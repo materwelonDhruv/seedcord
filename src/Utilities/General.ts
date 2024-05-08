@@ -1,11 +1,11 @@
 import { DatabaseErrorEmbed, GenericErrorEmbed } from '../Components';
 import { CustomErrorEmbed } from '../Interfaces';
 
-export class GeneralFunctions {
+export class GeneralUtils {
   public static getErrorEmbed(error: any): CustomErrorEmbed {
     const errorEmbedMap: Record<string, () => CustomErrorEmbed> = {
       DatabaseError: () => new DatabaseErrorEmbed(),
-      DatabaseConnectionFailure: () => new DatabaseErrorEmbed(),
+      DatabaseConnectionFailure: () => new DatabaseErrorEmbed()
     };
 
     const errorName: string =

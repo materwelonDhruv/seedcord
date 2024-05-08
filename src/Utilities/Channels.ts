@@ -1,7 +1,7 @@
 import { Guild, Message, TextChannel } from 'discord.js';
 import { MessageContent } from '../Interfaces';
 
-export class ChannelFunctions {
+export class ChannelUtils {
   public static async channelSendMessage(
     guild: Guild | null,
     channel: TextChannel,
