@@ -1,0 +1,49 @@
+{
+  "name": "seedcord",
+  "version": "1.0.0",
+  "description": "A robust TypeScript template for building scalable Discord bots using Discord.js and MongoDB.",
+  "main": "index.js",
+  "scripts": {
+    "start": "if [ \"$ALLOW_START\" = \"true\" ]; then NODE_ENV=production ts-node index.ts; else echo 'Cannot use this script in development.'; fi",
+    "dev": "NODE_ENV=development ts-node index.ts",
+    "build": "NODE_ENV=production tsc -p .",
+    "start:prod": "npm run build && node dist/index.js",
+    "lint": "eslint 'src'",
+    "lint:fix": "eslint 'src' --fix",
+    "prettier": "prettier --write 'src'",
+    "test": "NODE_ENV=development ts-node Temp/test.ts"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "typescript",
+    "mongoose",
+    "mongodb",
+    "template",
+    "discord.js"
+  ],
+  "author": "materwelondhruv",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.25",
+    "@typescript-eslint/eslint-plugin": "^7.1.1",
+    "@typescript-eslint/parser": "^7.1.1",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.2.1"
+  },
+  "engines": {
+    "node": ">=20.12.2"
+  },
+  "bugs": {
+    "url": "https://github.com/materwelondhruv/seedcord/issues"
+  },
+  "homepage": "https://github.com/materwelondhruv/seedcord#readme"
+}

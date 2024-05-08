@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# debug
+npm-debug.*
+
+# local env files
+.env.production
+.env.development
+
+# typescript
+*.tsbuildinfo
+
+# misc 
+Temp/
+**/.DS_Store
+
+# Ignore pnpm lock file
+pnpm-lock.yaml
