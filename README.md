@@ -31,8 +31,6 @@
 4. **Environment Setup**:
    - Configure `.env.development` and `.env.production` with your database and bot credentials.
 
-Certainly! I'll incorporate the additional instructions for setting up the testing environment and using `pnpm run test` into the "Usage" section of your README.md. Here's the updated segment:
-
 ### Usage
 
 - **Development**:
