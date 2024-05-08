@@ -1,37 +1,47 @@
-### SeedCord: A TypeScript Discord Bot Template
+# seedcord
 
-**Welcome to SeedCord**, a highly structured and robust Discord bot template designed to enable rapid development and scalability. Leveraging TypeScript, SeedCord implements a suite of design patterns and best practices to ensure maintainability and modularity.
+**Welcome to seedcord**, a TypeScript-based Discord bot template created by materwelon. Designed for developers looking to build an object-oriented Discord bot, seedcord follows good design patterns, ensuring robustness and scalability.
 
-#### Features
+## Features
 
-- **Modular Design**: Clear separation of concerns across various directories, improving code readability and extendibility.
-- **Object-Oriented Programming**: Utilizes OOP principles for logical structuring and code reusability.
-- **Design Patterns**:
-  - **Dependency Injection** and **Singleton**: For efficient resource and instance management.
-  - **Factory and Command Patterns**: For dynamic component generation and encapsulated command execution.
-  - **Observer and Middleware Patterns**: Enhance event handling and request processing capabilities.
-- **Environment-Specific Configuration**: Dedicated configuration files for development and production setups.
-- **Docker Support**: Basic Docker configuration included for containerized application management.
+- **TypeScript**: Employs the latest TypeScript for strong typing and maintainability.
+- **Modular Design**: The codebase is structured into separate directories, each with a specific purpose, enhancing readability and extendibility.
+- **Object-Oriented Programming**: Utilizes OOP principles for clear modular structures and reusability.
+- **Design Patterns**: Includes Dependency Injection, Singleton, Factory, Command, Observer, and Middleware Patterns for efficient management and dynamic component generation.
+- **MongoDB Integration**: Comes with MongoDB setup for robust data handling using Mongoose.
+- **Environment-Specific Configuration**: Separate configuration files for development and production environments.
+- **Docker Support**: Includes a basic Docker configuration for containerized application management.
 
-#### Getting Started
+## Prerequisites
+
+Before you begin, ensure you have the following installed:
+
+- Node.js (LTS version)
+- TypeScript
+- pnpm (recommended)
+
+## Getting Started
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/materwelondhruv/seedcord.git
+   git clone https://github.com/yourusername/seedcord.git
    ```
 2. **Install dependencies**:
    ```bash
    pnpm install
    ```
 3. **Set up MongoDB**:
-
    - Define schemas in `db/Models`.
-   - Implement CRUD operations in middleware classes within `db/Middleware` using Mongoose for atomic interactions.
-
+   - Implement CRUD operations in middleware classes within `db/Middleware` for atomic interactions.
 4. **Environment Setup**:
-   - Configure `.env.development` and `.env.production` with your database and bot credentials.
+   - Create `.env.development` and `.env.production` based on the provided templates:
+     ```
+     MONGODB_URI=<your_mongodb_uri>
+     DB_NAME=<your_database_collection_name>
+     BOT_TOKEN=<your_discord_bot_token>
+     ```
 
-### Usage
+## Usage
 
 - **Development**:
 
@@ -47,24 +57,21 @@
       ```
 
 - **Production**:
-  - Ensure `ALLOW_START=true` in `.env.production` to enable production mode.
+  - Ensure `ALLOW_START=true` in `.env.production` to prevent accidental production runs.
     ```bash
     npm run start:prod
     ```
 
-#### Contributing
+## Contributing
 
-SeedCord is open to contributions! Whether it's feature enhancements, bug fixes, or performance improvements, we welcome your pull requests and issues. For major changes, please open an issue first to discuss what you would like to change. Ensure to adhere to the outlined design patterns for consistency and maintainability.
+Contributions are welcome! Whether it's feature enhancements, bug fixes, or performance improvements, we invite you to fork the project and submit pull requests. You can also open issues if you find bugs or have feature requests. Please adhere to the established code style and document all changes.
 
-#### License
+## License
 
-SeedCord is MIT licensed, ensuring it remains free and open for use, modification, and distribution with the necessary acknowledgment.
+seedcord.ts is licensed under the MIT License, allowing modification, distribution, private use, and commercial use, provided the original copyright and license notice are included.
 
-### Contribution Guidelines Ideas
+## Contact
 
-Given the structure and intent of your project, here are some guideline ideas:
-
-1. **Code Style**: Adhere to the established code style and formatting. Utilize tools like ESLint and Prettier to maintain code quality.
-2. **Pull Requests**: Encourage small, manageable pull requests with clear, descriptive titles and descriptions for easier code reviews.
-3. **Testing**: Encourage contributors to include tests where applicable to maintain the stability of the bot's functionalities.
-4. **Documentation**: Encourage updates to documentation with every change. This helps keep the project accessible for new contributors and users.
+- Discord: materwelon
+- Twitter: @materwelon2002
+- Email: materwelondhruv@gmail.com
