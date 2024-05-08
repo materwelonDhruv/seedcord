@@ -1,6 +1,6 @@
 import { ChatInputCommandInteraction } from 'discord.js';
 import { Event } from '../Interfaces';
-import { GeneralFunctions } from '../Helpers';
+import { GeneralUtils } from '../Utilities';
 
 export class Pong extends Event<ChatInputCommandInteraction> {
   constructor(interaction: ChatInputCommandInteraction) {
@@ -11,7 +11,7 @@ export class Pong extends Event<ChatInputCommandInteraction> {
     try {
       await this.event.reply('Pong!');
     } catch (error: unknown) {
-      const errorEmbed = GeneralFunctions.getErrorEmbed(error);
+      const errorEmbed = GeneralUtils.getErrorEmbed(error);
 
       console.error(error);
       await this.event.reply({ embeds: [errorEmbed.getComponent] });
