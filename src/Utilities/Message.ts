@@ -1,19 +1,12 @@
-import { Guild, Message, TextChannel } from 'discord.js';
+import { Message, TextChannel } from 'discord.js';
 import { MessageContent } from '../Interfaces';
 
-export class ChannelUtils {
-  public static async channelSendMessage(
-    guild: Guild | null,
+export class MessageUtils {
+  public static async send(
     channel: TextChannel,
     content: MessageContent
   ): Promise<Message | undefined> {
-    if (!guild) {
-      throw new Error('Guild not found');
-    }
-
-    const guildChannel = await guild?.channels.fetch(channel.id);
-
-    if (guildChannel?.isTextBased()) {
+    if (channel.isTextBased()) {
       const payload = {
         ...(content.content !== undefined && { content: content.content }),
         ...(content.embeds !== undefined && { embeds: [...content.embeds] }),
@@ -22,7 +15,7 @@ export class ChannelUtils {
         })
       };
 
-      const sentMessage = await guildChannel.send(payload);
+      const sentMessage = await channel.send(payload);
 
       const fetchedMessage = await sentMessage.fetch();
       return fetchedMessage;
