@@ -19,12 +19,6 @@ export class Constants {
   public static readonly dbName = process.env.DB_NAME || '';
   public static readonly mongoUri = process.env.MONGODB_URI || '';
 
-  // CONSTANTS
-  public static readonly emojis = {};
-  public static readonly icons = {};
-  public static readonly channelIds = {};
-  public static readonly roleIds = {};
-
   // VARIABLE ACCESSORS BASED ON ENVIRONMENT
   public static readonly botColor =
     Constants.environment === 'production'
