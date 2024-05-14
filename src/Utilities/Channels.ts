@@ -10,7 +10,7 @@ export class ChannelUtils {
       return channelId;
     }
 
-    const channel = client.channels.fetch(channelId) as Promise<TextChannel>;
+    const channel = await client.channels.fetch(channelId);
 
     if (channel instanceof TextChannel) {
       return channel;
