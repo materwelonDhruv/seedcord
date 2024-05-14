@@ -1,6 +1,6 @@
 // Errors
 export class ChannelNotFoundError extends Error {
-  private readonly channelId: string;
+  public readonly channelId: string;
 
   constructor(message: string, channelId: string) {
     super(message);
@@ -11,7 +11,7 @@ export class ChannelNotFoundError extends Error {
 }
 
 export class ChannelNotTextChannelError extends Error {
-  private readonly channelId: string;
+  public readonly channelId: string;
 
   constructor(message: string, channelId: string) {
     super(message);
