@@ -1,5 +1,8 @@
-import { DatabaseErrorEmbed, GenericErrorEmbed } from '../Components';
-import { CustomErrorEmbed } from '../Interfaces';
+import {
+  CustomErrorEmbed,
+  DatabaseErrorEmbed,
+  GenericErrorEmbed
+} from '../../lib';
 
 export class GeneralUtils {
   private static errorEmbedMap = new Map<

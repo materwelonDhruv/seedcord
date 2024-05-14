@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { Event } from '../Interfaces';
+import { Event } from '../../lib';
 import { GeneralUtils } from '../Utilities';
 
 export class Pong extends Event<ChatInputCommandInteraction> {

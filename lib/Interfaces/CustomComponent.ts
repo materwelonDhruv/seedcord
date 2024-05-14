@@ -4,7 +4,7 @@ import {
   EmbedBuilder,
   SlashCommandBuilder
 } from 'discord.js';
-import { Constants } from '../../lib';
+import { Constants } from '..';
 
 const ComponentTypes = {
   command: SlashCommandBuilder,

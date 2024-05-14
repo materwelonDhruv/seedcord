@@ -1,5 +1,5 @@
 import { Client, TextChannel, TextChannelResolvable } from 'discord.js';
-import { ChannelNotFoundError } from '../../lib';
+import { ChannelNotTextChannelError } from '../../lib';
 
 export class ChannelUtils {
   public static async fetch(
@@ -16,6 +16,6 @@ export class ChannelUtils {
       return channel;
     }
 
-    throw new ChannelNotFoundError('Channel not found', channelId);
+    throw new ChannelNotTextChannelError('Channel not found', channelId);
   }
 }

@@ -1,4 +1,4 @@
 export * from './Constants';
-export * from './CustomErrors';
+export * from './Errors';
+export * from './Interfaces';
 export * from './Utilities';
-export * from './Types';

@@ -1,5 +1,5 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { IEventHandler } from '../Interfaces';
+import { IEventHandler } from '../../lib';
 import { Pong } from '../Services';
 
 export class SlashCommandHandler implements IEventHandler {

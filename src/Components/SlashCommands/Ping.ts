@@ -1,4 +1,4 @@
-import { CustomComponent } from '../../Interfaces';
+import { CustomComponent } from '../../../lib';
 
 export class PingCommand extends CustomComponent<'command'> {
   constructor() {

@@ -1,5 +1,5 @@
 import { ButtonInteraction } from 'discord.js';
-import { IEventHandler } from '../Interfaces';
+import { IEventHandler } from '../../lib';
 
 export class ButtonHandler implements IEventHandler {
   private interaction: ButtonInteraction;

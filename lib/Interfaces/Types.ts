@@ -1,3 +1,9 @@
+import {
+  ActionRowBuilder,
+  EmbedBuilder,
+  MessageActionRowComponentBuilder
+} from 'discord.js';
+
 export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> &
   U[keyof U];
 
@@ -10,3 +16,9 @@ export type FixedLengthArray<N extends number, T> = N extends N
     ? T[]
     : _Array<N, T, []>
   : never;
+
+export type MessageContent = AtLeastOne<{
+  content: string;
+  embeds: EmbedBuilder[];
+  components: [ActionRowBuilder<MessageActionRowComponentBuilder>];
+}>;

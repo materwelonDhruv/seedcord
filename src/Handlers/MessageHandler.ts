@@ -1,6 +1,5 @@
 import { Message } from 'discord.js';
-// import { Config } from '../../Utilities';
-import { IEventHandler } from '../Interfaces';
+import { IEventHandler } from '../../lib';
 
 export class MessageHandler implements IEventHandler {
   private message: Message;

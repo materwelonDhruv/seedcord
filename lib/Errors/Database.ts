@@ -1,3 +1,6 @@
+import { CustomErrorEmbed } from '../Interfaces';
+
+// Errors
 export class DatabaseConnectionFailure extends Error {
   constructor(public message: string) {
     super(message);
@@ -14,13 +17,12 @@ export class DatabaseError extends Error {
   }
 }
 
-export class ChannelNotFoundError extends Error {
-  private readonly channelId: string;
-
-  constructor(message: string, channelId: string) {
-    super(message);
-    Object.setPrototypeOf(this, ChannelNotFoundError.prototype);
-    this.name = 'ChannelNotFoundError';
-    this.channelId = channelId;
+// Embeds
+export class DatabaseErrorEmbed extends CustomErrorEmbed {
+  constructor() {
+    super();
+    this.component.setDescription(
+      `An error occurred while interacting with the database.`
+    );
   }
 }
