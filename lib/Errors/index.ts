@@ -1,7 +1,18 @@
+import { CustomErrorEmbed } from '../Interfaces';
+
+// Exports
 export * from './Database';
-export * from './Generic';
-export * from './Unauthorized';
 export * from './Channels';
+export * from './Unauthorized';
+
+export class GenericErrorEmbed extends CustomErrorEmbed {
+  constructor() {
+    super();
+    this.component.setDescription(
+      `An error occurred while processing this request. Please report this to materwelon`
+    );
+  }
+}
 
 /**
  * Handles an error by throwing a custom error with a formatted message.
