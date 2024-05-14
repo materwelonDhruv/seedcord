@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { Constants, DatabaseConnectionFailure, throwCustomError } from '../lib';
+import { Constants, DatabaseConnectionFailure, ErrorUtils } from '../lib';
 
 export default class Database {
   private readonly uri: string;
@@ -19,7 +19,7 @@ export default class Database {
         console.log('Connected to MongoDB: ' + instance.connection.name)
       )
       .catch((err) => {
-        throwCustomError(
+        ErrorUtils.throwCustomError(
           err,
           'Could not connect to MongoDB',
           DatabaseConnectionFailure

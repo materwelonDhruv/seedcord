@@ -1,9 +1,12 @@
 import { CustomErrorEmbed } from '../Interfaces';
+import { DatabaseErrorEmbed } from './Database';
 
 // Exports
 export * from './Database';
 export * from './Channels';
 export * from './Unauthorized';
+
+// --------------------------------------------------------
 
 export class GenericErrorEmbed extends CustomErrorEmbed {
   constructor() {
@@ -14,23 +17,32 @@ export class GenericErrorEmbed extends CustomErrorEmbed {
   }
 }
 
-/**
- * Handles an error by throwing a custom error with a formatted message.
- * @template T - The type of the custom error class.
- * @param error - The error to handle.
- * @param message - The error message.
- * @param CustomError - The custom error class.
- * @throws {CustomError} - Throws a custom error with the formatted message.
- * @returns {never} - This function never returns as it always throws an error.
- */
-export function throwCustomError<T extends new (...args: any[]) => Error>(
-  error: unknown,
-  message: string,
-  CustomError: T
-): never {
-  if (error instanceof Error) {
-    throw new CustomError(`${message}: ${error.message}`);
-  } else {
-    throw new CustomError(message);
+export class ErrorUtils {
+  private static errorEmbedMap = new Map<
+    string,
+    (error: any) => CustomErrorEmbed
+  >([
+    ['DatabaseError', () => new DatabaseErrorEmbed()],
+    ['DatabaseConnectionFailure', () => new DatabaseErrorEmbed()]
+  ]);
+
+  public static getErrorEmbed(error: any): CustomErrorEmbed {
+    const errorName = error instanceof Error ? error.constructor.name : '';
+    const errorEmbed =
+      ErrorUtils.errorEmbedMap.get(errorName)?.(error) ??
+      new GenericErrorEmbed();
+    return errorEmbed;
+  }
+
+  public static throwCustomError<T extends new (...args: any[]) => Error>(
+    error: unknown,
+    message: string,
+    CustomError: T
+  ): never {
+    if (error instanceof Error) {
+      throw new CustomError(`${message}: ${error.message}`);
+    } else {
+      throw new CustomError(message);
+    }
   }
 }
