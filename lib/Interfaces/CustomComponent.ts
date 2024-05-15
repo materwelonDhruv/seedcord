@@ -11,44 +11,45 @@ const ComponentTypes = {
   embed: EmbedBuilder,
   button: ButtonBuilder
 };
-type ComponentType = keyof typeof ComponentTypes;
-
 const ActionRowComponentTypes = {
   button: ActionRowBuilder<ButtonBuilder>
 };
 
+type ComponentType = keyof typeof ComponentTypes;
+type InstantiatedBuilder<B extends ComponentType> = InstanceType<
+  (typeof ComponentTypes)[B]
+>;
 type ActionRowComponentType = keyof typeof ActionRowComponentTypes;
+type InstantiatedActionRow<A extends ActionRowComponentType> = InstanceType<
+  (typeof ActionRowComponentTypes)[A]
+>;
 
-export abstract class CustomComponent<T extends ComponentType> {
-  protected component: InstanceType<(typeof ComponentTypes)[T]>;
+export abstract class CustomComponent<C extends ComponentType> {
+  protected component: InstantiatedBuilder<C>;
 
-  constructor(type: T) {
+  constructor(type: C) {
     const ComponentClass = ComponentTypes[type];
-    this.component = new ComponentClass() as InstanceType<
-      (typeof ComponentTypes)[T]
-    >;
+    this.component = new ComponentClass() as InstantiatedBuilder<C>;
 
     if (this.component instanceof EmbedBuilder) {
       this.component.setColor(Constants.botColor);
     }
   }
 
-  get getComponent(): InstanceType<(typeof ComponentTypes)[T]> {
+  get getComponent(): InstantiatedBuilder<C> {
     return this.component;
   }
 }
 
-export abstract class CustomActionRow<T extends ActionRowComponentType> {
-  protected row: InstanceType<(typeof ActionRowComponentTypes)[T]>;
+export abstract class CustomActionRow<C extends ActionRowComponentType> {
+  protected row: InstantiatedActionRow<C>;
 
-  constructor(type: T) {
+  constructor(type: C) {
     const ComponentClass = ActionRowComponentTypes[type];
-    this.row = new ComponentClass() as InstanceType<
-      (typeof ActionRowComponentTypes)[T]
-    >;
+    this.row = new ComponentClass() as InstantiatedActionRow<C>;
   }
 
-  get getRow(): InstanceType<(typeof ActionRowComponentTypes)[T]> {
+  get getRow(): InstantiatedActionRow<C> {
     return this.row;
   }
 }
