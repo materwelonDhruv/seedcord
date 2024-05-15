@@ -24,33 +24,37 @@ type InstantiatedActionRow<A extends ActionRowComponentType> = InstanceType<
   (typeof ActionRowComponentTypes)[A]
 >;
 
-export abstract class CustomComponent<C extends ComponentType> {
-  protected component: InstantiatedBuilder<C>;
+abstract class CustomBase<C> {
+  protected component: C;
 
+  constructor(ComponentClass: new () => C) {
+    this.component = new ComponentClass();
+  }
+
+  get getComponent(): C {
+    return this.component;
+  }
+}
+
+export abstract class CustomComponent<
+  C extends ComponentType
+> extends CustomBase<InstantiatedBuilder<C>> {
   constructor(type: C) {
-    const ComponentClass = ComponentTypes[type];
-    this.component = new ComponentClass() as InstantiatedBuilder<C>;
+    const ComponentClass = ComponentTypes[type] as unknown;
+    super(ComponentClass as new () => InstantiatedBuilder<C>);
 
     if (this.component instanceof EmbedBuilder) {
       this.component.setColor(Constants.botColor);
     }
   }
-
-  get getComponent(): InstantiatedBuilder<C> {
-    return this.component;
-  }
 }
 
-export abstract class CustomActionRow<C extends ActionRowComponentType> {
-  protected row: InstantiatedActionRow<C>;
-
+export abstract class CustomActionRow<
+  C extends ActionRowComponentType
+> extends CustomBase<InstantiatedActionRow<C>> {
   constructor(type: C) {
-    const ComponentClass = ActionRowComponentTypes[type];
-    this.row = new ComponentClass() as InstantiatedActionRow<C>;
-  }
-
-  get getRow(): InstantiatedActionRow<C> {
-    return this.row;
+    const ComponentClass = ActionRowComponentTypes[type] as unknown;
+    super(ComponentClass as new () => InstantiatedActionRow<C>);
   }
 }
 
