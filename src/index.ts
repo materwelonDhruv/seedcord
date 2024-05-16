@@ -18,7 +18,7 @@ export default class Discord {
   }
 
   public async login(): Promise<Discord> {
-    await this.client.login(Constants.botToken);
+    await this.client.login(Constants.BOT_TOKEN);
     console.log(`Logged in as ${this.client.user?.tag}!`);
     return this;
   }

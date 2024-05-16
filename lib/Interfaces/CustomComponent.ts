@@ -44,7 +44,7 @@ export abstract class CustomComponent<
     super(ComponentClass as new () => InstantiatedBuilder<C>);
 
     if (this.component instanceof EmbedBuilder) {
-      this.component.setColor(Constants.botColor);
+      this.component.setColor(Constants.BOT_COLOR);
     }
   }
 }

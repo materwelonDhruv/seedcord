@@ -5,15 +5,15 @@ export default class Database {
   private readonly uri: string;
 
   constructor() {
-    this.uri = `${Constants.mongoUri}`;
+    this.uri = `${Constants.MONGO_URI}`;
   }
 
   public async connect(): Promise<void> {
     await mongoose
       .connect(this.uri, {
-        ...(Constants.environment === 'production' ? { tls: true } : {}),
-        ...(Constants.environment === 'production' ? { ssl: true } : {}),
-        dbName: Constants.dbName
+        ...(Constants.ENV === 'production' ? { tls: true } : {}),
+        ...(Constants.ENV === 'production' ? { ssl: true } : {}),
+        dbName: Constants.DB_NAME
       })
       .then((instance) =>
         console.log('Connected to MongoDB: ' + instance.connection.name)
