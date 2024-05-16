@@ -1,5 +1,5 @@
-import { Client, GatewayIntentBits } from 'discord.js';
-import { Constants } from '../lib';
+import { Client, Events, GatewayIntentBits } from 'discord.js';
+import { Constants, Executable } from '../lib';
 import { PingCommand } from './Components';
 import { ButtonHandler, MessageHandler, SlashCommandHandler } from './Handlers';
 
@@ -47,27 +47,41 @@ export default class Discord {
     this.setupMessageHandler();
   }
 
-  private setupInteractionHandler(): void {
-    this.client.on('interactionCreate', (interaction) => {
-      if (interaction.isChatInputCommand()) {
-        new SlashCommandHandler(interaction).execute().catch((error) => {
-          console.error('Failed to execute slash command:', error);
-        });
-      }
+  private setupMessageHandler(): void {
+    this.client.on(Events.MessageCreate, (message) => {
+      new MessageHandler(message).execute().catch((error) => {
+        console.error('Failed to handle message:', error);
+      });
+    });
+  }
 
-      if (interaction.isButton()) {
-        new ButtonHandler(interaction).execute().catch((error) => {
-          console.error('Failed to execute button handler:', error);
-        });
+  private setupInteractionHandler(): void {
+    this.client.on(Events.InteractionCreate, (interaction) => {
+      switch (true) {
+        case interaction.isChatInputCommand():
+          this.handleInteraction(
+            new SlashCommandHandler(interaction),
+            'Failed to handle slash command interaction:'
+          );
+          break;
+        case interaction.isButton():
+          this.handleInteraction(
+            new ButtonHandler(interaction),
+            'Failed to handle button interaction:'
+          );
+          break;
+        default:
+          break;
       }
     });
   }
 
-  private setupMessageHandler(): void {
-    this.client.on('messageCreate', (message) => {
-      new MessageHandler(message).execute().catch((error) => {
-        console.error('Failed to handle message:', error);
-      });
+  private handleInteraction(
+    handler: InstanceType<typeof Executable>,
+    errorMessage: string
+  ) {
+    handler.execute().catch((error) => {
+      console.error(errorMessage, error);
     });
   }
 }

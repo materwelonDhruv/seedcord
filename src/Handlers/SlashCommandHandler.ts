@@ -1,18 +1,16 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { IEventHandler } from '../../lib';
+import { Executable } from '../../lib';
 import { Pong } from '../Services';
 
-export class SlashCommandHandler implements IEventHandler {
-  private interaction: ChatInputCommandInteraction;
-
+export class SlashCommandHandler extends Executable<ChatInputCommandInteraction> {
   constructor(interaction: ChatInputCommandInteraction) {
-    this.interaction = interaction;
+    super(interaction);
   }
 
-  private getHandler(): IEventHandler | null {
-    switch (this.interaction.commandName) {
+  private getHandler(): Executable<ChatInputCommandInteraction> | null {
+    switch (this.event.commandName) {
       case 'ping':
-        return new Pong(this.interaction);
+        return new Pong(this.event);
       default:
         return null;
     }

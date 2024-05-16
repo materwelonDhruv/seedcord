@@ -1,15 +1,13 @@
 import { ButtonInteraction } from 'discord.js';
-import { IEventHandler } from '../../lib';
+import { Executable } from '../../lib';
 
-export class ButtonHandler implements IEventHandler {
-  private interaction: ButtonInteraction;
-
+export class ButtonHandler extends Executable<ButtonInteraction> {
   constructor(interaction: ButtonInteraction) {
-    this.interaction = interaction;
+    super(interaction);
   }
 
-  private getHandler(): IEventHandler | null {
-    switch (this.interaction.customId.split('-')[0]) {
+  private getHandler(): Executable<ButtonInteraction> | null {
+    switch (this.event.customId.split('-')[0]) {
       default:
         return null;
     }

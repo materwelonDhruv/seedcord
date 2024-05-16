@@ -4,18 +4,16 @@ import {
   ButtonInteraction
 } from 'discord.js';
 
-export interface IEventHandler {
-  execute(): Promise<void>;
-}
-
 type ValidEventTypes =
   | Message
   | ChatInputCommandInteraction
   | ButtonInteraction;
 
-export abstract class Event<T extends ValidEventTypes>
-  implements IEventHandler
-{
+/**
+ * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
+ * @template T - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
+ */
+export abstract class Executable<T extends ValidEventTypes> {
   protected event: T;
 
   constructor(event: T) {

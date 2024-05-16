@@ -1,11 +1,9 @@
 import { Message } from 'discord.js';
-import { IEventHandler } from '../../lib';
+import { Executable } from '../../lib';
 
-export class MessageHandler implements IEventHandler {
-  private message: Message;
-
+export class MessageHandler extends Executable<Message> {
   constructor(message: Message) {
-    this.message = message;
+    super(message);
   }
 
   public async execute(): Promise<void> {}
