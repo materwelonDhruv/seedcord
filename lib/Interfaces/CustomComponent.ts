@@ -1,18 +1,37 @@
 import {
   ActionRowBuilder,
   ButtonBuilder,
+  ChannelSelectMenuBuilder,
   EmbedBuilder,
-  SlashCommandBuilder
+  MentionableSelectMenuBuilder,
+  ModalBuilder,
+  RoleSelectMenuBuilder,
+  SlashCommandBuilder,
+  StringSelectMenuBuilder,
+  StringSelectMenuOptionBuilder,
+  UserSelectMenuBuilder
 } from 'discord.js';
 import { Constants } from '..';
 
 const ComponentTypes = {
   command: SlashCommandBuilder,
   embed: EmbedBuilder,
-  button: ButtonBuilder
+  button: ButtonBuilder,
+  menu_string: StringSelectMenuBuilder,
+  menu_option_string: StringSelectMenuOptionBuilder,
+  menu_role: RoleSelectMenuBuilder,
+  menu_mentionable: MentionableSelectMenuBuilder,
+  menu_channel: ChannelSelectMenuBuilder,
+  menu_user: UserSelectMenuBuilder,
+  modal: ModalBuilder
 };
 const ActionRowComponentTypes = {
-  button: ActionRowBuilder<ButtonBuilder>
+  button: ActionRowBuilder<ButtonBuilder>,
+  menu_string: ActionRowBuilder<StringSelectMenuBuilder>,
+  menu_role: ActionRowBuilder<RoleSelectMenuBuilder>,
+  menu_mentionable: ActionRowBuilder<MentionableSelectMenuBuilder>,
+  menu_channel: ActionRowBuilder<ChannelSelectMenuBuilder>,
+  menu_user: ActionRowBuilder<UserSelectMenuBuilder>
 };
 
 type ComponentType = keyof typeof ComponentTypes;
