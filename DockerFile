@@ -16,8 +16,5 @@ COPY . .
 # Compile the TypeScript code
 RUN npm run build
 
-# Expose port 3000 for the app (replace with your actual port if it's not 3000)
-EXPOSE 3000
-
 # Define the command to run the app
 CMD [ "npm", "run", "start:prod" ]
