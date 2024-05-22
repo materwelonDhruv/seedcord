@@ -10,10 +10,10 @@ export class Pong extends Executable<ChatInputCommandInteraction> {
     try {
       await this.event.reply('Pong!');
     } catch (error: unknown) {
-      const errorEmbed = ErrorUtils.getErrorEmbed(error);
-
       console.error(error);
-      await this.event.reply({ embeds: [errorEmbed.getComponent] });
+      await this.event.reply({
+        embeds: [ErrorUtils.getErrorEmbed(error).getComponent]
+      });
     }
   }
 }
