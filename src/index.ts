@@ -1,7 +1,13 @@
 import { Client, Events, GatewayIntentBits } from 'discord.js';
 import { Constants, Executable } from '../lib';
 import { PingCommand } from './Components';
-import { ButtonHandler, MessageHandler, SlashCommandHandler } from './Handlers';
+import {
+  ButtonHandler,
+  MessageHandler,
+  ModalSubmitHandler,
+  SlashCommandHandler,
+  StringMenuHandler
+} from './Handlers';
 
 export default class Discord {
   private readonly client: Client;
@@ -68,6 +74,18 @@ export default class Discord {
           this.handleInteraction(
             new ButtonHandler(interaction),
             'Failed to handle button interaction:'
+          );
+          break;
+        case interaction.isStringSelectMenu():
+          this.handleInteraction(
+            new StringMenuHandler(interaction),
+            'Failed to handle menu interaction:'
+          );
+          break;
+        case interaction.isModalSubmit():
+          this.handleInteraction(
+            new ModalSubmitHandler(interaction),
+            'Failed to handle modal submit interaction:'
           );
           break;
         default:

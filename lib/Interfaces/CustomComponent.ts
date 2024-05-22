@@ -1,15 +1,13 @@
 import {
   ActionRowBuilder,
   ButtonBuilder,
-  ChannelSelectMenuBuilder,
   EmbedBuilder,
-  MentionableSelectMenuBuilder,
+  ModalActionRowComponentBuilder,
   ModalBuilder,
-  RoleSelectMenuBuilder,
   SlashCommandBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
-  UserSelectMenuBuilder
+  TextInputBuilder
 } from 'discord.js';
 import { Constants } from '..';
 
@@ -19,28 +17,31 @@ const ComponentTypes = {
   button: ButtonBuilder,
   menu_string: StringSelectMenuBuilder,
   menu_option_string: StringSelectMenuOptionBuilder,
-  menu_role: RoleSelectMenuBuilder,
-  menu_mentionable: MentionableSelectMenuBuilder,
-  menu_channel: ChannelSelectMenuBuilder,
-  menu_user: UserSelectMenuBuilder,
   modal: ModalBuilder
 };
 const ActionRowComponentTypes = {
   button: ActionRowBuilder<ButtonBuilder>,
   menu_string: ActionRowBuilder<StringSelectMenuBuilder>,
-  menu_role: ActionRowBuilder<RoleSelectMenuBuilder>,
-  menu_mentionable: ActionRowBuilder<MentionableSelectMenuBuilder>,
-  menu_channel: ActionRowBuilder<ChannelSelectMenuBuilder>,
-  menu_user: ActionRowBuilder<UserSelectMenuBuilder>
+  modal: ActionRowBuilder<ModalActionRowComponentBuilder>
+};
+
+const ModalTypes = {
+  text: TextInputBuilder
 };
 
 type ComponentType = keyof typeof ComponentTypes;
 type InstantiatedBuilder<B extends ComponentType> = InstanceType<
   (typeof ComponentTypes)[B]
 >;
+
 type ActionRowComponentType = keyof typeof ActionRowComponentTypes;
 type InstantiatedActionRow<A extends ActionRowComponentType> = InstanceType<
   (typeof ActionRowComponentTypes)[A]
+>;
+
+type ModalType = keyof typeof ModalTypes;
+type InstantiatedModal<M extends ModalType> = InstanceType<
+  (typeof ModalTypes)[M]
 >;
 
 abstract class CustomBase<C> {
@@ -50,9 +51,9 @@ abstract class CustomBase<C> {
     this.component = new ComponentClass();
   }
 
-  get getComponent(): C {
-    return this.component;
-  }
+  abstract get getComponent():
+    | InstantiatedBuilder<ComponentType>
+    | InstantiatedActionRow<ActionRowComponentType>;
 }
 
 export abstract class CustomComponent<
@@ -66,6 +67,10 @@ export abstract class CustomComponent<
       this.component.setColor(Constants.BOT_COLOR);
     }
   }
+
+  get getComponent(): InstantiatedBuilder<C> {
+    return this.component;
+  }
 }
 
 export abstract class CustomActionRow<
@@ -74,6 +79,31 @@ export abstract class CustomActionRow<
   constructor(type: C) {
     const ComponentClass = ActionRowComponentTypes[type] as unknown;
     super(ComponentClass as new () => InstantiatedActionRow<C>);
+  }
+
+  get getComponent(): InstantiatedActionRow<C> {
+    return this.component;
+  }
+}
+
+class ModalRow<M extends ModalType> extends CustomActionRow<'modal'> {
+  constructor(component: InstantiatedModal<M>) {
+    super('modal');
+
+    this.component.addComponents(component);
+  }
+}
+
+export abstract class CustomModalField<M extends ModalType> extends CustomBase<
+  InstantiatedModal<M>
+> {
+  constructor(type: M) {
+    const ComponentClass = ModalTypes[type] as unknown;
+    super(ComponentClass as new () => InstantiatedModal<M>);
+  }
+
+  get getComponent(): InstantiatedActionRow<'modal'> {
+    return new ModalRow<M>(this.component).getComponent;
   }
 }
 

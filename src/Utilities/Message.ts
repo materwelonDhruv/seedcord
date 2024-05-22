@@ -5,7 +5,7 @@ export class MessageUtils {
   public static async send(
     channel: TextChannel,
     content: MessageContent
-  ): Promise<Message | undefined> {
+  ): Promise<Message> {
     const payload = {
       ...(content.content !== undefined && { content: content.content }),
       ...(content.embeds !== undefined && { embeds: [...content.embeds] }),
@@ -15,8 +15,6 @@ export class MessageUtils {
     };
 
     const sentMessage = await channel.send(payload);
-
-    const fetchedMessage = await sentMessage.fetch();
-    return fetchedMessage;
+    return sentMessage;
   }
 }

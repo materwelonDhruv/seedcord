@@ -17,6 +17,8 @@ export class GenericErrorEmbed extends CustomErrorEmbed {
   }
 }
 
+export type CustomErrorType = new (...args: any[]) => Error;
+
 export class ErrorUtils {
   private static errorEmbedMap = new Map<
     string,
@@ -34,7 +36,7 @@ export class ErrorUtils {
     return errorEmbed;
   }
 
-  public static throwCustomError<T extends new (...args: any[]) => Error>(
+  public static throwCustomError<T extends CustomErrorType>(
     error: unknown,
     message: string,
     CustomError: T

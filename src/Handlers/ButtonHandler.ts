@@ -7,7 +7,7 @@ export class ButtonHandler extends Executable<ButtonInteraction> {
   }
 
   private getHandler(): Executable<ButtonInteraction> | null {
-    switch (this.event.customId.split('-')[0]) {
+    switch (this.event.customId.split('_')[0]) {
       default:
         return null;
     }

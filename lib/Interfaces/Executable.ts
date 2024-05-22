@@ -1,13 +1,17 @@
 import {
   Message,
   ChatInputCommandInteraction,
-  ButtonInteraction
+  ButtonInteraction,
+  StringSelectMenuInteraction,
+  ModalSubmitInteraction
 } from 'discord.js';
 
 type ValidEventTypes =
   | Message
   | ChatInputCommandInteraction
-  | ButtonInteraction;
+  | ButtonInteraction
+  | StringSelectMenuInteraction
+  | ModalSubmitInteraction;
 
 /**
  * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
