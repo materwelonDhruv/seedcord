@@ -57,10 +57,9 @@ Before you begin, ensure you have the following installed:
       ```
 
 - **Production**:
-  - Ensure `ALLOW_START=true` in `.env.production` to prevent accidental production runs.
-    ```bash
-    npm run start:prod
-    ```
+  ```bash
+  npm run start:prod
+  ```
 
 ## Contributing
 

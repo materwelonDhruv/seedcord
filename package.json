@@ -4,13 +4,12 @@
   "description": "A robust TypeScript template for building scalable Discord bots using Discord.js and MongoDB.",
   "main": "index.js",
   "scripts": {
-    "start": "if [ \"$ALLOW_START\" = \"true\" ]; then NODE_ENV=production ts-node index.ts; else echo 'Cannot use this script in development.'; fi",
-    "dev": "NODE_ENV=development ts-node index.ts",
+    "start": "NODE_ENV=development ts-node index.ts",
     "build": "NODE_ENV=production tsc -p .",
-    "start:prod": "npm run build && node dist/index.js",
-    "lint": "eslint 'src'",
-    "lint:fix": "eslint 'src' --fix",
-    "prettier": "prettier --write 'src'",
+    "start:prod": "NODE_ENV=production npm run build && node dist/index.js",
+    "lint": "eslint 'src' 'lib' 'db' 'temp'",
+    "lint:fix": "eslint 'src' 'lib' 'db' 'temp' --fix",
+    "prettier": "prettier --write 'src' 'lib' 'db' 'temp'",
     "test": "NODE_ENV=development ts-node Temp/test.ts"
   },
   "keywords": [
