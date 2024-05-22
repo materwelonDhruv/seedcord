@@ -39,8 +39,8 @@ type InstantiatedActionRow<A extends ActionRowComponentType> = InstanceType<
   (typeof ActionRowComponentTypes)[A]
 >;
 
-type ModalType = keyof typeof ModalTypes;
-type InstantiatedModal<M extends ModalType> = InstanceType<
+type ModalFieldTypes = keyof typeof ModalTypes;
+type InstantiatedModalField<M extends ModalFieldTypes> = InstanceType<
   (typeof ModalTypes)[M]
 >;
 
@@ -86,20 +86,20 @@ export abstract class CustomActionRow<
   }
 }
 
-class ModalRow<M extends ModalType> extends CustomActionRow<'modal'> {
-  constructor(component: InstantiatedModal<M>) {
+class ModalRow<M extends ModalFieldTypes> extends CustomActionRow<'modal'> {
+  constructor(component: InstantiatedModalField<M>) {
     super('modal');
 
     this.component.addComponents(component);
   }
 }
 
-export abstract class CustomModalField<M extends ModalType> extends CustomBase<
-  InstantiatedModal<M>
-> {
+export abstract class CustomModalField<
+  M extends ModalFieldTypes
+> extends CustomBase<InstantiatedModalField<M>> {
   constructor(type: M) {
     const ComponentClass = ModalTypes[type] as unknown;
-    super(ComponentClass as new () => InstantiatedModal<M>);
+    super(ComponentClass as new () => InstantiatedModalField<M>);
   }
 
   get getComponent(): InstantiatedActionRow<'modal'> {
