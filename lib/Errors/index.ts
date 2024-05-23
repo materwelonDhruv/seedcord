@@ -29,7 +29,7 @@ export class ErrorUtils {
   ]);
 
   public static getErrorEmbed(error: any): CustomErrorEmbed {
-    const errorName = error instanceof Error ? error.constructor.name : '';
+    const errorName = error instanceof Error ? error.name : '';
     const errorEmbed =
       ErrorUtils.errorEmbedMap.get(errorName)?.(error) ??
       new GenericErrorEmbed();
