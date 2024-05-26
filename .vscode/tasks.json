@@ -2,10 +2,10 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "type": "npm",
-      "script": "test",
+      "type": "shell",
+      "command": "pnpm test",
       "problemMatcher": [],
-      "label": "npm: test",
+      "label": "pnpm: test",
       "detail": "NODE_ENV=development ts-node Temp/test.ts",
       "group": {
         "kind": "test",
@@ -13,10 +13,10 @@
       }
     },
     {
-      "type": "npm",
-      "script": "start",
+      "type": "shell",
+      "command": "pnpm start",
       "problemMatcher": [],
-      "label": "npm: start",
+      "label": "pnpm: start",
       "detail": "NODE_ENV=development ts-node index.ts",
       "group": {
         "kind": "build",

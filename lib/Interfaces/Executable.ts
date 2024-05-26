@@ -6,13 +6,16 @@ import {
   ModalSubmitInteraction
 } from 'discord.js';
 
-type ValidEventTypes =
+export type ValidEventTypes =
   | Message
   | ChatInputCommandInteraction
   | ButtonInteraction
   | StringSelectMenuInteraction
   | ModalSubmitInteraction;
 
+export type ExecutableInteraction = Executable<
+  Exclude<ValidEventTypes, Message>
+>;
 /**
  * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
  * @template T - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.

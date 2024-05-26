@@ -1,8 +1,13 @@
-import { Client, TextChannel, TextChannelResolvable } from 'discord.js';
-import { ChannelNotTextChannelError } from '../../lib';
+import {
+  Channel,
+  Client,
+  TextChannel,
+  TextChannelResolvable
+} from 'discord.js';
+import { ChannelNotTextChannelError, Nullish } from '../../lib';
 
 export class ChannelUtils {
-  public static async fetch(
+  public static async fetchText(
     client: Client,
     channelId: TextChannelResolvable
   ): Promise<TextChannel> {
@@ -10,7 +15,11 @@ export class ChannelUtils {
       return channelId;
     }
 
-    const channel = await client.channels.fetch(channelId);
+    let channel: Nullish<Channel> = client.channels.cache.get(channelId);
+
+    if (!channel) {
+      channel = await client.channels.fetch(channelId);
+    }
 
     if (channel instanceof TextChannel) {
       return channel;

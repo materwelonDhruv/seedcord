@@ -1,19 +1,14 @@
 import { ChatInputCommandInteraction } from 'discord.js';
-import { ErrorUtils, Executable } from '../../lib';
+import { Executable } from '../../lib';
+import { CatchErrors } from '../Middleware';
 
 export class Pong extends Executable<ChatInputCommandInteraction> {
   constructor(interaction: ChatInputCommandInteraction) {
     super(interaction);
   }
 
+  @CatchErrors()
   public async execute(): Promise<void> {
-    try {
-      await this.event.reply('Pong!');
-    } catch (error: unknown) {
-      console.error(error);
-      await this.event.reply({
-        embeds: [ErrorUtils.getErrorEmbed(error).getComponent]
-      });
-    }
+    await this.event.reply('Pong!');
   }
 }

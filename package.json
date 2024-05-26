@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=development ts-node index.ts",
+    "start:watch": "nodemon --exec NODE_ENV=development ts-node index.ts",
     "build": "NODE_ENV=production tsc -p .",
     "start:prod": "NODE_ENV=production npm run build && node dist/index.js",
     "lint": "eslint 'src' 'lib' 'db' 'temp'",
@@ -29,6 +30,7 @@
     "@typescript-eslint/parser": "^7.1.1",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
+    "nodemon": "^3.1.1",
     "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.2"

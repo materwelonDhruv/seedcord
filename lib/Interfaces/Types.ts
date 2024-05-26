@@ -17,6 +17,10 @@ export type FixedLengthArray<N extends number, T> = N extends N
     : _Array<N, T, []>
   : never;
 
+export type Nullish<T = null> = T extends null
+  ? null | undefined
+  : T | null | undefined;
+
 export type MessageContent = AtLeastOne<{
   content: string;
   embeds: EmbedBuilder[];
