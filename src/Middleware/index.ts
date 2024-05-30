@@ -1,1 +1,1 @@
-export * from './CatchErrors';
+export * from './Decorators';
