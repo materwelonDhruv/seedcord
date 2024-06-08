@@ -32,7 +32,6 @@ export default class Discord {
   public async buildSlashCommands(): Promise<void> {
     const commands = [new PingCommand().getComponent];
 
-    await this.client.application?.commands.set([]);
     await this.client.application?.commands.set(commands);
     console.log(
       `Created the following commands: ${commands.map((command) => command.name).join(', ')}`
