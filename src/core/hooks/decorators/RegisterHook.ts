@@ -1,10 +1,10 @@
 import 'reflect-metadata';
-import { Hooks } from '../interfaces/Hooks';
+import { HookKeys } from '../types/HookMap';
 import { ConstructorFunction } from '../../library/types/Miscellaneous';
 
 export const HookMetadataKey = Symbol('hook:metadata');
 
-export function RegisterHook<T extends Hooks>(hook: T) {
+export function RegisterHook(hook: HookKeys) {
   return function (constructor: ConstructorFunction) {
     Reflect.defineMetadata(HookMetadataKey, hook, constructor);
   };

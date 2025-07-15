@@ -1,0 +1,23 @@
+import { UUID } from 'crypto';
+import { Guild, User } from 'discord.js';
+
+// Base constraint for any hooks map - all values must extend arrays of parameters
+export type HookConstraint = Record<string, any[]>;
+
+// Default hooks that are always available in the framework
+export interface DefaultHooks {
+  unknownException: [uuid: UUID, error: Error, guild: Guild, user: User];
+}
+
+// This interface can be augmented via declaration merging
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface CustomHooks {}
+
+// Combined hooks interface - includes both default and custom hooks
+export interface AllHooks extends DefaultHooks, CustomHooks {}
+
+// Helper type to extract hook keys
+export type HookKeys = keyof AllHooks;
+
+// Helper type to get parameters for a specific hook
+export type HookParams<T extends HookKeys> = AllHooks[T];
