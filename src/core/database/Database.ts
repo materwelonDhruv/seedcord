@@ -7,11 +7,8 @@ import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { Core } from '../library/interfaces/Core';
 import { LogService } from '../services/LogService';
 import { BaseService } from './BaseService';
-import { ServiceMap } from './types/ServiceMap';
+import { Services } from './types/ServiceMap';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
-
-// Import augmentations to activate declaration merging
-import './augmentations/ServiceMapAugmentation';
 
 export class Database {
   private readonly logger = new LogService('Database');
@@ -22,7 +19,7 @@ export class Database {
    * Map of all loaded services.
    * Keys come from `@DatabaseService('key')`
    */
-  public readonly services: ServiceMap = {} as ServiceMap;
+  public readonly services: Services = {} as Services;
 
   constructor(
     public readonly core: Core,
@@ -82,7 +79,7 @@ export class Database {
     );
   }
 
-  _register<K extends keyof ServiceMap>(key: K, instance: ServiceMap[K]): void {
+  _register<K extends keyof Services>(key: K, instance: Services[K]): void {
     this.services[key] = instance;
   }
 }
