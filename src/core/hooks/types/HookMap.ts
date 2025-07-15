@@ -1,9 +1,6 @@
 import { UUID } from 'crypto';
 import { Guild, User } from 'discord.js';
 
-// Base constraint for any hooks map - all values must extend arrays of parameters
-export type HookConstraint = Record<string, any[]>;
-
 // Default hooks that are always available in the framework
 export interface DefaultHooks {
   unknownException: [uuid: UUID, error: Error, guild: Guild, user: User];
