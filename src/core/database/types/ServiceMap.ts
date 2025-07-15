@@ -1,12 +1,11 @@
-import { Users } from '../services/Users';
+import { BaseService } from '../BaseService';
 
-export const ValidServiceKeys = ['users'] as const;
-export type ValidServiceKey = (typeof ValidServiceKeys)[number];
+// Base constraint for any service map - all values must extend BaseService
+export type ServiceMapConstraint = Record<string, BaseService<any>>;
 
-interface AllServices {
-  users: Users;
-}
+// This interface can be augmented via declaration merging
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface ServiceMap {}
 
-export type ServiceMap = {
-  [K in ValidServiceKey]: AllServices[K];
-};
+// Helper type to extract service keys
+export type ServiceMapKeys = keyof ServiceMap;

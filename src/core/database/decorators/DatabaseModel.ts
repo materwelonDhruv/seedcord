@@ -1,9 +1,9 @@
 import mongoose from 'mongoose';
-import { ValidServiceKey } from '../types/ServiceMap';
+import { ServiceMapKeys } from '../types/ServiceMap';
 
 export const ModelMetadataKey = Symbol('db:model');
 
-export function DatabaseModel(collection: ValidServiceKey) {
+export function DatabaseModel(collection: ServiceMapKeys) {
   return <T extends Record<K, mongoose.Schema>, K extends keyof T & (string | symbol)>(
     target: T,
     propertyKey: K

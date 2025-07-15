@@ -10,6 +10,9 @@ import { BaseService } from './BaseService';
 import { ServiceMap } from './types/ServiceMap';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
 
+// Import augmentations to activate declaration merging
+import './augmentations/ServiceMapAugmentation';
+
 export class Database {
   private readonly logger = new LogService('Database');
   private isInitialised = false;
