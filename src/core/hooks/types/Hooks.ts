@@ -1,5 +1,5 @@
-import { UUID } from 'crypto';
-import { Guild, User } from 'discord.js';
+import type { UUID } from 'crypto';
+import type { Guild, User } from 'discord.js';
 
 // Default hooks that are always available in the framework
 export interface DefaultHooks {

@@ -3,4 +3,4 @@
 export interface Services {}
 
 // Helper type to extract service keys
-export type ServiceMapKeys = keyof Services;
+export type ServiceKeys = keyof Services;

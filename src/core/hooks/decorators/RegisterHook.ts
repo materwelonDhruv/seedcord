@@ -4,7 +4,7 @@ import { ConstructorFunction } from '../../library/types/Miscellaneous';
 
 export const HookMetadataKey = Symbol('hook:metadata');
 
-export function RegisterHook(hook: HookKeys) {
+export function RegisterHook<THook extends HookKeys>(hook: THook) {
   return function (constructor: ConstructorFunction) {
     Reflect.defineMetadata(HookMetadataKey, hook, constructor);
   };
