@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ServiceMapKeys } from '../types/ServiceMap';
+import { ServiceMapKeys } from '../types/Services';
 
 export const ModelMetadataKey = Symbol('db:model');
 
@@ -9,7 +9,7 @@ export function DatabaseModel(collection: ServiceMapKeys) {
     propertyKey: K
   ): void => {
     const schema = target[propertyKey];
-    const name = collection;
+    const name = String(collection);
     const model = mongoose.model(name, schema);
     Reflect.defineMetadata(ModelMetadataKey, model, target);
   };

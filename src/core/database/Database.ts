@@ -7,7 +7,7 @@ import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { Core } from '../library/interfaces/Core';
 import { LogService } from '../services/LogService';
 import { BaseService } from './BaseService';
-import { Services } from './types/ServiceMap';
+import { Services } from './types/Services';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
 
 export class Database {
