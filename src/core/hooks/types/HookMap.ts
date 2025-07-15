@@ -11,10 +11,10 @@ export interface DefaultHooks {
 
 // This interface can be augmented via declaration merging
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface CustomHooks {}
+export interface Hooks {}
 
 // Combined hooks interface - includes both default and custom hooks
-export interface AllHooks extends DefaultHooks, CustomHooks {}
+export interface AllHooks extends DefaultHooks, Hooks {}
 
 // Helper type to extract hook keys
 export type HookKeys = keyof AllHooks;

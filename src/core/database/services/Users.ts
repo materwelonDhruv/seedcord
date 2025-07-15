@@ -18,7 +18,7 @@ export class Users<D extends IUser = IUser> extends BaseService<D> {
 
 /* Declare Users to augment the ServiceMap */
 declare module '../types/ServiceMap' {
-  interface ServiceMap {
+  interface Services {
     users: Users;
   }
 }

@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import { IDocument } from '../library/types/Miscellaneous';
 import { Database } from './Database';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
-import { ServiceMap } from './types/ServiceMap';
+import { Services } from './types/ServiceMap';
 import { ModelMetadataKey } from './decorators/DatabaseModel';
 
 export abstract class BaseService<D extends IDocument = IDocument> {
@@ -19,6 +19,6 @@ export abstract class BaseService<D extends IDocument = IDocument> {
 
     this.model = model;
 
-    db._register(key as keyof ServiceMap, this as unknown as ServiceMap[keyof ServiceMap]);
+    db._register(key as keyof Services, this as unknown as Services[keyof Services]);
   }
 }
