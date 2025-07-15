@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { HookKeys } from '../types/HookMap';
+import { HookKeys } from '../types/Hooks';
 import { ConstructorFunction } from '../../library/types/Miscellaneous';
 
 export const HookMetadataKey = Symbol('hook:metadata');

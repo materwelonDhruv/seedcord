@@ -1,5 +1,5 @@
 import EventEmitter from 'events';
-import { AllHooks, HookKeys } from './types/HookMap';
+import { AllHooks, HookKeys } from './types/Hooks';
 
 export class HookEmitter {
   private emitter = new EventEmitter();

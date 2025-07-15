@@ -7,7 +7,7 @@ import { LogService } from '../services/LogService';
 import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
-import { HookKeys, AllHooks } from './types/HookMap';
+import { HookKeys, AllHooks } from './types/Hooks';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 

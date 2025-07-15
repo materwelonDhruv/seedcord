@@ -4,7 +4,7 @@ import { Images } from '../../../library/globals/Assets';
 import { RegisterHook } from '../../decorators/RegisterHook';
 import { WebhookLog } from '../../interfaces/abstracts/WebhookLog';
 import { Globals } from '../../../library/globals/Globals';
-import { AllHooks } from '../../types/HookMap';
+import { AllHooks } from '../../types/Hooks';
 
 @RegisterHook('unknownException')
 export class UnknownException extends WebhookLog<'unknownException'> {
