@@ -3,10 +3,10 @@ import * as dotenv from 'dotenv';
 import { Parser } from './lib/Parser';
 import { EnvumentType } from './lib/Types.enum';
 
-let configObject: { [key: string]: any } = {};
+let configObject: Record<string, unknown> = {};
 
 export class Envuments {
-  private static parser = new Parser();
+  private static readonly parser = new Parser();
 
   private static getConfig() {
     if (!configObject || !Object.keys(configObject).length) {
@@ -23,7 +23,7 @@ export class Envuments {
     return configObject;
   }
 
-  static SeedConfig(config: { [key: string]: any; parsed?: { [key: string]: string } }) {
+  static SeedConfig(config: { [key: string]: unknown; parsed?: Record<string, string> }) {
     if (Object.keys(config).includes('parsed')) {
       // Dotenv.config() response
       configObject = config.parsed as Record<string, string>;
@@ -32,7 +32,7 @@ export class Envuments {
     }
   }
 
-  private static _get(key: string, type: EnvumentType = EnvumentType.STRING, def?: any): any {
+  private static _get(key: string, type: EnvumentType = EnvumentType.STRING, def?: unknown): unknown {
     const rawVal = this.getConfig()[key] as string | number | boolean;
     if (!rawVal) return def;
 

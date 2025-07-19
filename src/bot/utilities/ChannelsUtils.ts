@@ -1,7 +1,9 @@
-import { Channel, Client, Message, TextChannel, TextChannelResolvable } from 'discord.js';
+import type { Channel, Client, Message, TextChannelResolvable } from 'discord.js';
+import { TextChannel } from 'discord.js';
+
+import type { Nullish } from '../../core/library/types/Miscellaneous';
 import { CouldNotFindChannel } from '../errors/Channels';
-import { Nullish } from '../../core/library/types/Miscellaneous';
-import { AtleastOneMessageComponent } from '../Types';
+import type { AtleastOneMessageComponent } from '../Types';
 
 export class ChannelUtils {
   public static async fetchText(client: Client, channelId: TextChannelResolvable): Promise<TextChannel> {
@@ -19,7 +21,7 @@ export class ChannelUtils {
       }
     }
 
-    if (channel && channel.isTextBased()) {
+    if (channel?.isTextBased()) {
       return channel as TextChannel;
     }
 

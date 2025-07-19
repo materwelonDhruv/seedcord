@@ -1,31 +1,22 @@
-import { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
-import { UserNotInGuild } from '../errors/User';
+import type { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
+
+import { UserNotFound, UserNotInGuild } from '../errors/User';
 
 export class UserUtils {
   public static async fetchGuildMember(guild: Guild, userId: string): Promise<GuildMember> {
     let user = guild.members.cache.get(userId);
-
-    if (!user) {
-      try {
-        user = await guild.members.fetch(userId);
-      } catch {
-        throw new UserNotInGuild(`User with ID ${userId} not found in guild`);
-      }
-    }
-
-    if (!user) {
+    user ??= await guild.members.fetch(userId).catch(() => {
       throw new UserNotInGuild(`User with ID ${userId} not found in guild`);
-    }
+    });
 
     return user;
   }
 
   public static async fetchUser(client: Client, userId: string): Promise<User> {
     let user = client.users.cache.get(userId);
-
-    if (!user) {
-      user = await client.users.fetch(userId);
-    }
+    user ??= await client.users.fetch(userId).catch(() => {
+      throw new UserNotFound(userId);
+    });
 
     return user;
   }

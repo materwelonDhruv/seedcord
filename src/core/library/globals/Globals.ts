@@ -1,6 +1,7 @@
-import 'reflect-metadata';
 import { ColorResolvable } from 'discord.js';
 import dotenv from 'dotenv';
+import 'reflect-metadata';
+
 import { Env, Envuments } from '../../utilities/envuments';
 
 export enum Environment {

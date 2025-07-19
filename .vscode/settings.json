@@ -1,0 +1,59 @@
+{
+  // Editor Settings
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "editor.trimAutoWhitespace": true,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+
+  // Prettier Settings
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+
+  // ESLint Settings
+  "eslint.validate": ["typescript", "javascript"],
+  "eslint.run": "onType",
+  "eslint.format.enable": false,
+  "eslint.lintTask.enable": true,
+
+  // TypeScript Settings
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+
+  // File Explorer
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.eslintcache": true,
+    "**/logs": true
+  },
+
+  // Terminal
+  "terminal.integrated.defaultProfile.osx": "zsh",
+
+  // Search
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.eslintcache": true,
+    "**/logs": true
+  }
+}

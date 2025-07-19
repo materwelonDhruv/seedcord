@@ -1,9 +1,9 @@
+import type { ModalActionRowComponentBuilder } from 'discord.js';
 import {
   ActionRowBuilder,
   ButtonBuilder,
   EmbedBuilder,
   InteractionContextType,
-  ModalActionRowComponentBuilder,
   ModalBuilder,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
@@ -12,8 +12,9 @@ import {
   StringSelectMenuOptionBuilder,
   TextInputBuilder
 } from 'discord.js';
+
 import { Globals } from '../../core/library/globals/Globals';
-import { TypedConstructor } from '../../core/library/types/Miscellaneous';
+import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 
 const BuilderTypes = {
   command: SlashCommandBuilder,
@@ -48,6 +49,7 @@ type InstantiatedModalField<M extends ModalFieldTypes> = InstanceType<(typeof Mo
 abstract class BaseComponent<C> {
   private readonly _component: C;
 
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   protected constructor(ComponentClass: new () => C) {
     this._component = new ComponentClass();
   }
@@ -124,7 +126,7 @@ export abstract class ModalComponent<M extends ModalFieldTypes> extends BaseComp
 }
 
 export abstract class CustomError extends Error {
-  protected _emit: boolean = false;
+  protected _emit = false;
 
   public constructor(public override message: string) {
     super(message);

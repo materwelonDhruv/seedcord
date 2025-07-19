@@ -1,15 +1,17 @@
 import chalk from 'chalk';
-import { Client, SlashCommandBuilder } from 'discord.js';
+import type { Client, SlashCommandBuilder } from 'discord.js';
 import * as path from 'path';
+
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
-import { CommandMeta, CommandMetadataKey } from '../decorators/CommandRegisterable';
+import type { CommandMeta } from '../decorators/CommandRegisterable';
+import { CommandMetadataKey } from '../decorators/CommandRegisterable';
 import { BuilderComponent } from '../interfaces/Components';
 
 type CommandCtor = new () => BuilderComponent<'command'>;
 
 export class CommandRegistry {
-  private logger = new LogService('Commands');
+  private readonly logger = new LogService('Commands');
   private isInitialised = false;
 
   public readonly globalCommands: SlashCommandBuilder[] = [];
@@ -48,12 +50,12 @@ export class CommandRegistry {
     return obj.prototype instanceof BuilderComponent && Reflect.hasMetadata(CommandMetadataKey, obj);
   }
 
-  private registerCommand(Ctor: CommandCtor, rel: string): void {
-    const meta = Reflect.getMetadata(CommandMetadataKey, Ctor) as CommandMeta | undefined;
+  private registerCommand(ctor: CommandCtor, rel: string): void {
+    const meta = Reflect.getMetadata(CommandMetadataKey, ctor) as CommandMeta | undefined;
 
     if (!meta) return;
 
-    const instance = new Ctor();
+    const instance = new ctor();
     const comp = instance.component;
 
     if (meta.scope === 'global') {
@@ -66,7 +68,7 @@ export class CommandRegistry {
       }
     }
 
-    this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(Ctor.name)} from ${chalk.gray(rel)}`);
+    this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(ctor.name)} from ${chalk.gray(rel)}`);
   }
 
   public async setCommands(): Promise<void> {

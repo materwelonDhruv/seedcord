@@ -1,17 +1,19 @@
 import chalk from 'chalk';
-import { ClientEvents } from 'discord.js';
+import type { ClientEvents } from 'discord.js';
 import * as path from 'path';
-import { CoreBot } from '../../core/CoreBot';
+
+import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import { EventHandler, EventHandlerConstructor } from '../interfaces/Handler';
+import type { EventHandlerConstructor } from '../interfaces/Handler';
+import { EventHandler } from '../interfaces/Handler';
 
 export class EventController {
-  private logger = new LogService('Events');
+  private readonly logger = new LogService('Events');
   private isInitialized = false;
 
-  private eventMap = new Map<keyof ClientEvents, Array<EventHandlerConstructor>>();
+  private readonly eventMap = new Map<keyof ClientEvents, EventHandlerConstructor[]>();
 
   public constructor(protected core: CoreBot) {}
 
@@ -39,7 +41,7 @@ export class EventController {
   private async loadHandlers(dir: string): Promise<void> {
     await traverseDirectory(dir, (_fullPath, relativePath, imported) => {
       for (const exportName of Object.keys(imported)) {
-        const val = <unknown>imported[exportName];
+        const val = imported[exportName] as unknown;
         if (this.isEventHandlerClass(val)) {
           this.registerHandler(val);
           this.logger.info(

@@ -1,14 +1,16 @@
 import chalk from 'chalk';
 import mongoose from 'mongoose';
 import path from 'path';
+
 import { DatabaseConnectionFailure } from '../../bot/errors/Database';
 import { Globals } from '../library/globals/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
-import { Core } from '../library/interfaces/Core';
+import type { Core } from '../library/interfaces/Core';
+import type { TypeOfIDocument } from '../library/types/Miscellaneous';
 import { LogService } from '../services/LogService';
 import { BaseService } from './BaseService';
-import { Services } from './types/Services';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
+import type { Services } from './types/Services';
 
 export class Database {
   private readonly logger = new LogService('Database');
@@ -64,8 +66,10 @@ export class Database {
     await traverseDirectory(servicesDir, (_full, rel, mod) => {
       for (const Service of Object.values(mod) as unknown[]) {
         if (this.isServiceClass(Service)) {
-          new Service(this);
-          this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(Service.name)} from ${chalk.gray(rel)}`);
+          const instance = new Service(this);
+          this.logger.info(
+            `${chalk.italic('Registered')} ${chalk.bold.yellow(instance.constructor.name)} from ${chalk.gray(rel)}`
+          );
         }
       }
     });
@@ -73,7 +77,7 @@ export class Database {
     this.logger.info(`${chalk.bold.green('Loaded')}: ${chalk.magenta(Object.keys(this.services).length)} services`);
   }
 
-  private isServiceClass(obj: unknown): obj is new (db: Database) => BaseService<any> {
+  private isServiceClass(obj: unknown): obj is new (db: Database) => BaseService<TypeOfIDocument> {
     return (
       typeof obj === 'function' && obj.prototype instanceof BaseService && Reflect.hasMetadata(ServiceMetadataKey, obj)
     );

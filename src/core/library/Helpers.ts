@@ -1,7 +1,9 @@
-import * as fs from 'fs';
+import type * as fs from 'fs';
+import { readdir } from 'fs/promises';
 import * as path from 'path';
+
 import { DatabaseError } from '../../bot/errors/Database';
-import { CustomErrorConstructor } from '../../bot/interfaces/Components';
+import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
 import { LogService } from '../services/LogService';
 
 /**
@@ -170,12 +172,12 @@ export function isTsOrJsFile(entry: fs.Dirent): boolean {
  */
 export async function traverseDirectory(
   dir: string,
-  callback: (fullPath: string, relativePath: string, imported: Record<string, any>) => Promise<void> | void
+  callback: (fullPath: string, relativePath: string, imported: Record<string, unknown>) => Promise<void> | void
 ): Promise<void> {
   let entries: fs.Dirent[];
 
   try {
-    entries = await fs.promises.readdir(dir, { withFileTypes: true });
+    entries = await readdir(dir, { withFileTypes: true });
   } catch {
     entries = [];
   }
@@ -187,7 +189,7 @@ export async function traverseDirectory(
     if (entry.isDirectory()) {
       await traverseDirectory(fullPath, callback);
     } else if (isTsOrJsFile(entry)) {
-      const imported = (await import(fullPath)) as Record<string, any>;
+      const imported = (await import(fullPath)) as Record<string, unknown>;
       await callback(fullPath, relativePath, imported);
     }
   }
@@ -218,7 +220,7 @@ export function throwCustomError<T extends CustomErrorConstructor>(
   CustomError: T
 ): never {
   const uuid = crypto.randomUUID();
-  LogService.Error('Throwing Custom Error', (<Error>error).name);
+  LogService.Error('Throwing Custom Error', (error as Error).name);
 
   if (typeof CustomError === typeof DatabaseError) {
     const errorMessage = error instanceof Error ? error.message : message;

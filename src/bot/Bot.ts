@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
-import { CoreBot } from '../core/CoreBot';
+
+import type { CoreBot } from '../core/CoreBot';
 import { Globals } from '../core/library/globals/Globals';
 import { LogService } from '../core/services/LogService';
 import { CommandRegistry } from './controllers/CommandRegistry';
@@ -10,15 +11,15 @@ import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
 
 export class Bot {
-  private logger = new LogService('Bot');
+  private readonly logger = new LogService('Bot');
   private isInitialized = false;
 
   private readonly _client: Client;
-  private interactions: InteractionController;
-  private events: EventController;
+  private readonly interactions: InteractionController;
+  private readonly events: EventController;
   public errors: ErrorController;
-  private commands: CommandRegistry;
-  private emojiInjector: EmojiInjector;
+  private readonly commands: CommandRegistry;
+  private readonly emojiInjector: EmojiInjector;
 
   constructor(protected core: CoreBot) {
     this._client = new Client({

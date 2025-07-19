@@ -1,4 +1,4 @@
-import {
+import type {
   AutocompleteInteraction,
   ButtonInteraction,
   ChatInputCommandInteraction,
@@ -7,8 +7,9 @@ import {
   ModalSubmitInteraction,
   StringSelectMenuInteraction
 } from 'discord.js';
-import { CoreBot } from '../../core/CoreBot';
-import { TypedConstructor } from '../../core/library/types/Miscellaneous';
+
+import type { CoreBot } from '../../core/CoreBot';
+import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 
 export type ValidInteractionTypes =
   | ChatInputCommandInteraction
@@ -35,9 +36,9 @@ export interface WithChecks {
 interface HandlerWithChecks extends WithChecks, Handler {}
 
 abstract class BaseHandler<T extends ValidEventTypes> implements Handler {
-  protected checkable: boolean = false;
-  protected break: boolean = false;
-  protected errored: boolean = false;
+  protected checkable = false;
+  protected break = false;
+  protected errored = false;
   protected event: T;
 
   protected constructor(

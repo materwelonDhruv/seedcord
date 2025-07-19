@@ -1,0 +1,58 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "command": "pnpm test",
+      "problemMatcher": [],
+      "label": "pnpm: test",
+      "detail": "NODE_ENV=development ts-node Temp/test.ts",
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "command": "pnpm start",
+      "problemMatcher": [],
+      "label": "pnpm: start",
+      "detail": "NODE_ENV=development ts-node index.ts",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "docker-build",
+      "label": "docker-build",
+      "platform": "node",
+      "dockerBuild": {
+        "dockerfile": "${workspaceFolder}/Dockerfile",
+        "context": "${workspaceFolder}",
+        "pull": true
+      }
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: release",
+      "dependsOn": ["docker-build"],
+      "platform": "node"
+    },
+    {
+      "type": "docker-run",
+      "label": "docker-run: debug",
+      // "dependsOn": ["docker-build"],
+      "dockerRun": {
+        "env": {
+          "DEBUG": "*",
+          "NODE_ENV": "development"
+        },
+        "command": "npm run --debug 0.0.0.0:9229 start:docker"
+      },
+      "node": {
+        "enableDebugging": true
+      }
+    }
+  ]
+}

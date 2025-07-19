@@ -1,7 +1,7 @@
 import { Envuments } from '..';
 
 export class Parser {
-  private TEMPLATE_REGEX = /\${\w*}/g;
+  private readonly TEMPLATE_REGEX = /\${\w*}/g;
 
   private escapeRegexChars(str: string) {
     return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');

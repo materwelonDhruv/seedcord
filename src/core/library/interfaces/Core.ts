@@ -1,6 +1,6 @@
-import { Bot } from '../../../bot/Bot';
-import { Database } from '../../database/Database';
-import { HookController } from '../../hooks/HookController';
+import type { Bot } from '../../../bot/Bot';
+import type { Database } from '../../database/Database';
+import type { HookController } from '../../hooks/HookController';
 
 export type BotMode = 'bot';
 export type CoreMode = BotMode;
