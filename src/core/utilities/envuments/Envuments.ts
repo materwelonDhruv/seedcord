@@ -9,7 +9,7 @@ export class Envuments {
   private static readonly parser = new Parser();
 
   private static getConfig(): Record<string, unknown> {
-    if (!configObject || !Object.keys(configObject).length) {
+    if (Object.keys(configObject).length === 0) {
       // Default to dotenv config
       try {
         dotenv.config();
@@ -31,22 +31,22 @@ export class Envuments {
     }
   }
 
-  private static _get(key: string, type: EnvumentType = EnvumentType.STRING, def?: unknown): unknown {
-    const rawVal = this.getConfig()[key] as string | number | boolean;
-    if (!rawVal) return def;
+  private static _get(key: string, type: EnvumentType = EnvumentType.String, def?: unknown): unknown {
+    const rawVal = this.getConfig()[key] as string | number | boolean | undefined;
+    if (rawVal === undefined || rawVal === null) return def;
 
     const parsed = this.parser.resolveValueString(key, String(rawVal));
 
     switch (type) {
-      case EnvumentType.STRING: {
+      case EnvumentType.String: {
         return (parsed !== '' && parsed) || def;
       }
-      case EnvumentType.NUMBER: {
+      case EnvumentType.Number: {
         const num = Number(parsed);
 
-        return (!isNaN(num) && num) || def;
+        return (!isNaN(num) && num !== 0) || def;
       }
-      case EnvumentType.BOOLEAN: {
+      case EnvumentType.Boolean: {
         const yes = ['1', 'yes', 'true'];
         const no = ['0', 'no', 'false'];
 
@@ -63,26 +63,26 @@ export class Envuments {
   }
 
   static get(key: string, def?: string): string {
-    return this._get(key, EnvumentType.STRING, def) as string;
+    return this._get(key, EnvumentType.String, def) as string;
   }
 
   static getNumber(key: string, def?: number): number {
-    return this._get(key, EnvumentType.NUMBER, def) as number;
+    return this._get(key, EnvumentType.Number, def) as number;
   }
 
   static getBoolean(key: string, def?: boolean): boolean {
-    return this._get(key, EnvumentType.BOOLEAN, def) as boolean;
+    return this._get(key, EnvumentType.Boolean, def) as boolean;
   }
 
   get(key: string, def?: string): string {
-    return Envuments._get(key, EnvumentType.STRING, def) as string;
+    return Envuments._get(key, EnvumentType.String, def) as string;
   }
 
   getNumber(key: string, def?: number): number {
-    return Envuments._get(key, EnvumentType.NUMBER, def) as number;
+    return Envuments._get(key, EnvumentType.Number, def) as number;
   }
 
   getBoolean(key: string, def?: boolean): boolean {
-    return Envuments._get(key, EnvumentType.BOOLEAN, def) as boolean;
+    return Envuments._get(key, EnvumentType.Boolean, def) as boolean;
   }
 }

@@ -130,7 +130,7 @@ export default tseslint.config(
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/prefer-readonly-parameter-types': 'off', // Too strict for most cases
       '@typescript-eslint/strict-boolean-expressions': [
-        'off', // Disabled as it's too restrictive for real-world code
+        'warn', // Disabled as it's too restrictive for real-world code
         {
           allowString: true, // Allow string checks
           allowNumber: false,
