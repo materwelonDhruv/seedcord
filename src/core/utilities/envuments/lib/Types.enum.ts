@@ -1,5 +1,5 @@
 export enum EnvumentType {
-  String,
-  Number,
-  Boolean
+  STRING,
+  NUMBER,
+  BOOLEAN
 }

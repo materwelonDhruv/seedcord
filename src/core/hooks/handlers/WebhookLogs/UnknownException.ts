@@ -48,7 +48,7 @@ class UnhandledErrorEmbed extends BuilderComponent<'embed'> {
     const now = Date.now();
 
     // Extract the snowflake ID from `/interactions/{ID}/`
-    const snowflake = error.url?.match(/\/interactions\/(\d+)\//)?.[1];
+    const snowflake = error.url.match(/\/interactions\/(\d+)\//)?.[1];
     if (!snowflake) return undefined;
 
     // Discord epoch offset (ms) and timestamp extraction

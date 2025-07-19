@@ -1,14 +1,14 @@
 import chalk from 'chalk';
+import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
 import { Events } from 'discord.js';
 import * as path from 'path';
+import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
-import { InteractionHandler } from '../interfaces/Handler';
-import type { CoreBot } from '../../core/CoreBot';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
-import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
+import { InteractionHandler } from '../interfaces/Handler';
 
 export class InteractionController {
   private readonly logger = new LogService('Interactions');
@@ -105,7 +105,7 @@ export class InteractionController {
     for (const MiddlewareCtor of this.middlewares) {
       const middleware = new MiddlewareCtor(interaction as Repliables, this.core);
       await middleware.execute();
-      if (middleware.hasErrors?.()) {
+      if (middleware.hasErrors()) {
         return;
       }
     }
@@ -118,13 +118,13 @@ export class InteractionController {
 
     this.logger.debug(`Processing ${chalk.bold.green(key)} with ${chalk.gray(HandlerCtor.name)}`);
     const handler = new HandlerCtor(interaction as Repliables, this.core);
-    if (handler.hasChecks?.()) {
+    if (handler.hasChecks()) {
       await handler.runChecks();
     }
 
     if (handler.shouldBreak()) return;
 
-    if (!handler.hasErrors?.()) {
+    if (!handler.hasErrors()) {
       await handler.execute();
     }
   }
@@ -179,8 +179,8 @@ export class InteractionController {
   // Build the route from commandName, subcommandGroup, subcommand
   private buildSlashRoute(interaction: ChatInputCommandInteraction): string {
     const command = interaction.commandName;
-    const group = interaction.options?.getSubcommandGroup(false);
-    const sub = interaction.options?.getSubcommand(false);
+    const group = interaction.options.getSubcommandGroup(false);
+    const sub = interaction.options.getSubcommand(false);
 
     let route = command;
     if (group && sub) {

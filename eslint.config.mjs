@@ -63,18 +63,18 @@ export default tseslint.config(
     },
     rules: {
       // Import/Export rules - Configured to work with VS Code auto-organize
-      'import/order': [
-        'warn', // Warning to not conflict with auto-organize
-        {
-          groups: [['builtin', 'external'], ['internal', 'parent', 'sibling', 'index'], ['type']],
-          'newlines-between': 'never', // Match typical auto-organize behavior
-          alphabetize: {
-            order: 'asc',
-            caseInsensitive: true
-          },
-          warnOnUnassignedImports: false
-        }
-      ],
+      // 'import/order': [
+      //   'warn', // Warning to not conflict with auto-organize
+      //   {
+      //     groups: [['builtin', 'external'], ['internal', 'parent', 'sibling', 'index'], ['type']],
+      //     'newlines-between': 'never', // Match typical auto-organize behavior
+      //     alphabetize: {
+      //       order: 'asc',
+      //       caseInsensitive: true
+      //     },
+      //     warnOnUnassignedImports: false
+      //   }
+      // ],
       'import/newline-after-import': 'warn',
       'import/no-duplicates': 'error',
       'import/no-unresolved': 'error',
@@ -123,6 +123,7 @@ export default tseslint.config(
       '@typescript-eslint/prefer-nullish-coalescing': 'error',
       '@typescript-eslint/prefer-optional-chain': 'error',
       '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+      '@typescript-eslint/no-unnecessary-condition': 'warn',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/await-thenable': 'error',
       '@typescript-eslint/require-await': 'error',
@@ -130,7 +131,7 @@ export default tseslint.config(
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/prefer-readonly-parameter-types': 'off', // Too strict for most cases
       '@typescript-eslint/strict-boolean-expressions': [
-        'warn', // Disabled as it's too restrictive for real-world code
+        'off', // Disabled as it's too restrictive
         {
           allowString: true, // Allow string checks
           allowNumber: false,

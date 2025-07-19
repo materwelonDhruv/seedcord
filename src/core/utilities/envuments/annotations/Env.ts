@@ -11,7 +11,7 @@ const envCache: Record<string, unknown> = {};
  * converts it with the chosen converter, and caches the result.
  */
 export function Env<T = string>(key: string, fallback?: T, converter: EnvType<T> = String) {
-  // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!Reflect)
     throw new Error("@Env annotation used without Reflect, have you called import 'reflect-metadata'; in your code?");
 

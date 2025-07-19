@@ -1,12 +1,12 @@
 import chalk from 'chalk';
+import type { ClientEvents } from 'discord.js';
 import * as path from 'path';
+import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import { EventHandler } from '../interfaces/Handler';
-import type { CoreBot } from '../../core/CoreBot';
 import type { EventHandlerConstructor } from '../interfaces/Handler';
-import type { ClientEvents } from 'discord.js';
+import { EventHandler } from '../interfaces/Handler';
 
 export class EventController {
   private readonly logger = new LogService('Events');
@@ -57,7 +57,7 @@ export class EventController {
   }
 
   private registerHandler(handlerClass: EventHandlerConstructor): void {
-    const eventName = Reflect.getMetadata(EventMetadataKey, handlerClass) as keyof ClientEvents;
+    const eventName = Reflect.getMetadata(EventMetadataKey, handlerClass) as keyof ClientEvents | undefined;
     if (!eventName) return;
 
     let handlers = this.eventMap.get(eventName);
@@ -90,14 +90,14 @@ export class EventController {
       try {
         this.logger.debug(`Processing ${chalk.bold.green(eventName)} with ${chalk.gray(HandlerCtor.name)}`);
         const handler = new HandlerCtor(args, this.core);
-        if (handler.hasChecks?.()) {
+        if (handler.hasChecks()) {
           await handler.runChecks();
         }
 
         if (handler.shouldBreak()) return;
 
         // Execute if no errors
-        if (!handler.hasErrors?.()) {
+        if (!handler.hasErrors()) {
           await handler.execute();
         }
       } catch (err) {

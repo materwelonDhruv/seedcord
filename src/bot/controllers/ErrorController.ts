@@ -1,15 +1,15 @@
 import chalk from 'chalk';
+import type { UUID } from 'crypto';
+import type { Guild, User } from 'discord.js';
 import * as path from 'path';
+import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
+import type { Nullish } from '../../core/library/types/Miscellaneous';
 import { LogService } from '../../core/services/LogService';
 import { ErrorType } from '../decorators/ErrorConfigurable';
 import { DatabaseError } from '../errors/Database';
-import { BaseErrorEmbed, CustomError } from '../interfaces/Components';
-import type { CoreBot } from '../../core/CoreBot';
-import type { Nullish } from '../../core/library/types/Miscellaneous';
 import type { BaseErrorConstructor, BaseErrorEmbedConstructor } from '../interfaces/Components';
-import type { UUID } from 'crypto';
-import type { Guild, User } from 'discord.js';
+import { BaseErrorEmbed, CustomError } from '../interfaces/Components';
 
 export class ErrorController {
   private readonly logger = new LogService('Errors');
