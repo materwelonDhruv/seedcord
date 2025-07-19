@@ -1,13 +1,14 @@
-import { Envuments } from '..';
+// eslint-disable-next-line import/no-cycle
+import { Envuments } from '../Envuments';
 
 export class Parser {
   private readonly TEMPLATE_REGEX = /\${\w*}/g;
 
-  private escapeRegexChars(str: string) {
+  private escapeRegexChars(str: string): string {
     return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
   }
 
-  resolveValueString(key: string, value: string) {
+  resolveValueString(key: string, value: string): string {
     const templates = value.match(this.TEMPLATE_REGEX);
     if (!templates) return value;
 

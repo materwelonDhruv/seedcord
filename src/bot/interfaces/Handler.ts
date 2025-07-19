@@ -1,3 +1,5 @@
+import type { CoreBot } from '../../core/CoreBot';
+import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 import type {
   AutocompleteInteraction,
   ButtonInteraction,
@@ -7,9 +9,6 @@ import type {
   ModalSubmitInteraction,
   StringSelectMenuInteraction
 } from 'discord.js';
-
-import type { CoreBot } from '../../core/CoreBot';
-import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 
 export type ValidInteractionTypes =
   | ChatInputCommandInteraction

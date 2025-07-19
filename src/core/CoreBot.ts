@@ -1,10 +1,9 @@
 import chalk from 'chalk';
-
 import { Bot } from '../bot/Bot';
 import { Database } from './database/Database';
 import { HookController } from './hooks/HookController';
-import type { Core } from './library/interfaces/Core';
 import { LogService } from './services/LogService';
+import type { Core } from './library/interfaces/Core';
 
 export class CoreBot implements Core {
   private readonly logger = new LogService('CoreBot');

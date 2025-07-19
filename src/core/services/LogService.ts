@@ -1,8 +1,7 @@
-import type { Logform, Logger } from 'winston';
 import { createLogger, format, transports } from 'winston';
-import type { ConsoleTransportInstance } from 'winston/lib/winston/transports';
-
 import { Globals } from '../library/globals/Globals';
+import type { Logform, Logger } from 'winston';
+import type { ConsoleTransportInstance } from 'winston/lib/winston/transports';
 
 export class LogService {
   declare private logger: Logger;

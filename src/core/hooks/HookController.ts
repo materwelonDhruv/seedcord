@@ -1,14 +1,13 @@
 import chalk from 'chalk';
 import * as path from 'path';
-
 import { traverseDirectory } from '../library/Helpers';
-import type { Core } from '../library/interfaces/Core';
-import type { TypedConstructor } from '../library/types/Miscellaneous';
 import { LogService } from '../services/LogService';
 import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
 import type { AllHooks, HookKeys } from './types/Hooks';
+import type { Core } from '../library/interfaces/Core';
+import type { TypedConstructor } from '../library/types/Miscellaneous';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 
@@ -39,7 +38,7 @@ export class HookController {
   private async loadHooks(dir: string): Promise<void> {
     await traverseDirectory(dir, (_fullPath, relativePath, imported) => {
       for (const exportName of Object.keys(imported)) {
-        const val = imported[exportName] as unknown;
+        const val = imported[exportName];
         if (this.isHookHandler(val)) {
           const hookName = Reflect.getMetadata(HookMetadataKey, val) as HookKeys | undefined;
           if (hookName) {

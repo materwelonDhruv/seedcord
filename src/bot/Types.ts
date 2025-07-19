@@ -1,6 +1,5 @@
-import type { ActionRowBuilder, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
-
 import type { AtLeastOne } from '../core/library/types/Miscellaneous';
+import type { ActionRowBuilder, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
 
 export interface MessageContent {
   embeds: EmbedBuilder[];

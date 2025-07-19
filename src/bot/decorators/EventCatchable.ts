@@ -1,8 +1,7 @@
 /* decorators/EventCatchable.ts */
-import type { ClientEvents } from 'discord.js';
 import { Message } from 'discord.js';
-
 import type { EventHandler } from '../interfaces/Handler';
+import type { ClientEvents } from 'discord.js';
 
 export function EventCatchable(log?: boolean) {
   return function (

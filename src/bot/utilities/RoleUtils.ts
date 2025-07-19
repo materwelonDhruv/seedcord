@@ -1,8 +1,5 @@
-import type { Client, PermissionsBitField, TextChannel } from 'discord.js';
 import { Guild, PermissionFlagsBits, Role } from 'discord.js';
-
 import { prettify } from '../../core/library/Helpers';
-import type { BotPermissionScope, Nullish } from '../../core/library/types/Miscellaneous';
 import {
   BotMissingPermissionsError,
   CannotAssignBotRole,
@@ -10,6 +7,8 @@ import {
   RoleDoesNotExist,
   RoleHigherThanMe
 } from '../errors/Roles';
+import type { BotPermissionScope, Nullish } from '../../core/library/types/Miscellaneous';
+import type { Client, PermissionsBitField, TextChannel } from 'discord.js';
 
 export const PermissionNames = new Map<bigint, string>(
   Object.entries(PermissionFlagsBits).map(([key, bit]) => [bit, prettify(key)])

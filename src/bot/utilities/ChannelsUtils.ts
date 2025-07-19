@@ -1,9 +1,8 @@
-import type { Channel, Client, Message, TextChannelResolvable } from 'discord.js';
 import { TextChannel } from 'discord.js';
-
-import type { Nullish } from '../../core/library/types/Miscellaneous';
 import { CouldNotFindChannel } from '../errors/Channels';
+import type { Nullish } from '../../core/library/types/Miscellaneous';
 import type { AtleastOneMessageComponent } from '../Types';
+import type { Channel, Client, Message, TextChannelResolvable } from 'discord.js';
 
 export class ChannelUtils {
   public static async fetchText(client: Client, channelId: TextChannelResolvable): Promise<TextChannel> {

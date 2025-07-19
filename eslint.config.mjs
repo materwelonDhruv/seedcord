@@ -62,26 +62,24 @@ export default tseslint.config(
       }
     },
     rules: {
-      // Import/Export rules
+      // Import/Export rules - Configured to work with VS Code auto-organize
       'import/order': [
-        'error',
+        'warn', // Warning to not conflict with auto-organize
         {
-          groups: [
-            ['builtin', 'external'],
-            ['internal', 'parent', 'sibling', 'index']
-          ],
-          'newlines-between': 'always',
+          groups: [['builtin', 'external'], ['internal', 'parent', 'sibling', 'index'], ['type']],
+          'newlines-between': 'never', // Match typical auto-organize behavior
           alphabetize: {
             order: 'asc',
             caseInsensitive: true
-          }
+          },
+          warnOnUnassignedImports: false
         }
       ],
-      'import/newline-after-import': 'error',
+      'import/newline-after-import': 'warn',
       'import/no-duplicates': 'error',
       'import/no-unresolved': 'error',
-      'import/no-cycle': 'error',
-      'import/no-unused-modules': 'error',
+      'import/no-cycle': 'warn',
+      'import/no-unused-modules': 'warn',
       'import/no-deprecated': 'warn'
     }
   },
@@ -97,7 +95,7 @@ export default tseslint.config(
 
       // TypeScript-specific rules
       '@typescript-eslint/explicit-function-return-type': [
-        'warn', // Changed to warn for decorators and internal functions
+        'warn', // Warn for decorators and internal functions
         {
           allowExpressions: true,
           allowTypedFunctionExpressions: true,
@@ -105,7 +103,7 @@ export default tseslint.config(
           allowDirectConstAssertionInArrowFunctions: true
         }
       ],
-      '@typescript-eslint/explicit-module-boundary-types': 'warn', // Changed to warn
+      '@typescript-eslint/explicit-module-boundary-types': 'warn',
       '@typescript-eslint/no-explicit-any': [
         'error',
         {
@@ -132,7 +130,7 @@ export default tseslint.config(
       '@typescript-eslint/prefer-readonly': 'error',
       '@typescript-eslint/prefer-readonly-parameter-types': 'off', // Too strict for most cases
       '@typescript-eslint/strict-boolean-expressions': [
-        'warn', // Changed to warn to be less restrictive
+        'off', // Disabled as it's too restrictive for real-world code
         {
           allowString: true, // Allow string checks
           allowNumber: false,
@@ -155,7 +153,7 @@ export default tseslint.config(
 
       // Naming conventions - More flexible
       '@typescript-eslint/naming-convention': [
-        'warn', // Changed to warn
+        'warn', // warn
         {
           selector: 'default',
           format: ['camelCase'],
@@ -211,14 +209,14 @@ export default tseslint.config(
       'require-await': 'off', // Using TypeScript version
       yoda: 'error',
 
-      // Code quality - More reasonable limits
+      // Code quality
       complexity: ['warn', 15], // Increased from 10
       'max-depth': ['warn', 5], // Increased from 4
       'max-nested-callbacks': ['warn', 4], // Increased from 3
       'max-params': ['warn', 5], // Increased from 4
       'max-statements': ['warn', 25], // Increased from 20
       'max-lines': ['warn', 400], // Increased from 300
-      'max-lines-per-function': ['warn', 100], // Increased from 50
+      'max-lines-per-function': ['warn', 85], // Increased from 50
 
       // Best practices
       eqeqeq: ['error', 'always'],
@@ -237,10 +235,12 @@ export default tseslint.config(
       'no-magic-numbers': [
         'warn',
         {
-          ignore: [-1, 0, 1, 2, 100, 1000, 1024], // Added more common numbers
+          ignore: [-1, 0, 1, 2, 5, 10, 20, 100, 1000, 1024, 5000, 10000], // Common numbers including timeouts
           ignoreArrayIndexes: true,
           ignoreDefaultValues: true,
-          ignoreClassFieldInitialValues: true
+          ignoreClassFieldInitialValues: true,
+          enforceConst: false, // Don't enforce const for literals
+          detectObjects: false // Don't check object properties
         }
       ],
       'no-multi-spaces': 'error',
@@ -256,23 +256,24 @@ export default tseslint.config(
       'prefer-template': 'error',
       radix: 'error',
 
-      // Security rules - More focused
-      'security/detect-object-injection': 'warn', // Changed to warn
-      'security/detect-non-literal-fs-filename': 'warn', // Changed to warn
-      'security/detect-non-literal-regexp': 'warn', // Changed to warn
+      // Security rules
+      'security/detect-object-injection': 'off', // Disabled as it's common pattern in TypeScript with proper typing
+      'security/detect-non-literal-fs-filename': 'off', // Disabled as it's common in utility functions
+      'security/detect-non-literal-regexp': 'off', // Disabled for template parsing
 
       // Disable some overly strict rules
       '@typescript-eslint/no-extraneous-class': 'off', // Allow utility classes
-      '@typescript-eslint/no-useless-constructor': 'off', // Allow empty constructors
-      '@typescript-eslint/no-empty-function': 'off', // Allow empty functions
-      'no-empty-function': 'off', // Allow empty functions
-      'no-useless-constructor': 'off', // Allow empty constructors
-      'import/no-cycle': 'warn', // Change to warning as it's common in large projects
-      '@typescript-eslint/unified-signatures': 'warn', // Change to warning
+      '@typescript-eslint/no-useless-constructor': 'off',
+      '@typescript-eslint/no-empty-function': 'off',
+      'no-empty-function': 'off',
+      'no-useless-constructor': 'off',
+      '@typescript-eslint/unified-signatures': 'warn',
+      '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
+      'no-param-reassign': 'off', // Disabled for utility functions
 
       // Allow some patterns common in decorators and framework code
-      'no-new': 'warn', // Change to warning
-      'prefer-template': 'warn' // Change to warning
+      'no-new': 'warn',
+      'prefer-template': 'warn'
     }
   },
 

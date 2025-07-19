@@ -1,10 +1,9 @@
-import type * as fs from 'fs';
 import { readdir } from 'fs/promises';
 import * as path from 'path';
-
 import { DatabaseError } from '../../bot/errors/Database';
-import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
 import { LogService } from '../services/LogService';
+import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
+import type * as fs from 'fs';
 
 /**
  * Rounds a number to a specified number of decimal places.
@@ -43,14 +42,14 @@ export function generateAsciiTable(data: string[][]): string {
   // Determine the maximum width for each column
   for (let i = 0; i < data[0].length; i++) {
     let maxWidth = 0;
-    for (let j = 0; j < data.length; j++) {
-      maxWidth = Math.max(maxWidth, data[j][i].length);
+    for (const row of data) {
+      maxWidth = Math.max(maxWidth, row[i].length);
     }
     columnWidths.push(maxWidth);
   }
 
   // Function to create a horizontal line
-  const createLine = (char: string, left: string, intersect: string, right: string) => {
+  const createLine = (char: string, left: string, intersect: string, right: string): string => {
     let line = left;
     columnWidths.forEach((width, index) => {
       line += char.repeat(width + 2);
@@ -217,19 +216,19 @@ export async function traverseDirectory(
 export function throwCustomError<T extends CustomErrorConstructor>(
   error: unknown,
   message: string,
-  CustomError: T
+  customError: T
 ): never {
   const uuid = crypto.randomUUID();
   LogService.Error('Throwing Custom Error', (error as Error).name);
 
-  if (typeof CustomError === typeof DatabaseError) {
+  if (typeof customError === typeof DatabaseError) {
     const errorMessage = error instanceof Error ? error.message : message;
-    throw new CustomError(errorMessage, uuid);
+    throw new customError(errorMessage, uuid);
   } else {
     if (error instanceof Error) {
-      throw new CustomError(`${message}: ${error.message ? error.message : error.toString()}`);
+      throw new customError(`${message}: ${error.message ? error.message : error.toString()}`);
     } else {
-      throw new CustomError(message);
+      throw new customError(message);
     }
   }
 }

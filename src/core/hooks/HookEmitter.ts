@@ -1,5 +1,4 @@
 import { EventEmitter } from 'events';
-
 import type { AllHooks, HookKeys } from './types/Hooks';
 
 export class HookEmitter {

@@ -1,15 +1,14 @@
 import chalk from 'chalk';
-import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
 import { Events } from 'discord.js';
 import * as path from 'path';
-
-import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
-import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
 import { InteractionHandler } from '../interfaces/Handler';
+import type { CoreBot } from '../../core/CoreBot';
+import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
+import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
 
 export class InteractionController {
   private readonly logger = new LogService('Interactions');
@@ -49,7 +48,7 @@ export class InteractionController {
   private async loadHandlers(dir: string): Promise<void> {
     await traverseDirectory(dir, (_fullPath, relativePath, imported) => {
       for (const exportName of Object.keys(imported)) {
-        const val = imported[exportName] as unknown;
+        const val = imported[exportName];
         if (this.isHandlerClass(val)) {
           this.registerHandler(val);
           this.logger.info(

@@ -1,5 +1,4 @@
 import { UUID } from 'crypto';
-
 import { ErrorKey, ErrorValue } from '../decorators/ErrorConfigurable';
 import { BaseError, BaseErrorEmbed, CustomError } from '../interfaces/Components';
 

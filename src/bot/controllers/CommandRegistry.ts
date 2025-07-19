@@ -1,12 +1,11 @@
 import chalk from 'chalk';
-import type { Client, SlashCommandBuilder } from 'discord.js';
 import * as path from 'path';
-
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
-import type { CommandMeta } from '../decorators/CommandRegisterable';
 import { CommandMetadataKey } from '../decorators/CommandRegisterable';
 import { BuilderComponent } from '../interfaces/Components';
+import type { CommandMeta } from '../decorators/CommandRegisterable';
+import type { Client, SlashCommandBuilder } from 'discord.js';
 
 type CommandCtor = new () => BuilderComponent<'command'>;
 
@@ -37,7 +36,7 @@ export class CommandRegistry {
 
   private async loadCommands(dir: string): Promise<void> {
     await traverseDirectory(dir, (_full, rel, mod) => {
-      for (const exported of Object.values(mod) as unknown[]) {
+      for (const exported of Object.values(mod)) {
         if (this.isCommandClass(exported)) {
           this.registerCommand(exported, rel);
         }

@@ -1,4 +1,3 @@
-import type { ModalActionRowComponentBuilder } from 'discord.js';
 import {
   ActionRowBuilder,
   ButtonBuilder,
@@ -12,9 +11,9 @@ import {
   StringSelectMenuOptionBuilder,
   TextInputBuilder
 } from 'discord.js';
-
 import { Globals } from '../../core/library/globals/Globals';
 import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
+import type { ModalActionRowComponentBuilder } from 'discord.js';
 
 const BuilderTypes = {
   command: SlashCommandBuilder,

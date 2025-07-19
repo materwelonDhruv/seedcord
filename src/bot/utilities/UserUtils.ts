@@ -1,6 +1,5 @@
-import type { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
-
 import { UserNotFound, UserNotInGuild } from '../errors/User';
+import type { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
 
 export class UserUtils {
   public static async fetchGuildMember(guild: Guild, userId: string): Promise<GuildMember> {

@@ -1,7 +1,6 @@
+import type { Nullish } from '../../library/types/Miscellaneous';
 import type { UUID } from 'crypto';
 import type { Guild, User } from 'discord.js';
-
-import type { Nullish } from '../../library/types/Miscellaneous';
 
 // Default hooks that are always available in the framework
 export interface DefaultHooks {

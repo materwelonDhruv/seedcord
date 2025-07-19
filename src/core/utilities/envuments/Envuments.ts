@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-
+// eslint-disable-next-line import/no-cycle
 import { Parser } from './lib/Parser';
 import { EnvumentType } from './lib/Types.enum';
 
@@ -8,7 +8,7 @@ let configObject: Record<string, unknown> = {};
 export class Envuments {
   private static readonly parser = new Parser();
 
-  private static getConfig() {
+  private static getConfig(): Record<string, unknown> {
     if (!configObject || !Object.keys(configObject).length) {
       // Default to dotenv config
       try {
@@ -16,14 +16,13 @@ export class Envuments {
       } catch {
         // Do Nothing
       }
-
-      Envuments.SeedConfig(process.env);
+      Envuments.seedConfig(process.env);
     }
 
     return configObject;
   }
 
-  static SeedConfig(config: { [key: string]: unknown; parsed?: Record<string, string> }) {
+  static seedConfig(config: { [key: string]: unknown; parsed?: Record<string, string> }): void {
     if (Object.keys(config).includes('parsed')) {
       // Dotenv.config() response
       configObject = config.parsed as Record<string, string>;

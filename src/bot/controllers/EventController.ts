@@ -1,13 +1,12 @@
 import chalk from 'chalk';
-import type { ClientEvents } from 'discord.js';
 import * as path from 'path';
-
-import type { CoreBot } from '../../core/CoreBot';
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import type { EventHandlerConstructor } from '../interfaces/Handler';
 import { EventHandler } from '../interfaces/Handler';
+import type { CoreBot } from '../../core/CoreBot';
+import type { EventHandlerConstructor } from '../interfaces/Handler';
+import type { ClientEvents } from 'discord.js';
 
 export class EventController {
   private readonly logger = new LogService('Events');
@@ -41,7 +40,7 @@ export class EventController {
   private async loadHandlers(dir: string): Promise<void> {
     await traverseDirectory(dir, (_fullPath, relativePath, imported) => {
       for (const exportName of Object.keys(imported)) {
-        const val = imported[exportName] as unknown;
+        const val = imported[exportName];
         if (this.isEventHandlerClass(val)) {
           this.registerHandler(val);
           this.logger.info(

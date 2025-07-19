@@ -1,5 +1,4 @@
 import { MessageFlags } from 'discord.js';
-
 import { Catchable } from '../decorators/Catchable';
 import { InteractionHandler, Repliables } from '../interfaces/Handler';
 

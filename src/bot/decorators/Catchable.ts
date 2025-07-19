@@ -1,5 +1,4 @@
 import { MessageFlags } from 'discord.js';
-
 import type { RepliableInteractionHandler } from '../interfaces/Handler';
 
 export function Catchable(log?: boolean) {
