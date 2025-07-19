@@ -13,7 +13,7 @@
     "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
     "build": "tsc -p .",
     "start:bot": "pnpm run build && node dist/bot.js",
-    "dev:bot": "nodemon --config nodemon.bot.json",
+    "dev:bot": "nodemon --config nodemon.json",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean && pnpm run lint && pnpm run typecheck"
