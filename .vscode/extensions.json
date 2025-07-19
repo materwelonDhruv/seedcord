@@ -1,12 +1,26 @@
 {
   "recommendations": [
+    // Essential formatting and linting
     "esbenp.prettier-vscode",
-    "ms-vscode.vscode-eslint",
+    "dbaeumer.vscode-eslint",
     "editorconfig.editorconfig",
-    "ms-vscode.vscode-typescript-next",
-    "bradlc.vscode-tailwindcss",
-    "formulahendry.auto-rename-tag",
+
+    // TypeScript/JavaScript development
     "christian-kohler.path-intellisense",
-    "ms-vscode.vscode-json"
+    "christian-kohler.npm-intellisense",
+    "yoavbls.pretty-ts-errors",
+
+    // Git and AI assistance
+    "eamodio.gitlens",
+    "github.copilot",
+    "github.copilot-chat",
+
+    // Project-specific tools
+    // Use the official MongoDB Compass app for MongoDB management
+    "prisma.prisma",
+    "mikestead.dotenv",
+
+    // Development productivity
+    "gruntfuggly.todo-tree"
   ]
 }

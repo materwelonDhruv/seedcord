@@ -47,5 +47,33 @@
     "**/dist": true,
     "**/.eslintcache": true,
     "**/logs": true
+  },
+
+  // Git and Version Control
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": false, // Better to pick files to stage manually
+
+  // Performance and UI
+  "extensions.ignoreRecommendations": false,
+  "workbench.editor.enablePreview": false,
+  "workbench.editor.closeEmptyGroups": false,
+
+  // IntelliSense and Suggestions
+  "editor.suggest.insertMode": "replace",
+  "editor.acceptSuggestionOnCommitCharacter": false,
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+
+  // Language-specific settings
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "files.trimTrailingWhitespace": false
   }
 }
