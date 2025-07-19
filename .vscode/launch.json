@@ -4,36 +4,68 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "🚀 Launch Watch Mode (Primary)",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["start:watch"],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "restart": true,
+      "presentation": {
+        "hidden": false,
+        "group": "main"
+      },
+      "internalConsoleOptions": "neverOpen"
     },
     {
       "type": "node",
       "request": "launch",
-      "name": "Test Program",
+      "name": "🔧 Build & Start Bot",
+      "skipFiles": ["<node_internals>/**"],
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start:bot"],
+      "console": "integratedTerminal",
+      "presentation": {
+        "hidden": false,
+        "group": "secondary"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "🧪 Run Tests",
       "skipFiles": ["<node_internals>/**"],
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["test"],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "presentation": {
+        "hidden": false,
+        "group": "secondary"
+      }
     },
     {
-      "name": "Docker Node.js Launch",
-      "type": "docker",
-      "request": "launch",
-      "preLaunchTask": "docker-run: debug",
-      "platform": "node"
-    },
-    {
-      "name": "Docker Node.js Attach",
       "type": "node",
       "request": "attach",
+      "name": "🔗 Attach to Process",
       "port": 9229,
       "restart": true,
       "localRoot": "${workspaceFolder}",
-      "remoteRoot": "/app"
+      "remoteRoot": "/usr/source/app",
+      "skipFiles": ["<node_internals>/**"],
+      "presentation": {
+        "hidden": false,
+        "group": "debug"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "🔄 Full Development Mode",
+      "configurations": ["🚀 Launch Watch Mode (Primary)"],
+      "stopAll": true,
+      "presentation": {
+        "hidden": false,
+        "group": "compounds"
+      }
     }
   ]
 }
