@@ -20,7 +20,9 @@ export class Globals extends Envuments {
   }
 
   // Environment
-  private static internalEnvironment = this.determineEnvironment(this.get('NODE_ENV', 'development'));
+  private static internalEnvironment = this.determineEnvironment(
+    this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
+  );
 
   private static determineEnvironment(env: string | Environment): Environment {
     if (typeof env === 'string') {
@@ -67,6 +69,13 @@ export class Globals extends Envuments {
 
   @Env('DB_NAME', 'seedcord')
   public static readonly dbName: string;
+
+  // Health Check
+  @Env('HEALTH_CHECK_PORT', '6956')
+  public static readonly healthCheckPort: number;
+
+  @Env('HEALTH_CHECK_PATH', '/healthcheck')
+  public static readonly healthCheckPath: string;
 
   // Variables
   public static readonly botColor: ColorResolvable = this.isProduction ? '#dcc8f0' : '#fe565a';

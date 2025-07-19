@@ -5,7 +5,7 @@ import { Events } from 'discord.js';
 
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
-import { InteractionRoutes } from '../decorators/InteractionConfigurable';
+import { InteractionMetadataKey, InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
 import { InteractionHandler } from '../interfaces/Handler';
 
@@ -64,7 +64,7 @@ export class InteractionController {
 
   private isHandlerClass(obj: unknown): obj is HandlerConstructor {
     if (typeof obj !== 'function') return false;
-    return obj.prototype instanceof InteractionHandler;
+    return obj.prototype instanceof InteractionHandler && Reflect.hasMetadata(InteractionMetadataKey, obj);
   }
 
   private registerHandler(handlerClass: HandlerConstructor): void {

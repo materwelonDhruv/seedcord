@@ -7,6 +7,7 @@ import { EventController } from './controllers/EventController';
 import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
 import { Globals } from '../core/library/globals/Globals';
+import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
 import { LogService } from '../core/services/LogService';
 
 import type { CoreBot } from '../core/CoreBot';
@@ -41,6 +42,8 @@ export class Bot {
 
     this.commands = new CommandRegistry(this._client);
     this.emojiInjector = new EmojiInjector(this._client);
+
+    this.core.shutdown.addTask(ShutdownPhase.DiscordCleanup, 'stop-bot', async () => await this.stop());
   }
 
   public async start(): Promise<void> {
