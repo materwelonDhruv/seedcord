@@ -3,6 +3,7 @@ import { EventEmitter } from 'node:events';
 import chalk from 'chalk';
 
 import { LogService } from './LogService';
+import { Globals } from '../library/globals/Globals';
 
 /**
  * Shutdown phases for coordinated application shutdown.
@@ -63,6 +64,8 @@ export class CoordinatedShutdown {
   }
 
   private registerSignalHandlers(): void {
+    if (!Globals.shutdownIsEnabled) return;
+
     process.on('SIGTERM', () => {
       this.logger.info(`Received ${chalk.yellow.bold('SIGTERM')} signal`);
       void this.run(0);
@@ -78,6 +81,8 @@ export class CoordinatedShutdown {
    * Add a task to a specific shutdown phase
    */
   public addTask(phase: ShutdownPhase, taskName: string, task: () => Promise<void>, timeoutMs = 5000): void {
+    if (!Globals.shutdownIsEnabled) return;
+
     const tasks = this.tasksMap.get(phase);
     if (!tasks) throw new Error(`Unknown shutdown phase: ${phase}`);
 

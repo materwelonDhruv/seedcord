@@ -77,6 +77,10 @@ export class Globals extends Envuments {
   @Env('HEALTH_CHECK_PATH', '/healthcheck')
   public static readonly healthCheckPath: string;
 
+  // Coordinated Shutdown
+  @Env('SHUTDOWN_IS_ENABLED', false, Boolean)
+  public static readonly shutdownIsEnabled: boolean;
+
   // Variables
   public static readonly botColor: ColorResolvable = this.isProduction ? '#dcc8f0' : '#fe565a';
 }
