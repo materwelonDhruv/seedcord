@@ -6,5 +6,9 @@
   "printWidth": 120,
   "bracketSpacing": true,
   "arrowParens": "always",
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "useTabs": false,
+  "quoteProps": "as-needed",
+  "bracketSameLine": false,
+  "proseWrap": "preserve"
 }

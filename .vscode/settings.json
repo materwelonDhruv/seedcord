@@ -1,7 +1,5 @@
 {
   // Editor Settings
-  "editor.tabSize": 2,
-  "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.trimAutoWhitespace": true,
   "files.trimTrailingWhitespace": true,
@@ -14,28 +12,23 @@
   // Prettier Settings
   "editor.formatOnSave": true,
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true
-  },
-  "[json]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
+  "prettier.requireConfig": true,
+  "prettier.useEditorConfig": true,
 
   // ESLint Settings
   "eslint.validate": ["typescript", "javascript"],
   "eslint.run": "onType",
   "eslint.format.enable": false,
   "eslint.lintTask.enable": true,
+  "eslint.codeActionsOnSave.mode": "all",
+
+  // EditorConfig Support
+  "editorconfig.generateAuto": false,
 
   // TypeScript Settings
   "typescript.preferences.importModuleSpecifier": "relative",
   "typescript.suggest.autoImports": false,
-  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.updateImportsOnFileMove.enabled": "prompt",
 
   // File Explorer
   "files.exclude": {

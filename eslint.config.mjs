@@ -105,8 +105,31 @@ export default tseslint.config(
       prettier: eslintPrettier
     },
     rules: {
-      // Prettier integration - let Prettier handle its own config
-      'prettier/prettier': 'error',
+      // Prettier integration (same as .prettierrc)
+      'prettier/prettier': [
+        'error',
+        {
+          // These should match .prettierrc
+          tabWidth: 2,
+          semi: true,
+          singleQuote: true,
+          trailingComma: 'none',
+          printWidth: 120,
+          bracketSpacing: true,
+          arrowParens: 'always',
+          endOfLine: 'lf',
+          useTabs: false,
+          quoteProps: 'as-needed',
+          bracketSameLine: false,
+          proseWrap: 'preserve'
+        },
+        {
+          usePrettierrc: true,
+          fileInfoOptions: {
+            withNodeModules: false
+          }
+        }
+      ],
 
       // TypeScript-specific rules
       '@typescript-eslint/explicit-function-return-type': [
