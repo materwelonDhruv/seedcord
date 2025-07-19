@@ -1,4 +1,5 @@
 import { DiscordAPIError, SnowflakeUtil, WebhookClient } from 'discord.js';
+
 import { BuilderComponent } from '../../../../bot/interfaces/Components';
 import { Images } from '../../../library/globals/Assets';
 import { Globals } from '../../../library/globals/Globals';

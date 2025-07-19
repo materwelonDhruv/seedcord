@@ -1,4 +1,5 @@
 import { PermissionFlagsBits } from 'discord.js';
+
 import { RegisterCommand } from '../../decorators/CommandRegisterable';
 import { BuilderComponent } from '../../interfaces/Components';
 

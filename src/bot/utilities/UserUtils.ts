@@ -1,4 +1,5 @@
 import { UserNotFound, UserNotInGuild } from '../errors/User';
+
 import type { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
 
 export class UserUtils {

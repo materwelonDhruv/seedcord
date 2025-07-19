@@ -1,9 +1,12 @@
-import chalk from 'chalk';
 import * as path from 'path';
+
+import chalk from 'chalk';
+
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { CommandMetadataKey } from '../decorators/CommandRegisterable';
 import { BuilderComponent } from '../interfaces/Components';
+
 import type { CommandMeta } from '../decorators/CommandRegisterable';
 import type { Client, SlashCommandBuilder } from 'discord.js';
 

@@ -1,5 +1,6 @@
 import chalk from 'chalk';
 import { Client, GatewayIntentBits, Partials } from 'discord.js';
+
 import { CommandRegistry } from './controllers/CommandRegistry';
 import { ErrorController } from './controllers/ErrorController';
 import { EventController } from './controllers/EventController';
@@ -7,6 +8,7 @@ import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
 import { Globals } from '../core/library/globals/Globals';
 import { LogService } from '../core/services/LogService';
+
 import type { CoreBot } from '../core/CoreBot';
 
 export class Bot {

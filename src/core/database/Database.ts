@@ -1,12 +1,15 @@
+import path from 'path';
+
 import chalk from 'chalk';
 import mongoose from 'mongoose';
-import path from 'path';
+
 import { BaseService } from './BaseService';
 import { DatabaseConnectionFailure } from '../../bot/errors/Database';
 import { Globals } from '../library/globals/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { LogService } from '../services/LogService';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
+
 import type { Services } from './types/Services';
 import type { Core } from '../library/interfaces/Core';
 import type { TypeOfIDocument } from '../library/types/Miscellaneous';

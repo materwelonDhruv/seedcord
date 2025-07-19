@@ -1,4 +1,5 @@
 import { HookHandler } from '../HookHandler';
+
 import type { HookKeys } from '../../types/Hooks';
 import type { WebhookClient } from 'discord.js';
 

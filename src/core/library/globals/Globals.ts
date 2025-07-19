@@ -1,5 +1,6 @@
 import { ColorResolvable } from 'discord.js';
 import dotenv from 'dotenv';
+
 import 'reflect-metadata';
 import { Env } from '../../utilities/envuments/annotations/Env';
 import { Envuments } from '../../utilities/envuments/Envuments';

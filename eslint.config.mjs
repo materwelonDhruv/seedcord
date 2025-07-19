@@ -14,7 +14,7 @@ export default tseslint.config(
         project: ['./tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
         sourceType: 'module',
-        ecmaVersion: 2022
+        ecmaVersion: 2024
       },
       globals: {
         node: true,
@@ -59,28 +59,43 @@ export default tseslint.config(
       },
       'import/parsers': {
         '@typescript-eslint/parser': ['.ts', '.tsx']
-      }
+      },
+      'import/internal-regex': '^(src/|@/)',
+      'import/external-module-folders': ['node_modules', 'dist']
     },
     rules: {
-      // Import/Export rules - Configured to work with VS Code auto-organize
-      // 'import/order': [
-      //   'warn', // Warning to not conflict with auto-organize
-      //   {
-      //     groups: [['builtin', 'external'], ['internal', 'parent', 'sibling', 'index'], ['type']],
-      //     'newlines-between': 'never', // Match typical auto-organize behavior
-      //     alphabetize: {
-      //       order: 'asc',
-      //       caseInsensitive: true
-      //     },
-      //     warnOnUnassignedImports: false
-      //   }
-      // ],
-      'import/newline-after-import': 'warn',
-      'import/no-duplicates': 'error',
+      'import/order': [
+        'warn',
+        {
+          groups: ['builtin', 'external', 'internal', ['parent', 'sibling'], 'index', 'type'],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true,
+            orderImportKind: 'asc' // Alphabetize imports within each group
+          },
+          warnOnUnassignedImports: false,
+          distinctGroup: true, // Separate type imports into their own group
+          pathGroups: [
+            {
+              pattern: '@/**',
+              group: 'internal',
+              position: 'before'
+            }
+          ],
+          pathGroupsExcludedImportTypes: ['builtin']
+        }
+      ],
+      'import/newline-after-import': ['error', { count: 1 }], // Enforce single newline after imports
+      'import/no-duplicates': ['error', { considerQueryString: true }],
       'import/no-unresolved': 'error',
       'import/no-cycle': 'warn',
-      'import/no-unused-modules': 'warn',
-      'import/no-deprecated': 'warn'
+      'import/no-unused-modules': 'off', // Can be noisy, keep disabled
+      'import/no-deprecated': 'warn',
+      'import/first': 'error', // Imports must be at top
+      'import/no-absolute-path': 'error', // Prevent absolute imports
+      'import/no-self-import': 'error', // Prevent self-imports
+      'import/no-useless-path-segments': ['error', { noUselessIndex: true }]
     }
   },
 
@@ -146,10 +161,16 @@ export default tseslint.config(
         'error',
         {
           prefer: 'type-imports',
-          disallowTypeAnnotations: false
+          disallowTypeAnnotations: false,
+          fixStyle: 'separate-type-imports' // Separate type imports from regular imports
         }
       ],
-      '@typescript-eslint/consistent-type-exports': 'error',
+      '@typescript-eslint/consistent-type-exports': [
+        'error',
+        {
+          fixMixedExportsWithInlineTypeSpecifier: true
+        }
+      ],
       '@typescript-eslint/no-import-type-side-effects': 'error',
 
       // Naming conventions - More flexible

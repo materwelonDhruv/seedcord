@@ -1,5 +1,6 @@
 /* decorators/EventCatchable.ts */
 import { Message } from 'discord.js';
+
 import type { EventHandler } from '../interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 

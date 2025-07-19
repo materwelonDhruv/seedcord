@@ -1,12 +1,15 @@
-import chalk from 'chalk';
-import type { ClientEvents } from 'discord.js';
 import * as path from 'path';
-import type { CoreBot } from '../../core/CoreBot';
+
+import chalk from 'chalk';
+
 import { traverseDirectory } from '../../core/library/Helpers';
 import { LogService } from '../../core/services/LogService';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import type { EventHandlerConstructor } from '../interfaces/Handler';
 import { EventHandler } from '../interfaces/Handler';
+
+import type { CoreBot } from '../../core/CoreBot';
+import type { EventHandlerConstructor } from '../interfaces/Handler';
+import type { ClientEvents } from 'discord.js';
 
 export class EventController {
   private readonly logger = new LogService('Events');

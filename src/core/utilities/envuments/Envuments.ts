@@ -1,4 +1,5 @@
 import * as dotenv from 'dotenv';
+
 // eslint-disable-next-line import/no-cycle
 import { Parser } from './lib/Parser';
 import { EnvumentType } from './lib/Types.enum';

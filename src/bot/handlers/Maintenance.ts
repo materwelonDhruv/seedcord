@@ -1,4 +1,5 @@
 import { ChatInputCommandInteraction, MessageFlags, TextChannel } from 'discord.js';
+
 import { MaintenanceEmbed } from '../components/bundles/Maintenance';
 import { Catchable } from '../decorators/Catchable';
 import { SlashRoute } from '../decorators/InteractionConfigurable';

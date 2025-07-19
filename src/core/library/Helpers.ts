@@ -1,7 +1,9 @@
 import { readdir } from 'fs/promises';
 import * as path from 'path';
+
 import { DatabaseError } from '../../bot/errors/Database';
 import { LogService } from '../services/LogService';
+
 import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
 import type * as fs from 'fs';
 
