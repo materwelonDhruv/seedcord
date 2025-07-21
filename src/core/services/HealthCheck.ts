@@ -12,26 +12,13 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 const HTTP_OK = 200;
 const HTTP_NOT_FOUND = 404;
 
-interface HealthCheckOptions {
-  /** Port to listen on (default: from Globals.healthCheckPort) */
-  port?: number;
-  /** Path for the health check endpoint (default: from Globals.healthCheckPath) */
-  path?: string;
-}
-
 export class HealthCheck {
   private readonly logger = new LogService('HealthCheck');
-  private readonly port: number;
-  private readonly path: string;
+  private readonly port: number = Globals.healthCheckPort;
+  private readonly path: string = Globals.healthCheckPath;
   private server?: Server;
 
-  constructor(
-    private readonly core: Core,
-    options: HealthCheckOptions = {}
-  ) {
-    this.port = options.port ?? Globals.healthCheckPort;
-    this.path = options.path ?? Globals.healthCheckPath;
-
+  constructor(private readonly core: Core) {
     // Register shutdown task
     this.core.shutdown.addTask(ShutdownPhase.StopServices, 'stop-healthcheck-server', async () => await this.stop());
   }
