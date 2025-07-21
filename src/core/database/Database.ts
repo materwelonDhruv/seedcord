@@ -9,6 +9,7 @@ import { Globals } from '../library/globals/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { LogService } from '../services/LogService';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
+import { ShutdownPhase } from '../services/CoordinatedShutdown';
 
 import type { Services } from './types/Services';
 import type { Core } from '../library/interfaces/Core';
@@ -30,6 +31,8 @@ export class Database {
     uriOverride?: string
   ) {
     this.uri = uriOverride ?? Globals.mongoUri;
+
+    this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
   }
 
   public async start(): Promise<void> {

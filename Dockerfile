@@ -1,7 +1,8 @@
 # Base image and setup
 FROM node:24-alpine AS base
 
-RUN npm install -g pnpm@latest
+RUN apk add --no-cache curl && \
+    npm install -g pnpm@latest
 
 WORKDIR /usr/source/app
 
@@ -22,6 +23,7 @@ COPY . .
 USER seedcord
 
 EXPOSE 3000
+EXPOSE 6956
 
 CMD ["pnpm", "start:watch"]
 
@@ -40,8 +42,9 @@ COPY --from=build /usr/source/app/package.json ./
 USER seedcord
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD node -e "console.log('Health check')" || exit 1
+  CMD curl -f http://localhost:6956/healthcheck || exit 1
 
 EXPOSE 3000
+EXPOSE 6956
 
 CMD ["pnpm", "start:bot"]

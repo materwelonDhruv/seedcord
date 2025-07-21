@@ -27,7 +27,7 @@
 
   // TypeScript Settings
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.suggest.autoImports": false,
+  "typescript.suggest.autoImports": true,
   "typescript.updateImportsOnFileMove.enabled": "prompt",
 
   // File Explorer
@@ -56,7 +56,7 @@
 
   // Performance and UI
   "extensions.ignoreRecommendations": false,
-  "workbench.editor.enablePreview": false,
+  "workbench.editor.enablePreview": true,
   "workbench.editor.closeEmptyGroups": false,
 
   // IntelliSense and Suggestions

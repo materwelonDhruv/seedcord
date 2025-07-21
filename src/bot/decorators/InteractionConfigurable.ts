@@ -7,6 +7,8 @@ export enum InteractionRoutes {
   StringMenu = 'interaction:stringMenu'
 }
 
+export const InteractionMetadataKey = Symbol('interaction:metadata');
+
 /**
  * Decorator for slash command routes. The route can be:
  *  - "profile"
@@ -62,4 +64,5 @@ function storeMetadata(symbol: InteractionRoutes, routes: string | string[], con
 
   const toStore = Array.isArray(routes) ? routes : [routes];
   Reflect.defineMetadata(symbol, [...existing, ...toStore], constructor);
+  Reflect.defineMetadata(InteractionMetadataKey, true, constructor);
 }
