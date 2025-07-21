@@ -8,31 +8,9 @@
 
 import { config } from 'dotenv';
 
+import { Parser as EnvParser, type EnvConverterService } from './Parser';
+
 let configObject: Record<string, unknown> = {};
-
-class Parser {
-  private readonly TEMPLATE_REGEX = /\${\w*}/g;
-
-  private escapeRegexChars(str: string): string {
-    return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
-  }
-
-  resolveValueString(key: string, value: string): string {
-    const templates = value.match(this.TEMPLATE_REGEX);
-    if (!templates) return value;
-
-    for (const template of templates) {
-      const variable = template.slice(2, -1);
-      if (!variable || variable === key) continue; // Prevent any circulars
-
-      const variableVal = Envuments.get(variable);
-
-      value = value.replace(new RegExp(this.escapeRegexChars(template), 'g'), variableVal || template);
-    }
-
-    return value;
-  }
-}
 
 enum EnvumentType {
   String,
@@ -40,8 +18,54 @@ enum EnvumentType {
   Boolean
 }
 
-class Envuments {
-  private static readonly parser = new Parser();
+export enum Environment {
+  Development,
+  Staging,
+  Production
+}
+
+class Envuments implements EnvConverterService {
+  private static readonly parser = new EnvParser(new Envuments());
+
+  // Environment handling
+  private static internalEnvironment = this.determineEnvironment(
+    this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
+  );
+
+  private static determineEnvironment(env: string | Environment): Environment {
+    if (typeof env === 'string') {
+      switch (env.toLowerCase()) {
+        case 'production':
+          return Environment.Production;
+        case 'staging':
+          return Environment.Staging;
+        default:
+          return Environment.Development;
+      }
+    }
+
+    return env;
+  }
+
+  static set environment(env: string | Environment) {
+    this.internalEnvironment = this.determineEnvironment(env);
+  }
+
+  static get environment(): Environment {
+    return this.internalEnvironment;
+  }
+
+  static get isProduction(): boolean {
+    return this.internalEnvironment === Environment.Production;
+  }
+
+  static get isStaging(): boolean {
+    return this.internalEnvironment === Environment.Staging;
+  }
+
+  static get isDevelopment(): boolean {
+    return this.internalEnvironment === Environment.Development;
+  }
 
   private static getConfig(): Record<string, unknown> {
     if (!Object.keys(configObject).length) {
@@ -74,7 +98,7 @@ class Envuments {
       case EnvumentType.Number: {
         const num = Number(parsed);
 
-        return (!isNaN(num) && num) || def;
+        return (!Number.isNaN(num) && num) || def;
       }
       case EnvumentType.Boolean: {
         const yes = ['1', 'yes', 'true'];
@@ -117,4 +141,4 @@ class Envuments {
   }
 }
 
-export { Envuments, EnvumentType, Parser };
+export { Envuments, EnvumentType };

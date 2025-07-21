@@ -7,43 +7,67 @@
  */
 
 import { Envuments } from './Envuments';
+import { Parser, type EnvConverter } from './Parser';
 
-export type EnvInput = string | undefined;
-type EnvParser<T> = (raw: EnvInput, fallback?: T) => T;
-type EnvType<T> = typeof Number | typeof Boolean | typeof String | EnvParser<T>;
+interface EnvOptions<T = string> {
+  fallback?: T;
+  converter?: EnvConverter<T>;
+}
 
 const envCache: Record<string, unknown> = {};
+
+function createPropertyDecorator<T>(
+  key: string,
+  fallback: T | undefined,
+  converter: EnvConverter<T> | undefined
+): PropertyDecorator {
+  return function (target: object, prop: string | symbol): void {
+    const propKey = String(prop);
+    let value = envCache[key] as T | undefined;
+
+    if (value !== undefined) {
+      Object.defineProperty(target, propKey, { value });
+      return;
+    }
+
+    const parser = new Parser(Envuments);
+    value = parser.convertValue(key, fallback, converter);
+
+    envCache[key] = value;
+    Object.defineProperty(target, propKey, { value });
+  };
+}
 
 /**
  * Decorator that pulls a key from the environment once,
  * converts it with the chosen converter, and caches the result.
+ * Automatically detects type from fallback value using typeof, but allows override with explicit converter.
  */
-export function Env<T = string>(key: string, fallback?: T, converter: EnvType<T> = String) {
+export function Env<T = string>(key: string, options?: EnvOptions<T>): PropertyDecorator;
+export function Env<T = string>(key: string, fallback?: T, converter?: EnvConverter<T>): PropertyDecorator;
+export function Env<T = string>(
+  key: string,
+  fallbackOrOptions?: T | EnvOptions<T>,
+  converter?: EnvConverter<T>
+): PropertyDecorator {
   // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (!Reflect)
     throw new Error("@Env annotation used without Reflect, have you called import 'reflect-metadata'; in your code?");
 
-  return function (target: object, prop: string): void {
-    let value = envCache[key] as T | undefined;
+  // Determine if using new options API or legacy API
+  let fallback: T | undefined;
+  let actualConverter: EnvConverter<T> | undefined;
 
-    if (value !== undefined) {
-      Object.defineProperty(target, prop, { value });
-      return;
-    }
+  if (fallbackOrOptions && typeof fallbackOrOptions === 'object' && 'fallback' in fallbackOrOptions) {
+    // New options API
+    const options = fallbackOrOptions;
+    fallback = options.fallback;
+    actualConverter = options.converter;
+  } else {
+    // Legacy API
+    fallback = fallbackOrOptions as T;
+    actualConverter = converter;
+  }
 
-    if (converter === Number) {
-      value = Envuments.getNumber(key, Number(fallback)) as unknown as T;
-    } else if (converter === Boolean) {
-      value = Envuments.getBoolean(key, Boolean(fallback)) as unknown as T;
-    } else if (converter === String) {
-      value = Envuments.get(key, String(fallback)) as unknown as T;
-    } else {
-      const raw = Envuments.get(key, undefined) as EnvInput;
-      value = (converter as EnvParser<T>)(raw, fallback);
-    }
-
-    envCache[key] = value;
-
-    Object.defineProperty(target, prop, { value });
-  };
+  return createPropertyDecorator(key, fallback, actualConverter);
 }
