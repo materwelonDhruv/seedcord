@@ -5,13 +5,15 @@ import chalk from 'chalk';
 import { LogService } from './LogService';
 import { Globals } from '../library/globals/Globals';
 
+import type { TypedExclude, NumberRange } from '../library/types/Miscellaneous';
+
 /**
  * Shutdown phases for coordinated application shutdown.
  * Phases execute in the order defined below.
  */
 export enum ShutdownPhase {
   /** Stop accepting new requests/interactions */
-  StopAcceptingRequests,
+  StopAcceptingRequests = 1,
   /** Stop background services (health checks, etc.) */
   StopServices,
   /** Disconnect from external resources (database, APIs) */
@@ -21,6 +23,12 @@ export enum ShutdownPhase {
   /** Final cleanup tasks */
   FinalCleanup
 }
+
+type ShutdownAction = 'start' | 'complete' | 'error';
+type PhaseAction = TypedExclude<ShutdownAction, 'error'>;
+type ShutdownEvents = `shutdown:${ShutdownAction}`;
+type PhaseEvents = `phase:${NumberRange<1, 5>}:${PhaseAction}`;
+type CoordinatedShutdownEventKey = ShutdownEvents | PhaseEvents;
 
 /** Interface for a shutdown task */
 export interface ShutdownTask {
@@ -127,7 +135,7 @@ export class CoordinatedShutdown {
     this.logger.info(
       `${chalk.bold.yellow('Starting')} coordinated shutdown with exit code ${chalk.bold.cyan(exitCode)}`
     );
-    this.events.emit('shutdown:start');
+    this.emit('shutdown:start');
 
     try {
       // Execute each phase in order
@@ -136,10 +144,10 @@ export class CoordinatedShutdown {
       }
 
       this.logger.info(`${chalk.bold.green('Coordinated shutdown completed')} successfully`);
-      this.events.emit('shutdown:complete');
+      this.emit('shutdown:complete');
     } catch (error) {
       this.logger.error(`${chalk.bold.red('Coordinated shutdown failed')}:`, error);
-      this.events.emit('shutdown:error', error);
+      this.emit('shutdown:error', error);
     } finally {
       // Terminate the process
       this.logger.info(`${chalk.bold.red('Exiting')} process with code ${chalk.bold.cyan(this.exitCode)}`);
@@ -163,7 +171,7 @@ export class CoordinatedShutdown {
     this.logger.info(
       `${chalk.bold.yellow('Running')} shutdown phase ${chalk.bold.magenta(phase)} with ${chalk.bold.cyan(tasks.length)} tasks`
     );
-    this.events.emit(`phase:${phase}:start`);
+    this.emit(`phase:${phase}:start`);
 
     // Execute all tasks in parallel with timeout
     const results = await Promise.allSettled(tasks.map((task) => this.runTaskWithTimeout(phase, task)));
@@ -176,7 +184,7 @@ export class CoordinatedShutdown {
       this.logger.info(`Phase ${chalk.bold.magenta(phase)} ${chalk.bold.green('completed successfully')}`);
     }
 
-    this.events.emit(`phase:${phase}:complete`);
+    this.emit(`phase:${phase}:complete`);
   }
 
   /**
@@ -213,14 +221,18 @@ export class CoordinatedShutdown {
   /**
    * Subscribe to shutdown events
    */
-  public on(event: string, listener: (...args: unknown[]) => void): void {
+  public on(event: CoordinatedShutdownEventKey, listener: (...args: unknown[]) => void): void {
     this.events.on(event, listener);
   }
 
   /**
    * Unsubscribe from shutdown events
    */
-  public off(event: string, listener: (...args: unknown[]) => void): void {
+  public off(event: CoordinatedShutdownEventKey, listener: (...args: unknown[]) => void): void {
     this.events.off(event, listener);
+  }
+
+  private emit(event: CoordinatedShutdownEventKey, ...args: unknown[]): boolean {
+    return this.events.emit(event, ...args);
   }
 }
