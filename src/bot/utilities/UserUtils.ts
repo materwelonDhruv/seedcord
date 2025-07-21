@@ -1,7 +1,6 @@
 import {
   DiscordAPIError,
   RESTJSONErrorCodes,
-  RPCErrorCodes,
   type Client,
   type Guild,
   type GuildMember,

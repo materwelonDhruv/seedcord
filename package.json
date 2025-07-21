@@ -18,7 +18,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "prebuild": "pnpm run clean && pnpm run lint && pnpm run typecheck",
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "Dhruv <materwelondhruv@gmail.com>",
