@@ -3,14 +3,14 @@
  * Copyright (c) 2020 Mason Rogers <viction.dev@gmail.com> (https://github.com/mason-rogers)
  *
  * Modified in 2025 by Dhruv (https://github.com/materwelonDhruv)
- * Changes: improved type safety, added resolver support
+ * Changes: improved type safety, added resolver support, service dependency
  */
 
 import { config } from 'dotenv';
 
 import { Parser as EnvParser, type EnvConverterService } from './Parser';
 
-let configObject: Record<string, unknown> = {};
+export const EnvCache = new Map<string, unknown>();
 
 enum EnvumentType {
   String,
@@ -18,7 +18,7 @@ enum EnvumentType {
   Boolean
 }
 
-export enum Environment {
+enum Environment {
   Development,
   Staging,
   Production
@@ -67,8 +67,8 @@ class Envuments implements EnvConverterService {
     return this.internalEnvironment === Environment.Development;
   }
 
-  private static getConfig(): Record<string, unknown> {
-    if (!Object.keys(configObject).length) {
+  private static get config(): Map<string, unknown> {
+    if (EnvCache.size === 0) {
       // Create isolated environment object to avoid mutating process.env
       const isolatedEnv: Record<string, string> = { ...(process.env as Record<string, string>) };
 
@@ -79,14 +79,15 @@ class Envuments implements EnvConverterService {
         // Do Nothing
       }
 
-      configObject = isolatedEnv;
+      // Populate the Map with global environment variables
+      for (const [key, value] of Object.entries(isolatedEnv)) EnvCache.set(key, value);
     }
 
-    return configObject;
+    return EnvCache;
   }
 
   private static _get(key: string, type: EnvumentType = EnvumentType.String, def?: unknown): unknown {
-    const rawVal = this.getConfig()[key] as string | number | boolean;
+    const rawVal = this.config.get(key) as string | number | boolean;
     if (!rawVal) return def;
 
     const parsed = this.parser.resolveValueString(key, String(rawVal));
@@ -141,4 +142,4 @@ class Envuments implements EnvConverterService {
   }
 }
 
-export { Envuments, EnvumentType };
+export { Envuments, EnvumentType, Environment };

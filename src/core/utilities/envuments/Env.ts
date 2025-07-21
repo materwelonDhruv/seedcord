@@ -3,18 +3,16 @@
  * Copyright (c) 2020 Mason Rogers <viction.dev@gmail.com> (https://github.com/mason-rogers)
  *
  * Modified in 2025 by Dhruv (https://github.com/materwelonDhruv)
- * Changes: improved type safety, added resolver support
+ * Changes: improved type safety, added resolver support, service dependency
  */
 
-import { Envuments } from './Envuments';
+import { Envuments, EnvCache } from './Envuments';
 import { Parser, type EnvConverter } from './Parser';
 
 interface EnvOptions<T = string> {
   fallback?: T;
   converter?: EnvConverter<T>;
 }
-
-const envCache: Record<string, unknown> = {};
 
 function createPropertyDecorator<T>(
   key: string,
@@ -23,7 +21,9 @@ function createPropertyDecorator<T>(
 ): PropertyDecorator {
   return function (target: object, prop: string | symbol): void {
     const propKey = String(prop);
-    let value = envCache[key] as T | undefined;
+    const cacheKey = `envuments.${propKey}`;
+
+    let value = EnvCache.get(cacheKey) as T | undefined;
 
     if (value !== undefined) {
       Object.defineProperty(target, propKey, { value });
@@ -33,7 +33,7 @@ function createPropertyDecorator<T>(
     const parser = new Parser(Envuments);
     value = parser.convertValue(key, fallback, converter);
 
-    envCache[key] = value;
+    EnvCache.set(cacheKey, value);
     Object.defineProperty(target, propKey, { value });
   };
 }

@@ -3,7 +3,7 @@
  * Copyright (c) 2020 Mason Rogers <viction.dev@gmail.com> (https://github.com/mason-rogers)
  *
  * Modified in 2025 by Dhruv (https://github.com/materwelonDhruv)
- * Changes: improved type safety, added resolver support, dependency injection
+ * Changes: improved type safety, added resolver support, service dependency
  */
 
 export type EnvInput = string | undefined;
@@ -46,17 +46,9 @@ export class Parser {
     const resolvedConverter = this.resolveConverter(converter, fallback);
 
     // Apply the converter
-    if (resolvedConverter === Number) {
-      return this.convertToNumber(key, fallback) as unknown as T;
-    }
-
-    if (resolvedConverter === Boolean) {
-      return this.convertToBoolean(key, fallback) as unknown as T;
-    }
-
-    if (resolvedConverter === String) {
-      return this.convertToString(key, fallback) as unknown as T;
-    }
+    if (resolvedConverter === Number) return this.convertToNumber(key, fallback) as unknown as T;
+    if (resolvedConverter === Boolean) return this.convertToBoolean(key, fallback) as unknown as T;
+    if (resolvedConverter === String) return this.convertToString(key, fallback) as unknown as T;
 
     // Custom converter function
     const raw = this.envService.get(key, undefined) as EnvInput;
