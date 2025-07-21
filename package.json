@@ -17,12 +17,15 @@
     "dev:bot": "nodemon --config nodemon.json",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "prebuild": "pnpm run clean && pnpm run lint && pnpm run typecheck"
+    "prebuild": "pnpm run clean && pnpm run lint && pnpm run typecheck",
+    "prepare": "husky install"
   },
   "keywords": [],
   "author": "Dhruv <materwelondhruv@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.31.0",
     "@types/chai": "^5.2.2",
@@ -38,6 +41,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-security": "^3.0.1",
+    "husky": "^9.1.7",
     "mocha": "^11.7.1",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
