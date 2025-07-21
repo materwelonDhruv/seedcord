@@ -261,7 +261,7 @@ export default tseslint.config(
       'max-params': ['warn', 5], // Increased from 4
       'max-statements': ['warn', 25], // Increased from 20
       'max-lines': ['warn', 400], // Increased from 300
-      'max-lines-per-function': ['warn', 85], // Increased from 50
+      'max-lines-per-function': ['warn', { max: 80, skipComments: true, skipBlankLines: true }], // Increased from 50
 
       // Best practices
       eqeqeq: ['error', 'always'],
@@ -321,7 +321,12 @@ export default tseslint.config(
       'prefer-template': 'warn'
     }
   },
-
+  {
+    files: ['**/*.test.ts'],
+    rules: {
+      'max-lines-per-function': 'off'
+    }
+  },
   // Prettier config to disable conflicting rules
   prettierConfig
 );

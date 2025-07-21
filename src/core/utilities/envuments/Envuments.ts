@@ -26,7 +26,7 @@ enum Environment {
 
 class Envuments implements EnvConverterService {
   private static readonly parser = new EnvParser(new Envuments());
-  private static _envPath = '.env'; // default path
+  private static _envPaths: string[] = ['.env']; // default path
 
   // Environment handling
   private static internalEnvironment = this.determineEnvironment(
@@ -34,18 +34,20 @@ class Envuments implements EnvConverterService {
   );
 
   // allow user to set custom .env path
-  static set envPath(path: string) {
-    this._envPath = path;
+  static set envPaths(paths: string[] | string) {
+    this._envPaths = Array.isArray(paths) ? paths : [paths];
+
     // clear cache to force reload with new path
     EnvCache.clear();
+
     // reset internal environment to force re-evaluation
     this.internalEnvironment = this.determineEnvironment(
       this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
     );
   }
 
-  static get envPath(): string {
-    return this._envPath;
+  static get envPaths(): string[] {
+    return this._envPaths;
   }
 
   private static determineEnvironment(env: string | Environment): Environment {
@@ -90,7 +92,7 @@ class Envuments implements EnvConverterService {
 
       try {
         // load _envPath file from custom path into isolated environment object
-        config({ path: this._envPath, quiet: true, processEnv: isolatedEnv });
+        config({ path: this._envPaths, quiet: true, processEnv: isolatedEnv });
       } catch {
         // do nothing
       }

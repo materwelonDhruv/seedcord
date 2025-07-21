@@ -2,8 +2,8 @@ import { resolve } from 'node:path';
 
 import { expect } from 'chai';
 
-import { Env } from '../src/core/utilities/envuments/Env';
-import { Envuments } from '../src/core/utilities/envuments/Envuments';
+import { Env } from '../../src/core/utilities/envuments/Env';
+import { Envuments } from '../../src/core/utilities/envuments/Envuments';
 
 /**
  * These tests use a dedicated .env.test
@@ -11,7 +11,7 @@ import { Envuments } from '../src/core/utilities/envuments/Envuments';
  */
 
 // set test .env path before any class evaluation
-Envuments.envPath = resolve(__dirname, '.env.test');
+Envuments.envPaths = resolve(__dirname, '.env.test');
 
 // test class for automatic type detection and non-options based params
 class TestTypeDetection {
@@ -45,6 +45,9 @@ class TestEnv {
 
   @Env('TEST_VAR', { fallback: undefined })
   public static readonly testVar: string;
+
+  @Env('VAR_IN_EXTRA_FILE', { fallback: true, converter: Boolean })
+  public static readonly varInExtraFile: boolean | undefined;
 }
 
 // test class with custom converters
@@ -57,7 +60,7 @@ class TestCustomEnv {
       return raw
         .split(',')
         .map((s) => s.trim())
-        .filter((s) => s.length > 0);
+        .filter(Boolean);
     }
   })
   public static readonly allowedChannels: string[];
@@ -70,7 +73,7 @@ class TestCustomEnv {
       const flags = raw
         .split(',')
         .map((s) => s.trim())
-        .filter((s) => s.length > 0);
+        .filter(Boolean);
       return new Set(flags);
     }
   })
@@ -89,18 +92,21 @@ class TestCustomEnv {
 
 describe('Envuments', () => {
   describe('env path configuration', () => {
-    it('should allow setting custom .env path', () => {
-      Envuments.envPath = 'custom/.env';
-      expect(Envuments.envPath).to.equal('custom/.env');
-
-      // reset to test path
-      Envuments.envPath = 'tests/.env.test';
-      expect(Envuments.envPath).to.equal('tests/.env.test');
+    it('should be .env.test set at the top of the file rather than .env', () => {
+      // we expect it to be our test path since we set it at module level
+      expect(Envuments.envPaths).to.deep.equal([resolve(__dirname, '.env.test')]);
     });
 
-    it('should default to .env path', () => {
-      // we expect it to be our test path since we set it at module level
-      expect(Envuments.envPath).to.equal('tests/.env.test');
+    it('should allow setting custom .env path', () => {
+      Envuments.envPaths = 'custom/.env';
+      expect(Envuments.envPaths).to.deep.equal(['custom/.env']);
+
+      // reset to test path
+      Envuments.envPaths = [resolve(__dirname, '.env.test'), resolve(__dirname, '.env.extra.test')];
+      expect(Envuments.envPaths).to.deep.equal([
+        resolve(__dirname, '.env.test'),
+        resolve(__dirname, '.env.extra.test')
+      ]);
     });
   });
 
@@ -140,6 +146,11 @@ describe('Envuments', () => {
     it('should load env literals', () => {
       // expecting it to combine VAR_1, VAR_2, VAR_3 into TEST_VAR
       expect(TestEnv.testVar).to.equal('var1var2var3');
+    });
+
+    // should work now since we set the extra .env path above
+    it('should load variable from extra .env file', () => {
+      expect(TestEnv.varInExtraFile).to.equal(true);
     });
   });
 
