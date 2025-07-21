@@ -4,73 +4,27 @@ import 'reflect-metadata';
 import { Env } from '../../utilities/envuments/Env';
 import { Envuments } from '../../utilities/envuments/Envuments';
 
-export enum Environment {
-  Development,
-  Staging,
-  Production
-}
-
 export class Globals extends Envuments {
-  // Environment
-  private static internalEnvironment = this.determineEnvironment(
-    this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
-  );
-
-  private static determineEnvironment(env: string | Environment): Environment {
-    if (typeof env === 'string') {
-      switch (env.toLowerCase()) {
-        case 'production':
-          return Environment.Production;
-        case 'staging':
-          return Environment.Staging;
-        default:
-          return Environment.Development;
-      }
-    }
-
-    return env;
-  }
-
-  static set environment(env: string | Environment) {
-    this.internalEnvironment = this.determineEnvironment(env);
-  }
-
-  static get environment(): Environment {
-    return this.internalEnvironment;
-  }
-
-  static get isProduction(): boolean {
-    return this.internalEnvironment === Environment.Production;
-  }
-
-  static get isStaging(): boolean {
-    return this.internalEnvironment === Environment.Staging;
-  }
-
-  static get isDevelopment(): boolean {
-    return this.internalEnvironment === Environment.Development;
-  }
-
   // Secrets
-  @Env('BOT_TOKEN', undefined)
+  @Env('BOT_TOKEN', { fallback: undefined })
   public static readonly botToken: string;
 
   // General
-  @Env('MONGO_URI', 'mongodb://localhost:27017/')
+  @Env('MONGO_URI', { fallback: 'mongodb://localhost:27017/' })
   public static readonly mongoUri: string;
 
-  @Env('DB_NAME', 'seedcord')
+  @Env('DB_NAME', { fallback: 'seedcord' })
   public static readonly dbName: string;
 
   // Health Check
-  @Env('HEALTH_CHECK_PORT', '6956')
+  @Env('HEALTH_CHECK_PORT', { fallback: 6956 })
   public static readonly healthCheckPort: number;
 
-  @Env('HEALTH_CHECK_PATH', '/healthcheck')
+  @Env('HEALTH_CHECK_PATH', { fallback: '/healthcheck' })
   public static readonly healthCheckPath: string;
 
   // Coordinated Shutdown
-  @Env('SHUTDOWN_IS_ENABLED', false, Boolean)
+  @Env('SHUTDOWN_IS_ENABLED', { fallback: false })
   public static readonly shutdownIsEnabled: boolean;
 
   // Variables
