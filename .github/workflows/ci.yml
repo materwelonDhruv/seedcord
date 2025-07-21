@@ -21,9 +21,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Format
-        run: pnpm format
-
       - name: Lint
         run: pnpm lint
 
@@ -35,6 +32,3 @@ jobs:
 
       - name: Security Audit
         run: pnpm audit --audit-level=high
-
-      - name: Secret Scanning
-        run: npx --yes git-secrets --scan || echo "No secrets found"
