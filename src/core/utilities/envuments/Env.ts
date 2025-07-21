@@ -1,3 +1,11 @@
+/*
+ * Based on: https://github.com/mason-rogers/envuments
+ * Copyright (c) 2020 Mason Rogers <viction.dev@gmail.com> (https://github.com/mason-rogers)
+ *
+ * Modified in 2025 by Dhruv (https://github.com/materwelonDhruv)
+ * Changes: improved type safety, added resolver support
+ */
+
 import { Envuments } from './Envuments';
 
 export type EnvInput = string | undefined;

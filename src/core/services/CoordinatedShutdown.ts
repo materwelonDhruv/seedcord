@@ -1,3 +1,11 @@
+/*
+ * Inspired by Akka Coordinated Shutdown: https://doc.akka.io/libraries/akka-core/current/coordinated-shutdown.html
+ * Original implementation by Lewis (https://github.com/Yomanz)
+ *
+ * Modified in 2025 by Dhruv Jain (https://github.com/materwelonDhruv)
+ * Changes: streamlined flow, typed event keys, better logging, added toggle support
+ */
+
 import { EventEmitter } from 'node:events';
 
 import chalk from 'chalk';
