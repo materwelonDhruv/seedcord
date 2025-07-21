@@ -90,7 +90,7 @@ export default tseslint.config(
       'import/no-duplicates': ['error', { considerQueryString: true }],
       'import/no-unresolved': 'error',
       'import/no-cycle': 'warn',
-      'import/no-unused-modules': 'off', // Can be noisy, keep disabled
+      'import/no-unused-modules': 'off',
       'import/no-deprecated': 'warn',
       'import/first': 'error', // Imports must be at top
       'import/no-absolute-path': 'error', // Prevent absolute imports
@@ -257,7 +257,7 @@ export default tseslint.config(
       // Code quality
       complexity: ['warn', 15], // Increased from 10
       'max-depth': ['warn', 5], // Increased from 4
-      'max-nested-callbacks': ['warn', 4], // Increased from 3
+      'max-nested-callbacks': ['warn', 3],
       'max-params': ['warn', 5], // Increased from 4
       'max-statements': ['warn', 25], // Increased from 20
       'max-lines': ['warn', 400], // Increased from 300
@@ -306,7 +306,6 @@ export default tseslint.config(
       'security/detect-non-literal-fs-filename': 'off', // Disabled as it's common in utility functions
       'security/detect-non-literal-regexp': 'off', // Disabled for template parsing
 
-      // Disable some overly strict rules
       '@typescript-eslint/no-extraneous-class': 'off', // Allow utility classes
       '@typescript-eslint/no-useless-constructor': 'off',
       '@typescript-eslint/no-empty-function': 'off',
@@ -316,7 +315,6 @@ export default tseslint.config(
       '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
       'no-param-reassign': 'off', // Disabled for utility functions
 
-      // Allow some patterns common in decorators and framework code
       'no-new': 'warn',
       'prefer-template': 'warn'
     }
