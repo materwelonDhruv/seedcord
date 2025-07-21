@@ -1,4 +1,4 @@
-import { Envuments } from '../Envuments';
+import { Envuments } from './Envuments';
 
 export type EnvInput = string | undefined;
 type EnvParser<T> = (raw: EnvInput, fallback?: T) => T;

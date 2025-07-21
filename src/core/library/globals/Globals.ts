@@ -1,8 +1,7 @@
 import { ColorResolvable } from 'discord.js';
-import dotenv from 'dotenv';
 
 import 'reflect-metadata';
-import { Env } from '../../utilities/envuments/annotations/Env';
+import { Env } from '../../utilities/envuments/Env';
 import { Envuments } from '../../utilities/envuments/Envuments';
 
 export enum Environment {
@@ -12,13 +11,6 @@ export enum Environment {
 }
 
 export class Globals extends Envuments {
-  static {
-    if (!process.env.ENV_LOADED) {
-      dotenv.config();
-      process.env.ENV_LOADED = 'true';
-    }
-  }
-
   // Environment
   private static internalEnvironment = this.determineEnvironment(
     this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
@@ -60,7 +52,7 @@ export class Globals extends Envuments {
   }
 
   // Secrets
-  @Env('BOT_TOKEN')
+  @Env('BOT_TOKEN', undefined)
   public static readonly botToken: string;
 
   // General

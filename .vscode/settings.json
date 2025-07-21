@@ -27,7 +27,7 @@
 
   // TypeScript Settings
   "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.suggest.autoImports": false,
+  "typescript.suggest.autoImports": true,
   "typescript.updateImportsOnFileMove.enabled": "prompt",
 
   // File Explorer
