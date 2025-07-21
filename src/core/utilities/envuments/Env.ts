@@ -21,8 +21,9 @@ function createPropertyDecorator<T>(
 ): PropertyDecorator {
   return function (target: object, prop: string | symbol): void {
     const propKey = String(prop);
-    const cacheKey = `envuments.${propKey}`;
+    const cacheKey = `${target.constructor.name}.${propKey}`;
 
+    // check cache first
     let value = EnvCache.get(cacheKey) as T | undefined;
 
     if (value !== undefined) {

@@ -1,17 +1,40 @@
+import { resolve } from 'node:path';
+
 import { expect } from 'chai';
 
-import { Globals } from '../src/core/library/globals/Globals';
 import { Env } from '../src/core/utilities/envuments/Env';
+import { Envuments } from '../src/core/utilities/envuments/Envuments';
 
 /**
- * Set these variables in the .env file to test:
- *
- * ALLOWED_CHANNELS=123456789,987654321,555666777
- * FEATURE_FLAGS=auth,logging,caching,webhooks
+ * These tests use a dedicated .env.test
+ * The test file contains all necessary test variables
  */
 
-// test class with explicit converters
-class TestEnv extends Globals {
+// set test .env path before any class evaluation
+Envuments.envPath = resolve(__dirname, '.env.test');
+
+// test class for automatic type detection and non-options based params
+class TestTypeDetection {
+  // test undefined fallback with non-existent variable
+  @Env('NONEXISTENT_TEST_VAR', undefined)
+  public static readonly testUndefinedVar: string | undefined;
+
+  // test number type detection from fallback
+  // eslint-disable-next-line no-magic-numbers
+  @Env('PORT', 6956)
+  public static readonly port: number;
+
+  // test boolean type detection from fallback
+  @Env('IS_ENABLED', false)
+  public static readonly isEnabled: boolean;
+
+  // test string type detection from fallback
+  @Env('URI', 'db://localhost:27017/')
+  public static readonly uri: string;
+}
+
+// test class with explicit converters and env literals
+class TestEnv {
   // force string conversion even with number fallback
   @Env('TEST_NUMBER_AS_STRING', { fallback: 42, converter: String })
   public static readonly testNumberAsString: string;
@@ -19,10 +42,13 @@ class TestEnv extends Globals {
   // force number conversion even with string fallback
   @Env('TEST_STRING_AS_NUMBER', { fallback: '100', converter: Number })
   public static readonly testStringAsNumber: number;
+
+  @Env('TEST_VAR', { fallback: undefined })
+  public static readonly testVar: string;
 }
 
 // test class with custom converters
-class TestCustomEnv extends Globals {
+class TestCustomEnv {
   // custom converter for comma separated strings to arrays
   @Env('ALLOWED_CHANNELS', {
     fallback: ['default-channel'],
@@ -62,25 +88,41 @@ class TestCustomEnv extends Globals {
 }
 
 describe('Envuments', () => {
+  describe('env path configuration', () => {
+    it('should allow setting custom .env path', () => {
+      Envuments.envPath = 'custom/.env';
+      expect(Envuments.envPath).to.equal('custom/.env');
+
+      // reset to test path
+      Envuments.envPath = 'tests/.env.test';
+      expect(Envuments.envPath).to.equal('tests/.env.test');
+    });
+
+    it('should default to .env path', () => {
+      // we expect it to be our test path since we set it at module level
+      expect(Envuments.envPath).to.equal('tests/.env.test');
+    });
+  });
+
   describe('automatic type detection', () => {
     it('should detect undefined type for non-existent variables', () => {
-      expect(typeof Globals.testUndefinedVar).to.equal('undefined');
+      expect(typeof TestTypeDetection.testUndefinedVar).to.equal('undefined');
     });
 
     it('should detect number type from fallback', () => {
       const expectedPort = 6956;
-      expect(typeof Globals.healthCheckPort).to.equal('number');
-      expect(Globals.healthCheckPort).to.equal(expectedPort);
+      expect(typeof TestTypeDetection.port).to.equal('number');
+      expect(TestTypeDetection.port).to.equal(expectedPort);
     });
 
     it('should detect boolean type from fallback', () => {
-      expect(typeof Globals.shutdownIsEnabled).to.equal('boolean');
-      expect(Globals.shutdownIsEnabled).to.equal(false);
+      expect(typeof TestTypeDetection.isEnabled).to.equal('boolean');
+      expect(TestTypeDetection.isEnabled).to.equal(false);
     });
 
     it('should detect string type from fallback', () => {
-      expect(typeof Globals.mongoUri).to.equal('string');
-      expect(Globals.mongoUri).to.equal('mongodb://localhost:27017/');
+      expect(typeof TestTypeDetection.uri).to.equal('string');
+      expect(TestTypeDetection.uri).to.equal('mongodb://localhost:27017/');
     });
   });
 
@@ -93,6 +135,11 @@ describe('Envuments', () => {
     it('should use Number converter override despite string fallback', () => {
       expect(typeof TestEnv.testStringAsNumber).to.equal('number');
       expect(TestEnv.testStringAsNumber).to.equal(100);
+    });
+
+    it('should load env literals', () => {
+      // expecting it to combine VAR_1, VAR_2, VAR_3 into TEST_VAR
+      expect(TestEnv.testVar).to.equal('var1var2var3');
     });
   });
 

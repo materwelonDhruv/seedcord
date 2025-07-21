@@ -26,11 +26,27 @@ enum Environment {
 
 class Envuments implements EnvConverterService {
   private static readonly parser = new EnvParser(new Envuments());
+  private static _envPath = '.env'; // default path
 
   // Environment handling
   private static internalEnvironment = this.determineEnvironment(
     this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
   );
+
+  // allow user to set custom .env path
+  static set envPath(path: string) {
+    this._envPath = path;
+    // clear cache to force reload with new path
+    EnvCache.clear();
+    // reset internal environment to force re-evaluation
+    this.internalEnvironment = this.determineEnvironment(
+      this.get('ENVIRONMENT', this.get('ENV', this.get('NODE_ENV', 'development')))
+    );
+  }
+
+  static get envPath(): string {
+    return this._envPath;
+  }
 
   private static determineEnvironment(env: string | Environment): Environment {
     if (typeof env === 'string') {
@@ -69,17 +85,17 @@ class Envuments implements EnvConverterService {
 
   private static get config(): Map<string, unknown> {
     if (EnvCache.size === 0) {
-      // Create isolated environment object to avoid mutating process.env
+      // create isolated environment object to avoid mutating process.env
       const isolatedEnv: Record<string, string> = { ...(process.env as Record<string, string>) };
 
       try {
-        // Load .env file into isolated environment object
-        config({ quiet: true, processEnv: isolatedEnv });
+        // load _envPath file from custom path into isolated environment object
+        config({ path: this._envPath, quiet: true, processEnv: isolatedEnv });
       } catch {
-        // Do Nothing
+        // do nothing
       }
 
-      // Populate the Map with global environment variables
+      // populate the Map with global environment variables
       for (const [key, value] of Object.entries(isolatedEnv)) EnvCache.set(key, value);
     }
 

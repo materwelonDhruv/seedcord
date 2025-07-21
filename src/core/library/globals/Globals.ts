@@ -9,10 +9,6 @@ export class Globals extends Envuments {
   @Env('BOT_TOKEN', { fallback: undefined })
   public static readonly botToken: string;
 
-  // Test variable for undefined handling
-  @Env('NONEXISTENT_TEST_VAR', { fallback: undefined })
-  public static readonly testUndefinedVar: string;
-
   // General
   @Env('MONGO_URI', { fallback: 'mongodb://localhost:27017/' })
   public static readonly mongoUri: string;
