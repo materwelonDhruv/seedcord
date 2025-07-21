@@ -96,11 +96,13 @@ class Envuments implements EnvConverterService {
       case EnvumentType.String: {
         return (parsed !== '' && parsed) || def;
       }
+
       case EnvumentType.Number: {
         const num = Number(parsed);
 
         return (!Number.isNaN(num) && num) || def;
       }
+
       case EnvumentType.Boolean: {
         const yes = ['1', 'yes', 'true'];
         const no = ['0', 'no', 'false'];
