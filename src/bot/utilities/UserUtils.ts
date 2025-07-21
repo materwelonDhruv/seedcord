@@ -1,6 +1,15 @@
-import { UserNotFound, UserNotInGuild } from '../errors/User';
+import {
+  DiscordAPIError,
+  RESTJSONErrorCodes,
+  RPCErrorCodes,
+  type Client,
+  type Guild,
+  type GuildMember,
+  type Snowflake,
+  type User
+} from 'discord.js';
 
-import type { Client, Guild, GuildMember, Snowflake, User } from 'discord.js';
+import { UserNotFound, UserNotInGuild } from '../errors/User';
 
 export class UserUtils {
   public static async fetchGuildMember(guild: Guild, userId: string): Promise<GuildMember> {
@@ -14,8 +23,12 @@ export class UserUtils {
 
   public static async fetchUser(client: Client, userId: string): Promise<User> {
     let user = client.users.cache.get(userId);
-    user ??= await client.users.fetch(userId).catch(() => {
-      throw new UserNotFound(userId);
+    user ??= await client.users.fetch(userId).catch((err) => {
+      if (err instanceof DiscordAPIError && err.code === RESTJSONErrorCodes.UnknownUser) {
+        throw new UserNotFound(userId);
+      }
+
+      throw err;
     });
 
     return user;
