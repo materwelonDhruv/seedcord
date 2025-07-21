@@ -65,9 +65,7 @@ export class Parser {
     // Auto-detect type from fallback using typeof
     const fallbackType = typeof fallback;
     if (fallbackType === 'number') return Number;
-
     if (fallbackType === 'boolean') return Boolean;
-
     return String;
   }
 
