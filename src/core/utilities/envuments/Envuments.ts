@@ -45,26 +45,20 @@ class Envuments {
 
   private static getConfig(): Record<string, unknown> {
     if (!Object.keys(configObject).length) {
-      // Default to dotenv config
+      // Create isolated environment object to avoid mutating process.env
+      const isolatedEnv: Record<string, string> = { ...(process.env as Record<string, string>) };
+
       try {
-        config({ quiet: true });
+        // Load .env file into isolated environment object
+        config({ quiet: true, processEnv: isolatedEnv });
       } catch {
         // Do Nothing
       }
 
-      Envuments.seedConfig(process.env);
+      configObject = isolatedEnv;
     }
 
     return configObject;
-  }
-
-  static seedConfig(config: { [key: string]: unknown; parsed?: Record<string, string> }): void {
-    if (Object.keys(config).includes('parsed')) {
-      // Dotenv.config() response
-      configObject = config.parsed as Record<string, string>;
-    } else {
-      configObject = config;
-    }
   }
 
   private static _get(key: string, type: EnvumentType = EnvumentType.String, def?: unknown): unknown {
