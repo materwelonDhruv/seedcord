@@ -3,7 +3,7 @@ import * as path from 'path';
 import chalk from 'chalk';
 
 import { traverseDirectory } from '../../core/library/Helpers';
-import { LogService } from '../../core/services/LogService';
+import { Logger } from '../../core/services/Logger';
 import { ErrorType } from '../decorators/ErrorConfigurable';
 import { DatabaseError } from '../errors/Database';
 import { BaseErrorEmbed, CustomError } from '../interfaces/Components';
@@ -15,7 +15,7 @@ import type { UUID } from 'crypto';
 import type { Guild, User } from 'discord.js';
 
 export class ErrorController {
-  private readonly logger = new LogService('Errors');
+  private readonly logger = new Logger('Errors');
   private isInitialized = false;
 
   private readonly errorMap = new Map<string, BaseErrorConstructor>();

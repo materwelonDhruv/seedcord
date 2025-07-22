@@ -8,12 +8,12 @@ import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
 import { Globals } from '../core/library/globals/Globals';
 import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
-import { LogService } from '../core/services/LogService';
+import { Logger } from '../core/services/Logger';
 
 import type { CoreBot } from '../core/CoreBot';
 
 export class Bot {
-  private readonly logger = new LogService('Bot');
+  private readonly logger = new Logger('Bot');
   private isInitialized = false;
 
   private readonly _client: Client;
