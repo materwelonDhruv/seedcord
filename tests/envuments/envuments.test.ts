@@ -113,7 +113,7 @@ describe('Envuments', () => {
       expect(TestEnv.testStringAsNumber).to.equal(100);
     });
 
-    it('should combine env literals', () => {
+    it('should resolve template variables in environment values', () => {
       // expecting it to combine VAR_1, VAR_2, VAR_3 into TEST_VAR
       expect(TestEnv.testVar).to.equal('var1var2var3');
     });

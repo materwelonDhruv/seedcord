@@ -84,7 +84,7 @@ describe('Edge Cases', () => {
       expect(TemplateEdgeCases.nonexistentTemplate).to.equal('value: ${DOES_NOT_EXIST}');
     });
 
-    it('should not handle empty template variables', () => {
+    it('should preserve template syntax for empty variables', () => {
       expect(TemplateEdgeCases.emptyTemplate).to.equal('value: ${EMPTY_VAR}');
     });
 
