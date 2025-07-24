@@ -100,9 +100,9 @@ describe('Edge Cases', () => {
 
       @Env('OBJECT_FALLBACK', {
         fallback: { key: 'default' },
-        converter: (key, value) => {
-          if (typeof key !== 'string' || !value) return value;
-          return JSON.parse(key);
+        converter: (raw, fallback) => {
+          if (typeof raw !== 'string' || !fallback) return fallback;
+          return JSON.parse(raw);
         }
       })
       static readonly objectFallback: object;
