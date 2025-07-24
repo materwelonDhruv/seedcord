@@ -1,9 +1,9 @@
 {
   "name": "seedcord",
   "version": "0.1.0",
-  "description": "",
+  "description": "A focused OOP framework for Discord.js bots.",
   "main": "index.js",
-  "packageManager": "pnpm@10.0.0",
+  "packageManager": "pnpm@10.12.0",
   "scripts": {
     "start:watch": "tsx start-watch.ts",
     "test": "mocha",
@@ -20,7 +20,14 @@
     "prebuild": "pnpm run clean && pnpm run lint && pnpm run typecheck",
     "prepare": "husky"
   },
-  "keywords": [],
+  "keywords": [
+    "discord",
+    "discord.js",
+    "bot",
+    "framework",
+    "oop",
+    "typescript"
+  ],
   "author": "Dhruv <materwelondhruv@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
@@ -56,5 +63,8 @@
     "mongoose": "^8.16.4",
     "reflect-metadata": "^0.2.2",
     "winston": "^3.17.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   }
 }
