@@ -70,26 +70,45 @@ describe('Edge Cases', () => {
 
   describe('Template resolution edge cases', () => {
     class TemplateEdgeCases {
-      @Env('NONEXISTENT_TEMPLATE', 'default')
+      @Env('NONEXISTENT_TEMPLATE')
       static readonly nonexistentTemplate: string;
 
-      @Env('EMPTY_TEMPLATE', 'default')
+      @Env('EMPTY_TEMPLATE')
       static readonly emptyTemplate: string;
 
-      @Env('CIRCULAR_TEMPLATE', 'value: ${CIRCULAR_TEMPLATE}')
+      @Env('CIRCULAR_TEMPLATE')
       static readonly circularTemplate: string;
+
+      @Env('CIRCULAR_A')
+      static readonly circularA: string;
+
+      @Env('CIRCULAR_B')
+      static readonly circularB: string;
+
+      @Env('MULTI_TYPE_TEMPLATE')
+      static readonly multiTypeTemplate: string;
     }
 
     it('should handle nonexistent template variables', () => {
-      expect(TemplateEdgeCases.nonexistentTemplate).to.equal('value: ${DOES_NOT_EXIST}');
+      expect(TemplateEdgeCases.nonexistentTemplate).to.equal('${DOES_NOT_EXIST}');
     });
 
     it('should preserve template syntax for empty variables', () => {
-      expect(TemplateEdgeCases.emptyTemplate).to.equal('value: ${EMPTY_VAR}');
+      expect(TemplateEdgeCases.emptyTemplate).to.equal('${EMPTY_VAR}');
     });
 
     it('should handle circular template variables', () => {
-      expect(TemplateEdgeCases.circularTemplate).to.equal('value: ${CIRCULAR_TEMPLATE}');
+      expect(TemplateEdgeCases.circularTemplate).to.equal('${CIRCULAR_TEMPLATE}');
+    });
+
+    it('should handle circular references between variables', () => {
+      expect(TemplateEdgeCases.circularA).to.equal('${CIRCULAR_B}');
+      expect(TemplateEdgeCases.circularB).to.equal('${CIRCULAR_A}');
+    });
+
+    it('should resolve multi-type template variables correctly', () => {
+      expect(TemplateEdgeCases.multiTypeTemplate).to.equal('stringVar123true');
+      expect(typeof TemplateEdgeCases.multiTypeTemplate).to.equal('string');
     });
   });
 

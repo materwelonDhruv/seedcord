@@ -33,7 +33,7 @@ function createPropertyDecorator<T>(
 
         // Re-evaluate if we don't have a cached value
         if (value === undefined) {
-          const parser = new Parser(Envuments);
+          const parser = new Parser(new Envuments());
           value = parser.convertValue(key, fallback, converter, hasFallback);
           EnvCache.set(cacheKey, value);
         }

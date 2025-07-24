@@ -12,6 +12,7 @@ type EnvParser<T> = (raw: EnvInput, fallback?: T) => T;
 export type EnvConverter<T> = typeof Number | typeof Boolean | typeof String | EnvParser<T>;
 
 export interface EnvConverterService {
+  getRaw(key: string): string | undefined;
   get(key: string, def?: string): string;
   getNumber(key: string, def?: number): number;
   getBoolean(key: string, def?: boolean): boolean;
@@ -22,35 +23,33 @@ export class Parser {
 
   constructor(private readonly envService: EnvConverterService) {}
 
-  private escapeRegexChars(str: string): string {
-    return str.replace(/([.*+?^=!:${}()|[\]/\\])/g, '\\$1');
-  }
+  resolveValueString(key: string, value: string, stack = new Set<string>()): string {
+    if (stack.has(key)) return value; // direct cycle, keep as is
 
-  resolveValueString(key: string, value: string, visited = new Set<string>()): string {
-    const templates = value.match(this.TEMPLATE_REGEX);
-    if (!templates) return value;
+    stack.add(key);
 
-    // Add current key to visited set to prevent circular references
-    visited.add(key);
-
-    for (const template of templates) {
+    const out = value.replace(this.TEMPLATE_REGEX, (template) => {
       const variable = template.slice(2, -1);
-      if (!variable || visited.has(variable)) continue; // Prevent circular references
+      if (!variable) return template; // empty name, preserve
 
-      const variableVal = this.envService.get(variable);
-      if (variableVal) {
-        // Recursively resolve the variable value, passing the visited set
-        const resolvedVal = this.resolveValueString(variable, variableVal, visited);
-        value = value.replace(new RegExp(this.escapeRegexChars(template), 'g'), resolvedVal);
-      } else {
-        // Keep the template if variable doesn't exist
-        value = value.replace(new RegExp(this.escapeRegexChars(template), 'g'), template);
-      }
-    }
+      if (stack.has(variable)) return template; // cycle, preserve
 
-    // Remove current key from visited set when done
-    visited.delete(key);
-    return value;
+      const raw = this.envService.getRaw(variable);
+      if (!raw || raw === '') return template; // missing or empty, preserve
+
+      const resolved = this.resolveValueString(variable, raw, new Set(stack));
+
+      // If resolution still references the current key, skip replacement (indirect cycle)
+      if (resolved.includes(`\${${key}}`)) return template;
+
+      // If nothing changed (unresolved placeholders stayed), also preserve original template
+      if (resolved === raw && /\$\{[^}]*\}/.test(resolved)) return template;
+
+      return resolved;
+    });
+
+    stack.delete(key);
+    return out;
   }
 
   convertValue<T>(

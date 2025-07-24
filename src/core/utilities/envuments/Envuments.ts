@@ -161,6 +161,10 @@ class Envuments implements EnvConverterService {
   getBoolean(key: string, def?: boolean): boolean {
     return Envuments._get(key, EnvumentType.Boolean, def) as boolean;
   }
+
+  getRaw(key: string): string | undefined {
+    return Envuments.config.get(key) as string | undefined;
+  }
 }
 
 export { Envuments, EnvumentType, Environment };
