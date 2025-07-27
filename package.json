@@ -4,6 +4,7 @@
   "description": "A focused OOP framework for Discord.js bots.",
   "main": "index.js",
   "private": true,
+  "type": "module",
   "packageManager": "pnpm@10.12.0",
   "scripts": {
     "build": "turbo build",
@@ -23,7 +24,6 @@
     "turbo:prune": "turbo prune",
     "turbo:graph": "turbo build --graph",
     "turbo:trace": "turbo build --trace",
-    "// Local scripts": "Scripts that run locally in root",
     "local:build": "tsc -p .",
     "local:lint": "eslint 'src/**/*.{ts,tsx}' --cache",
     "local:lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
