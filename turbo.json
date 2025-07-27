@@ -1,0 +1,57 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "tui",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".env*"],
+      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+    },
+    "lint": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"]
+    },
+    "lint:fix": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"],
+      "cache": false
+    },
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"]
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*"]
+    },
+    "format": {
+      "inputs": ["$TURBO_DEFAULT$", ".prettierrc*", "prettier.config.*"],
+      "cache": false
+    },
+    "format:check": {
+      "inputs": ["$TURBO_DEFAULT$", ".prettierrc*", "prettier.config.*"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "start": {
+      "cache": false,
+      "persistent": true
+    },
+    "start:bot": {
+      "dependsOn": ["build"],
+      "cache": false,
+      "persistent": true
+    },
+    "start:watch": {
+      "cache": false,
+      "persistent": true
+    }
+  },
+  "globalDependencies": ["package.json", "pnpm-workspace.yaml", "turbo.json", ".env*"],
+  "globalEnv": ["NODE_ENV", "DISCORD_TOKEN", "MONGODB_URI"]
+}

@@ -1,0 +1,30 @@
+{
+  "name": "@seedcord/cli",
+  "version": "0.0.0",
+  "description": "CLI tools for Seedcord Discord bot framework",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "seedcord": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "dev": "tsc -p . --watch",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --cache",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
+    "format": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
+    "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests yet'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "chalk": "^5.4.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.3"
+  },
+  "files": [
+    "dist/**/*"
+  ]
+}
