@@ -1,6 +1,6 @@
 import { BuiltInConverters } from './BuiltInConverters';
 
-import type { EnvaptConverter, ConverterFunction, BuiltInConverter } from './Types';
+import type { EnvaptConverter, ConverterFunction } from './Types';
 
 /**
  * @internal
@@ -21,7 +21,7 @@ export class Parser {
 
   constructor(private readonly envService: EnvapterService) {}
 
-  resolveValueString(key: string, value: string, stack = new Set<string>()): string {
+  resolveTemplate(key: string, value: string, stack = new Set<string>()): string {
     if (stack.has(key)) return value; // direct cycle, keep as is
 
     stack.add(key);
@@ -35,7 +35,7 @@ export class Parser {
       const raw = this.envService.getRaw(variable);
       if (!raw || raw === '') return template; // missing or empty, preserve
 
-      const resolved = this.resolveValueString(variable, raw, new Set(stack));
+      const resolved = this.resolveTemplate(variable, raw, new Set(stack));
 
       // If resolution still references the current key, skip replacement (indirect cycle)
       if (resolved.includes(`\${${key}}`)) return template;
@@ -67,20 +67,24 @@ export class Parser {
 
     // Check if it's an ArrayConverter object
     if (BuiltInConverters.isArrayConverter(resolvedConverter)) {
+      // Validate the ArrayConverter configuration at runtime
+      const validatedConfig = BuiltInConverters.validateArrayConverter(resolvedConverter);
       const parsed = this.envService.get(key, undefined);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (parsed === undefined) return hasFallback ? fallback : null;
 
-      return BuiltInConverters.processArrayConverter(parsed, fallback, resolvedConverter) as FallbackType;
+      return BuiltInConverters.processArrayConverter(parsed, fallback, validatedConfig) as FallbackType;
     }
 
     // Check if it's a built-in converter
     if (BuiltInConverters.isBuiltInConverter(resolvedConverter as EnvaptConverter<unknown>)) {
+      // Validate the built-in converter at runtime
+      const validatedConverter = BuiltInConverters.validateBuiltInConverter(resolvedConverter);
       const parsed = this.envService.get(key, undefined);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (parsed === undefined) return hasFallback ? fallback : null;
 
-      const converterFn = BuiltInConverters.getConverter(resolvedConverter as BuiltInConverter);
+      const converterFn = BuiltInConverters.getConverter(validatedConverter);
       return converterFn(parsed, fallback);
     }
 

@@ -1,4 +1,4 @@
-import type { EnvaptConverter, ArrayConverter, BuiltInConverter } from './Types';
+import type { ArrayConverter, BuiltInConverter, EnvaptConverter } from './Types';
 
 export const BuiltInConvertersArray = [
   'string',
@@ -133,8 +133,7 @@ export class BuiltInConverters {
     // if (raw === undefined) return fallback;
     if (raw === undefined) {
       if (Array.isArray(fallback)) return fallback;
-      // TODO: Add logged warning here
-      return undefined;
+      throw new Error(`ArrayConverter requires that the fallback be an array, got ${typeof fallback}`);
     }
 
     if (raw.trim() === '') return [];
@@ -165,6 +164,44 @@ export class BuiltInConverters {
       'delimiter' in value &&
       typeof (value as ArrayConverter).delimiter === 'string'
     );
+  }
+
+  /**
+   * Check if a value is a valid ArrayConverter type
+   */
+  static isValidArrayConverterType(value: unknown): value is Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'> {
+    if (typeof value !== 'string') return false;
+
+    const validTypes: Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>[] = [
+      'string',
+      'number',
+      'boolean',
+      'integer',
+      'bigint',
+      'symbol',
+      'float',
+      'url',
+      'date'
+    ];
+
+    return validTypes.includes(value as Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>);
+  }
+
+  /**
+   * Validate ArrayConverter configuration with runtime checks
+   */
+  static validateArrayConverter(value: unknown): ArrayConverter {
+    if (!this.isArrayConverter(value)) {
+      // TODO: add warning logger
+      throw new Error('Invalid ArrayConverter configuration: must have delimiter property');
+    }
+
+    if (value.type !== undefined && !this.isValidArrayConverterType(value.type)) {
+      // TODO: add warning logger
+      throw new Error(`Invalid ArrayConverter type: "${value.type}" is not a valid converter type`);
+    }
+
+    return value;
   }
 
   /**
@@ -208,5 +245,24 @@ export class BuiltInConverters {
   static isBuiltInConverter(value: EnvaptConverter<unknown>): value is BuiltInConverter {
     if (typeof value === 'string') return BuiltInConvertersArray.includes(value);
     return false;
+  }
+
+  /**
+   * Validate that a string is a valid built-in converter type
+   */
+  static validateBuiltInConverter(value: unknown): BuiltInConverter {
+    if (typeof value !== 'string') {
+      // TODO: add warning logger
+      throw new Error(`Invalid converter type: expected string, got ${typeof value}`);
+    }
+
+    if (!BuiltInConvertersArray.includes(value as BuiltInConverter)) {
+      // TODO: add warning logger
+      throw new Error(
+        `Invalid built-in converter: "${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(', ')}`
+      );
+    }
+
+    return value as BuiltInConverter;
   }
 }

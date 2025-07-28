@@ -89,7 +89,6 @@ function createPropertyDecorator<FallbackType>(
  */
 
 // TODO: update tsconfigs to add paths so I don't have to build every time I make a change
-// TODO: legacy config support. change how it's called, not legacy support. but u get it. don't allow objects. only primitives
 
 export function Envapt<FallbackType = unknown>(key: string, options?: EnvaptOptions<FallbackType>): PropertyDecorator;
 export function Envapt<FallbackType = string | number | boolean | bigint | symbol>(

@@ -64,6 +64,7 @@
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
     "@types/chai": "^5.2.2",
+    "@types/lodash.invert": "^4.3.9",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.10.7",
     "chai": "^5.1.2",
@@ -78,6 +79,7 @@
     "reflect-metadata": "^0.2.2"
   },
   "dependencies": {
-    "dotenv": "^17.2.0"
+    "dotenv": "^17.2.0",
+    "lodash.invert": "^4.3.0"
   }
 }

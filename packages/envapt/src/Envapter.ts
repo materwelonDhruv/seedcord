@@ -1,5 +1,6 @@
 import { config } from 'dotenv';
 
+import { BuiltInConverters } from './BuiltInConverters';
 import { Parser, type EnvapterService } from './Parser';
 
 /**
@@ -179,32 +180,31 @@ export class Envapter implements EnvapterService {
     const rawVal = this.config.get(key) as string | number | boolean;
     if (!rawVal) return def;
 
-    const parsed = this.parser.resolveValueString(key, String(rawVal));
+    const parsed = this.parser.resolveTemplate(key, String(rawVal));
 
     switch (type) {
       case Primitive.String: {
-        return (parsed !== '' && parsed) || def;
+        return BuiltInConverters.string(parsed, def as string);
       }
 
       case Primitive.Number: {
-        const num = Number(parsed);
-
-        return !Number.isNaN(num) ? num : def;
+        return BuiltInConverters.number(parsed, def as number);
       }
 
       case Primitive.Boolean: {
-        const yes = ['1', 'yes', 'true', 'on'];
-        const no = ['0', 'no', 'false', 'off'];
+        return BuiltInConverters.boolean(parsed, def as boolean);
+      }
 
-        const lowerParsed = parsed.toLowerCase();
-        if (yes.includes(lowerParsed)) return true;
-        if (no.includes(lowerParsed)) return false;
+      case Primitive.BigInt: {
+        return BuiltInConverters.bigint(parsed, def as bigint);
+      }
 
-        return def;
+      case Primitive.Symbol: {
+        return BuiltInConverters.symbol(parsed, def as symbol);
       }
 
       default: {
-        return (parsed !== '' && parsed) || def;
+        return BuiltInConverters.string(parsed, def as string);
       }
     }
   }
@@ -260,6 +260,40 @@ export class Envapter implements EnvapterService {
     return this._get(key, Primitive.Boolean, def) as boolean;
   }
 
+  /**
+   * Get a bigint environment variable with optional fallback.
+   * Automatically converts string values to bigint.
+   *
+   * @param key - Environment variable name
+   * @param def - Default value if variable is not found or cannot be converted
+   * @returns The environment variable value as bigint or default
+   *
+   * @example
+   * ```ts
+   * const largeNumber = Envapter.getBigInt('LARGE_NUMBER', 123456789012345678901234567890n);
+   * ```
+   */
+  static getBigInt(key: string, def?: bigint): bigint {
+    return this._get(key, Primitive.BigInt, def) as bigint;
+  }
+
+  /**
+   * Get a symbol environment variable with optional fallback.
+   * Creates a symbol from the string value.
+   *
+   * @param key - Environment variable name
+   * @param def - Default value if variable is not found
+   * @returns The environment variable value as symbol or default
+   *
+   * @example
+   * ```ts
+   * const uniqueKey = Envapter.getSymbol('UNIQUE_KEY', Symbol('default'));
+   * ```
+   */
+  static getSymbol(key: string, def?: symbol): symbol {
+    return this._get(key, Primitive.Symbol, def) as symbol;
+  }
+
   get(key: string, def?: string): string {
     return Envapter._get(key, Primitive.String, def) as string;
   }
@@ -270,6 +304,14 @@ export class Envapter implements EnvapterService {
 
   getBoolean(key: string, def?: boolean): boolean {
     return Envapter._get(key, Primitive.Boolean, def) as boolean;
+  }
+
+  getBigInt(key: string, def?: bigint): bigint {
+    return Envapter._get(key, Primitive.BigInt, def) as bigint;
+  }
+
+  getSymbol(key: string, def?: symbol): symbol {
+    return Envapter._get(key, Primitive.Symbol, def) as symbol;
   }
 
   /**
