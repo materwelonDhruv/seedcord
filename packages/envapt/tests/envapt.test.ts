@@ -199,13 +199,13 @@ describe('Envapter', () => {
       @Envapt('DATABASE_CONFIG', { converter: 'json' })
       static readonly databaseConfig: object;
 
-      // @Envapt('API_ENDPOINTS', { converter: 'array:semicolon' })
-      // static readonly apiEndpoints: string[];
+      @Envapt('API_ENDPOINTS', { converter: { delimiter: ';' } })
+      static readonly apiEndpoints: string[];
 
-      // @Envapt('CORS_ORIGINS', { converter: 'array:pipe' })
-      // static readonly corsOrigins: string[];
+      @Envapt('CORS_ORIGINS', { converter: { delimiter: '|', type: 'url' } })
+      static readonly corsOrigins: URL[];
 
-      @Envapt('SERVICE_TAGS', { converter: 'array:space' })
+      @Envapt('SERVICE_TAGS', { converter: { delimiter: ' ' } })
       static readonly serviceTags: string[];
 
       @Envapt('ENABLED_FEATURES', { converter: 'boolean' })
@@ -223,17 +223,22 @@ describe('Envapter', () => {
       });
     });
 
-    // it('should parse semicolon-delimited arrays', () => {
-    //   expect(BuiltInConverterShowcase.apiEndpoints).to.deep.equal(['auth', 'users', 'products', 'orders']);
-    // });
+    it('should parse semicolon-delimited arrays', () => {
+      expect(BuiltInConverterShowcase.apiEndpoints).to.deep.equal(['auth', 'users', 'products', 'orders']);
+    });
 
-    // it('should parse pipe-delimited arrays', () => {
-    //   expect(BuiltInConverterShowcase.corsOrigins).to.deep.equal([
-    //     'http://localhost:3000',
-    //     'https://app.example.com',
-    //     'https://staging.example.com'
-    //   ]);
-    // });
+    it('should parse pipe-delimited URL arrays', () => {
+      expect(BuiltInConverterShowcase.corsOrigins).to.be.an('array');
+      expect(BuiltInConverterShowcase.corsOrigins.length).to.equal(3);
+
+      expect(BuiltInConverterShowcase.corsOrigins[0]).to.be.instanceOf(URL);
+      expect(BuiltInConverterShowcase.corsOrigins[1]).to.be.instanceOf(URL);
+      expect(BuiltInConverterShowcase.corsOrigins[2]).to.be.instanceOf(URL);
+
+      expect(BuiltInConverterShowcase.corsOrigins[0]?.href).to.equal('http://localhost:3000/');
+      expect(BuiltInConverterShowcase.corsOrigins[1]?.href).to.equal('https://app.example.com/');
+      expect(BuiltInConverterShowcase.corsOrigins[2]?.href).to.equal('https://staging.example.com/');
+    });
 
     it('should parse space-delimited arrays', () => {
       expect(BuiltInConverterShowcase.serviceTags).to.deep.equal(['frontend', 'backend', 'api', 'database']);

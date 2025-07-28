@@ -1,6 +1,6 @@
-import type { EnvaptConverter } from './Types';
+import type { EnvaptConverter, ArrayConverter, BuiltInConverter } from './Types';
 
-const BuiltInConvertersArray = [
+export const BuiltInConvertersArray = [
   'string',
   'number',
   'boolean',
@@ -9,19 +9,11 @@ const BuiltInConvertersArray = [
   'integer',
   'float',
   'json',
-  'array:comma',
-  'array:space',
-  'array:commaspace',
+  'array',
   'url',
   'regexp',
   'date'
 ] as const;
-
-/**
- * Built-in converter types for common environment variable patterns
- * @public
- */
-export type BuiltInConverter = (typeof BuiltInConvertersArray)[number];
 
 /**
  * Built-in converter implementations
@@ -93,26 +85,6 @@ export class BuiltInConverters {
       .filter((item) => item.length > 0);
   }
 
-  static arrayComma(raw: string | undefined, fallback?: string[]): string[] | undefined {
-    return BuiltInConverters.array(raw, fallback, ',');
-  }
-
-  static arraySemicolon(raw: string | undefined, fallback?: string[]): string[] | undefined {
-    return BuiltInConverters.array(raw, fallback, ';');
-  }
-
-  static arrayPipe(raw: string | undefined, fallback?: string[]): string[] | undefined {
-    return BuiltInConverters.array(raw, fallback, '|');
-  }
-
-  static arraySpace(raw: string | undefined, fallback?: string[]): string[] | undefined {
-    return BuiltInConverters.array(raw, fallback, ' ');
-  }
-
-  static arrayCommaSpace(raw: string | undefined, fallback?: string[]): string[] | undefined {
-    return BuiltInConverters.array(raw, fallback, ', ');
-  }
-
   static url(raw: string | undefined, fallback?: URL): URL | undefined {
     if (raw === undefined) return fallback;
     try {
@@ -151,6 +123,51 @@ export class BuiltInConverters {
   }
 
   /**
+   * Process array with custom converter config
+   */
+  static processArrayConverter(
+    raw: string | undefined,
+    fallback: unknown,
+    config: ArrayConverter
+  ): unknown[] | undefined {
+    // if (raw === undefined) return fallback;
+    if (raw === undefined) {
+      if (Array.isArray(fallback)) return fallback;
+      // TODO: Add logged warning here
+      return undefined;
+    }
+
+    if (raw.trim() === '') return [];
+
+    const items = raw
+      .split(config.delimiter)
+      .map((item) => String(item).trim())
+      .filter(Boolean);
+
+    // If no type specified, return as string array
+    if (!config.type) return items;
+
+    // Convert each item using the specified type
+    const converter = BuiltInConverters.getConverter(config.type);
+    return items.map((item) => {
+      const converted = converter(item, undefined);
+      return converted !== undefined ? converted : item;
+    });
+  }
+
+  /**
+   * Check if a value is an ArrayConverter configuration object
+   */
+  static isArrayConverter(value: unknown): value is ArrayConverter {
+    return (
+      typeof value === 'object' &&
+      value !== null &&
+      'delimiter' in value &&
+      typeof (value as ArrayConverter).delimiter === 'string'
+    );
+  }
+
+  /**
    * Get the converter function for a built-in converter type
    */
 
@@ -172,12 +189,8 @@ export class BuiltInConverters {
         return BuiltInConverters.float;
       case 'json':
         return BuiltInConverters.json;
-      case 'array:comma':
-        return BuiltInConverters.arrayComma;
-      case 'array:space':
-        return BuiltInConverters.arraySpace;
-      case 'array:commaspace':
-        return BuiltInConverters.arrayCommaSpace;
+      case 'array':
+        return BuiltInConverters.array;
       case 'url':
         return BuiltInConverters.url;
       case 'regexp':

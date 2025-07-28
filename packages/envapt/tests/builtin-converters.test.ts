@@ -24,6 +24,12 @@ describe('Built-in Converters', () => {
 
       @Envapt('TEST_FLOAT', { converter: 'float', fallback: 0.0 })
       static readonly testFloat: number;
+
+      @Envapt('TEST_BIGINT', { converter: 'bigint', fallback: 0n })
+      static readonly testBigint: bigint;
+
+      @Envapt('TEST_SYMBOL', { converter: 'symbol', fallback: Symbol('default') })
+      static readonly testSymbol: symbol;
     }
 
     it('should handle string converter', () => {
@@ -45,28 +51,50 @@ describe('Built-in Converters', () => {
     it('should handle float converter', () => {
       expect(BasicTypeTest.testFloat).to.equal(3.14159);
     });
+
+    it('should handle bigint converter', () => {
+      expect(BasicTypeTest.testBigint).to.equal(123456789012345678901234567890n);
+    });
+
+    it('should handle symbol converter', () => {
+      expect(BasicTypeTest.testSymbol).to.be.a('symbol');
+      expect(BasicTypeTest.testSymbol.description).to.equal('mysymbol');
+    });
   });
 
   describe('array converters', () => {
     class ArrayTest {
-      @Envapt('TEST_ARRAY_COMMA', [], 'array:comma')
+      @Envapt('TEST_ARRAY_COMMA', { converter: 'array', fallback: [] })
+      static readonly arrayDefault: string[];
+
+      @Envapt('TEST_ARRAY_COMMA', { converter: { delimiter: ',' }, fallback: [] })
       static readonly arrayComma: string[];
 
-      @Envapt('TEST_ARRAY_SPACE', [], 'array:space')
+      @Envapt('TEST_ARRAY_SPACE', { converter: { delimiter: ' ' }, fallback: [] })
       static readonly arraySpace: string[];
 
-      @Envapt('TEST_ARRAY_EMPTY', ['default'], 'array:comma')
+      @Envapt('TEST_ARRAY_EMPTY', { converter: 'array', fallback: ['default'] })
       static readonly arrayEmpty: string[];
 
-      @Envapt('TEST_ARRAY_WHITESPACE_ONLY', [], 'array:comma')
+      @Envapt('TEST_ARRAY_WHITESPACE_ONLY', { converter: 'array', fallback: [] })
       static readonly arrayWhitespaceOnly: string[];
 
-      @Envapt('TEST_ARRAY_COMMA_SPACE', [], 'array:commaspace')
+      @Envapt('TEST_ARRAY_COMMA_SPACE', { converter: { delimiter: ', ' }, fallback: [] })
       static readonly arrayCommaSpace: string[];
 
-      @Envapt('NONEXISTENT_ARRAY', ['fallback1', 'fallback2'], 'array:comma')
+      @Envapt('NONEXISTENT_ARRAY', { converter: 'array', fallback: ['fallback1', 'fallback2'] })
       static readonly nonexistentArray: string[];
+
+      @Envapt('TEST_ARRAY_NUMBERS', { converter: { delimiter: ',', type: 'number' }, fallback: [] })
+      static readonly arrayNumbers: number[];
+
+      @Envapt('TEST_ARRAY_BOOLEANS', { converter: { delimiter: ',', type: 'boolean' }, fallback: [] })
+      static readonly arrayBooleans: boolean[];
     }
+
+    it('should parse arrays with default delimiter (comma)', () => {
+      expect(ArrayTest.arrayDefault).to.deep.equal(['item1', 'item2', 'item3']);
+    });
 
     it('should parse comma-separated arrays', () => {
       expect(ArrayTest.arrayComma).to.deep.equal(['item1', 'item2', 'item3']);
@@ -90,6 +118,14 @@ describe('Built-in Converters', () => {
 
     it('should use fallback for nonexistent arrays', () => {
       expect(ArrayTest.nonexistentArray).to.deep.equal(['fallback1', 'fallback2']);
+    });
+
+    it('should convert array elements to numbers', () => {
+      expect(ArrayTest.arrayNumbers).to.deep.equal([1, 2, 3]);
+    });
+
+    it('should convert array elements to booleans', () => {
+      expect(ArrayTest.arrayBooleans).to.deep.equal([true, false, true]);
     });
   });
 
@@ -406,14 +442,21 @@ describe('Built-in Converters', () => {
       @Envapt('TEST_BOOLEAN_FALSE_TEMPLATE', { converter: 'boolean', fallback: true })
       static readonly booleanFalseTemplate: boolean;
 
+      // BigInt and Symbol converters with templates
+      @Envapt('TEST_BIGINT_TEMPLATE', { converter: 'bigint', fallback: 0n })
+      static readonly bigintTemplate: bigint;
+
+      @Envapt('TEST_SYMBOL_TEMPLATE', { converter: 'symbol', fallback: Symbol('default') })
+      static readonly symbolTemplate: symbol;
+
       // Array converters with templates
-      @Envapt('TEST_ARRAY_COMMA_TEMPLATE', { converter: 'array:comma', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA_TEMPLATE', { converter: 'array', fallback: [] })
       static readonly arrayCommaTemplate: string[];
 
-      @Envapt('TEST_ARRAY_SPACE_TEMPLATE', { converter: 'array:space', fallback: [] })
+      @Envapt('TEST_ARRAY_SPACE_TEMPLATE', { converter: { delimiter: ' ' }, fallback: [] })
       static readonly arraySpaceTemplate: string[];
 
-      @Envapt('TEST_ARRAY_COMMA_SPACE_TEMPLATE', { converter: 'array:commaspace', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA_SPACE_TEMPLATE', { converter: { delimiter: ', ' }, fallback: [] })
       static readonly arrayCommaSpaceTemplate: string[];
 
       // JSON converter with templates
@@ -461,6 +504,15 @@ describe('Built-in Converters', () => {
 
     it('should resolve templates in boolean converter - false', () => {
       expect(TemplateTest.booleanFalseTemplate).to.be.false;
+    });
+
+    it('should resolve templates in bigint converter', () => {
+      expect(TemplateTest.bigintTemplate).to.equal(42n);
+    });
+
+    it('should resolve templates in symbol converter', () => {
+      expect(TemplateTest.symbolTemplate).to.be.a('symbol');
+      expect(TemplateTest.symbolTemplate.description).to.equal('hello');
     });
 
     it('should resolve templates in comma array converter', () => {

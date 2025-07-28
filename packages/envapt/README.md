@@ -163,20 +163,27 @@ class Config extends Envapter {
   static readonly enabled: boolean;
 
   // Array converters with different delimiters
-  @Envapt('TAGS', { converter: 'array:comma', fallback: [] })
+  @Envapt('TAGS', { converter: 'array', fallback: [] })
   static readonly tags: string[];
 
-  // @Envapt('ENDPOINTS', { converter: 'array:semicolon', fallback: [] })
-  // static readonly endpoints: string[];
+  @Envapt('ENDPOINTS', { converter: { delimiter: ';' }, fallback: [] })
+  static readonly endpoints: string[];
 
-  // @Envapt('CORS_ORIGINS', { converter: 'array:pipe', fallback: [] })
-  // static readonly corsOrigins: string[];
+  @Envapt('CORS_ORIGINS', { converter: { delimiter: '|' }, fallback: [] })
+  static readonly corsOrigins: string[];
 
-  @Envapt('SERVICES', { converter: 'array:space', fallback: [] })
+  @Envapt('SERVICES', { converter: { delimiter: ' ' }, fallback: [] })
   static readonly services: string[];
 
-  @Envapt('METHODS', { converter: 'array:comma-space', fallback: [] })
-  static readonly services: string[];
+  @Envapt('METHODS', { converter: { delimiter: ', ' }, fallback: [] })
+  static readonly methods: string[];
+
+  // Array with type conversion
+  @Envapt('PORTS', { converter: { delimiter: ',', type: 'number' }, fallback: [] })
+  static readonly ports: number[];
+
+  @Envapt('FEATURE_FLAGS', { converter: { delimiter: ',', type: 'boolean' }, fallback: [] })
+  static readonly featureFlags: boolean[];
 
   // JSON converter (safely parses JSON)
   @Envapt('CONFIG', { converter: 'json', fallback: {} })
@@ -193,6 +200,14 @@ class Config extends Envapter {
   // Date converter (supports ISO strings and timestamps)
   @Envapt('CREATED_AT', { converter: 'date', fallback: new Date() })
   static readonly createdAt: Date;
+
+  // BigInt converter (for large integers)
+  @Envapt('LARGE_NUMBER', { converter: 'bigint', fallback: 0n })
+  static readonly largeNumber: bigint;
+
+  // Symbol converter (creates symbols from strings)
+  @Envapt('UNIQUE_KEY', { converter: 'symbol', fallback: Symbol('default') })
+  static readonly uniqueKey: symbol;
 }
 ```
 
@@ -203,14 +218,45 @@ class Config extends Envapter {
 - `'integer'` - Integer values only
 - `'float'` - Float values only
 - `'boolean'` - Boolean values (true/false, yes/no, on/off, 1/0)
+- `'bigint'` - BigInt values for large integers
+- `'symbol'` - Symbol values (creates symbols from string descriptions)
 - `'json'` - JSON objects/arrays (safe parsing with fallback)
-- `'array'` - Comma-separated arrays (default delimiter)
-- `'array:comma'` - Comma-separated arrays (`,`)
-- `'array:space'` - Space-separated arrays (` `)
-- `'array:comma-space'` - Comma-space separated arrays (`, `)
+- `'array'` - Comma-separated string arrays
 - `'url'` - URL objects
 - `'regexp'` - Regular expressions (supports `/pattern/flags` syntax)
 - `'date'` - Date objects (supports ISO strings and timestamps)
+
+#### Custom Array Converters
+
+For more control over array parsing, use the ArrayConverter object syntax:\
+
+```ts
+class Config extends Envapter {
+  // Basic array (comma-separated strings)
+  @Envapt('TAGS', { converter: 'array', fallback: [] })
+  static readonly tags: string[];
+
+  // Custom delimiter
+  @Envapt('SERVICES', { converter: { delimiter: '|' }, fallback: [] })
+  static readonly services: string[];
+
+  // Custom delimiter with type conversion
+  @Envapt('PORTS', { converter: { delimiter: ',', type: 'number' }, fallback: [] })
+  static readonly ports: number[];
+
+  @Envapt('FEATURE_FLAGS', { converter: { delimiter: ';', type: 'boolean' }, fallback: [] })
+  static readonly featureFlags: boolean[];
+
+  // Multiple custom delimiters
+  @Envapt('ENDPOINTS', { converter: { delimiter: ' | ' }, fallback: [] })
+  static readonly endpoints: string[];
+}
+```
+
+**ArrayConverter Interface:**
+
+- `delimiter: string` - The string used to split array elements
+- `type?: BuiltInConverter` - Optional type to convert each element to (excludes 'array', 'json', and 'regexp')
 
 #### Custom Converters
 
@@ -218,12 +264,6 @@ Transform environment values to any type:
 
 ```ts
 class Config extends Envapter {
-  @Envapt('JSON_CONFIG', {
-    fallback: { timeout: 5000 },
-    converter: (raw, fallback) => (raw ? JSON.parse(raw) : fallback)
-  })
-  static readonly config: { timeout: number };
-
   @Envapt('TAGS', {
     fallback: new Set(['default']),
     converter: (raw, fallback) => {

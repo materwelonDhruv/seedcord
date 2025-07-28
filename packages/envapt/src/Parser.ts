@@ -1,7 +1,6 @@
 import { BuiltInConverters } from './BuiltInConverters';
 
-import type { BuiltInConverter } from './BuiltInConverters';
-import type { EnvaptConverter, ConverterFunction } from './Types';
+import type { EnvaptConverter, ConverterFunction, BuiltInConverter } from './Types';
 
 /**
  * @internal
@@ -65,6 +64,15 @@ export class Parser {
     else if (resolvedConverter === String) resolvedConverter = 'string';
     else if (resolvedConverter === BigInt) resolvedConverter = 'bigint';
     else if (resolvedConverter === Symbol) resolvedConverter = 'symbol';
+
+    // Check if it's an ArrayConverter object
+    if (BuiltInConverters.isArrayConverter(resolvedConverter)) {
+      const parsed = this.envService.get(key, undefined);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+      if (parsed === undefined) return hasFallback ? fallback : null;
+
+      return BuiltInConverters.processArrayConverter(parsed, fallback, resolvedConverter) as FallbackType;
+    }
 
     // Check if it's a built-in converter
     if (BuiltInConverters.isBuiltInConverter(resolvedConverter as EnvaptConverter<unknown>)) {
