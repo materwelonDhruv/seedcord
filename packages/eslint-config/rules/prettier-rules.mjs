@@ -19,7 +19,7 @@ export const PRETTIER_RULES = {
     'error',
     PRETTIER_CONFIG,
     {
-      usePrettierrc: true,
+      usePrettierrc: false,
       fileInfoOptions: {
         withNodeModules: false
       }

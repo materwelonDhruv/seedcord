@@ -1,40 +1,52 @@
-export type AtLeastOne<T, U = { [K in keyof T]: Pick<T, K> }> = Partial<T> & U[keyof U];
+export type AtLeastOne<Props, SingleKeyObjectMap = { [K in keyof Props]: Pick<Props, K> }> = Partial<Props> &
+  SingleKeyObjectMap[keyof SingleKeyObjectMap];
 
-export type Nullish<T = null> = T extends null ? null | undefined : T | null | undefined;
+export type Nullish<Value = null> = Value extends null ? null | undefined : Value | null | undefined;
 
-export type NumberRange<L extends number, U extends number, Acc extends unknown[] = []> = Acc['length'] extends U
-  ? [...Acc, Acc['length']][number]
-  : Acc['length'] extends L
-    ? NumberRange<number, U, [...Acc, Acc['length']]>
-    : NumberRange<L, U, [...Acc, L]>;
+export type NumberRange<
+  Lower extends number,
+  Upper extends number,
+  Accumulator extends unknown[] = []
+> = Accumulator['length'] extends Upper
+  ? [...Accumulator, Accumulator['length']][number]
+  : Accumulator['length'] extends Lower
+    ? NumberRange<number, Upper, [...Accumulator, Accumulator['length']]>
+    : NumberRange<Lower, Upper, [...Accumulator, Lower]>;
 
-export type TupleOf<T, N extends number, R extends unknown[] = []> = R['length'] extends N
-  ? R
-  : TupleOf<T, N, [...R, T]>;
+export type TupleOf<Element, Length extends number, Result extends unknown[] = []> = Result['length'] extends Length
+  ? Result
+  : TupleOf<Element, Length, [...Result, Element]>;
 
-export type Without<T, U> = Partial<Record<Exclude<keyof T, keyof U>, never>>;
+export type Without<Source, Excluded> = Partial<Record<Exclude<keyof Source, keyof Excluded>, never>>;
 
-export type XOR<T, U> = T | U extends object ? (Without<T, U> & U) | (Without<U, T> & T) : T | U;
+export type XOR<ThisObj, OtherObj> = ThisObj | OtherObj extends object
+  ? (Without<ThisObj, OtherObj> & OtherObj) | (Without<OtherObj, ThisObj> & ThisObj)
+  : ThisObj | OtherObj;
 
-export type TypedOmit<T, K extends keyof T> = Omit<T, K>;
+export type TypedOmit<TargetObj, ObjKeys extends keyof TargetObj> = Omit<TargetObj, ObjKeys>;
 
-export type TypedExclude<T, U extends T> = Exclude<T, U>;
+export type TypedExclude<Target, UnionKeys extends Target> = Exclude<Target, UnionKeys>;
 
 export type ConstructorFunction = new (...args: any[]) => unknown;
 
-export type TypedConstructor<T> = T extends new (...args: infer A) => infer R
+export type TypedConstructor<ConstructorType> = ConstructorType extends new (...args: infer A) => infer R
   ? new (...args: A) => R
-  : T extends abstract new (...args: infer A) => infer R
+  : ConstructorType extends abstract new (...args: infer A) => infer R
     ? new (...args: A) => R
     : never;
 
-type UnionToIntersection<U> = (U extends unknown ? (x: U) => void : never) extends (x: infer I) => void ? I : never;
+type UnionToIntersection<UnionType> = (UnionType extends unknown ? (x: UnionType) => void : never) extends (
+  x: infer I
+) => void
+  ? I
+  : never;
 
-type LastOf<U> = UnionToIntersection<U extends unknown ? (x: U) => 0 : never> extends (x: infer L) => 0 ? L : never;
+type LastOf<UnionType> =
+  UnionToIntersection<UnionType extends unknown ? (x: UnionType) => 0 : never> extends (x: infer L) => 0 ? L : never;
 
-export type UnionToTuple<U, T extends unknown[] = []> = [U] extends [never]
-  ? T
-  : UnionToTuple<Exclude<U, LastOf<U>>, [LastOf<U>, ...T]>;
+export type UnionToTuple<UnionType, TupleArray extends unknown[] = []> = [UnionType] extends [never]
+  ? TupleArray
+  : UnionToTuple<Exclude<UnionType, LastOf<UnionType>>, [LastOf<UnionType>, ...TupleArray]>;
 
 export type BotPermissionScope = 'manage' | 'others' | 'all' | bigint[] | 'embed';
 
@@ -42,4 +54,4 @@ export interface IDocument {
   _id: string;
 }
 
-export type TypeOfIDocument<T extends IDocument = IDocument> = T;
+export type TypeOfIDocument<Doc extends IDocument = IDocument> = Doc;

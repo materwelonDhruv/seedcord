@@ -5,7 +5,7 @@ import type { ServiceKeys } from '../types/Services';
 export const ServiceMetadataKey = Symbol('db:serviceKey');
 
 export function DatabaseService<TService extends ServiceKeys>(key: TService) {
-  return <T extends ConstructorFunction & { prototype: BaseService }>(ctor: T): void => {
+  return <DatabaseCtor extends ConstructorFunction & { prototype: BaseService }>(ctor: DatabaseCtor): void => {
     Reflect.defineMetadata(ServiceMetadataKey, key, ctor);
   };
 }

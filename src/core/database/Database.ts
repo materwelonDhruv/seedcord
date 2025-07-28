@@ -88,7 +88,7 @@ export class Database {
     );
   }
 
-  _register<K extends keyof Services>(key: K, instance: Services[K]): void {
+  _register<SKey extends keyof Services>(key: SKey, instance: Services[SKey]): void {
     this.services[key] = instance;
   }
 }

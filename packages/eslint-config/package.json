@@ -24,10 +24,6 @@
     },
     "./rules/prettier": {
       "import": "./rules/prettier-rules.mjs"
-    },
-    "./prettier-config": {
-      "import": "./prettier.mjs",
-      "types": "./prettier.d.mts"
     }
   },
   "files": [

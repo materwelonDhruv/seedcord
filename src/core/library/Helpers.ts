@@ -219,10 +219,10 @@ export async function traverseDirectory(
  *   throwCustomError(e, "Something went wrong", MyCustomError);
  * }
  */
-export function throwCustomError<T extends CustomErrorConstructor>(
+export function throwCustomError<Ctor extends CustomErrorConstructor>(
   error: unknown,
   message: string,
-  customError: T
+  customError: Ctor
 ): never {
   const uuid = crypto.randomUUID();
   Logger.Error('Throwing Custom Error', (error as Error).name);
@@ -266,9 +266,9 @@ export function prettify(key: string): string {
  * This function creates a new array with the same elements in a random order,
  * without modifying the original array.
  *
- * @template T - The type of elements in the array
- * @param {T[]} items - The array to shuffle
- * @returns {T[]} A new array with the same elements in a random order
+ * @template TArray - The type of elements in the array
+ * @param {TArray[]} items - The array to shuffle
+ * @returns {TArray[]} A new array with the same elements in a random order
  *
  * @example
  * const numbers = [1, 2, 3, 4, 5];
@@ -276,7 +276,7 @@ export function prettify(key: string): string {
  * // shuffled might be [3, 1, 5, 2, 4]
  * // numbers is still [1, 2, 3, 4, 5]
  */
-export function fyShuffle<T>(items: T[]): T[] {
+export function fyShuffle<TArray>(items: TArray[]): TArray[] {
   const array = items.slice();
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

@@ -58,19 +58,19 @@ const ModalTypes = {
 };
 
 type BuilderType = keyof typeof BuilderTypes;
-type InstantiatedBuilder<B extends BuilderType> = InstanceType<(typeof BuilderTypes)[B]>;
+type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
 
 type ActionRowComponentType = keyof typeof RowTypes;
-type InstantiatedActionRow<A extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[A]>;
+type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
 
 type ModalFieldTypes = keyof typeof ModalTypes;
-type InstantiatedModalField<M extends ModalFieldTypes> = InstanceType<(typeof ModalTypes)[M]>;
+type InstantiatedModalField<ModalKey extends ModalFieldTypes> = InstanceType<(typeof ModalTypes)[ModalKey]>;
 
-abstract class BaseComponent<C> {
-  private readonly _component: C;
+abstract class BaseComponent<TComponent> {
+  private readonly _component: TComponent;
 
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  protected constructor(ComponentClass: new () => C) {
+  protected constructor(ComponentClass: new () => TComponent) {
     this._component = new ComponentClass();
   }
 
@@ -87,15 +87,17 @@ abstract class BaseComponent<C> {
    * @note Use this for configuring the component using its instance setters.
    * @usage `this.instance.someMethod()`
    */
-  protected get instance(): C {
+  protected get instance(): TComponent {
     return this._component;
   }
 }
 
-export abstract class BuilderComponent<C extends BuilderType> extends BaseComponent<InstantiatedBuilder<C>> {
-  protected constructor(type: C) {
+export abstract class BuilderComponent<BuilderKey extends BuilderType> extends BaseComponent<
+  InstantiatedBuilder<BuilderKey>
+> {
+  protected constructor(type: BuilderKey) {
     const ComponentClass = BuilderTypes[type] as unknown;
-    super(ComponentClass as new () => InstantiatedBuilder<C>);
+    super(ComponentClass as new () => InstantiatedBuilder<BuilderKey>);
 
     // Override in builders
     if (this.instance instanceof EmbedBuilder) {
@@ -108,40 +110,44 @@ export abstract class BuilderComponent<C extends BuilderType> extends BaseCompon
     }
   }
 
-  get component(): InstantiatedBuilder<C> {
+  get component(): InstantiatedBuilder<BuilderKey> {
     // TODO: Add checks for specific builders that make sure mandatory fields are set
 
     return this.instance;
   }
 }
 
-export abstract class RowComponent<C extends ActionRowComponentType> extends BaseComponent<InstantiatedActionRow<C>> {
-  protected constructor(type: C) {
+export abstract class RowComponent<RowKey extends ActionRowComponentType> extends BaseComponent<
+  InstantiatedActionRow<RowKey>
+> {
+  protected constructor(type: RowKey) {
     const ComponentClass = RowTypes[type] as unknown;
-    super(ComponentClass as new () => InstantiatedActionRow<C>);
+    super(ComponentClass as new () => InstantiatedActionRow<RowKey>);
   }
 
-  get component(): InstantiatedActionRow<C> {
+  get component(): InstantiatedActionRow<RowKey> {
     return this.instance;
   }
 }
 
-class ModalRow<M extends ModalFieldTypes> extends RowComponent<'modal'> {
-  constructor(component: InstantiatedModalField<M>) {
+class ModalRow<ModalKey extends ModalFieldTypes> extends RowComponent<'modal'> {
+  constructor(component: InstantiatedModalField<ModalKey>) {
     super('modal');
 
     this.instance.addComponents(component);
   }
 }
 
-export abstract class ModalComponent<M extends ModalFieldTypes> extends BaseComponent<InstantiatedModalField<M>> {
-  protected constructor(type: M) {
+export abstract class ModalComponent<ModalKey extends ModalFieldTypes> extends BaseComponent<
+  InstantiatedModalField<ModalKey>
+> {
+  protected constructor(type: ModalKey) {
     const ComponentClass = ModalTypes[type] as unknown;
-    super(ComponentClass as new () => InstantiatedModalField<M>);
+    super(ComponentClass as new () => InstantiatedModalField<ModalKey>);
   }
 
   get component(): InstantiatedActionRow<'modal'> {
-    return new ModalRow<M>(this.instance).component;
+    return new ModalRow<ModalKey>(this.instance).component;
   }
 }
 

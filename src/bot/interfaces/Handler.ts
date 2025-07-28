@@ -34,14 +34,14 @@ export interface WithChecks {
 
 interface HandlerWithChecks extends WithChecks, Handler {}
 
-abstract class BaseHandler<T extends ValidEventTypes> implements Handler {
+abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handler {
   protected checkable = false;
   protected break = false;
   protected errored = false;
-  protected event: T;
+  protected event: ValidEvent;
 
   protected constructor(
-    event: T,
+    event: ValidEvent,
     public core: CoreBot
   ) {
     this.event = event;
@@ -65,7 +65,7 @@ abstract class BaseHandler<T extends ValidEventTypes> implements Handler {
     return this.break;
   }
 
-  public getEvent(): T {
+  public getEvent(): ValidEvent {
     return this.event;
   }
 }
@@ -74,16 +74,22 @@ abstract class BaseHandler<T extends ValidEventTypes> implements Handler {
  * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
  * This class implements ICheckable when the decorator Checkable is used on the class.
  * @implements Handler
- * @template T - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
+ * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
  */
-export abstract class InteractionHandler<T extends Repliables> extends BaseHandler<T> implements Handler {
-  constructor(event: T, core: CoreBot) {
+export abstract class InteractionHandler<Repliable extends Repliables>
+  extends BaseHandler<Repliable>
+  implements Handler
+{
+  constructor(event: Repliable, core: CoreBot) {
     super(event, core);
   }
 }
 
-export abstract class InteractionMiddleware<T extends Repliables> extends BaseHandler<T> implements Handler {
-  constructor(event: T, core: CoreBot) {
+export abstract class InteractionMiddleware<Repliable extends Repliables>
+  extends BaseHandler<Repliable>
+  implements Handler
+{
+  constructor(event: Repliable, core: CoreBot) {
     super(event, core);
   }
 }
@@ -92,13 +98,13 @@ export abstract class InteractionMiddleware<T extends Repliables> extends BaseHa
  * All non-interaction events with the bot including Handlers and what those handlers do or pass to other services should extend this class.
  * This class implements ICheckable when the decorator Checkable is used on the class.
  * @implements Handler
- * @template T - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
+ * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
  */
-export abstract class EventHandler<T extends keyof ClientEvents>
-  extends BaseHandler<ClientEvents[T]>
+export abstract class EventHandler<Repliable extends keyof ClientEvents>
+  extends BaseHandler<ClientEvents[Repliable]>
   implements Handler
 {
-  constructor(event: ClientEvents[T], core: CoreBot) {
+  constructor(event: ClientEvents[Repliable], core: CoreBot) {
     super(event, core);
   }
 }

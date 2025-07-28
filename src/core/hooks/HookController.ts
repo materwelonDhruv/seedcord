@@ -84,7 +84,7 @@ export class HookController {
     }
   }
 
-  public emit<E extends HookKeys>(event: E, data: AllHooks[E]): boolean {
+  public emit<KeyOfHooks extends HookKeys>(event: KeyOfHooks, data: AllHooks[KeyOfHooks]): boolean {
     return this.emitter.emit(event, data);
   }
 }

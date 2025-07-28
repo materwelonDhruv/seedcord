@@ -95,9 +95,9 @@ export class InteractionController {
     });
   }
 
-  public async processInteraction<T extends Interaction>(
-    interaction: T,
-    extractKey: (i: T) => string,
+  public async processInteraction<TInteraction extends Interaction>(
+    interaction: TInteraction,
+    extractKey: (i: TInteraction) => string,
     getHandler: (key: string) => HandlerConstructor | undefined
   ): Promise<void> {
     const key = extractKey(interaction);
