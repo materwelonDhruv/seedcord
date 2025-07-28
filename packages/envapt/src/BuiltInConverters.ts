@@ -264,7 +264,7 @@ export class BuiltInConverters {
     if (!BuiltInConvertersArray.includes(value as BuiltInConverter)) {
       throw new EnvaptError(
         EnvaptErrorCodes.InvalidBuiltInConverter,
-        `"${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(', ')}`
+        `"${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(',')}`
       );
     }
 

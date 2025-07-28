@@ -7,14 +7,19 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "require": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      },
-      "import": {
-        "types": "./dist/index.d.ts",
-        "default": "./dist/index.js"
-      }
+      "import": "./dist/index.js",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./envapter": {
+      "import": "./dist/Envapter.js",
+      "require": "./dist/Envapter.js",
+      "types": "./dist/Envapter.d.ts"
+    },
+    "./envapt": {
+      "import": "./dist/Envapt.js",
+      "require": "./dist/Envapt.js",
+      "types": "./dist/Envapt.d.ts"
     }
   },
   "files": [

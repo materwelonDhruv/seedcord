@@ -129,7 +129,8 @@ export function Envapt<FallbackType = unknown>(
     hasFallback = arguments.length > 1;
   }
 
-  // console.log(`Registering Envapt for key "${key}" with fallback: ${fallback}, converter: ${actualConverter}`);
+  // eslint-disable-next-line no-console
+  console.log(`Registering Envapt for key "${key}" with fallback: ${fallback}, converter: ${actualConverter}`);
 
   return createPropertyDecorator(key, fallback, actualConverter, hasFallback);
 }
