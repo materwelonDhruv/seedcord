@@ -44,9 +44,9 @@
   "author": "Dhruv <materwelondhruv@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@seedcord/eslint-config": "workspace:^",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@seedcord/eslint-config": "workspace:^",
     "@types/chai": "^5.2.2",
     "@types/eslint-plugin-security": "^3.0.0",
     "@types/mocha": "^10.0.10",

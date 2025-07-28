@@ -27,16 +27,6 @@ export class Globals extends Envapter {
   @Envapt('SHUTDOWN_IS_ENABLED', { fallback: false })
   public static readonly shutdownIsEnabled: boolean;
 
-  // Incorrect converter usage
-  @Envapt('INCORRECT_CONVERTER_USAGE', {
-    fallback: [1, 2],
-    converter: {
-      delimiter: ',',
-      type: 'asdasdf'
-    }
-  })
-  public static readonly incorrectConverterUsage: string;
-
   // Variables
   public static readonly botColor: ColorResolvable = this.isProduction ? '#dcc8f0' : '#fe565a';
 }

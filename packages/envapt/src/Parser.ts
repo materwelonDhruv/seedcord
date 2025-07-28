@@ -1,6 +1,7 @@
 import { BuiltInConverters } from './BuiltInConverters';
+import { Validator } from './Validators';
 
-import type { EnvaptConverter, ConverterFunction } from './Types';
+import type { EnvaptConverter } from './Types';
 
 /**
  * @internal
@@ -66,27 +67,30 @@ export class Parser {
     else if (resolvedConverter === Symbol) resolvedConverter = 'symbol';
 
     // Check if it's an ArrayConverter object
-    if (BuiltInConverters.isArrayConverter(resolvedConverter)) {
+    if (Validator.isArrayConverter(resolvedConverter)) {
       // Validate the ArrayConverter configuration at runtime
-      const validatedConfig = BuiltInConverters.validateArrayConverter(resolvedConverter);
+      Validator.arrayConverter(resolvedConverter);
+
       const parsed = this.envService.get(key, undefined);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (parsed === undefined) return hasFallback ? fallback : null;
 
-      return BuiltInConverters.processArrayConverter(parsed, fallback, validatedConfig) as FallbackType;
+      return BuiltInConverters.processArrayConverter(parsed, fallback, resolvedConverter) as FallbackType;
     }
 
     // Check if it's a built-in converter
-    if (BuiltInConverters.isBuiltInConverter(resolvedConverter as EnvaptConverter<unknown>)) {
+    if (Validator.isBuiltInConverter(resolvedConverter as EnvaptConverter<unknown>)) {
       // Validate the built-in converter at runtime
-      const validatedConverter = BuiltInConverters.validateBuiltInConverter(resolvedConverter);
+      Validator.builtInConverter(resolvedConverter);
       const parsed = this.envService.get(key, undefined);
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (parsed === undefined) return hasFallback ? fallback : null;
 
-      const converterFn = BuiltInConverters.getConverter(validatedConverter);
+      const converterFn = BuiltInConverters.getConverter(resolvedConverter);
       return converterFn(parsed, fallback);
     }
+
+    Validator.customConvertor(resolvedConverter);
 
     // Custom converter function
     const raw = this.envService.get(key, undefined);
@@ -96,7 +100,7 @@ export class Parser {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (raw === undefined) return hasFallback ? fallback : null;
 
-    return (resolvedConverter as ConverterFunction<FallbackType>)(raw, fallback);
+    return resolvedConverter(raw, fallback);
   }
 
   private resolveConverter<FallbackType>(

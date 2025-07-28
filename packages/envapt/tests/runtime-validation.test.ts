@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 
-import { BuiltInConverters } from '../src/BuiltInConverters';
 import { EnvaptError, EnvaptErrorCodes } from '../src/Error';
+import { Validator } from '../src/Validators';
 
 describe('Runtime Validation', () => {
   describe('Built-in converter validation', () => {
@@ -9,15 +9,15 @@ describe('Runtime Validation', () => {
       const validTypes = ['string', 'number', 'boolean', 'bigint', 'symbol', 'array', 'json', 'url', 'regexp', 'date'];
 
       for (const type of validTypes) {
-        const result = BuiltInConverters.validateBuiltInConverter(type);
-        expect(result).to.equal(type);
+        const testFunction = (): void => Validator.builtInConverter(type);
+        expect(testFunction).to.not.throw();
       }
     });
 
     it('should throw for invalid built-in converter types', () => {
       const invalidTypes = ['invalid', 'str', 'num'];
 
-      const testFunction = (type: string) => () => BuiltInConverters.validateBuiltInConverter(type);
+      const testFunction = (type: string) => () => Validator.builtInConverter(type);
 
       invalidTypes.forEach((type) => {
         expect(testFunction(type))
@@ -33,7 +33,7 @@ describe('Runtime Validation', () => {
         { value: null, expectedCode: EnvaptErrorCodes.InvalidConverterType }
       ];
 
-      const testFunction = (value: unknown) => () => BuiltInConverters.validateBuiltInConverter(value);
+      const testFunction = (value: unknown) => () => Validator.builtInConverter(value);
 
       nonStringTypes.forEach(({ value, expectedCode }) => {
         expect(testFunction(value)).to.throw(EnvaptError).with.property('code', expectedCode);
@@ -51,15 +51,15 @@ describe('Runtime Validation', () => {
       ];
 
       for (const config of validConfigs) {
-        const result = BuiltInConverters.validateArrayConverter(config);
-        expect(result).to.deep.equal(config);
+        const testFunction = (): void => Validator.arrayConverter(config);
+        expect(testFunction).to.not.throw();
       }
     });
 
     it('should throw for invalid ArrayConverter configurations', () => {
       const invalidConfigs = [{}, 'string', null];
 
-      const testFunction = (config: unknown) => () => BuiltInConverters.validateArrayConverter(config);
+      const testFunction = (config: unknown) => () => Validator.arrayConverter(config);
 
       invalidConfigs.forEach((config) => {
         expect(testFunction(config)).to.throw(EnvaptError).with.property('code', EnvaptErrorCodes.MissingDelimiter);
@@ -69,7 +69,7 @@ describe('Runtime Validation', () => {
     it('should throw for invalid ArrayConverter types', () => {
       const invalidTypes = ['array', 'json', 'regexp', 'invalid'];
 
-      const testFunction = (type: string) => () => BuiltInConverters.validateArrayConverter({ delimiter: ',', type });
+      const testFunction = (type: string) => () => Validator.arrayConverter({ delimiter: ',', type });
 
       invalidTypes.forEach((type) => {
         expect(testFunction(type))
@@ -82,7 +82,7 @@ describe('Runtime Validation', () => {
       const validTypes = ['string', 'number', 'boolean', 'integer', 'bigint', 'symbol', 'float', 'url', 'date'];
 
       for (const type of validTypes) {
-        expect(BuiltInConverters.isValidArrayConverterType(type)).to.be.true;
+        expect(Validator.isValidArrayConverterType(type)).to.be.true;
       }
     });
 
@@ -90,7 +90,7 @@ describe('Runtime Validation', () => {
       const invalidTypes = ['array', 'json', 'regexp', 'invalid', 123, {}, null];
 
       for (const type of invalidTypes) {
-        expect(BuiltInConverters.isValidArrayConverterType(type)).to.be.false;
+        expect(Validator.isValidArrayConverterType(type)).to.be.false;
       }
     });
   });

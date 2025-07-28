@@ -3,7 +3,8 @@ export const EnvaptErrorCodes = {
   MissingDelimiter: 967308,
   InvalidArrayConverterType: 193159,
   InvalidBuiltInConverter: 337271,
-  InvalidConverterType: 453217
+  InvalidConverterType: 453217,
+  InvalidCustomConverter: 789432
 } as const;
 
 export type EnvaptErrorCode = (typeof EnvaptErrorCodes)[keyof typeof EnvaptErrorCodes];

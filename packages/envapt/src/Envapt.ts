@@ -66,8 +66,11 @@ function createPropertyDecorator<FallbackType>(
  * ‎ ‎ static readonly apiUrl: URL;
  *
  * ‎ ‎ \@Envapt('CUSTOM_LIST', {
- * ‎ ‎ ‎ ‎ fallback: ['default'],
- * ‎ ‎ ‎ ‎ converter: (raw, fallback) => raw ? raw.split('~') : fallback
+ * ‎ ‎ ‎ ‎ fallback: [1, 2, 3],
+ * ‎ ‎ ‎ ‎ converter: {
+ * ‎ ‎ ‎ ‎   delimiter: ',',
+ * ‎ ‎ ‎ ‎   type: 'number' // Convert each item to number
+ * ‎ ‎ ‎ ‎ }
  * ‎ ‎ })
  * ‎ ‎ static readonly customList: string[];
  * }
@@ -128,9 +131,6 @@ export function Envapt<FallbackType = unknown>(
     actualConverter = converter;
     hasFallback = arguments.length > 1;
   }
-
-  // eslint-disable-next-line no-console
-  console.log(`Registering Envapt for key "${key}" with fallback: ${fallback}, converter: ${actualConverter}`);
 
   return createPropertyDecorator(key, fallback, actualConverter, hasFallback);
 }
