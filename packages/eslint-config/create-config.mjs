@@ -119,7 +119,10 @@ export default function createConfig(options = {}) {
     {
       files: TEST_FILES,
       rules: {
-        'max-lines-per-function': 'off'
+        'max-lines-per-function': 'off',
+        'no-magic-numbers': 'off',
+        'no-unused-expressions': 'off',
+        'max-lines': ['error', { max: 500, skipBlankLines: true, skipComments: true }]
       }
     },
 

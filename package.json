@@ -62,6 +62,7 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "@seedcord/envapt": "workspace:*",
     "chalk": "^5.4.1",
     "discord.js": "^14.21.0",
     "dotenv": "^17.2.0",

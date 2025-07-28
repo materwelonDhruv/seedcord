@@ -1,55 +1,49 @@
-/* eslint-disable no-magic-numbers */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-unused-expressions */
 import { resolve } from 'node:path';
 
 import { expect } from 'chai';
 
-import { Env } from '../../src/core/utilities/envuments/Env';
-import { Envuments } from '../../src/core/utilities/envuments/Envuments';
+import { Envapt } from '../src/Envapt';
+import { Envapter } from '../src/Envapter';
 
-describe('Envuments', () => {
-  before(() => (Envuments.envPaths = resolve(import.meta.dirname, '.env.test')));
+describe('Envapter', () => {
+  before(() => (Envapter.envPaths = resolve(__dirname, '.env.test')));
 
   describe('env path configuration', () => {
     it('should be .env.test set at the top of the file rather than .env', () => {
       // we expect it to be our test path since we set it at module level
-      expect(Envuments.envPaths).to.deep.equal([resolve(import.meta.dirname, '.env.test')]);
+      expect(Envapter.envPaths).to.deep.equal([resolve(__dirname, '.env.test')]);
     });
 
     it('should allow setting custom .env path', () => {
-      Envuments.envPaths = 'custom/.env';
-      expect(Envuments.envPaths).to.deep.equal(['custom/.env']);
+      Envapter.envPaths = 'custom/.env';
+      expect(Envapter.envPaths).to.deep.equal(['custom/.env']);
     });
 
     // reset to test path
     it('should set to list of .env files', () => {
-      Envuments.envPaths = [resolve(import.meta.dirname, '.env.test'), resolve(import.meta.dirname, '.env.extra')];
-      expect(Envuments.envPaths).to.deep.equal([
-        resolve(import.meta.dirname, '.env.test'),
-        resolve(import.meta.dirname, '.env.extra')
-      ]);
+      Envapter.envPaths = [resolve(__dirname, '.env.test'), resolve(__dirname, '.env.extra')];
+      expect(Envapter.envPaths).to.deep.equal([resolve(__dirname, '.env.test'), resolve(__dirname, '.env.extra')]);
     });
   });
 
   describe('automatic type detection', () => {
     class TestTypeDetection {
-      @Env('NONEXISTENT_TEST_VAR', undefined)
+      @Envapt('NONEXISTENT_TEST_VAR', undefined)
       public static readonly testUndefinedVar: string | undefined;
 
-      @Env('NONEXISTENT_VAR_WITHOUT_FALLBACK', { converter: String })
+      @Envapt('NONEXISTENT_VAR_WITHOUT_FALLBACK', { converter: String })
       public static readonly nonexistentVarWithoutFallback: string | null;
 
-      @Env('NONEXISTENT_VAR_NO_OPTIONS')
+      @Envapt('NONEXISTENT_VAR_NO_OPTIONS')
       public static readonly nonexistentVarNoOptions: string | null;
 
-      @Env('PORT', 6956)
+      @Envapt('PORT', 6956)
       public static readonly port: number;
 
-      @Env('IS_ENABLED', false)
+      @Envapt('IS_ENABLED', false)
       public static readonly isEnabled: boolean;
 
-      @Env('URI', 'db://localhost:27017/')
+      @Envapt('URI', 'db://localhost:27017/')
       public static readonly uri: string;
     }
 
@@ -73,7 +67,7 @@ describe('Envuments', () => {
 
     it('should detect boolean type from fallback', () => {
       expect(typeof TestTypeDetection.isEnabled).to.equal('boolean');
-      expect(TestTypeDetection.isEnabled).to.equal(false);
+      expect(TestTypeDetection.isEnabled).to.be.false;
     });
 
     it('should detect string type from fallback', () => {
@@ -83,26 +77,26 @@ describe('Envuments', () => {
   });
 
   describe('explicit overrides and other tests', () => {
-    class TestEnv extends Envuments {
-      @Env('TEST_NUMBER_AS_STRING', { fallback: 42, converter: String })
+    class TestEnv extends Envapter {
+      @Envapt('TEST_NUMBER_AS_STRING', { fallback: 42, converter: String })
       public static readonly testNumberAsString: string;
 
-      @Env('TEST_STRING_AS_NUMBER', { fallback: '100', converter: Number })
+      @Envapt('TEST_STRING_AS_NUMBER', { fallback: '100', converter: Number })
       public static readonly testStringAsNumber: number;
 
-      @Env('TEST_VAR', { fallback: undefined })
+      @Envapt('TEST_VAR', { fallback: undefined })
       public static readonly testVar: string;
 
-      @Env('VAR_IN_EXTRA_FILE', { converter: Boolean })
+      @Envapt('VAR_IN_EXTRA_FILE', { converter: Boolean })
       public static readonly varInExtraFile: boolean | undefined;
 
-      @Env('NONEXISTENT_VAR_WITH_FALLBACK_STRING', { fallback: 'default-value' })
+      @Envapt('NONEXISTENT_VAR_WITH_FALLBACK_STRING', { fallback: 'default-value' })
       public static readonly nonexistentVarWithFallbackString: string;
 
-      @Env('NONEXISTENT_VAR_WITH_FALLBACK_NUMBER', { fallback: 12345 })
+      @Envapt('NONEXISTENT_VAR_WITH_FALLBACK_NUMBER', { fallback: 12345 })
       public static readonly nonexistentVarWithFallbackNumber: number;
 
-      @Env('NONEXISTENT_VAR_WITH_FALLBACK_BOOLEAN', { fallback: true })
+      @Envapt('NONEXISTENT_VAR_WITH_FALLBACK_BOOLEAN', { fallback: true })
       public static readonly nonexistentVarWithFallbackBoolean: boolean;
     }
 
@@ -135,10 +129,10 @@ describe('Envuments', () => {
     });
 
     it('should return fallback for non-existent variable with non-undefined boolean fallback', () => {
-      expect(TestEnv.nonexistentVarWithFallbackBoolean).to.equal(true);
+      expect(TestEnv.nonexistentVarWithFallbackBoolean).to.be.true;
     });
 
-    // isStaging is present because we extended the Envuments class
+    // isStaging is present because we extended the Envapter class
     it('should be true for isStaging environment set in .env.extra', () => {
       expect(TestEnv.isStaging).to.be.true;
     });
@@ -146,7 +140,7 @@ describe('Envuments', () => {
 
   describe('custom converter functions', () => {
     class TestCustomEnv {
-      @Env('ALLOWED_CHANNELS', {
+      @Envapt('ALLOWED_CHANNELS', {
         fallback: ['default-channel'],
         converter: (raw, fallback) => {
           if (!raw || raw.trim() === '') return fallback ?? [];
@@ -158,7 +152,7 @@ describe('Envuments', () => {
       })
       public static readonly allowedChannels: string[];
 
-      @Env('FEATURE_FLAGS', {
+      @Envapt('FEATURE_FLAGS', {
         fallback: new Set(['basic']),
         converter: (raw, fallback) => {
           if (!raw || raw.trim() === '') return fallback ?? new Set();
@@ -171,7 +165,7 @@ describe('Envuments', () => {
       })
       public static readonly featureFlags: Set<string>;
 
-      @Env('NONEXISTENT_ARRAY', {
+      @Envapt('NONEXISTENT_ARRAY', {
         fallback: ['default1', 'default2'],
         converter: (raw, fallback) => {
           if (!raw || raw.trim() === '') return fallback ?? [];
@@ -197,6 +191,60 @@ describe('Envuments', () => {
       expect(TestCustomEnv.nonexistentArray).to.be.an('array');
       const expectedFallback = ['default1', 'default2'];
       expect(TestCustomEnv.nonexistentArray).to.deep.equal(expectedFallback);
+    });
+  });
+
+  describe('built-in converters showcase', () => {
+    class BuiltInConverterShowcase {
+      @Envapt('DATABASE_CONFIG', { converter: 'json' })
+      static readonly databaseConfig: object;
+
+      @Envapt('API_ENDPOINTS', { converter: 'array:semicolon' })
+      static readonly apiEndpoints: string[];
+
+      @Envapt('CORS_ORIGINS', { converter: 'array:pipe' })
+      static readonly corsOrigins: string[];
+
+      @Envapt('SERVICE_TAGS', { converter: 'array:space' })
+      static readonly serviceTags: string[];
+
+      @Envapt('ENABLED_FEATURES', { converter: 'boolean' })
+      static readonly enabledFeatures: boolean;
+
+      @Envapt('API_TIMEOUT', { converter: 'integer' })
+      static readonly apiTimeout: number;
+    }
+
+    it('should parse JSON configuration', () => {
+      expect(BuiltInConverterShowcase.databaseConfig).to.deep.equal({
+        host: 'localhost',
+        port: 5432,
+        ssl: true
+      });
+    });
+
+    it('should parse semicolon-delimited arrays', () => {
+      expect(BuiltInConverterShowcase.apiEndpoints).to.deep.equal(['auth', 'users', 'products', 'orders']);
+    });
+
+    it('should parse pipe-delimited arrays', () => {
+      expect(BuiltInConverterShowcase.corsOrigins).to.deep.equal([
+        'http://localhost:3000',
+        'https://app.example.com',
+        'https://staging.example.com'
+      ]);
+    });
+
+    it('should parse space-delimited arrays', () => {
+      expect(BuiltInConverterShowcase.serviceTags).to.deep.equal(['frontend', 'backend', 'api', 'database']);
+    });
+
+    it('should parse boolean values', () => {
+      expect(BuiltInConverterShowcase.enabledFeatures).to.be.true;
+    });
+
+    it('should parse integer values', () => {
+      expect(BuiltInConverterShowcase.apiTimeout).to.equal(5000);
     });
   });
 });

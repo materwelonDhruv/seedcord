@@ -1,91 +1,95 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable no-unused-expressions */
 import { resolve } from 'node:path';
 
 import { expect } from 'chai';
 
-import { Env } from '../../src/core/utilities/envuments/Env';
-import { Envuments } from '../../src/core/utilities/envuments/Envuments';
+import { Envapt } from '../src/Envapt';
+import { Envapter } from '../src/Envapter';
 
 describe('Edge Cases', () => {
-  before(() => (Envuments.envPaths = resolve(import.meta.dirname, '.env.edgecases')));
+  before(() => (Envapter.envPaths = resolve(__dirname, '.env.edge-cases')));
 
   describe('Number conversion edge cases', () => {
     class NumberEdgeCases {
-      @Env('ZERO_VALUE', { converter: Number })
-      static readonly zeroFallback: number;
+      @Envapt('ZERO_VALUE', { converter: Number })
+      static readonly zero: number;
 
-      @Env('NEGATIVE_ZERO', { converter: Number })
+      @Envapt('NEGATIVE_ZERO', { converter: Number })
       static readonly negativeZero: number;
 
-      @Env('INFINITY_VALUE', { converter: Number })
-      static readonly infinityFallback: number;
+      @Envapt('INFINITY_VALUE', { converter: Number })
+      static readonly infinity: number;
 
-      @Env('NEGATIVE_INFINITY', { converter: Number })
-      static readonly negativeInfinityFallback: number;
+      @Envapt('NEGATIVE_INFINITY', { converter: Number })
+      static readonly negativeInfinity: number;
+
+      @Envapt('EPSILON_VALUE', { converter: Number })
+      static readonly epsilon: number;
     }
 
-    it('should handle zero correctly (not return fallback)', () => {
-      expect(NumberEdgeCases.zeroFallback).to.equal(0);
+    it('should handle zero correctly', () => {
+      expect(NumberEdgeCases.zero).to.equal(0);
     });
 
     it('should handle negative zero correctly', () => {
       expect(NumberEdgeCases.negativeZero).to.equal(0);
     });
 
-    it('should handle infinity fallback', () => {
-      expect(NumberEdgeCases.infinityFallback).to.equal(Infinity);
+    it('should handle infinity', () => {
+      expect(NumberEdgeCases.infinity).to.equal(Number.POSITIVE_INFINITY);
     });
 
-    it('should handle negative infinity fallback', () => {
-      expect(NumberEdgeCases.negativeInfinityFallback).to.equal(-Infinity);
+    it('should handle negative infinity', () => {
+      expect(NumberEdgeCases.negativeInfinity).to.equal(Number.NEGATIVE_INFINITY);
+    });
+
+    it('should handle scientific number', () => {
+      expect(NumberEdgeCases.epsilon).to.equal(Number.EPSILON);
     });
   });
 
   describe('Boolean conversion edge cases', () => {
     class BooleanEdgeCases {
-      @Env('UPPERCASE_TRUE', false)
+      @Envapt('UPPERCASE_TRUE', false)
       static readonly uppercaseTrue: boolean;
 
-      @Env('MIXED_CASE_FALSE', true)
+      @Envapt('MIXED_CASE_FALSE', true)
       static readonly mixedCaseFalse: boolean;
 
-      @Env('NUMERIC_BOOL', false)
+      @Envapt('NUMERIC_BOOL', false)
       static readonly numericBool: boolean;
     }
 
     it('should handle uppercase boolean values', () => {
-      expect(BooleanEdgeCases.uppercaseTrue).to.equal(true);
+      expect(BooleanEdgeCases.uppercaseTrue).to.be.true;
     });
 
     it('should handle mixed case boolean values', () => {
-      expect(BooleanEdgeCases.mixedCaseFalse).to.equal(false);
+      expect(BooleanEdgeCases.mixedCaseFalse).to.be.false;
     });
 
     it('should handle numeric boolean values', () => {
-      expect(BooleanEdgeCases.numericBool).to.equal(true);
+      expect(BooleanEdgeCases.numericBool).to.be.true;
     });
   });
 
   describe('Template resolution edge cases', () => {
     class TemplateEdgeCases {
-      @Env('NONEXISTENT_TEMPLATE')
+      @Envapt('NONEXISTENT_TEMPLATE')
       static readonly nonexistentTemplate: string;
 
-      @Env('EMPTY_TEMPLATE')
+      @Envapt('EMPTY_TEMPLATE')
       static readonly emptyTemplate: string;
 
-      @Env('CIRCULAR_TEMPLATE')
+      @Envapt('CIRCULAR_TEMPLATE')
       static readonly circularTemplate: string;
 
-      @Env('CIRCULAR_A')
+      @Envapt('CIRCULAR_A')
       static readonly circularA: string;
 
-      @Env('CIRCULAR_B')
+      @Envapt('CIRCULAR_B')
       static readonly circularB: string;
 
-      @Env('MULTI_TYPE_TEMPLATE')
+      @Envapt('MULTI_TYPE_TEMPLATE')
       static readonly multiTypeTemplate: string;
     }
 
@@ -114,10 +118,10 @@ describe('Edge Cases', () => {
 
   describe('Type coercion edge cases', () => {
     class TypeCoercionEdgeCases {
-      @Env('STRING_TO_NUMBER', 'not a number', Number)
+      @Envapt('STRING_TO_NUMBER', Number.NaN, Number)
       static readonly stringToNumber: number;
 
-      @Env('OBJECT_FALLBACK', {
+      @Envapt('OBJECT_FALLBACK', {
         fallback: { key: 'default' },
         converter: (raw, fallback) => {
           if (typeof raw !== 'string' || !fallback) return fallback;
@@ -141,10 +145,10 @@ describe('Edge Cases', () => {
 
   describe('Extreme values', () => {
     class ExtremeValues {
-      @Env('UNICODE_VALUE', 'ascii')
+      @Envapt('UNICODE_VALUE', 'ascii')
       static readonly unicodeValue: string;
 
-      @Env('VERY_LONG_STRING', 'short')
+      @Envapt('VERY_LONG_STRING', 'short')
       static readonly veryLongString: string;
     }
 

@@ -1,14 +1,13 @@
 import { ColorResolvable } from 'discord.js';
 
 import 'reflect-metadata';
-import { Env } from '../../utilities/envuments/Env';
-import { Envuments } from '../../utilities/envuments/Envuments';
 
-export class Globals extends Envuments {
+export class Globals extends Envapter {
   // Secrets
   @Env('BOT_TOKEN', { fallback: undefined })
   public static readonly botToken: string;
 
+  @Env('DISCORD_CLIENT_ID', { fallback: undefined })
   // General
   @Env('MONGO_URI', { fallback: 'mongodb://localhost:27017/' })
   public static readonly mongoUri: string;
