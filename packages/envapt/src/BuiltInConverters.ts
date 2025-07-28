@@ -1,3 +1,5 @@
+import { EnvaptError, EnvaptErrorCodes } from './Error';
+
 import type { ArrayConverter, BuiltInConverter, EnvaptConverter } from './Types';
 
 export const BuiltInConvertersArray = [
@@ -133,7 +135,10 @@ export class BuiltInConverters {
     // if (raw === undefined) return fallback;
     if (raw === undefined) {
       if (Array.isArray(fallback)) return fallback;
-      throw new Error(`ArrayConverter requires that the fallback be an array, got ${typeof fallback}`);
+      throw new EnvaptError(
+        EnvaptErrorCodes.InvalidFallback,
+        `ArrayConverter requires that the fallback be an array, got ${typeof fallback}`
+      );
     }
 
     if (raw.trim() === '') return [];
@@ -192,13 +197,14 @@ export class BuiltInConverters {
    */
   static validateArrayConverter(value: unknown): ArrayConverter {
     if (!this.isArrayConverter(value)) {
-      // TODO: add warning logger
-      throw new Error('Invalid ArrayConverter configuration: must have delimiter property');
+      throw new EnvaptError(EnvaptErrorCodes.MissingDelimiter, 'Must have delimiter property');
     }
 
     if (value.type !== undefined && !this.isValidArrayConverterType(value.type)) {
-      // TODO: add warning logger
-      throw new Error(`Invalid ArrayConverter type: "${value.type}" is not a valid converter type`);
+      throw new EnvaptError(
+        EnvaptErrorCodes.InvalidArrayConverterType,
+        `"${value.type}" is not a valid converter type`
+      );
     }
 
     return value;
@@ -235,7 +241,7 @@ export class BuiltInConverters {
       case 'date':
         return BuiltInConverters.date;
       default:
-        throw new Error(`Unknown built-in converter: ${type}`);
+        throw new EnvaptError(EnvaptErrorCodes.InvalidBuiltInConverter, `Unknown built-in converter: ${type}`);
     }
   }
 
@@ -252,14 +258,13 @@ export class BuiltInConverters {
    */
   static validateBuiltInConverter(value: unknown): BuiltInConverter {
     if (typeof value !== 'string') {
-      // TODO: add warning logger
-      throw new Error(`Invalid converter type: expected string, got ${typeof value}`);
+      throw new EnvaptError(EnvaptErrorCodes.InvalidConverterType, `Expected string, got ${typeof value}`);
     }
 
     if (!BuiltInConvertersArray.includes(value as BuiltInConverter)) {
-      // TODO: add warning logger
-      throw new Error(
-        `Invalid built-in converter: "${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(', ')}`
+      throw new EnvaptError(
+        EnvaptErrorCodes.InvalidBuiltInConverter,
+        `"${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(', ')}`
       );
     }
 

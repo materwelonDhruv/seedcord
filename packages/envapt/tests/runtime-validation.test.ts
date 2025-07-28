@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 
 import { BuiltInConverters } from '../src/BuiltInConverters';
+import { EnvaptError, EnvaptErrorCodes } from '../src/Error';
 
 describe('Runtime Validation', () => {
   describe('Built-in converter validation', () => {
@@ -16,35 +17,27 @@ describe('Runtime Validation', () => {
     it('should throw for invalid built-in converter types', () => {
       const invalidTypes = ['invalid', 'str', 'num'];
 
-      for (const type of invalidTypes) {
-        let errorThrown = false;
-        try {
-          BuiltInConverters.validateBuiltInConverter(type);
-        } catch (error) {
-          errorThrown = true;
-          expect((error as Error).message).to.include(`Invalid built-in converter: "${type}"`);
-        }
-        expect(errorThrown).to.be.true;
-      }
+      const testFunction = (type: string) => () => BuiltInConverters.validateBuiltInConverter(type);
+
+      invalidTypes.forEach((type) => {
+        expect(testFunction(type))
+          .to.throw(EnvaptError)
+          .with.property('code', EnvaptErrorCodes.InvalidBuiltInConverter);
+      });
     });
 
     it('should throw for non-string types', () => {
       const nonStringTypes = [
-        { value: 123, expectedType: 'number' },
-        { value: {}, expectedType: 'object' },
-        { value: null, expectedType: 'object' }
+        { value: 123, expectedCode: EnvaptErrorCodes.InvalidConverterType },
+        { value: {}, expectedCode: EnvaptErrorCodes.InvalidConverterType },
+        { value: null, expectedCode: EnvaptErrorCodes.InvalidConverterType }
       ];
 
-      for (const { value, expectedType } of nonStringTypes) {
-        let errorThrown = false;
-        try {
-          BuiltInConverters.validateBuiltInConverter(value);
-        } catch (error) {
-          errorThrown = true;
-          expect((error as Error).message).to.equal(`Invalid converter type: expected string, got ${expectedType}`);
-        }
-        expect(errorThrown).to.be.true;
-      }
+      const testFunction = (value: unknown) => () => BuiltInConverters.validateBuiltInConverter(value);
+
+      nonStringTypes.forEach(({ value, expectedCode }) => {
+        expect(testFunction(value)).to.throw(EnvaptError).with.property('code', expectedCode);
+      });
     });
   });
 
@@ -66,33 +59,23 @@ describe('Runtime Validation', () => {
     it('should throw for invalid ArrayConverter configurations', () => {
       const invalidConfigs = [{}, 'string', null];
 
-      for (const config of invalidConfigs) {
-        let errorThrown = false;
-        try {
-          BuiltInConverters.validateArrayConverter(config);
-        } catch (error) {
-          errorThrown = true;
-          expect((error as Error).message).to.equal(
-            'Invalid ArrayConverter configuration: must have delimiter property'
-          );
-        }
-        expect(errorThrown).to.be.true;
-      }
+      const testFunction = (config: unknown) => () => BuiltInConverters.validateArrayConverter(config);
+
+      invalidConfigs.forEach((config) => {
+        expect(testFunction(config)).to.throw(EnvaptError).with.property('code', EnvaptErrorCodes.MissingDelimiter);
+      });
     });
 
     it('should throw for invalid ArrayConverter types', () => {
       const invalidTypes = ['array', 'json', 'regexp', 'invalid'];
 
-      for (const type of invalidTypes) {
-        let errorThrown = false;
-        try {
-          BuiltInConverters.validateArrayConverter({ delimiter: ',', type });
-        } catch (error) {
-          errorThrown = true;
-          expect((error as Error).message).to.include(`Invalid ArrayConverter type: "${type}"`);
-        }
-        expect(errorThrown).to.be.true;
-      }
+      const testFunction = (type: string) => () => BuiltInConverters.validateArrayConverter({ delimiter: ',', type });
+
+      invalidTypes.forEach((type) => {
+        expect(testFunction(type))
+          .to.throw(EnvaptError)
+          .with.property('code', EnvaptErrorCodes.InvalidArrayConverterType);
+      });
     });
 
     it('should validate correct ArrayConverter element types', () => {

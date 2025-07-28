@@ -7,19 +7,14 @@
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.js",
-      "types": "./dist/index.d.ts"
-    },
-    "./envapter": {
-      "import": "./dist/Envapter.js",
-      "require": "./dist/Envapter.js",
-      "types": "./dist/Envapter.d.ts"
-    },
-    "./envapt": {
-      "import": "./dist/Envapt.js",
-      "require": "./dist/Envapt.js",
-      "types": "./dist/Envapt.d.ts"
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     }
   },
   "files": [
@@ -64,7 +59,6 @@
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
     "@types/chai": "^5.2.2",
-    "@types/lodash.invert": "^4.3.9",
     "@types/mocha": "^10.0.10",
     "@types/node": "^22.10.7",
     "chai": "^5.1.2",
@@ -79,7 +73,6 @@
     "reflect-metadata": "^0.2.2"
   },
   "dependencies": {
-    "dotenv": "^17.2.0",
-    "lodash.invert": "^4.3.0"
+    "dotenv": "^17.2.0"
   }
 }

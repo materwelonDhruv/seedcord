@@ -27,6 +27,9 @@ export class Globals extends Envapter {
   @Envapt('SHUTDOWN_IS_ENABLED', { fallback: false })
   public static readonly shutdownIsEnabled: boolean;
 
+  @Envapt('TIMESTAMPS', { fallback: [7123912837, 7123912838], converter: 'lol' })
+  public static readonly timestamps: number[];
+
   // Variables
   public static readonly botColor: ColorResolvable = this.isProduction ? '#dcc8f0' : '#fe565a';
 }

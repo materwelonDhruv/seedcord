@@ -1,27 +1,25 @@
-// import invert from 'lodash.invert';
+export const EnvaptErrorCodes = {
+  InvalidFallback: 617404,
+  MissingDelimiter: 967308,
+  InvalidArrayConverterType: 193159,
+  InvalidBuiltInConverter: 337271,
+  InvalidConverterType: 453217
+} as const;
 
-// export const EnvaptErrorCodes = {
-//   InvalidFallback: 617404,
-//   MissingDelimiter: 967308,
-//   InvalidArrayConverterType: 193159,
-//   InvalidBuiltInConverter: 337271
-// };
+export type EnvaptErrorCode = (typeof EnvaptErrorCodes)[keyof typeof EnvaptErrorCodes];
 
-// const CodeToName = invert(EnvaptErrorCodes);
+const ReversedEnvaptErrorCodes = Object.fromEntries(
+  Object.entries(EnvaptErrorCodes).map(([key, value]) => [value, key])
+) as Record<EnvaptErrorCode, string>;
 
-// // export class EnvaptConverterError extends Error {
-// //   constructor(message: string) {
-// //     super(message);
-// //     this.name = 'EnvaptConverterError';
-// //   }
-// // }
+export class EnvaptError extends Error {
+  public readonly code: EnvaptErrorCode;
 
-// export class EnvaptConverterError extends Error {
-//   constructor(code: EnvaptErrorCodes, message: string) {
-//     super(message);
-//     this.name = 'EnvaptConverterError';
-//     this.code = code;
-//   }
+  constructor(code: EnvaptErrorCode, message: string) {
+    super(message);
+    this.name = `${ReversedEnvaptErrorCodes[code]} [${code}]`;
+    this.code = code;
 
-//   code: EnvaptErrorCode;
-// }
+    Error.captureStackTrace(this, EnvaptError);
+  }
+}
