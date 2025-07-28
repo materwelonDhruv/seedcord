@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
 
-import { Envarser as EnvParser, type EnvaptConverterService } from './Parser';
+import { Parser, type EnvapterService } from './Parser';
 
 /**
  * Internal cache for environment variables and computed values
@@ -11,7 +11,7 @@ export const EnvaptCache = new Map<string, unknown>();
 /**
  * @internal
  */
-enum PrimitiveEnvapterType {
+enum Primitive {
   String,
   Number,
   Boolean
@@ -21,7 +21,7 @@ enum PrimitiveEnvapterType {
  * Environment types supported by Envapter
  * @public
  */
-enum EnvaptEnvironment {
+export enum Environment {
   Development,
   Staging,
   Production
@@ -48,8 +48,8 @@ enum EnvaptEnvironment {
  *
  * @public
  */
-class Envapter implements EnvaptConverterService {
-  private static readonly parser = new EnvParser(new Envapter());
+export class Envapter implements EnvapterService {
+  private static readonly parser = new Parser(new Envapter());
   private static _envPaths: string[] = ['.env']; // default path
 
   // Environment handling
@@ -93,15 +93,15 @@ class Envapter implements EnvaptConverterService {
     return this._envPaths;
   }
 
-  private static determineEnvironment(env: string | EnvaptEnvironment): EnvaptEnvironment {
+  private static determineEnvironment(env: string | Environment): Environment {
     if (typeof env === 'string') {
       switch (env.toLowerCase()) {
         case 'production':
-          return EnvaptEnvironment.Production;
+          return Environment.Production;
         case 'staging':
-          return EnvaptEnvironment.Staging;
+          return Environment.Staging;
         default:
-          return EnvaptEnvironment.Development;
+          return Environment.Development;
       }
     }
 
@@ -119,7 +119,7 @@ class Envapter implements EnvaptConverterService {
    * Envapter.environment = 'staging';
    * ```
    */
-  static set environment(env: string | EnvaptEnvironment) {
+  static set environment(env: string | Environment) {
     this.internalEnvironment = this.determineEnvironment(env);
   }
 
@@ -127,7 +127,7 @@ class Envapter implements EnvaptConverterService {
    * Get the current application environment
    * @returns Current environment enum value
    */
-  static get environment(): EnvaptEnvironment {
+  static get environment(): Environment {
     return this.internalEnvironment;
   }
 
@@ -136,7 +136,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is production
    */
   static get isProduction(): boolean {
-    return this.internalEnvironment === EnvaptEnvironment.Production;
+    return this.internalEnvironment === Environment.Production;
   }
 
   /**
@@ -144,7 +144,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is staging
    */
   static get isStaging(): boolean {
-    return this.internalEnvironment === EnvaptEnvironment.Staging;
+    return this.internalEnvironment === Environment.Staging;
   }
 
   /**
@@ -152,7 +152,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is development
    */
   static get isDevelopment(): boolean {
-    return this.internalEnvironment === EnvaptEnvironment.Development;
+    return this.internalEnvironment === Environment.Development;
   }
 
   private static get config(): Map<string, unknown> {
@@ -173,24 +173,24 @@ class Envapter implements EnvaptConverterService {
     return EnvaptCache;
   }
 
-  private static _get(key: string, type: PrimitiveEnvapterType = PrimitiveEnvapterType.String, def?: unknown): unknown {
+  private static _get(key: string, type: Primitive = Primitive.String, def?: unknown): unknown {
     const rawVal = this.config.get(key) as string | number | boolean;
     if (!rawVal) return def;
 
     const parsed = this.parser.resolveValueString(key, String(rawVal));
 
     switch (type) {
-      case PrimitiveEnvapterType.String: {
+      case Primitive.String: {
         return (parsed !== '' && parsed) || def;
       }
 
-      case PrimitiveEnvapterType.Number: {
+      case Primitive.Number: {
         const num = Number(parsed);
 
         return !Number.isNaN(num) ? num : def;
       }
 
-      case PrimitiveEnvapterType.Boolean: {
+      case Primitive.Boolean: {
         const yes = ['1', 'yes', 'true', 'on'];
         const no = ['0', 'no', 'false', 'off'];
 
@@ -221,7 +221,7 @@ class Envapter implements EnvaptConverterService {
    * ```
    */
   static get(key: string, def?: string): string {
-    return this._get(key, PrimitiveEnvapterType.String, def) as string;
+    return this._get(key, Primitive.String, def) as string;
   }
 
   /**
@@ -238,7 +238,7 @@ class Envapter implements EnvaptConverterService {
    * ```
    */
   static getNumber(key: string, def?: number): number {
-    return this._get(key, PrimitiveEnvapterType.Number, def) as number;
+    return this._get(key, Primitive.Number, def) as number;
   }
 
   /**
@@ -255,19 +255,19 @@ class Envapter implements EnvaptConverterService {
    * ```
    */
   static getBoolean(key: string, def?: boolean): boolean {
-    return this._get(key, PrimitiveEnvapterType.Boolean, def) as boolean;
+    return this._get(key, Primitive.Boolean, def) as boolean;
   }
 
   get(key: string, def?: string): string {
-    return Envapter._get(key, PrimitiveEnvapterType.String, def) as string;
+    return Envapter._get(key, Primitive.String, def) as string;
   }
 
   getNumber(key: string, def?: number): number {
-    return Envapter._get(key, PrimitiveEnvapterType.Number, def) as number;
+    return Envapter._get(key, Primitive.Number, def) as number;
   }
 
   getBoolean(key: string, def?: boolean): boolean {
-    return Envapter._get(key, PrimitiveEnvapterType.Boolean, def) as boolean;
+    return Envapter._get(key, Primitive.Boolean, def) as boolean;
   }
 
   /**
@@ -279,5 +279,3 @@ class Envapter implements EnvaptConverterService {
     return Envapter.config.get(key) as string | undefined;
   }
 }
-
-export { Envapter, EnvaptEnvironment };

@@ -1,6 +1,6 @@
 /* eslint-disable security/detect-bidi-characters */
 import { Envapter, EnvaptCache } from './Envapter';
-import { Envarser, type EnvaptConverter as EnvaptConverter } from './Parser';
+import { Parser, type EnvaptConverter } from './Parser';
 
 /**
  * Options for the \@Envapt decorator (modern API)
@@ -36,7 +36,7 @@ function createPropertyDecorator<FallbackType>(
 
         // Re-evaluate if we don't have a cached value
         if (value === undefined) {
-          const parser = new Envarser(new Envapter());
+          const parser = new Parser(new Envapter());
           value = parser.convertValue(key, fallback, converter, hasFallback);
           EnvaptCache.set(cacheKey, value);
         }

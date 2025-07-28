@@ -6,7 +6,7 @@ import type { BuiltInConverter } from './BuiltInConverters';
  * String value from a .env file or environment variable
  * @public
  */
-export type EnvaptInput = string | undefined;
+export type BaseInput = string | undefined;
 
 /**
  * Custom parser function type for environment variables
@@ -15,12 +15,12 @@ export type EnvaptInput = string | undefined;
  * @returns Parsed value of type T
  * @public
  */
-export type EnvaptParser<FallbackType> = (raw: EnvaptInput, fallback?: FallbackType) => FallbackType;
+export type ConverterFunction<FallbackType> = (raw: BaseInput, fallback?: FallbackType) => FallbackType;
 
 /**
  * Environment variable converter - can be a built-in constructor, built-in converter string, or custom parser function
  * @see {@link BuiltInConverter} for built-in types
- * @see {@link EnvaptParser} for custom parser functions
+ * @see {@link ConverterFunction} for custom parser functions
  * @public
  */
 export type EnvaptConverter<FallbackType> =
@@ -28,12 +28,12 @@ export type EnvaptConverter<FallbackType> =
   | typeof Boolean
   | typeof String
   | BuiltInConverter
-  | EnvaptParser<FallbackType>;
+  | ConverterFunction<FallbackType>;
 
 /**
  * @internal
  */
-export interface EnvaptConverterService {
+export interface EnvapterService {
   getRaw(key: string): string | undefined;
   get(key: string, def?: string): string;
   getNumber(key: string, def?: number): number;
@@ -44,10 +44,10 @@ export interface EnvaptConverterService {
  * Parser class for handling environment variable template resolution and type conversion
  * @internal
  */
-export class Envarser {
+export class Parser {
   private readonly TEMPLATE_REGEX = /\${\w*}/g;
 
-  constructor(private readonly envService: EnvaptConverterService) {}
+  constructor(private readonly envService: EnvapterService) {}
 
   resolveValueString(key: string, value: string, stack = new Set<string>()): string {
     if (stack.has(key)) return value; // direct cycle, keep as is
@@ -109,7 +109,7 @@ export class Envarser {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     if (raw === undefined) return hasFallback ? fallback : null;
 
-    return (resolvedConverter as EnvaptParser<FallbackType>)(raw, fallback);
+    return (resolvedConverter as ConverterFunction<FallbackType>)(raw, fallback);
   }
 
   private resolveConverter<FallbackType>(
