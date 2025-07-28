@@ -25,7 +25,7 @@ export class EventController {
     }
     this.isInitialized = true;
 
-    const handlersDir = path.resolve(__dirname, '../events');
+    const handlersDir = path.resolve(import.meta.dirname, '../events');
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

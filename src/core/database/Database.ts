@@ -65,7 +65,7 @@ export class Database {
   }
 
   private async loadServices(): Promise<void> {
-    const servicesDir = path.resolve(__dirname, './services');
+    const servicesDir = path.resolve(import.meta.dirname, './services');
     this.logger.info(chalk.bold(servicesDir));
 
     await traverseDirectory(servicesDir, (_full, rel, mod) => {

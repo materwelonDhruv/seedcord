@@ -9,12 +9,12 @@ import { Env } from '../../src/core/utilities/envuments/Env';
 import { Envuments } from '../../src/core/utilities/envuments/Envuments';
 
 describe('Envuments', () => {
-  before(() => (Envuments.envPaths = resolve(__dirname, '.env.test')));
+  before(() => (Envuments.envPaths = resolve(import.meta.dirname, '.env.test')));
 
   describe('env path configuration', () => {
     it('should be .env.test set at the top of the file rather than .env', () => {
       // we expect it to be our test path since we set it at module level
-      expect(Envuments.envPaths).to.deep.equal([resolve(__dirname, '.env.test')]);
+      expect(Envuments.envPaths).to.deep.equal([resolve(import.meta.dirname, '.env.test')]);
     });
 
     it('should allow setting custom .env path', () => {
@@ -24,8 +24,11 @@ describe('Envuments', () => {
 
     // reset to test path
     it('should set to list of .env files', () => {
-      Envuments.envPaths = [resolve(__dirname, '.env.test'), resolve(__dirname, '.env.extra')];
-      expect(Envuments.envPaths).to.deep.equal([resolve(__dirname, '.env.test'), resolve(__dirname, '.env.extra')]);
+      Envuments.envPaths = [resolve(import.meta.dirname, '.env.test'), resolve(import.meta.dirname, '.env.extra')];
+      expect(Envuments.envPaths).to.deep.equal([
+        resolve(import.meta.dirname, '.env.test'),
+        resolve(import.meta.dirname, '.env.extra')
+      ]);
     });
   });
 

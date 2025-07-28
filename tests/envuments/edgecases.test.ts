@@ -9,7 +9,7 @@ import { Env } from '../../src/core/utilities/envuments/Env';
 import { Envuments } from '../../src/core/utilities/envuments/Envuments';
 
 describe('Edge Cases', () => {
-  before(() => (Envuments.envPaths = resolve(__dirname, '.env.edgecases')));
+  before(() => (Envuments.envPaths = resolve(import.meta.dirname, '.env.edgecases')));
 
   describe('Number conversion edge cases', () => {
     class NumberEdgeCases {

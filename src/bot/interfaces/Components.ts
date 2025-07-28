@@ -35,7 +35,15 @@ const BuilderTypes = {
   group: SlashCommandSubcommandGroupBuilder
 };
 
-const RowTypes = {
+const RowTypes: {
+  button: typeof ActionRowBuilder<ButtonBuilder>;
+  menu_string: typeof ActionRowBuilder<StringSelectMenuBuilder>;
+  menu_user: typeof ActionRowBuilder<UserSelectMenuBuilder>;
+  menu_channel: typeof ActionRowBuilder<ChannelSelectMenuBuilder>;
+  menu_mentionable: typeof ActionRowBuilder<MentionableSelectMenuBuilder>;
+  menu_role: typeof ActionRowBuilder<RoleSelectMenuBuilder>;
+  modal: typeof ActionRowBuilder<ModalActionRowComponentBuilder>;
+} = {
   button: ActionRowBuilder<ButtonBuilder>,
   menu_string: ActionRowBuilder<StringSelectMenuBuilder>,
   menu_user: ActionRowBuilder<UserSelectMenuBuilder>,

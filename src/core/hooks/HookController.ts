@@ -28,7 +28,7 @@ export class HookController {
     }
     this.isInitialized = true;
 
-    const hooksDir = path.resolve(__dirname, './handlers');
+    const hooksDir = path.resolve(import.meta.dirname, './handlers');
     this.logger.info(chalk.bold(hooksDir));
 
     await this.loadHooks(hooksDir);
