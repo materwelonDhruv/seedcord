@@ -7,6 +7,6 @@
     "allowJs": true,
     "checkJs": false
   },
-  "include": ["*.ts", "*.mjs"],
+  "include": ["*.ts", "*.mjs", "**/*.mjs"],
   "exclude": ["node_modules", "dist"]
 }

@@ -2,7 +2,7 @@ import prettierConfig from 'eslint-config-prettier';
 import eslintImport from 'eslint-plugin-import';
 import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSecurity from 'eslint-plugin-security';
-import _ from 'lodash';
+import merge from 'lodash.merge';
 import tseslint from 'typescript-eslint';
 
 import {
@@ -37,7 +37,7 @@ export default function createConfig(options = {}) {
 
   // Create TypeScript parser options with dynamic tsconfigRootDir
   const createTsParserOptions = (rootDir) => ({
-    project: ['./tsconfig.json'],
+    project: ['./tsconfig.json'], // Use main tsconfig, could be overridden with tsconfig.eslint.json if needed
     tsconfigRootDir: rootDir,
     sourceType: 'module',
     ecmaVersion: 2024
@@ -52,14 +52,14 @@ export default function createConfig(options = {}) {
     // Base ESLint configuration for JavaScript/MJS files
     {
       files: JS_FILES,
-      languageOptions: _.merge({}, JAVASCRIPT_LANGUAGE_OPTIONS),
+      languageOptions: merge({}, JAVASCRIPT_LANGUAGE_OPTIONS),
       linterOptions: COMMON_LINTER_OPTIONS
     },
 
     // TypeScript-specific configuration
     {
       files: TS_FILES,
-      languageOptions: _.merge({}, TYPESCRIPT_LANGUAGE_OPTIONS, {
+      languageOptions: merge({}, TYPESCRIPT_LANGUAGE_OPTIONS, {
         parser: tseslint.parser,
         parserOptions: createTsParserOptions(tsconfigRootDir)
       }),
@@ -81,7 +81,7 @@ export default function createConfig(options = {}) {
       plugins: {
         security: eslintSecurity
       },
-      rules: _.merge({}, eslintSecurity.configs.recommended.rules)
+      rules: merge({}, eslintSecurity.configs.recommended.rules)
     },
 
     // Import plugin - apply to all files
@@ -112,7 +112,7 @@ export default function createConfig(options = {}) {
     // Additional rules configuration
     {
       files: ALL_FILES,
-      rules: _.merge({}, GENERAL_RULES, SECURITY_RULES, OVERRIDE_RULES)
+      rules: merge({}, GENERAL_RULES, SECURITY_RULES, OVERRIDE_RULES)
     },
 
     // Test files configuration

@@ -97,6 +97,14 @@ export const TYPESCRIPT_RULES = {
       selector: 'parameter',
       format: ['camelCase'],
       leadingUnderscore: 'allow'
+    },
+    {
+      selector: 'typeParameter',
+      format: ['PascalCase'],
+      custom: {
+        regex: '^\\w{3,}',
+        match: true
+      }
     }
   ],
   '@typescript-eslint/no-extraneous-class': 'off',

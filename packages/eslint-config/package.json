@@ -2,19 +2,42 @@
   "name": "@seedcord/eslint-config",
   "type": "module",
   "version": "1.0.0",
-  "description": "ESLint configuration package for seedcord projects",
+  "description": "Modular ESLint configuration package for seedcord projects with TypeScript, Prettier, and security rules",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     "./create-config": {
       "import": "./create-config.mjs",
       "types": "./create-config.d.mts"
+    },
+    "./constants": {
+      "import": "./constants.mjs"
+    },
+    "./rules/general": {
+      "import": "./rules/general-rules.mjs"
+    },
+    "./rules/typescript": {
+      "import": "./rules/typescript-rules.mjs"
+    },
+    "./rules/import": {
+      "import": "./rules/import-rules.mjs"
+    },
+    "./rules/prettier": {
+      "import": "./rules/prettier-rules.mjs"
+    },
+    "./prettier-config": {
+      "import": "./prettier.mjs",
+      "types": "./prettier.d.mts"
     }
   },
   "files": [
     "dist",
     "create-config.mjs",
-    "create-config.d.mts"
+    "create-config.d.mts",
+    "constants.mjs",
+    "prettier.mjs",
+    "prettier.d.mts",
+    "rules/*.mjs"
   ],
   "scripts": {
     "build": "tsc",
@@ -26,7 +49,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.32.0",
-    "@types/lodash": "^4.17.20",
+    "@types/lodash.merge": "^4.6.9",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.32.0",
@@ -35,7 +58,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-security": "^3.0.1",
-    "lodash": "^4.17.21",
+    "lodash.merge": "^4.6.2",
     "typescript-eslint": "^8.38.0"
   }
 }
