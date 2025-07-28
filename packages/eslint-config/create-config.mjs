@@ -1,10 +1,10 @@
+/* eslint-disable no-magic-numbers */
+/* eslint-disable max-lines-per-function */
 import prettierConfig from 'eslint-config-prettier';
 import eslintImport from 'eslint-plugin-import';
 import eslintPrettier from 'eslint-plugin-prettier';
 import eslintSecurity from 'eslint-plugin-security';
 import tseslint from 'typescript-eslint';
-
-/* eslint-disable max-lines-per-function, @typescript-eslint/explicit-function-return-type, no-magic-numbers, @typescript-eslint/explicit-module-boundary-types */
 
 /**
  * @typedef {import('typescript-eslint').Config} Config
@@ -23,8 +23,29 @@ export default function createConfig(options = {}) {
 
   return tseslint.config(
     {
-      // Base ESLint configuration
-      ignores: ['dist/**', 'node_modules/**', 'logs/**', '*.mjs', '*.js'],
+      // Global ignores
+      ignores: ['dist/**', 'node_modules/**', 'logs/**']
+    },
+
+    {
+      // Base ESLint configuration for JavaScript/MJS files
+      files: ['**/*.js', '**/*.mjs'],
+      languageOptions: {
+        sourceType: 'module',
+        ecmaVersion: 2024,
+        globals: {
+          node: true,
+          es2022: true
+        }
+      },
+      linterOptions: {
+        reportUnusedDisableDirectives: 'error'
+      }
+    },
+
+    {
+      // TypeScript-specific configuration
+      files: ['**/*.ts', '**/*.tsx'],
       languageOptions: {
         parser: tseslint.parser,
         parserOptions: {
@@ -43,14 +64,18 @@ export default function createConfig(options = {}) {
       }
     },
 
-    // Enable recommended configurations
-    ...tseslint.configs.recommended,
-    ...tseslint.configs.recommendedTypeChecked,
-    ...tseslint.configs.strict,
-    ...tseslint.configs.stylistic,
-
-    // Security plugin
+    // Enable recommended configurations for TypeScript files only
     {
+      files: ['**/*.ts', '**/*.tsx'],
+      ...tseslint.configs.recommended.reduce((acc, config) => ({ ...acc, ...config }), {}),
+      ...tseslint.configs.recommendedTypeChecked.reduce((acc, config) => ({ ...acc, ...config }), {}),
+      ...tseslint.configs.strict.reduce((acc, config) => ({ ...acc, ...config }), {}),
+      ...tseslint.configs.stylistic.reduce((acc, config) => ({ ...acc, ...config }), {})
+    },
+
+    // Security plugin - apply to all files
+    {
+      files: ['**/*.js', '**/*.mjs', '**/*.ts', '**/*.tsx'],
       plugins: {
         security: eslintSecurity
       },
@@ -59,8 +84,9 @@ export default function createConfig(options = {}) {
       }
     },
 
-    // Import plugin
+    // Import plugin - apply to all files
     {
+      files: ['**/*.js', '**/*.mjs', '**/*.ts', '**/*.tsx'],
       plugins: {
         import: eslintImport
       },
@@ -116,8 +142,9 @@ export default function createConfig(options = {}) {
       }
     },
 
-    // Main rules configuration
+    // Main rules configuration for all files
     {
+      files: ['**/*.js', '**/*.mjs', '**/*.ts', '**/*.tsx'],
       plugins: {
         prettier: eslintPrettier
       },
@@ -146,8 +173,14 @@ export default function createConfig(options = {}) {
               withNodeModules: false
             }
           }
-        ],
+        ]
+      }
+    },
 
+    // TypeScript-specific rules configuration
+    {
+      files: ['**/*.ts', '**/*.tsx'],
+      rules: {
         // TypeScript-specific rules
         '@typescript-eslint/explicit-function-return-type': [
           'warn', // Warn for decorators and internal functions
@@ -251,7 +284,20 @@ export default function createConfig(options = {}) {
           }
         ],
 
-        // General JavaScript rules
+        // TypeScript-specific overrides
+        '@typescript-eslint/no-extraneous-class': 'off', // Allow utility classes
+        '@typescript-eslint/no-useless-constructor': 'off',
+        '@typescript-eslint/no-empty-function': 'off',
+        '@typescript-eslint/unified-signatures': 'warn',
+        '@typescript-eslint/no-unnecessary-type-assertion': 'warn'
+      }
+    },
+
+    // Additional rules configuration
+    {
+      files: ['**/*.js', '**/*.mjs', '**/*.ts', '**/*.tsx'],
+      rules: {
+        // General JavaScript rules (apply to all files)
         'no-console': 'warn',
         'no-debugger': 'error',
         'no-alert': 'error',
@@ -323,15 +369,10 @@ export default function createConfig(options = {}) {
         'security/detect-non-literal-fs-filename': 'off', // Disabled as it's common in utility functions
         'security/detect-non-literal-regexp': 'off', // Disabled for template parsing
 
-        '@typescript-eslint/no-extraneous-class': 'off', // Allow utility classes
-        '@typescript-eslint/no-useless-constructor': 'off',
-        '@typescript-eslint/no-empty-function': 'off',
+        // General overrides
         'no-empty-function': 'off',
         'no-useless-constructor': 'off',
-        '@typescript-eslint/unified-signatures': 'warn',
-        '@typescript-eslint/no-unnecessary-type-assertion': 'warn',
         'no-param-reassign': 'off', // Disabled for utility functions
-
         'no-new': 'warn',
         'prefer-template': 'warn'
       }
