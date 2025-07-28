@@ -49,13 +49,13 @@ describe('Edge Cases', () => {
 
   describe('Boolean conversion edge cases', () => {
     class BooleanEdgeCases {
-      @Envapt('UPPERCASE_TRUE', false)
+      @Envapt('UPPERCASE_TRUE', { fallback: false })
       static readonly uppercaseTrue: boolean;
 
-      @Envapt('MIXED_CASE_FALSE', true)
+      @Envapt('MIXED_CASE_FALSE', { fallback: true })
       static readonly mixedCaseFalse: boolean;
 
-      @Envapt('NUMERIC_BOOL', false)
+      @Envapt('NUMERIC_BOOL', { fallback: false })
       static readonly numericBool: boolean;
     }
 
@@ -118,7 +118,7 @@ describe('Edge Cases', () => {
 
   describe('Type coercion edge cases', () => {
     class TypeCoercionEdgeCases {
-      @Envapt('STRING_TO_NUMBER', Number.NaN, Number)
+      @Envapt('STRING_TO_NUMBER', { fallback: Number.NaN, converter: Number })
       static readonly stringToNumber: number;
 
       @Envapt('OBJECT_FALLBACK', {
@@ -145,10 +145,10 @@ describe('Edge Cases', () => {
 
   describe('Extreme values', () => {
     class ExtremeValues {
-      @Envapt('UNICODE_VALUE', 'ascii')
+      @Envapt('UNICODE_VALUE', { fallback: 'ascii' })
       static readonly unicodeValue: string;
 
-      @Envapt('VERY_LONG_STRING', 'short')
+      @Envapt('VERY_LONG_STRING', { fallback: 'short' })
       static readonly veryLongString: string;
     }
 

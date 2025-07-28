@@ -1,34 +1,7 @@
 import { BuiltInConverters } from './BuiltInConverters';
 
 import type { BuiltInConverter } from './BuiltInConverters';
-
-/**
- * String value from a .env file or environment variable
- * @public
- */
-export type BaseInput = string | undefined;
-
-/**
- * Custom parser function type for environment variables
- * @param raw - Raw string value from environment
- * @param fallback - Fallback value if parsing fails
- * @returns Parsed value of type T
- * @public
- */
-export type ConverterFunction<FallbackType> = (raw: BaseInput, fallback?: FallbackType) => FallbackType;
-
-/**
- * Environment variable converter - can be a built-in constructor, built-in converter string, or custom parser function
- * @see {@link BuiltInConverter} for built-in types
- * @see {@link ConverterFunction} for custom parser functions
- * @public
- */
-export type EnvaptConverter<FallbackType> =
-  | typeof Number
-  | typeof Boolean
-  | typeof String
-  | BuiltInConverter
-  | ConverterFunction<FallbackType>;
+import type { EnvaptConverter, ConverterFunction } from './Types';
 
 /**
  * @internal

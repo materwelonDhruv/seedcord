@@ -14,7 +14,9 @@ export const EnvaptCache = new Map<string, unknown>();
 enum Primitive {
   String,
   Number,
-  Boolean
+  Boolean,
+  BigInt,
+  Symbol
 }
 
 /**

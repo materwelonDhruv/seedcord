@@ -27,6 +27,8 @@ export type TypedOmit<TargetObj, ObjKeys extends keyof TargetObj> = Omit<TargetO
 
 export type TypedExclude<Target, UnionKeys extends Target> = Exclude<Target, UnionKeys>;
 
+export type TypedExtract<Target, UnionKeys extends Target> = Extract<Target, UnionKeys>;
+
 export type ConstructorFunction = new (...args: any[]) => unknown;
 
 export type TypedConstructor<ConstructorType> = ConstructorType extends new (...args: infer A) => infer R

@@ -6,7 +6,7 @@ import { Envapt, Envapter } from '@seedcord/envapt';
 
 export class Globals extends Envapter {
   // Secrets
-  @Envapt('BOT_TOKEN', { fallsbakc: undefined })
+  @Envapt('BOT_TOKEN', { fallback: undefined })
   public static readonly botToken: string;
 
   // General

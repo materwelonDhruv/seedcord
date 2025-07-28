@@ -1,18 +1,17 @@
-import type { EnvaptConverter } from './Parser';
+import type { EnvaptConverter } from './Types';
 
 const BuiltInConvertersArray = [
   'string',
   'number',
   'boolean',
+  'bigint',
+  'symbol',
   'integer',
   'float',
   'json',
-  'array',
   'array:comma',
-  'array:semicolon',
-  'array:pipe',
   'array:space',
-  'array:comma-space',
+  'array:commaspace',
   'url',
   'regexp',
   'date'
@@ -22,16 +21,20 @@ const BuiltInConvertersArray = [
  * Built-in converter types for common environment variable patterns
  * @public
  */
-export type BuiltInConverter = (typeof BuiltInConvertersArray)[number];
+type BaseBuiltInConverter = (typeof BuiltInConvertersArray)[number];
 
-/**
- * Options for array converters
- * @public
- */
-export interface ArrayConverterOptions {
-  delimiter?: string;
-  trim?: boolean;
-}
+// type StartsWith<
+//   BaseUnion extends string,
+//   StartingString extends string
+// > = BaseUnion extends `${StartingString}${string}` ? BaseUnion : never;
+
+// type TypedExclude<Target, UnionKeys extends Target> = Exclude<Target, UnionKeys>;
+// type ArrayBuiltIns = StartsWith<BaseBuiltInConverter, 'array'>;
+// type AllowedConvertersForArrays = TypedExclude<BaseBuiltInConverter, 'json' | 'regexp' | ArrayBuiltIns>;
+// type ArrayConverters = `${ArrayBuiltIns}:${AllowedConvertersForArrays}`;
+
+// export type BuiltInConverter = ArrayConverters | BaseBuiltInConverter;
+export type BuiltInConverter = BaseBuiltInConverter;
 
 /**
  * Built-in converter implementations
@@ -45,7 +48,7 @@ export class BuiltInConverters {
   static number(raw: string | undefined, fallback?: number): number | undefined {
     if (raw === undefined) return fallback;
     const parsed = Number(raw);
-    return isNaN(parsed) ? fallback : parsed;
+    return Number.isNaN(parsed) ? fallback : parsed;
   }
 
   static boolean(raw: string | undefined, fallback?: boolean): boolean | undefined {
@@ -60,16 +63,29 @@ export class BuiltInConverters {
     return fallback;
   }
 
+  static bigint(raw: string | undefined, fallback?: bigint): bigint | undefined {
+    if (raw === undefined) return fallback;
+    try {
+      return BigInt(raw);
+    } catch {
+      return fallback;
+    }
+  }
+
+  static symbol(raw: string | undefined, fallback?: symbol): symbol | undefined {
+    return raw ? Symbol(raw) : fallback;
+  }
+
   static integer(raw: string | undefined, fallback?: number): number | undefined {
     if (raw === undefined) return fallback;
     const parsed = parseInt(raw, 10);
-    return isNaN(parsed) ? fallback : parsed;
+    return Number.isNaN(parsed) ? fallback : parsed;
   }
 
   static float(raw: string | undefined, fallback?: number): number | undefined {
     if (raw === undefined) return fallback;
     const parsed = parseFloat(raw);
-    return isNaN(parsed) ? fallback : parsed;
+    return Number.isNaN(parsed) ? fallback : parsed;
   }
 
   static json<ParsedJson = unknown>(raw: string | undefined, fallback?: ParsedJson): ParsedJson | undefined {
@@ -139,18 +155,18 @@ export class BuiltInConverters {
     if (/^\d+$/.test(raw)) {
       const timestamp = parseInt(raw, 10);
       const parsed = new Date(timestamp);
-      return isNaN(parsed.getTime()) ? fallback : parsed;
+      return Number.isNaN(parsed.getTime()) ? fallback : parsed;
     }
 
     // Try parsing as regular date string
     const parsed = new Date(raw);
-    return isNaN(parsed.getTime()) ? fallback : parsed;
+    return Number.isNaN(parsed.getTime()) ? fallback : parsed;
   }
 
   /**
    * Get the converter function for a built-in converter type
    */
-  // eslint-disable-next-line complexity
+
   static getConverter(type: BuiltInConverter): Function {
     switch (type) {
       case 'string':
@@ -165,17 +181,11 @@ export class BuiltInConverters {
         return BuiltInConverters.float;
       case 'json':
         return BuiltInConverters.json;
-      case 'array':
-        return BuiltInConverters.arrayComma; // default to comma
       case 'array:comma':
         return BuiltInConverters.arrayComma;
-      case 'array:semicolon':
-        return BuiltInConverters.arraySemicolon;
-      case 'array:pipe':
-        return BuiltInConverters.arrayPipe;
       case 'array:space':
         return BuiltInConverters.arraySpace;
-      case 'array:comma-space':
+      case 'array:commaspace':
         return BuiltInConverters.arrayCommaSpace;
       case 'url':
         return BuiltInConverters.url;

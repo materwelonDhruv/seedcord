@@ -49,41 +49,27 @@ describe('Built-in Converters', () => {
 
   describe('array converters', () => {
     class ArrayTest {
-      @Envapt('TEST_ARRAY_COMMA', { converter: 'array', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA', [], 'array:comma')
       static readonly arrayComma: string[];
 
-      @Envapt('TEST_ARRAY_SEMICOLON', { converter: 'array:semicolon', fallback: [] })
-      static readonly arraySemicolon: string[];
-
-      @Envapt('TEST_ARRAY_PIPE', { converter: 'array:pipe', fallback: [] })
-      static readonly arrayPipe: string[];
-
-      @Envapt('TEST_ARRAY_SPACE', { converter: 'array:space', fallback: [] })
+      @Envapt('TEST_ARRAY_SPACE', [], 'array:space')
       static readonly arraySpace: string[];
 
-      @Envapt('TEST_ARRAY_EMPTY', { converter: 'array', fallback: ['default'] })
+      @Envapt('TEST_ARRAY_EMPTY', ['default'], 'array:comma')
       static readonly arrayEmpty: string[];
 
-      @Envapt('TEST_ARRAY_WHITESPACE_ONLY', { converter: 'array', fallback: ['default'] })
+      @Envapt('TEST_ARRAY_WHITESPACE_ONLY', [], 'array:comma')
       static readonly arrayWhitespaceOnly: string[];
 
-      @Envapt('TEST_ARRAY_COMMA_SPACE', { converter: 'array:comma-space', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA_SPACE', [], 'array:commaspace')
       static readonly arrayCommaSpace: string[];
 
-      @Envapt('NONEXISTENT_ARRAY', { converter: 'array', fallback: ['fallback1', 'fallback2'] })
+      @Envapt('NONEXISTENT_ARRAY', ['fallback1', 'fallback2'], 'array:comma')
       static readonly nonexistentArray: string[];
     }
 
     it('should parse comma-separated arrays', () => {
       expect(ArrayTest.arrayComma).to.deep.equal(['item1', 'item2', 'item3']);
-    });
-
-    it('should parse semicolon-separated arrays', () => {
-      expect(ArrayTest.arraySemicolon).to.deep.equal(['alpha', 'beta', 'gamma']);
-    });
-
-    it('should parse pipe-separated arrays', () => {
-      expect(ArrayTest.arrayPipe).to.deep.equal(['red', 'green', 'blue']);
     });
 
     it('should parse space-separated arrays', () => {
@@ -95,7 +81,6 @@ describe('Built-in Converters', () => {
     });
 
     it('should handle empty arrays', () => {
-      // Note: dotenv treats VAR="" as undefined, so fallback is used
       expect(ArrayTest.arrayEmpty).to.deep.equal(['default']);
     });
 
@@ -422,19 +407,13 @@ describe('Built-in Converters', () => {
       static readonly booleanFalseTemplate: boolean;
 
       // Array converters with templates
-      @Envapt('TEST_ARRAY_COMMA_TEMPLATE', { converter: 'array', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA_TEMPLATE', { converter: 'array:comma', fallback: [] })
       static readonly arrayCommaTemplate: string[];
-
-      @Envapt('TEST_ARRAY_SEMICOLON_TEMPLATE', { converter: 'array:semicolon', fallback: [] })
-      static readonly arraySemicolonTemplate: string[];
-
-      @Envapt('TEST_ARRAY_PIPE_TEMPLATE', { converter: 'array:pipe', fallback: [] })
-      static readonly arrayPipeTemplate: string[];
 
       @Envapt('TEST_ARRAY_SPACE_TEMPLATE', { converter: 'array:space', fallback: [] })
       static readonly arraySpaceTemplate: string[];
 
-      @Envapt('TEST_ARRAY_COMMA_SPACE_TEMPLATE', { converter: 'array:comma-space', fallback: [] })
+      @Envapt('TEST_ARRAY_COMMA_SPACE_TEMPLATE', { converter: 'array:commaspace', fallback: [] })
       static readonly arrayCommaSpaceTemplate: string[];
 
       // JSON converter with templates
@@ -486,14 +465,6 @@ describe('Built-in Converters', () => {
 
     it('should resolve templates in comma array converter', () => {
       expect(TemplateTest.arrayCommaTemplate).to.deep.equal(['alpha', 'beta', 'gamma']);
-    });
-
-    it('should resolve templates in semicolon array converter', () => {
-      expect(TemplateTest.arraySemicolonTemplate).to.deep.equal(['alpha', 'beta', 'gamma']);
-    });
-
-    it('should resolve templates in pipe array converter', () => {
-      expect(TemplateTest.arrayPipeTemplate).to.deep.equal(['alpha', 'beta', 'gamma']);
     });
 
     it('should resolve templates in space array converter', () => {

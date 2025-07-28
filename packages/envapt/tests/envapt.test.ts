@@ -37,13 +37,13 @@ describe('Envapter', () => {
       @Envapt('NONEXISTENT_VAR_NO_OPTIONS')
       public static readonly nonexistentVarNoOptions: string | null;
 
-      @Envapt('PORT', 6956)
+      @Envapt('PORT', { fallback: 6956 })
       public static readonly port: number;
 
-      @Envapt('IS_ENABLED', false)
+      @Envapt('IS_ENABLED', { fallback: false })
       public static readonly isEnabled: boolean;
 
-      @Envapt('URI', 'db://localhost:27017/')
+      @Envapt('URI', { fallback: 'db://localhost:27017/' })
       public static readonly uri: string;
     }
 
@@ -199,11 +199,11 @@ describe('Envapter', () => {
       @Envapt('DATABASE_CONFIG', { converter: 'json' })
       static readonly databaseConfig: object;
 
-      @Envapt('API_ENDPOINTS', { converter: 'array:semicolon' })
-      static readonly apiEndpoints: string[];
+      // @Envapt('API_ENDPOINTS', { converter: 'array:semicolon' })
+      // static readonly apiEndpoints: string[];
 
-      @Envapt('CORS_ORIGINS', { converter: 'array:pipe' })
-      static readonly corsOrigins: string[];
+      // @Envapt('CORS_ORIGINS', { converter: 'array:pipe' })
+      // static readonly corsOrigins: string[];
 
       @Envapt('SERVICE_TAGS', { converter: 'array:space' })
       static readonly serviceTags: string[];
@@ -223,17 +223,17 @@ describe('Envapter', () => {
       });
     });
 
-    it('should parse semicolon-delimited arrays', () => {
-      expect(BuiltInConverterShowcase.apiEndpoints).to.deep.equal(['auth', 'users', 'products', 'orders']);
-    });
+    // it('should parse semicolon-delimited arrays', () => {
+    //   expect(BuiltInConverterShowcase.apiEndpoints).to.deep.equal(['auth', 'users', 'products', 'orders']);
+    // });
 
-    it('should parse pipe-delimited arrays', () => {
-      expect(BuiltInConverterShowcase.corsOrigins).to.deep.equal([
-        'http://localhost:3000',
-        'https://app.example.com',
-        'https://staging.example.com'
-      ]);
-    });
+    // it('should parse pipe-delimited arrays', () => {
+    //   expect(BuiltInConverterShowcase.corsOrigins).to.deep.equal([
+    //     'http://localhost:3000',
+    //     'https://app.example.com',
+    //     'https://staging.example.com'
+    //   ]);
+    // });
 
     it('should parse space-delimited arrays', () => {
       expect(BuiltInConverterShowcase.serviceTags).to.deep.equal(['frontend', 'backend', 'api', 'database']);

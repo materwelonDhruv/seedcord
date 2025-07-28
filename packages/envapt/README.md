@@ -76,8 +76,8 @@ class Config extends Envapter {
   @Envapt('APP_PORT', 3000)
   static readonly port: number;
 
-  @Envapt('APP_URL', 'http://localhost:3000')
-  static readonly url: string;
+  @Envapt('APP_URL', 'http://localhost:3000', 'url')
+  static readonly url: URL;
 
   @Envapt('ALLOWED_ORIGINS', {
     fallback: ['http://localhost:3000'],
@@ -107,7 +107,7 @@ const isProduction = Envapter.getBoolean('IS_PRODUCTION', false);
 
 ### Decorator API
 
-The `@Envapt` decorator supports both legacy and modern syntax:
+The `@Envapt` decorator supports both class and modern syntax:
 
 #### Modern Syntax (Recommended)
 
@@ -115,7 +115,7 @@ The `@Envapt` decorator supports both legacy and modern syntax:
 @Envapt('ENV_VAR', { fallback?: T, converter?: EnvConverter<T> })
 ```
 
-#### Legacy Syntax (Still Supported)
+#### Class Syntax
 
 ```ts
 @Envapt('ENV_VAR', fallback?, converter?)
@@ -163,14 +163,14 @@ class Config extends Envapter {
   static readonly enabled: boolean;
 
   // Array converters with different delimiters
-  @Envapt('TAGS', { converter: 'array', fallback: [] }) // comma-separated (default)
+  @Envapt('TAGS', { converter: 'array:comma', fallback: [] })
   static readonly tags: string[];
 
-  @Envapt('ENDPOINTS', { converter: 'array:semicolon', fallback: [] })
-  static readonly endpoints: string[];
+  // @Envapt('ENDPOINTS', { converter: 'array:semicolon', fallback: [] })
+  // static readonly endpoints: string[];
 
-  @Envapt('CORS_ORIGINS', { converter: 'array:pipe', fallback: [] })
-  static readonly corsOrigins: string[];
+  // @Envapt('CORS_ORIGINS', { converter: 'array:pipe', fallback: [] })
+  // static readonly corsOrigins: string[];
 
   @Envapt('SERVICES', { converter: 'array:space', fallback: [] })
   static readonly services: string[];
@@ -206,8 +206,6 @@ class Config extends Envapter {
 - `'json'` - JSON objects/arrays (safe parsing with fallback)
 - `'array'` - Comma-separated arrays (default delimiter)
 - `'array:comma'` - Comma-separated arrays (`,`)
-- `'array:semicolon'` - Semicolon-separated arrays (`;`)
-- `'array:pipe'` - Pipe-separated arrays (`|`)
 - `'array:space'` - Space-separated arrays (` `)
 - `'array:comma-space'` - Comma-space separated arrays (`, `)
 - `'url'` - URL objects

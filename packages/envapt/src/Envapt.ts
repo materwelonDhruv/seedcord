@@ -1,21 +1,8 @@
 /* eslint-disable security/detect-bidi-characters */
 import { Envapter, EnvaptCache } from './Envapter';
-import { Parser, type EnvaptConverter } from './Parser';
+import { Parser } from './Parser';
 
-/**
- * Options for the \@Envapt decorator (modern API)
- * @public
- */
-export interface EnvaptOptions<FallbackType = string> {
-  /**
-   * Default value to use if environment variable is not found
-   */
-  fallback?: FallbackType;
-  /**
-   * Built-in converter, custom converter function, or legacy constructor (String, Number, Boolean)
-   */
-  converter?: EnvaptConverter<FallbackType>;
-}
+import type { EnvaptConverter, EnvaptOptions } from './Types';
 
 function createPropertyDecorator<FallbackType>(
   key: string,
@@ -55,7 +42,7 @@ function createPropertyDecorator<FallbackType>(
  * **IMPORTANT: This decorator is designed for STATIC class properties only.**\
  * Values are set before the class is instantiated.
  *
- * Supports both modern options-based API and legacy parameter-based API.
+ * Supports both modern options-based API and classic parameter-based API.
  * Automatically detects types from fallback values and provides caching for performance.
  *
  * Note: Using \@Envapt on a variable for an env that doesn't exist will set the value to `null` if no fallback is provided, regardless of a converter being used.
@@ -87,10 +74,10 @@ function createPropertyDecorator<FallbackType>(
  * ```
  *
  * @param key - Environment variable name to load
- * @param fallback - Default value if variable is not found (legacy API)
- * @param converter - Custom converter function or built-in converter (legacy API)
+ * @param fallback - Default value if variable is not found. Only suppoerts primitive types (string, number, boolean, bigint, symbol).
+ * @param converter - Custom converter function or built-in converter
  *
- * @example Legacy API (still supported):
+ * @example Classic API
  * ```ts
  * class Config extends Envapter {
  * ‎ ‎ \@Envapt('PORT', 3000, Number)
@@ -100,8 +87,12 @@ function createPropertyDecorator<FallbackType>(
  *
  * @public
  */
+
+// TODO: update tsconfigs to add paths so I don't have to build every time I make a change
+// TODO: legacy config support. change how it's called, not legacy support. but u get it. don't allow objects. only primitives
+
 export function Envapt<FallbackType = unknown>(key: string, options?: EnvaptOptions<FallbackType>): PropertyDecorator;
-export function Envapt<FallbackType = unknown>(
+export function Envapt<FallbackType = string | number | boolean | bigint | symbol>(
   key: string,
   fallback?: FallbackType,
   converter?: EnvaptConverter<FallbackType>
@@ -117,7 +108,7 @@ export function Envapt<FallbackType = unknown>(
       "@Envapt annotation used without Reflect, have you called import 'reflect-metadata'; in your code?"
     );
 
-  // Determine if using new options API or legacy API
+  // Determine if using new options API or classic API
   let fallback: FallbackType | undefined;
   let actualConverter: EnvaptConverter<FallbackType> | undefined;
   let hasFallback = true;
@@ -133,7 +124,7 @@ export function Envapt<FallbackType = unknown>(
     actualConverter = options.converter;
     hasFallback = 'fallback' in options;
   } else {
-    // Legacy API
+    // Classic API
     fallback = fallbackOrOptions as FallbackType;
     actualConverter = converter;
     hasFallback = arguments.length > 1;
