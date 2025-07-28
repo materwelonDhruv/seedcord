@@ -280,12 +280,8 @@ export function fyShuffle<TArray>(items: TArray[]): TArray[] {
   const array = items.slice();
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    const swapItem = array[j];
-    if (temp !== undefined && swapItem !== undefined) {
-      array[i] = swapItem;
-      array[j] = temp;
-    }
+    // @ts-ignore - TypeScript doesn't recognize that TArray can be swapped
+    [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 }

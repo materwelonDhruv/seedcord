@@ -90,9 +90,6 @@ function createPropertyDecorator<FallbackType>(
  *
  * @public
  */
-
-// TODO: update tsconfigs to add paths so I don't have to build every time I make a change
-
 export function Envapt<FallbackType = unknown>(key: string, options?: EnvaptOptions<FallbackType>): PropertyDecorator;
 export function Envapt<FallbackType = string | number | boolean | bigint | symbol>(
   key: string,

@@ -132,7 +132,6 @@ export class BuiltInConverters {
     fallback: unknown,
     config: ArrayConverter
   ): unknown[] | undefined {
-    // if (raw === undefined) return fallback;
     if (raw === undefined) {
       if (Array.isArray(fallback)) return fallback;
       throw new EnvaptError(
