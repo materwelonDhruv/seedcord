@@ -2,7 +2,7 @@
   "name": "@seedcord/envapt",
   "type": "module",
   "version": "1.0.0",
-  "description": "Environment variable processing and validation package for seedcord projects",
+  "description": "The apt way to handle env",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {

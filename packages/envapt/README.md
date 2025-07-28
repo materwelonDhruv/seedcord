@@ -1,4 +1,4 @@
-# Envapt - The apt way to handle env.
+# Envapt - The apt way to handle env
 
 [![Downloads](https://img.shields.io/npm/dt/envuments.svg)](https://www.npmjs.com/package/envuments)
 [![npm bundle size](https://img.shields.io/bundlephobia/min/envuments)](https://www.npmjs.com/package/envuments)
