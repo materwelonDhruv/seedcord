@@ -1,4 +1,5 @@
 // Prettier configuration
+// Make sure these match .prettierrc at root
 export const PRETTIER_CONFIG = {
   tabWidth: 2,
   semi: true,
