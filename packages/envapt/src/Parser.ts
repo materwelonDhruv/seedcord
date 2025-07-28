@@ -63,6 +63,8 @@ export class Parser {
     if (resolvedConverter === Number) resolvedConverter = 'number';
     else if (resolvedConverter === Boolean) resolvedConverter = 'boolean';
     else if (resolvedConverter === String) resolvedConverter = 'string';
+    else if (resolvedConverter === BigInt) resolvedConverter = 'bigint';
+    else if (resolvedConverter === Symbol) resolvedConverter = 'symbol';
 
     // Check if it's a built-in converter
     if (BuiltInConverters.isBuiltInConverter(resolvedConverter as EnvaptConverter<unknown>)) {

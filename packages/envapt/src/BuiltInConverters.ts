@@ -21,20 +21,7 @@ const BuiltInConvertersArray = [
  * Built-in converter types for common environment variable patterns
  * @public
  */
-type BaseBuiltInConverter = (typeof BuiltInConvertersArray)[number];
-
-// type StartsWith<
-//   BaseUnion extends string,
-//   StartingString extends string
-// > = BaseUnion extends `${StartingString}${string}` ? BaseUnion : never;
-
-// type TypedExclude<Target, UnionKeys extends Target> = Exclude<Target, UnionKeys>;
-// type ArrayBuiltIns = StartsWith<BaseBuiltInConverter, 'array'>;
-// type AllowedConvertersForArrays = TypedExclude<BaseBuiltInConverter, 'json' | 'regexp' | ArrayBuiltIns>;
-// type ArrayConverters = `${ArrayBuiltIns}:${AllowedConvertersForArrays}`;
-
-// export type BuiltInConverter = ArrayConverters | BaseBuiltInConverter;
-export type BuiltInConverter = BaseBuiltInConverter;
+export type BuiltInConverter = (typeof BuiltInConvertersArray)[number];
 
 /**
  * Built-in converter implementations
@@ -177,6 +164,10 @@ export class BuiltInConverters {
         return BuiltInConverters.boolean;
       case 'integer':
         return BuiltInConverters.integer;
+      case 'bigint':
+        return BuiltInConverters.bigint;
+      case 'symbol':
+        return BuiltInConverters.symbol;
       case 'float':
         return BuiltInConverters.float;
       case 'json':

@@ -31,6 +31,11 @@ export type TypedExtract<Target, UnionKeys extends Target> = Extract<Target, Uni
 
 export type ConstructorFunction = new (...args: any[]) => unknown;
 
+export type StartsWith<
+  BaseUnion extends string,
+  StartingString extends string
+> = BaseUnion extends `${StartingString}${string}` ? BaseUnion : never;
+
 export type TypedConstructor<ConstructorType> = ConstructorType extends new (...args: infer A) => infer R
   ? new (...args: A) => R
   : ConstructorType extends abstract new (...args: infer A) => infer R
