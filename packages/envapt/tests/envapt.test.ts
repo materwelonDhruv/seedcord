@@ -45,6 +45,12 @@ describe('Envapter', () => {
 
       @Envapt('URI', { fallback: 'db://localhost:27017/' })
       public static readonly uri: string;
+
+      @Envapt('BIGINT_VAR', 23478n)
+      public static readonly bigintVar: bigint;
+
+      @Envapt('SYMBOL_VAR', Symbol('test'))
+      public static readonly symbolVar: symbol;
     }
 
     it('should detect undefined type for non-existent variables', () => {
@@ -60,19 +66,29 @@ describe('Envapter', () => {
     });
 
     it('should detect number type from fallback', () => {
-      const expectedPort = 6956;
+      const expectedPort = 7777;
       expect(typeof TestTypeDetection.port).to.equal('number');
       expect(TestTypeDetection.port).to.equal(expectedPort);
     });
 
     it('should detect boolean type from fallback', () => {
       expect(typeof TestTypeDetection.isEnabled).to.equal('boolean');
-      expect(TestTypeDetection.isEnabled).to.be.false;
+      expect(TestTypeDetection.isEnabled).to.be.true;
     });
 
     it('should detect string type from fallback', () => {
       expect(typeof TestTypeDetection.uri).to.equal('string');
       expect(TestTypeDetection.uri).to.equal('mongodb://localhost:27017/');
+    });
+
+    it('should detect bigint type from fallback', () => {
+      expect(typeof TestTypeDetection.bigintVar).to.equal('bigint');
+      expect(TestTypeDetection.bigintVar).to.equal(99999n);
+    });
+
+    it('should detect symbol type from fallback', () => {
+      expect(typeof TestTypeDetection.symbolVar).to.equal('symbol');
+      expect(TestTypeDetection.symbolVar.toString()).to.equal('Symbol(lmao)');
     });
   });
 
