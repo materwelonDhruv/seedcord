@@ -1,9 +1,8 @@
 {
   "name": "@seedcord/eslint-config",
   "type": "module",
-  "version": "0.0.0",
-  "private": true,
-  "description": "ESLint configuration package for Seedcord projects",
+  "version": "1.0.0",
+  "description": "ESLint configuration package for seedcord projects",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
@@ -15,8 +14,7 @@
   "files": [
     "dist",
     "create-config.mjs",
-    "create-config.d.mts",
-    "index.ts"
+    "create-config.d.mts"
   ],
   "scripts": {
     "build": "tsc",
@@ -28,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.32.0",
+    "@types/lodash": "^4.17.20",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.32.0",
@@ -36,6 +35,7 @@
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.3",
     "eslint-plugin-security": "^3.0.1",
+    "lodash": "^4.17.21",
     "typescript-eslint": "^8.38.0"
   }
 }
