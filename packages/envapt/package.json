@@ -8,7 +8,18 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
+      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
+    },
+    "./envapter": {
+      "import": "./dist/Envapter.js",
+      "require": "./dist/Envapter.js",
+      "types": "./dist/Envapter.d.ts"
+    },
+    "./envapt": {
+      "import": "./dist/Envapt.js",
+      "require": "./dist/Envapt.js",
+      "types": "./dist/Envapt.d.ts"
     }
   },
   "files": [
@@ -20,7 +31,7 @@
     "directory": "packages/envapt"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.build.json",
     "clean": "rm -rf dist",
     "dev": "tsc --watch",
     "lint": "eslint 'src/**/*.{ts,tsx}' --cache",
@@ -29,7 +40,8 @@
     "format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
     "typecheck": "tsc --noEmit",
     "test": "mocha",
-    "test:watch": "mocha --watch"
+    "test:watch": "mocha --watch",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "keywords": [
     "env",
