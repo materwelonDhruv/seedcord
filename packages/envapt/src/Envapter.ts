@@ -21,7 +21,7 @@ enum PrimitiveEnvapterType {
  * Environment types supported by Envapter
  * @public
  */
-enum Environment {
+enum EnvaptEnvironment {
   Development,
   Staging,
   Production
@@ -93,15 +93,15 @@ class Envapter implements EnvaptConverterService {
     return this._envPaths;
   }
 
-  private static determineEnvironment(env: string | Environment): Environment {
+  private static determineEnvironment(env: string | EnvaptEnvironment): EnvaptEnvironment {
     if (typeof env === 'string') {
       switch (env.toLowerCase()) {
         case 'production':
-          return Environment.Production;
+          return EnvaptEnvironment.Production;
         case 'staging':
-          return Environment.Staging;
+          return EnvaptEnvironment.Staging;
         default:
-          return Environment.Development;
+          return EnvaptEnvironment.Development;
       }
     }
 
@@ -119,7 +119,7 @@ class Envapter implements EnvaptConverterService {
    * Envapter.environment = 'staging';
    * ```
    */
-  static set environment(env: string | Environment) {
+  static set environment(env: string | EnvaptEnvironment) {
     this.internalEnvironment = this.determineEnvironment(env);
   }
 
@@ -127,7 +127,7 @@ class Envapter implements EnvaptConverterService {
    * Get the current application environment
    * @returns Current environment enum value
    */
-  static get environment(): Environment {
+  static get environment(): EnvaptEnvironment {
     return this.internalEnvironment;
   }
 
@@ -136,7 +136,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is production
    */
   static get isProduction(): boolean {
-    return this.internalEnvironment === Environment.Production;
+    return this.internalEnvironment === EnvaptEnvironment.Production;
   }
 
   /**
@@ -144,7 +144,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is staging
    */
   static get isStaging(): boolean {
-    return this.internalEnvironment === Environment.Staging;
+    return this.internalEnvironment === EnvaptEnvironment.Staging;
   }
 
   /**
@@ -152,7 +152,7 @@ class Envapter implements EnvaptConverterService {
    * @returns true if environment is development
    */
   static get isDevelopment(): boolean {
-    return this.internalEnvironment === Environment.Development;
+    return this.internalEnvironment === EnvaptEnvironment.Development;
   }
 
   private static get config(): Map<string, unknown> {
@@ -280,4 +280,4 @@ class Envapter implements EnvaptConverterService {
   }
 }
 
-export { Envapter, Environment };
+export { Envapter, EnvaptEnvironment };

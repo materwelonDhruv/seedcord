@@ -1,44 +1,437 @@
-# @seedcord/envapt
+# Envapt - The apt way to handle env.
 
-Environment variable processing and validation package for seedcord projects.
+[![Downloads](https://img.shields.io/npm/dt/envuments.svg)](https://www.npmjs.com/package/envuments)
+[![npm bundle size](https://img.shields.io/bundlephobia/min/envuments)](https://www.npmjs.com/package/envuments)
+[![Version](https://img.shields.io/npm/v/envuments.svg)](https://www.npmjs.com/package/envuments)
+[![License](https://img.shields.io/npm/l/envuments)](https://www.npmjs.com/package/envuments)
 
-## Description
+---
 
-Envapt provides utilities for processing and validating environment variables in TypeScript projects.
+A powerful TypeScript-first environment configuration library that provides type detection, template variable resolution, and decorator-based static class property configuration by extending dotenv.
 
-## Installation
+This library is inspired by [envuments](https://github.com/mason-rogers/envuments).
+
+## Features
+
+- 🔧 **Automatic Type Detection** - Types inferred from fallback values
+- 🔗 **Template Variables** - `${VAR}` syntax with circular reference protection
+- 🎯 **Static Class Properties** - Decorator-based configuration for static class members
+- 🏷️ **Built-in & Custom Converters** - Ready-to-use converters for common patterns + custom transformations
+- 🌍 **Environment Detection** - Built-in development/staging/production handling
+- 📂 **Multiple .env Files** - Load from multiple sources
+- 💪 **Edge Case Handling** - Robust parsing for all scenarios
+- 🛡️ **Type Safety** - Full TypeScript support with proper type inference
+
+## Requirements
+
+- **Node.js**: v18 or later (recommended for ESM and nodenext support)
+- **TypeScript**: v5.8 or later
+- **Dependencies**:
+  - `dotenv` (runtime dependency | bundled)
+  - `reflect-metadata` (peer dependency, required for decorators)
+- **TypeScript Compiler Options**:
+  - `experimentalDecorators: true`
+  - `emitDecoratorMetadata: true`
+  - `module: nodenext`
+  - `moduleResolution: nodenext`
+  - `target: esnext`
+  - `lib: ESNext`
+- **ESM Support**: Project uses ESM (`nodenext`), so your environment and tooling should support ES modules.
+
+## Quick Start
+
+### Installation
 
 ```bash
-pnpm add @seedcord/envapt
+# npm
+npm install envapt reflect-metadata
+
+# pnpm
+pnpm add envapt reflect-metadata
+
+# yarn
+yarn add envapt reflect-metadata
 ```
 
-## Usage
+### Basic Usage
 
-```typescript
-import {} from /* your exports */ '@seedcord/envapt';
+Create a `.env` file:
 
-// TODO: Add usage examples
+```env
+APP_PORT=8443
+APP_URL=http://localhost:${APP_PORT}
+DATABASE_URL=postgres://localhost:5432/mydb
+IS_PRODUCTION=false
+MAX_CONNECTIONS=100
+ALLOWED_ORIGINS=https://app.com,https://admin.com
 ```
 
-## Development
+Use with decorators (recommended):
 
-```bash
-# Build the package
-pnpm build
+```ts
+import 'reflect-metadata';
+import { Envapt } from '@seedcord/envapt';
 
-# Run in development mode
-pnpm dev
+class Config extends Envapter {
+  @Envapt('APP_PORT', 3000)
+  static readonly port: number;
 
-# Run tests
-pnpm test
+  @Envapt('APP_URL', 'http://localhost:3000')
+  static readonly url: string;
 
-# Lint code
-pnpm lint
+  @Envapt('ALLOWED_ORIGINS', {
+    fallback: ['http://localhost:3000'],
+    converter: 'array' // Built-in array converter
+  })
+  static readonly allowedOrigins: string[];
+}
 
-# Format code
-pnpm format
+console.log(Config.port); // 8443 (number)
+console.log(Config.url); // "http://localhost:8443" (templated!)
+console.log(Config.allowedOrigins); // ["https://app.com", "https://admin.com"]
+console.log(Config.isProduction); // false (provided by the Envapter class)
 ```
 
-## License
+Or use functionally:\
+<sub>Limited to primitives, String, Number, Boolean, and does not support converters.</sub>
 
-Apache-2.0
+```ts
+import { Envapter } from '@seedcord/envapt';
+
+const port = Envapter.getNumber('APP_PORT', 3000);
+const url = Envapter.get('APP_URL', 'http://localhost:3000');
+const isProduction = Envapter.getBoolean('IS_PRODUCTION', false);
+```
+
+## API Reference
+
+### Decorator API
+
+The `@Envapt` decorator supports both legacy and modern syntax:
+
+#### Modern Syntax (Recommended)
+
+```ts
+@Envapt('ENV_VAR', { fallback?: T, converter?: EnvConverter<T> })
+```
+
+#### Legacy Syntax (Still Supported)
+
+```ts
+@Envapt('ENV_VAR', fallback?, converter?)
+```
+
+#### Automatic Type Detection
+
+Types are automatically inferred from fallback values:
+
+```ts
+class Config extends Envapter {
+  @Envapt('STRING_VAR', 'default') // string
+  static readonly stringVar: string;
+
+  @Envapt('NUMBER_VAR', 42) // number
+  static readonly numberVar: number;
+
+  @Envapt('BOOLEAN_VAR', true) // boolean
+  static readonly booleanVar: boolean;
+}
+```
+
+#### Built-in Converters
+
+Envapt provides many built-in converters for common patterns:
+
+```ts
+class Config extends Envapter {
+  // String converter (explicit)
+  @Envapt('APP_NAME', { converter: 'string', fallback: 'MyApp' })
+  static readonly appName: string;
+
+  // Numeric converters
+  @Envapt('PORT', { converter: 'number', fallback: 3000 })
+  static readonly port: number;
+
+  @Envapt('MAX_CONNECTIONS', { converter: 'integer', fallback: 100 })
+  static readonly maxConnections: number;
+
+  @Envapt('TIMEOUT', { converter: 'float', fallback: 30.5 })
+  static readonly timeout: number;
+
+  // Boolean converter (supports yes/no, on/off, 1/0, true/false)
+  @Envapt('ENABLED', { converter: 'boolean', fallback: false })
+  static readonly enabled: boolean;
+
+  // Array converters with different delimiters
+  @Envapt('TAGS', { converter: 'array', fallback: [] }) // comma-separated (default)
+  static readonly tags: string[];
+
+  @Envapt('ENDPOINTS', { converter: 'array:semicolon', fallback: [] })
+  static readonly endpoints: string[];
+
+  @Envapt('CORS_ORIGINS', { converter: 'array:pipe', fallback: [] })
+  static readonly corsOrigins: string[];
+
+  @Envapt('SERVICES', { converter: 'array:space', fallback: [] })
+  static readonly services: string[];
+
+  @Envapt('METHODS', { converter: 'array:comma-space', fallback: [] })
+  static readonly services: string[];
+
+  // JSON converter (safely parses JSON)
+  @Envapt('CONFIG', { converter: 'json', fallback: {} })
+  static readonly config: object;
+
+  // URL converter
+  @Envapt('API_URL', { converter: 'url', fallback: new URL('http://localhost') })
+  static readonly apiUrl: URL;
+
+  // RegExp converter (supports /pattern/flags syntax)
+  @Envapt('VALIDATION_PATTERN', { converter: 'regexp', fallback: /.*/ })
+  static readonly validationPattern: RegExp;
+
+  // Date converter (supports ISO strings and timestamps)
+  @Envapt('CREATED_AT', { converter: 'date', fallback: new Date() })
+  static readonly createdAt: Date;
+}
+```
+
+**Available Built-in Converters:**
+
+- `'string'` - String values
+- `'number'` - Numeric values (integers and floats)
+- `'integer'` - Integer values only
+- `'float'` - Float values only
+- `'boolean'` - Boolean values (true/false, yes/no, on/off, 1/0)
+- `'json'` - JSON objects/arrays (safe parsing with fallback)
+- `'array'` - Comma-separated arrays (default delimiter)
+- `'array:comma'` - Comma-separated arrays (`,`)
+- `'array:semicolon'` - Semicolon-separated arrays (`;`)
+- `'array:pipe'` - Pipe-separated arrays (`|`)
+- `'array:space'` - Space-separated arrays (` `)
+- `'array:comma-space'` - Comma-space separated arrays (`, `)
+- `'url'` - URL objects
+- `'regexp'` - Regular expressions (supports `/pattern/flags` syntax)
+- `'date'` - Date objects (supports ISO strings and timestamps)
+
+#### Custom Converters
+
+Transform environment values to any type:
+
+```ts
+class Config extends Envapter {
+  @Envapt('JSON_CONFIG', {
+    fallback: { timeout: 5000 },
+    converter: (raw, fallback) => (raw ? JSON.parse(raw) : fallback)
+  })
+  static readonly config: { timeout: number };
+
+  @Envapt('TAGS', {
+    fallback: new Set(['default']),
+    converter: (raw, fallback) => {
+      if (!raw) return fallback;
+      return new Set(raw.split(',').map((s) => s.trim()));
+    }
+  })
+  static readonly tags: Set<string>;
+}
+```
+
+#### Handling Missing Values
+
+Control what happens when environment variables don't exist:
+
+```ts
+class Config extends Envapter {
+  // Returns undefined if not found
+  @Envapt('OPTIONAL_VAR', { fallback: undefined })
+  static readonly optional: string | undefined;
+
+  // Returns null if not found (no fallback provided)
+  @Envapt('MISSING_VAR', { converter: String })
+  static readonly missing: string | null;
+
+  // Uses fallback if not found
+  @Envapt('WITH_FALLBACK', { fallback: 'default' })
+  static readonly withFallback: string;
+}
+```
+
+### Functional API
+
+```ts
+import { Envapter } from '@seedcord/envapt';
+
+// Type-specific getters
+const str = Envapter.get('STRING_VAR', 'default');
+const num = Envapter.getNumber('NUMBER_VAR', 42);
+const bool = Envapter.getBoolean('BOOLEAN_VAR', false);
+
+// Instance methods (same API)
+const envapter = new Envapter();
+const value = envapter.get('VAR', 'default');
+```
+
+## Environment Detection
+
+Envapt automatically detects your environment from these variables (in order):
+
+1. `ENVIRONMENT`
+2. `ENV`
+3. `NODE_ENV`
+
+Supported values: `development`, `staging`, `production` (case-sensitive)
+
+### Environment Management
+
+```ts
+import { Envapter, EnvaptEnvironment } from '@seedcord/envapt';
+
+// Check current environment
+console.log(Envapter.environment); // Environment.Development
+console.log(Envapter.isProduction); // false
+console.log(Envapter.isDevelopment); // true
+console.log(Envapter.isStaging); // false
+
+// Set environment
+Envapter.environment = EnvaptEnvironment.Production;
+Envapter.environment = 'staging'; // string also works
+```
+
+### Multiple .env Files
+
+```ts
+import { resolve } from 'node:path';
+import { Envapter } from '@seedcord/envapt';
+
+// Load from multiple files
+Envapter.envPaths = [resolve(__dirname, '.env.local'), resolve(__dirname, '.env.production')];
+
+// Or single file
+Envapter.envPaths = resolve(__dirname, '.env.production');
+
+// Or just don't set a path for it to default to .env at the root of your project
+```
+
+## Template Variables
+
+Envapt supports variable interpolation with `${VARIABLE}` syntax:
+
+```env
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_URL=postgres://${DATABASE_HOST}:${DATABASE_PORT}/mydb
+
+API_VERSION=v1
+API_BASE=https://api.example.com
+API_ENDPOINT=${API_BASE}/${API_VERSION}/users
+```
+
+### Circular Reference Protection
+
+```env
+CIRCULAR_A=${CIRCULAR_B}
+CIRCULAR_B=${CIRCULAR_A}
+```
+
+Circular references are detected and preserved as-is rather than causing infinite loops.
+
+## Advanced Examples
+
+### Complex Configuration Class
+
+```ts
+import 'reflect-metadata';
+import { Envapt } from '@seedcord/envapt';
+
+class AppConfig extends Envapter {
+  @Envapt('PORT', 3000)
+  static readonly port: number;
+
+  @Envapt('HOST', 'localhost')
+  static readonly host: string;
+
+  @Envapt('DATABASE_URL', 'sqlite://memory')
+  static readonly databaseUrl: string;
+
+  @Envapt('REDIS_URLS', {
+    fallback: [new URL('redis://localhost:6379')],
+    converter: (raw, fallback) => (raw ? raw.split(',').map((s) => new URL(s)) : fallback)
+  })
+  static readonly redisUrls: URL[];
+
+  @Envapt('FEATURE_FLAGS', {
+    fallback: new Set(['basic']),
+    converter: (raw, fallback) => {
+      if (!raw) return fallback;
+      return new Set(raw.split(',').map((s) => s.trim()));
+    }
+  })
+  static readonly featureFlags: Set<string>;
+
+  @Envapt('LOG_LEVEL', 'info')
+  static readonly logLevel: string;
+
+  @Envapt('MAX_UPLOAD_SIZE', {
+    fallback: 10 * 1024 * 1024, // 10MB
+    converter: 'integer'
+  })
+  static readonly maxUploadSize: number;
+}
+```
+
+### Custom Converter Examples
+
+```ts
+// Parse JSON
+@Envapt('CONFIG_JSON', {
+  fallback: {},
+  converter: 'json'
+})
+static readonly config: Record<string, any>;
+
+// Parse duration strings
+@Envapt('TIMEOUT', {
+  fallback: 30000,
+  converter: (raw, fallback) => {
+    if (!raw) return fallback;
+    const match = raw.match(/^(\d+)(s|ms|m|h)?$/);
+    if (!match) return fallback;
+
+    const [, num, unit = 'ms'] = match;
+    const value = parseInt(num);
+
+    switch (unit) {
+      case 's': return value * 1000;
+      case 'm': return value * 60 * 1000;
+      case 'h': return value * 60 * 60 * 1000;
+      default: return value;
+    }
+  }
+})
+static readonly timeout: number;
+```
+
+## Migration Guide
+
+### From v1.0.x
+
+The new API is fully backward compatible. You can gradually migrate to the new options syntax:
+
+```ts
+// Old (still works)
+@Envapt('PORT', 3000, Number)
+static readonly port: number;
+
+// New (recommended)
+@Envapt('PORT', { fallback: 3000 }) // converter auto-detected
+static readonly port: number;
+
+// Or explicit
+@Envapt('PORT', { fallback: 3000, converter: Number })
+static readonly port: number;
+```
+
+## Contributing
+
+Issues and pull requests are welcome on [GitHub](https://github.com/mason-rogers/envuments).
