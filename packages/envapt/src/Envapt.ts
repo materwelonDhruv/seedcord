@@ -6,7 +6,7 @@ import { Parser, type EnvaptConverter } from './Parser';
  * Options for the \@Envapt decorator (modern API)
  * @public
  */
-interface EnvaptOptions<FallbackType = string> {
+export interface EnvaptOptions<FallbackType = string> {
   /**
    * Default value to use if environment variable is not found
    */

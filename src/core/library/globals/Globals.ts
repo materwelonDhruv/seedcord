@@ -6,10 +6,8 @@ import { Envapt, Envapter } from '@seedcord/envapt';
 
 export class Globals extends Envapter {
   // Secrets
-  @Envapt('BOT_TOKEN', { fallback: undefined })
+  @Envapt('BOT_TOKEN', { fallsbakc: undefined })
   public static readonly botToken: string;
-
-  @Envapt('DISCORD_CLIENT_ID', { fallback: undefined })
 
   // General
   @Envapt('MONGO_URI', { fallback: 'mongodb://localhost:27017/' })
