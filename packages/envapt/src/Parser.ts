@@ -114,6 +114,8 @@ export class Parser {
     const fallbackType = typeof fallback;
     if (fallbackType === 'number') return 'number';
     if (fallbackType === 'boolean') return 'boolean';
+    if (fallbackType === 'bigint') return 'bigint';
+    if (fallbackType === 'symbol') return 'symbol';
     return 'string';
   }
 }
