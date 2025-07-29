@@ -93,7 +93,7 @@ console.log(Config.isProduction); // false (provided by the Envapter class)
 ```
 
 Or use functionally:\
-<sub>Limited to primitives, String, Number, Boolean, and does not support converters.</sub>
+<sub>Limited to primitives, String, Number, Boolean, Symbol, and BigInt. Does not support converters.</sub>
 
 ```ts
 import { Envapter } from '@seedcord/envapt';
