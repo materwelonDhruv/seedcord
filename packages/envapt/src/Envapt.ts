@@ -37,10 +37,7 @@ function createPropertyDecorator<FallbackType>(
 }
 
 /**
- * Property decorator that automatically loads and converts environment variables.
- *
- * **IMPORTANT: This decorator is designed for static class properties only.**\
- * Values are set before the class is instantiated.
+ * Instance/Static Property decorator that automatically loads and converts environment variables.
  *
  * Supports both modern options-based API and classic parameter-based API.
  * Automatically detects types from fallback values and provides caching for performance.
@@ -57,13 +54,13 @@ function createPropertyDecorator<FallbackType>(
  * ‎ ‎ static readonly port: number;
  *
  * ‎ ‎ \@Envapt('FEATURES', { fallback: ['auth'], converter: 'array' })
- * ‎ ‎ static readonly features: string[];
+ * ‎ ‎ declare private readonly features: string[];
  *
  * ‎ ‎ \@Envapt('CONFIG', { converter: 'json' })
  * ‎ ‎ static readonly config: object;
  *
  * ‎ ‎ \@Envapt('API_URL', { converter: 'url' })
- * ‎ ‎ static readonly apiUrl: URL;
+ * ‎ ‎ declare public readonly apiUrl: URL;
  *
  * ‎ ‎ \@Envapt('CUSTOM_LIST', {
  * ‎ ‎ ‎ ‎ fallback: [1, 2, 3],
@@ -82,9 +79,14 @@ function createPropertyDecorator<FallbackType>(
  *
  * @example Classic API
  * ```ts
- * class Config extends Envapter {
- * ‎ ‎ \@Envapt('PORT', 3000, Number)
- * ‎ ‎ static readonly port: number;
+ * class HealthCheck {
+ * ‎ ‎ \@Envapt('PORT', 3000) declare readonly port: number;
+ *
+ * ‎ ‎ // code to start server
+ * ‎ ‎ public start() {
+ * ‎ ‎ ‎ ‎ // works on instance properties
+ * ‎ ‎ ‎ ‎ console.log(`Server running on port ${this.port}`);
+ * ‎ ‎ }
  * }
  * ```
  *

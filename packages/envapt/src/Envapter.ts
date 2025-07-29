@@ -36,7 +36,7 @@ export enum Environment {
  * Provides both static and instance methods for retrieving typed environment variables
  * with support for template resolution, multiple .env files, and environment detection.
  *
- * Extend your own classes from this to define static properties with \@Envapt decorators and provide access to environment variables methods.
+ * Extend your own classes from this to define properties with \@Envapt decorators and provide access to environment variables methods.
  *
  * @example
  * ```ts
