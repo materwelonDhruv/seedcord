@@ -29,7 +29,7 @@
     // Emit
     "declaration": true,
     "declarationMap": true,
-    // "composite": true,
+    "composite": true,
     "importHelpers": false,
     "newLine": "lf",
     "noEmitHelpers": true,

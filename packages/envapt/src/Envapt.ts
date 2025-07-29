@@ -39,7 +39,7 @@ function createPropertyDecorator<FallbackType>(
 /**
  * Property decorator that automatically loads and converts environment variables.
  *
- * **IMPORTANT: This decorator is designed for STATIC class properties only.**\
+ * **IMPORTANT: This decorator is designed for static class properties only.**\
  * Values are set before the class is instantiated.
  *
  * Supports both modern options-based API and classic parameter-based API.
@@ -117,7 +117,7 @@ export function Envapt<FallbackType = unknown>(
     typeof fallbackOrOptions === 'object' &&
     ('fallback' in fallbackOrOptions || 'converter' in fallbackOrOptions)
   ) {
-    // New options API
+    // Modern API
     const options = fallbackOrOptions;
     fallback = options.fallback;
     actualConverter = options.converter;

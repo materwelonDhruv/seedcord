@@ -53,5 +53,5 @@
     }
   },
   "globalDependencies": ["package.json", "pnpm-workspace.yaml", "turbo.json", ".env*"],
-  "globalEnv": ["NODE_ENV", "DISCORD_TOKEN", "MONGODB_URI"]
+  "globalEnv": ["NODE_ENV", "ENVIRONMENT", "ENV"]
 }
