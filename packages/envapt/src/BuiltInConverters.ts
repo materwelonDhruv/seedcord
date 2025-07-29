@@ -14,7 +14,8 @@ export const ListOfBuiltInConverters = [
   'array',
   'url',
   'regexp',
-  'date'
+  'date',
+  'time'
 ] as const;
 
 /**
@@ -124,6 +125,34 @@ export class BuiltInConverters {
     return Number.isNaN(parsed.getTime()) ? fallback : parsed;
   }
 
+  static time(raw: string | undefined, fallback?: number): number | undefined {
+    if (raw === undefined) return fallback;
+
+    // Match formats like: 5s, 30m, 2h, 500ms, 1000 (plain number treated as ms)
+    // eslint-disable-next-line security/detect-unsafe-regex
+    const match = raw.match(/^(\d+(?:\.\d+)?)(ms|s|m|h)?$/u);
+    if (!match) return fallback;
+
+    const [, numStr, unit = 'ms'] = match;
+    if (!numStr) return fallback;
+
+    const value = Number.parseFloat(numStr);
+
+    if (Number.isNaN(value)) return fallback;
+
+    const SECONDS_TO_MS = 1000;
+    const SECONDS_PER_MINUTE = 60;
+    const MINUTES_PER_HOUR = 60;
+    const MINUTES_TO_MS = SECONDS_PER_MINUTE * SECONDS_TO_MS;
+    const HOURS_TO_MS = MINUTES_PER_HOUR * MINUTES_TO_MS;
+
+    if (unit === 'ms') return value;
+    if (unit === 's') return value * SECONDS_TO_MS;
+    if (unit === 'm') return value * MINUTES_TO_MS;
+    if (unit === 'h') return value * HOURS_TO_MS;
+    return fallback;
+  }
+
   /**
    * Process array with custom converter config
    */
@@ -188,6 +217,8 @@ export class BuiltInConverters {
         return BuiltInConverters.regexp;
       case 'date':
         return BuiltInConverters.date;
+      case 'time':
+        return BuiltInConverters.time;
       default:
         throw new EnvaptError(EnvaptErrorCodes.InvalidBuiltInConverter, `Unknown built-in converter: ${type}`);
     }

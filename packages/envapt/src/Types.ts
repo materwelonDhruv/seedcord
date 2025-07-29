@@ -12,6 +12,8 @@ type BuiltInConverter = (typeof ListOfBuiltInConverters)[number];
  */
 type PrimitiveConstructor = typeof String | typeof Number | typeof Boolean | typeof BigInt | typeof Symbol;
 
+type ValidArrayConverterBuiltInType = Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>;
+
 /**
  * Array converter configuration for custom delimiters and element types
  * @public
@@ -24,7 +26,7 @@ interface ArrayConverter {
   /**
    * Type to convert each array element to (excludes array, json, and regexp types)
    */
-  type?: Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>;
+  type?: ValidArrayConverterBuiltInType;
 }
 
 /**
@@ -74,6 +76,7 @@ interface EnvaptOptions<FallbackType = string> {
 export type {
   BuiltInConverter,
   PrimitiveConstructor,
+  ValidArrayConverterBuiltInType,
   ArrayConverter,
   BaseInput,
   ConverterFunction,

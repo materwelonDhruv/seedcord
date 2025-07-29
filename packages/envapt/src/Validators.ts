@@ -1,7 +1,13 @@
 import { ListOfBuiltInConverters } from './BuiltInConverters';
 import { EnvaptError, EnvaptErrorCodes } from './Error';
 
-import type { EnvaptConverter, ConverterFunction, ArrayConverter, BuiltInConverter } from './Types';
+import type {
+  EnvaptConverter,
+  ConverterFunction,
+  ArrayConverter,
+  BuiltInConverter,
+  ValidArrayConverterBuiltInType
+} from './Types';
 
 export class Validator {
   /**
@@ -27,22 +33,17 @@ export class Validator {
   /**
    * Check if a value is a valid ArrayConverter type
    */
-  static isValidArrayConverterType(value: unknown): value is Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'> {
+  static isValidArrayConverterType(value: unknown): value is ValidArrayConverterBuiltInType {
     if (typeof value !== 'string') return false;
 
-    const validTypes: Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>[] = [
-      'string',
-      'number',
-      'boolean',
-      'integer',
-      'bigint',
-      'symbol',
-      'float',
-      'url',
-      'date'
-    ];
+    const invalidTypes = ['array', 'json', 'regexp'];
 
-    return validTypes.includes(value as Exclude<BuiltInConverter, 'array' | 'json' | 'regexp'>);
+    if (invalidTypes.includes(value)) return false;
+    const validTypes: ValidArrayConverterBuiltInType[] = ListOfBuiltInConverters.filter(
+      (type): type is ValidArrayConverterBuiltInType => !invalidTypes.includes(type)
+    );
+
+    return validTypes.includes(value as ValidArrayConverterBuiltInType);
   }
 
   static customConvertor<FallbackType>(

@@ -90,6 +90,9 @@ describe('Built-in Converters', () => {
 
       @Envapt('TEST_ARRAY_BOOLEANS', { converter: { delimiter: ',', type: 'boolean' }, fallback: [] })
       static readonly arrayBooleans: boolean[];
+
+      @Envapt('TEST_ARRAY_TIME', { converter: { delimiter: ',', type: 'time' }, fallback: [] })
+      static readonly arrayTime: number[];
     }
 
     it('should parse arrays with default delimiter (comma)', () => {
@@ -126,6 +129,11 @@ describe('Built-in Converters', () => {
 
     it('should convert array elements to booleans', () => {
       expect(ArrayTest.arrayBooleans).to.deep.equal([true, false, true]);
+    });
+
+    it('should convert array elements to time in milliseconds', () => {
+      // 5ms, 5s, 5m, 5h
+      expect(ArrayTest.arrayTime).to.deep.equal([5, 5000, 300000, 18000000]);
     });
   });
 
@@ -345,6 +353,66 @@ describe('Built-in Converters', () => {
     });
   });
 
+  describe('time converter', () => {
+    class TimeTest {
+      @Envapt('TEST_TIME_MILLISECONDS', { converter: 'time', fallback: 0 })
+      static readonly timeMs: number;
+
+      @Envapt('TEST_TIME_SECONDS', { converter: 'time', fallback: 0 })
+      static readonly timeSeconds: number;
+
+      @Envapt('TEST_TIME_MINUTES', { converter: 'time', fallback: 0 })
+      static readonly timeMinutes: number;
+
+      @Envapt('TEST_TIME_HOURS', { converter: 'time', fallback: 0 })
+      static readonly timeHours: number;
+
+      @Envapt('TEST_TIME_DECIMAL_SECONDS', { converter: 'time', fallback: 0 })
+      static readonly timeDecimalSeconds: number;
+
+      @Envapt('TEST_TIME_PLAIN_NUMBER', { converter: 'time', fallback: 0 })
+      static readonly timePlainNumber: number;
+
+      @Envapt('TEST_TIME_INVALID', { converter: 'time', fallback: 999 })
+      static readonly timeInvalid: number;
+
+      @Envapt('NONEXISTENT_TIME', { converter: 'time', fallback: 5000 })
+      static readonly nonexistentTime: number;
+    }
+
+    it('should convert milliseconds correctly', () => {
+      expect(TimeTest.timeMs).to.equal(500);
+    });
+
+    it('should convert seconds to milliseconds', () => {
+      expect(TimeTest.timeSeconds).to.equal(5000); // 5s = 5000ms
+    });
+
+    it('should convert minutes to milliseconds', () => {
+      expect(TimeTest.timeMinutes).to.equal(1800000); // 30m = 1800000ms
+    });
+
+    it('should convert hours to milliseconds', () => {
+      expect(TimeTest.timeHours).to.equal(7200000); // 2h = 7200000ms
+    });
+
+    it('should handle decimal seconds', () => {
+      expect(TimeTest.timeDecimalSeconds).to.equal(1500); // 1.5s = 1500ms
+    });
+
+    it('should treat plain numbers as milliseconds', () => {
+      expect(TimeTest.timePlainNumber).to.equal(1000); // 1000 = 1000ms
+    });
+
+    it('should use fallback for invalid time format', () => {
+      expect(TimeTest.timeInvalid).to.equal(999);
+    });
+
+    it('should use fallback for nonexistent time', () => {
+      expect(TimeTest.nonexistentTime).to.equal(5000);
+    });
+  });
+
   describe('boolean converter edge cases', () => {
     class BooleanEdgeCaseTest {
       @Envapt('TEST_BOOL_TRUE_UPPER', { converter: 'boolean', fallback: false })
@@ -480,6 +548,10 @@ describe('Built-in Converters', () => {
       // Date converter with templates
       @Envapt('TEST_DATE_TEMPLATE', { converter: 'date', fallback: new Date('2020-01-01') })
       static readonly dateTemplate: Date;
+
+      // Time converter with templates
+      @Envapt('TEST_TIME_TEMPLATE', { converter: 'time', fallback: 0 })
+      static readonly timeTemplate: number;
     }
 
     it('should resolve templates in string converter', () => {
@@ -596,6 +668,10 @@ describe('Built-in Converters', () => {
       expect(TemplateTest.dateTemplate.getFullYear()).to.equal(2023);
       expect(TemplateTest.dateTemplate.getMonth()).to.equal(11); // December (0-indexed)
       expect(TemplateTest.dateTemplate.getDate()).to.equal(25);
+    });
+
+    it('should resolve templates in Time converter', () => {
+      expect(TemplateTest.timeTemplate).to.equal(10000); // 10s = 10000ms
     });
   });
 });
