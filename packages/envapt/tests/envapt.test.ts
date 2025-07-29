@@ -271,11 +271,9 @@ describe('Envapter', () => {
 
   describe('basic instance properties testing', () => {
     class BasicInstanceProperties {
-      @Envapt('INSTANCE_PROP_1', { fallback: 'default1' })
-      declare instanceProp1: string;
+      @Envapt('INSTANCE_PROP_1') declare instanceProp1: string;
 
-      @Envapt('INSTANCE_PROP_2', { fallback: 'default2' })
-      declare instanceProp2: string;
+      @Envapt('INSTANCE_PROP_2') declare instanceProp2: string;
 
       @Envapt('INSTANCE_PROP_3_TEMPLATED', { fallback: 'default3' })
       declare instanceProp3: string;
