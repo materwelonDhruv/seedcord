@@ -268,4 +268,28 @@ describe('Envapter', () => {
       expect(BuiltInConverterShowcase.apiTimeout).to.equal(5000);
     });
   });
+
+  describe('basic instance properties testing', () => {
+    class BasicInstanceProperties {
+      @Envapt('INSTANCE_PROP_1', { fallback: 'default1' })
+      declare instanceProp1: string;
+
+      @Envapt('INSTANCE_PROP_2', { fallback: 'default2' })
+      declare instanceProp2: string;
+
+      @Envapt('INSTANCE_PROP_3_TEMPLATED', { fallback: 'default3' })
+      declare instanceProp3: string;
+    }
+
+    const instance = new BasicInstanceProperties();
+
+    it('should have correct instance property values', () => {
+      expect(instance.instanceProp1).to.equal('value1');
+      expect(instance.instanceProp2).to.equal('value2');
+    });
+
+    it('should resolve templated instance property', () => {
+      expect(instance.instanceProp3).to.equal('value1-value2');
+    });
+  });
 });

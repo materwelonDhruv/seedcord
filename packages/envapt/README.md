@@ -7,7 +7,7 @@
 
 ---
 
-A powerful TypeScript-first environment configuration library that provides type detection, template variable resolution, and decorator-based static class property configuration by extending dotenv.
+A powerful TypeScript-first environment configuration library that provides type detection, template variable resolution, and decorator-based class property configuration by extending dotenv.
 
 This library is inspired by [envuments](https://github.com/mason-rogers/envuments).
 
@@ -15,7 +15,7 @@ This library is inspired by [envuments](https://github.com/mason-rogers/envument
 
 - 🔧 **Automatic Type Detection** - Types inferred from fallback values
 - 🔗 **Template Variables** - `${VAR}` syntax with circular reference protection
-- 🎯 **Static Class Properties** - Decorator-based configuration for static class members
+- 🎯 **Class Properties** - Decorator-based configuration for class members
 - 🏷️ **Built-in & Custom Converters** - Ready-to-use converters for common patterns + custom transformations
 - 🌍 **Environment Detection** - Built-in development/staging/production handling
 - 📂 **Multiple .env Files** - Load from multiple sources
