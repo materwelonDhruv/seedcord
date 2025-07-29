@@ -450,26 +450,6 @@ static readonly config: Record<string, any>;
 static readonly timeout: number;
 ```
 
-## Migration Guide
-
-### From v1.0.x
-
-The new API is fully backward compatible. You can gradually migrate to the new options syntax:
-
-```ts
-// Old (still works)
-@Envapt('PORT', 3000, Number)
-static readonly port: number;
-
-// New (recommended)
-@Envapt('PORT', { fallback: 3000 }) // converter auto-detected
-static readonly port: number;
-
-// Or explicit
-@Envapt('PORT', { fallback: 3000, converter: Number })
-static readonly port: number;
-```
-
 ## Contributing
 
 Issues and pull requests are welcome on [GitHub](https://github.com/mason-rogers/envuments).
