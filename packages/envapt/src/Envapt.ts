@@ -101,12 +101,6 @@ export function Envapt<FallbackType = unknown>(
   fallbackOrOptions?: FallbackType | EnvaptOptions<FallbackType>,
   converter?: EnvaptConverter<FallbackType>
 ): PropertyDecorator {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!Reflect)
-    throw new Error(
-      "@Envapt annotation used without Reflect, have you called import 'reflect-metadata'; in your code?"
-    );
-
   // Determine if using new options API or classic API
   let fallback: FallbackType | undefined;
   let actualConverter: EnvaptConverter<FallbackType> | undefined;

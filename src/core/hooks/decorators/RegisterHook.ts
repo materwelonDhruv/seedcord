@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import type { ConstructorFunction } from '../../library/types/Miscellaneous';
 import type { HookKeys } from '../types/Hooks';
 

@@ -1,5 +1,3 @@
-import 'reflect-metadata';
-
 import { ColorResolvable } from 'discord.js';
 
 import { Envapt, Envapter } from '@seedcord/envapt';

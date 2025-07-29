@@ -69,7 +69,6 @@ ALLOWED_ORIGINS=https://app.com,https://admin.com
 Use with decorators (recommended):
 
 ```ts
-import 'reflect-metadata';
 import { Envapt } from '@seedcord/envapt';
 
 class Config extends Envapter {
@@ -379,7 +378,6 @@ Circular references are detected and preserved as-is rather than causing infinit
 ### Complex Configuration Class
 
 ```ts
-import 'reflect-metadata';
 import { Envapt } from '@seedcord/envapt';
 
 class AppConfig extends Envapter {
