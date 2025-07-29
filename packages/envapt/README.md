@@ -71,7 +71,8 @@ Use with decorators (recommended):
 ```ts
 import { Envapt } from '@seedcord/envapt';
 
-class Config extends Envapter {
+// Global application configuration using static properties
+class AppConfig extends Envapter {
   @Envapt('APP_PORT', 3000)
   static readonly port: number;
 
@@ -85,10 +86,28 @@ class Config extends Envapter {
   static readonly allowedOrigins: string[];
 }
 
-console.log(Config.port); // 8443 (number)
-console.log(Config.url); // "http://localhost:8443" (templated!)
-console.log(Config.allowedOrigins); // ["https://app.com", "https://admin.com"]
-console.log(Config.isProduction); // false (provided by the Envapter class)
+// Service-specific configuration using instance properties
+class DatabaseService {
+  @Envapt('DATABASE_URL', 'sqlite://memory')
+  declare readonly databaseUrl: string;
+
+  @Envapt('MAX_CONNECTIONS', { converter: 'number', fallback: 10 })
+  declare readonly maxConnections: number;
+
+  async connect() {
+    console.log(`Connecting to ${this.databaseUrl} with max ${this.maxConnections} connections`);
+    // Connection logic here
+  }
+}
+
+// Usage
+console.log(AppConfig.port); // 8443 (number)
+console.log(AppConfig.url); // "http://localhost:8443" (templated!)
+console.log(AppConfig.allowedOrigins); // ["https://app.com", "https://admin.com"]
+console.log(AppConfig.isProduction); // false (provided by the Envapter class)
+
+const dbService = new DatabaseService();
+await dbService.connect(); // Uses instance properties
 ```
 
 Or use functionally:\
@@ -106,7 +125,12 @@ const isProduction = Envapter.getBoolean('IS_PRODUCTION', false);
 
 ### Decorator API
 
-The `@Envapt` decorator supports both class and modern syntax:
+The `@Envapt` decorator can be used on both **static** and **instance** class properties:
+
+- **Static properties**: Use for global configuration that's shared across your entire application (e.g., app port, global features, environment settings)
+- **Instance properties**: Use for service-specific configuration that may vary per service or when you want the configuration tied to a specific class instance (e.g., database connections, service endpoints, per-service settings)
+
+**Important**: Instance properties must be declared with `declare` keyword or `!` assertion since they're populated by the decorator rather than set in a constructor.
 
 #### Modern Syntax (Recommended)
 
@@ -125,24 +149,43 @@ The `@Envapt` decorator supports both class and modern syntax:
 Types are automatically inferred from fallback values:
 
 ```ts
-class Config extends Envapter {
-  @Envapt('STRING_VAR', 'default') // string
-  static readonly stringVar: string;
+// Global app configuration (static properties)
+class AppConfig extends Envapter {
+  @Envapt('APP_NAME', 'MyApp') // string
+  static readonly appName: string;
 
-  @Envapt('NUMBER_VAR', 42) // number
-  static readonly numberVar: number;
+  @Envapt('APP_PORT', 3000) // number
+  static readonly port: number;
 
-  @Envapt('BOOLEAN_VAR', true) // boolean
-  static readonly booleanVar: boolean;
+  @Envapt('DEBUG_MODE', false) // boolean
+  static readonly debugMode: boolean;
+}
+
+// Service-specific configuration (instance properties)
+class EmailService {
+  @Envapt('SMTP_HOST', 'localhost') // string
+  declare readonly smtpHost: string;
+
+  @Envapt('SMTP_PORT', 587) // number
+  declare readonly smtpPort: number;
+
+  @Envapt('SMTP_SECURE', true) // boolean
+  declare readonly smtpSecure: boolean;
+
+  sendEmail(to: string, subject: string) {
+    console.log(`Sending email via ${this.smtpHost}:${this.smtpPort} (secure: ${this.smtpSecure})`);
+    // Email sending logic using instance properties
+  }
 }
 ```
 
 #### Built-in Converters
 
-Envapt provides many built-in converters for common patterns:
+Envapt provides many built-in converters for common patterns. Here are examples using both static and instance properties:
 
 ```ts
-class Config extends Envapter {
+// Application-wide configuration (static)
+class AppConfig extends Envapter {
   // String converter (explicit)
   @Envapt('APP_NAME', { converter: 'string', fallback: 'MyApp' })
   static readonly appName: string;
@@ -154,59 +197,62 @@ class Config extends Envapter {
   @Envapt('MAX_CONNECTIONS', { converter: 'integer', fallback: 100 })
   static readonly maxConnections: number;
 
-  @Envapt('TIMEOUT', { converter: 'float', fallback: 30.5 })
-  static readonly timeout: number;
-
   // Boolean converter (supports yes/no, on/off, 1/0, true/false)
-  @Envapt('ENABLED', { converter: 'boolean', fallback: false })
-  static readonly enabled: boolean;
+  @Envapt('PRODUCTION_MODE', { converter: 'boolean', fallback: false })
+  static readonly productionMode: boolean;
 
-  // Array converters with different delimiters
-  @Envapt('TAGS', { converter: 'array', fallback: [] })
-  static readonly tags: string[];
-
-  @Envapt('ENDPOINTS', { converter: { delimiter: ';' }, fallback: [] })
-  static readonly endpoints: string[];
-
+  // Array with different delimiters
   @Envapt('CORS_ORIGINS', { converter: { delimiter: '|' }, fallback: [] })
   static readonly corsOrigins: string[];
 
-  @Envapt('SERVICES', { converter: { delimiter: ' ' }, fallback: [] })
-  static readonly services: string[];
-
-  @Envapt('METHODS', { converter: { delimiter: ', ' }, fallback: [] })
-  static readonly methods: string[];
-
-  // Array with type conversion
-  @Envapt('PORTS', { converter: { delimiter: ',', type: 'number' }, fallback: [] })
-  static readonly ports: number[];
-
-  @Envapt('FEATURE_FLAGS', { converter: { delimiter: ',', type: 'boolean' }, fallback: [] })
-  static readonly featureFlags: boolean[];
-
   // JSON converter (safely parses JSON)
-  @Envapt('CONFIG', { converter: 'json', fallback: {} })
-  static readonly config: object;
+  @Envapt('GLOBAL_CONFIG', { converter: 'json', fallback: {} })
+  static readonly globalConfig: object;
+}
 
-  // URL converter
-  @Envapt('API_URL', { converter: 'url', fallback: new URL('http://localhost') })
-  static readonly apiUrl: URL;
+// Service-specific configuration (instance)
+class CacheService {
+  @Envapt('REDIS_HOST', { fallback: 'localhost' })
+  declare readonly host: string;
 
-  // RegExp converter (supports /pattern/flags syntax)
-  @Envapt('VALIDATION_PATTERN', { converter: 'regexp', fallback: /.*/ })
-  static readonly validationPattern: RegExp;
+  @Envapt('REDIS_PORT', { converter: 'integer', fallback: 6379 })
+  declare readonly port: number;
 
-  // Date converter (supports ISO strings and timestamps)
-  @Envapt('CREATED_AT', { converter: 'date', fallback: new Date() })
-  static readonly createdAt: Date;
+  @Envapt('CACHE_TTL', { converter: 'float', fallback: 60.5 })
+  declare readonly ttl: number;
 
-  // BigInt converter (for large integers)
-  @Envapt('LARGE_NUMBER', { converter: 'bigint', fallback: 0n })
-  static readonly largeNumber: bigint;
+  @Envapt('REDIS_URL', { converter: 'url', fallback: new URL('redis://localhost:6379') })
+  declare readonly url: URL;
 
-  // Symbol converter (creates symbols from strings)
-  @Envapt('UNIQUE_KEY', { converter: 'symbol', fallback: Symbol('default') })
-  static readonly uniqueKey: symbol;
+  @Envapt('CACHE_KEYS', { converter: 'array', fallback: [] })
+  declare readonly keys: string[];
+
+  connect() {
+    console.log(`Connecting to Redis at ${this.host}:${this.port}`);
+    console.log(`Cache TTL: ${this.ttl}s, Keys: ${this.keys.join(', ')}`);
+  }
+}
+
+// Authentication service (instance)
+class AuthService {
+  @Envapt('JWT_SECRET', { fallback: 'dev-secret' })
+  declare readonly jwtSecret: string;
+
+  @Envapt('TOKEN_EXPIRY', { converter: 'date', fallback: new Date() })
+  declare readonly tokenExpiry: Date;
+
+  @Envapt('AUTH_PROVIDERS', { converter: { delimiter: ',', type: 'string' }, fallback: [] })
+  declare readonly providers: string[];
+
+  @Envapt('SESSION_REGEX', { converter: 'regexp', fallback: /.*/ })
+  declare readonly sessionPattern: RegExp;
+
+  @Envapt('MAX_LOGIN_ATTEMPTS', { converter: 'bigint', fallback: 5n })
+  declare readonly maxAttempts: bigint;
+
+  validateSession(sessionId: string): boolean {
+    return this.sessionPattern.test(sessionId);
+  }
 }
 ```
 
@@ -227,28 +273,38 @@ class Config extends Envapter {
 
 #### Custom Array Converters
 
-For more control over array parsing, use the ArrayConverter object syntax:\
+For more control over array parsing, use the ArrayConverter object syntax:
 
 ```ts
-class Config extends Envapter {
-  // Basic array (comma-separated strings)
-  @Envapt('TAGS', { converter: 'array', fallback: [] })
-  static readonly tags: string[];
+// Global feature configuration (static)
+class FeatureConfig extends Envapter {
+  @Envapt('GLOBAL_TAGS', { converter: 'array', fallback: [] })
+  static readonly globalTags: string[];
 
+  @Envapt('ENABLED_FEATURES', { converter: { delimiter: '|' }, fallback: [] })
+  static readonly enabledFeatures: string[];
+}
+
+// Microservice configuration (instance)
+class ApiService {
   // Custom delimiter
-  @Envapt('SERVICES', { converter: { delimiter: '|' }, fallback: [] })
-  static readonly services: string[];
+  @Envapt('ALLOWED_METHODS', { converter: { delimiter: '|' }, fallback: ['GET'] })
+  declare readonly allowedMethods: string[];
 
   // Custom delimiter with type conversion
-  @Envapt('PORTS', { converter: { delimiter: ',', type: 'number' }, fallback: [] })
-  static readonly ports: number[];
+  @Envapt('RATE_LIMITS', { converter: { delimiter: ',', type: 'number' }, fallback: [100] })
+  declare readonly rateLimits: number[];
 
-  @Envapt('FEATURE_FLAGS', { converter: { delimiter: ';', type: 'boolean' }, fallback: [] })
-  static readonly featureFlags: boolean[];
+  @Envapt('FEATURE_FLAGS', { converter: { delimiter: ';', type: 'boolean' }, fallback: [false] })
+  declare readonly featureFlags: boolean[];
 
   // Multiple custom delimiters
-  @Envapt('ENDPOINTS', { converter: { delimiter: ' | ' }, fallback: [] })
-  static readonly endpoints: string[];
+  @Envapt('API_ENDPOINTS', { converter: { delimiter: ' | ' }, fallback: ['/health'] })
+  declare readonly endpoints: string[];
+
+  isMethodAllowed(method: string): boolean {
+    return this.allowedMethods.includes(method.toUpperCase());
+  }
 }
 ```
 
@@ -259,18 +315,40 @@ class Config extends Envapter {
 
 #### Custom Converters
 
-Transform environment values to any type:
+Transform environment values to any type using both static and instance properties:
 
 ```ts
-class Config extends Envapter {
-  @Envapt('TAGS', {
+// Global configuration (static)
+class GlobalConfig extends Envapter {
+  @Envapt('GLOBAL_TAGS', {
     fallback: new Set(['default']),
     converter: (raw, fallback) => {
       if (!raw) return fallback;
       return new Set(raw.split(',').map((s) => s.trim()));
     }
   })
-  static readonly tags: Set<string>;
+  static readonly globalTags: Set<string>;
+}
+
+// Service configuration (instance)
+class NotificationService {
+  @Envapt('NOTIFICATION_CHANNELS', {
+    fallback: new Map([['email', 'enabled']]),
+    converter: (raw, fallback) => {
+      if (!raw) return fallback;
+      const map = new Map();
+      raw.split(',').forEach((pair) => {
+        const [key, value] = pair.split(':');
+        map.set(key?.trim(), value?.trim() || 'enabled');
+      });
+      return map;
+    }
+  })
+  declare readonly channels: Map<string, string>;
+
+  isChannelEnabled(channel: string): boolean {
+    return this.channels.get(channel) === 'enabled';
+  }
 }
 ```
 
@@ -279,18 +357,33 @@ class Config extends Envapter {
 Control what happens when environment variables don't exist:
 
 ```ts
-class Config extends Envapter {
+// Application configuration (static)
+class AppConfig extends Envapter {
   // Returns undefined if not found
-  @Envapt('OPTIONAL_VAR', { fallback: undefined })
-  static readonly optional: string | undefined;
+  @Envapt('OPTIONAL_FEATURE', { fallback: undefined })
+  static readonly optionalFeature: string | undefined;
 
   // Returns null if not found (no fallback provided)
-  @Envapt('MISSING_VAR', { converter: String })
-  static readonly missing: string | null;
+  @Envapt('MISSING_CONFIG', { converter: 'string' })
+  static readonly missingConfig: string | null;
 
   // Uses fallback if not found
-  @Envapt('WITH_FALLBACK', { fallback: 'default' })
-  static readonly withFallback: string;
+  @Envapt('DEFAULT_THEME', { fallback: 'light' })
+  static readonly defaultTheme: string;
+}
+
+// Service configuration (instance)
+class LoggingService {
+  // Optional instance configuration
+  @Envapt('LOG_FILE_PATH', { fallback: undefined })
+  declare readonly logFilePath: string | undefined;
+
+  @Envapt('LOG_LEVEL', { fallback: 'info' })
+  declare readonly logLevel: string;
+
+  shouldLogToFile(): boolean {
+    return this.logFilePath !== undefined;
+  }
 }
 ```
 
@@ -375,7 +468,9 @@ Circular references are detected and preserved as-is rather than causing infinit
 
 ## Advanced Examples
 
-### Complex Configuration Class
+### Complex Configuration Classes
+
+#### Global Application Configuration (Static Properties)
 
 ```ts
 import { Envapt } from '@seedcord/envapt';
@@ -387,14 +482,11 @@ class AppConfig extends Envapter {
   @Envapt('HOST', 'localhost')
   static readonly host: string;
 
-  @Envapt('DATABASE_URL', 'sqlite://memory')
-  static readonly databaseUrl: string;
-
-  @Envapt('REDIS_URLS', {
-    fallback: [new URL('redis://localhost:6379')],
-    converter: (raw, fallback) => (raw ? raw.split(',').map((s) => new URL(s)) : fallback)
+  @Envapt('CORS_ORIGINS', {
+    fallback: ['http://localhost:3000'],
+    converter: 'array'
   })
-  static readonly redisUrls: URL[];
+  static readonly corsOrigins: string[];
 
   @Envapt('FEATURE_FLAGS', {
     fallback: new Set(['basic']),
@@ -407,45 +499,120 @@ class AppConfig extends Envapter {
 
   @Envapt('LOG_LEVEL', 'info')
   static readonly logLevel: string;
+}
+```
 
-  @Envapt('MAX_UPLOAD_SIZE', {
-    fallback: 10 * 1024 * 1024, // 10MB
-    converter: 'integer'
+#### Service-Specific Configuration (Instance Properties)
+
+```ts
+// Database service configuration
+class DatabaseService {
+  @Envapt('DATABASE_URL', 'sqlite://memory')
+  declare readonly databaseUrl: string;
+
+  @Envapt('DB_POOL_SIZE', { converter: 'integer', fallback: 10 })
+  declare readonly poolSize: number;
+
+  @Envapt('DB_TIMEOUT', { converter: 'number', fallback: 30000 })
+  declare readonly timeout: number;
+
+  @Envapt('DB_RETRY_ATTEMPTS', { converter: 'integer', fallback: 3 })
+  declare readonly retryAttempts: number;
+
+  async connect() {
+    console.log(`Connecting to ${this.databaseUrl}`);
+    console.log(`Pool size: ${this.poolSize}, Timeout: ${this.timeout}ms`);
+    // Connection logic here
+  }
+}
+
+// Redis cache service configuration
+class CacheService {
+  @Envapt('REDIS_URLS', {
+    fallback: [new URL('redis://localhost:6379')],
+    converter: (raw, fallback) => (raw ? raw.split(',').map((s) => new URL(s)) : fallback)
   })
-  static readonly maxUploadSize: number;
+  declare readonly redisUrls: URL[];
+
+  @Envapt('CACHE_PREFIX', { fallback: 'app:' })
+  declare readonly cachePrefix: string;
+
+  @Envapt('DEFAULT_TTL', { converter: 'integer', fallback: 3600 })
+  declare readonly defaultTtl: number;
+
+  async set(key: string, value: any, ttl?: number) {
+    const prefixedKey = `${this.cachePrefix}${key}`;
+    const cacheTtl = ttl || this.defaultTtl;
+    console.log(`Setting cache ${prefixedKey} with TTL ${cacheTtl}s`);
+    // Cache logic here
+  }
 }
 ```
 
 ### Custom Converter Examples
 
+#### Static Properties for App-Wide Configuration
+
 ```ts
-// Parse JSON
-@Envapt('CONFIG_JSON', {
-  fallback: {},
-  converter: 'json'
-})
-static readonly config: Record<string, any>;
+// Parse global JSON configuration
+class GlobalConfig extends Envapter {
+  @Envapt('GLOBAL_CONFIG_JSON', {
+    fallback: {},
+    converter: 'json'
+  })
+  static readonly config: Record<string, any>;
 
-// Parse duration strings
-@Envapt('TIMEOUT', {
-  fallback: 30000,
-  converter: (raw, fallback) => {
-    if (!raw) return fallback;
-    const match = raw.match(/^(\d+)(s|ms|m|h)?$/);
-    if (!match) return fallback;
-
-    const [, num, unit = 'ms'] = match;
-    const value = parseInt(num);
-
-    switch (unit) {
-      case 's': return value * 1000;
-      case 'm': return value * 60 * 1000;
-      case 'h': return value * 60 * 60 * 1000;
-      default: return value;
+  @Envapt('APP_TIMEOUT', {
+    fallback: 30000,
+    converter: (raw, fallback) => {
+      if (!raw) return fallback;
+      const match = raw.match(/^(\d+)(s|ms|m|h)?$/);
+      if (!match) return fallback;
+      const [, num, unit = 'ms'] = match;
+      const value = parseInt(num);
+      if (unit === 's') return value * 1000;
+      if (unit === 'm') return value * 60 * 1000;
+      if (unit === 'h') return value * 60 * 60 * 1000;
+      return value;
     }
+  })
+  static readonly timeout: number;
+}
+```
+
+#### Instance Properties for Service Configuration
+
+```ts
+// Email service with custom duration parsing
+class EmailService {
+  @Envapt('SMTP_CONFIG', {
+    fallback: { host: 'localhost', port: 587, secure: false },
+    converter: 'json'
+  })
+  declare readonly smtpConfig: { host: string; port: number; secure: boolean };
+
+  @Envapt('EMAIL_RETRY_DELAY', {
+    fallback: 5000, // 5 seconds
+    converter: (raw, fallback) => {
+      if (!raw) return fallback;
+      const match = raw.match(/^(\d+)(s|m|h)$/);
+      if (!match) return fallback;
+      const [, num, unit] = match;
+      const value = parseInt(num);
+      if (unit === 's') return value * 1000;
+      if (unit === 'm') return value * 60 * 1000;
+      if (unit === 'h') return value * 60 * 60 * 1000;
+      return fallback;
+    }
+  })
+  declare readonly retryDelay: number;
+
+  async sendEmail(to: string, subject: string, body: string) {
+    const { host, port, secure } = this.smtpConfig;
+    console.log(`Sending email via ${host}:${port} (secure: ${secure})`);
+    // Email logic with retry using this.retryDelay
   }
-})
-static readonly timeout: number;
+}
 ```
 
 ## Contributing
