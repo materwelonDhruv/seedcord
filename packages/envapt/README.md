@@ -44,13 +44,13 @@ This library is inspired by [envuments](https://github.com/mason-rogers/envument
 
 ```bash
 # npm
-npm install envapt reflect-metadata
+npm install @seedcord/envapt reflect-metadata
 
 # pnpm
-pnpm add envapt reflect-metadata
+pnpm add @seedcord/envapt reflect-metadata
 
 # yarn
-yarn add envapt reflect-metadata
+yarn add @seedcord/envapt reflect-metadata
 ```
 
 ### Basic Usage
