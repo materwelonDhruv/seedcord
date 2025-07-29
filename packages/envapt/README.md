@@ -115,7 +115,7 @@ The `@Envapt` decorator supports both class and modern syntax:
 @Envapt('ENV_VAR', { fallback?: T, converter?: EnvConverter<T> })
 ```
 
-#### Class Syntax
+#### Classic Syntax
 
 ```ts
 @Envapt('ENV_VAR', fallback?, converter?)
