@@ -2,7 +2,6 @@
   "$schema": "https://json.schemastore.org/tsconfig.json",
   "compilerOptions": {
     // Type Checking
-    "noImplicitThis": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
     "exactOptionalPropertyTypes": true,
