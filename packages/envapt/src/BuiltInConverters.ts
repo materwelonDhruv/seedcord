@@ -2,7 +2,7 @@ import { EnvaptError, EnvaptErrorCodes } from './Error';
 
 import type { ArrayConverter, BuiltInConverter } from './Types';
 
-export const BuiltInConvertersArray = [
+export const ListOfBuiltInConverters = [
   'string',
   'number',
   'boolean',

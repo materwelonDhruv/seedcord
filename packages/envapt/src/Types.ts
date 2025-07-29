@@ -1,10 +1,10 @@
-import type { BuiltInConvertersArray } from './BuiltInConverters';
+import type { ListOfBuiltInConverters } from './BuiltInConverters';
 
 /**
  * Built-in converter types for common environment variable patterns
  * @public
  */
-type BuiltInConverter = (typeof BuiltInConvertersArray)[number];
+type BuiltInConverter = (typeof ListOfBuiltInConverters)[number];
 
 /**
  * Primitive types supported by Envapter

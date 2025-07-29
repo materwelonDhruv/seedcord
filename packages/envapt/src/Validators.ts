@@ -1,4 +1,4 @@
-import { BuiltInConvertersArray } from './BuiltInConverters';
+import { ListOfBuiltInConverters } from './BuiltInConverters';
 import { EnvaptError, EnvaptErrorCodes } from './Error';
 
 import type { EnvaptConverter, ConverterFunction, ArrayConverter, BuiltInConverter } from './Types';
@@ -8,7 +8,7 @@ export class Validator {
    * Check if a value is a built-in converter type
    */
   static isBuiltInConverter(value: EnvaptConverter<unknown>): value is BuiltInConverter {
-    if (typeof value === 'string') return BuiltInConvertersArray.includes(value);
+    if (typeof value === 'string') return ListOfBuiltInConverters.includes(value);
     return false;
   }
 
@@ -80,10 +80,10 @@ export class Validator {
       throw new EnvaptError(EnvaptErrorCodes.InvalidConverterType, `Expected string, got ${typeof value}`);
     }
 
-    if (!BuiltInConvertersArray.includes(value as BuiltInConverter)) {
+    if (!ListOfBuiltInConverters.includes(value as BuiltInConverter)) {
       throw new EnvaptError(
         EnvaptErrorCodes.InvalidBuiltInConverter,
-        `"${value}" is not a valid converter type. Valid types are: ${BuiltInConvertersArray.join(',')}`
+        `"${value}" is not a valid converter type. Valid types are: ${ListOfBuiltInConverters.join(',')}`
       );
     }
   }
