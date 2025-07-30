@@ -1,6 +1,5 @@
 import { ColorResolvable } from 'discord.js';
-
-import { Envapt, Envapter } from '@seedcord/envapt';
+import { Envapter, Envapt } from 'envapt';
 
 export class Globals extends Envapter {
   // Secrets
