@@ -25,7 +25,7 @@ export class CommandRegistry {
     if (this.isInitialised) return;
     this.isInitialised = true;
 
-    const commandsDir = path.resolve(__dirname, '../components/commands');
+    const commandsDir = path.resolve(import.meta.dirname, '../components/commands');
     this.logger.info(chalk.bold(commandsDir));
 
     await this.loadCommands(commandsDir);

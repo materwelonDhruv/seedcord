@@ -34,7 +34,7 @@ export class InteractionController {
     }
     this.isInitialized = true;
 
-    const handlersDir = path.resolve(__dirname, '../handlers');
+    const handlersDir = path.resolve(import.meta.dirname, '../handlers');
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);
@@ -95,9 +95,9 @@ export class InteractionController {
     });
   }
 
-  public async processInteraction<T extends Interaction>(
-    interaction: T,
-    extractKey: (i: T) => string,
+  public async processInteraction<TInteraction extends Interaction>(
+    interaction: TInteraction,
+    extractKey: (i: TInteraction) => string,
     getHandler: (key: string) => HandlerConstructor | undefined
   ): Promise<void> {
     const key = extractKey(interaction);
@@ -147,6 +147,8 @@ export class InteractionController {
       case interaction.isButton():
         {
           const buttonPrefix = interaction.customId.split('-')[0];
+          if (!buttonPrefix) return this.logger.warn(`Button has invalid customId: ${interaction.customId}`);
+
           await this.processInteraction(
             interaction,
             () => buttonPrefix,
@@ -157,6 +159,8 @@ export class InteractionController {
       case interaction.isModalSubmit():
         {
           const modalPrefix = interaction.customId.split('-')[0];
+          if (!modalPrefix) return this.logger.warn(`Modal has invalid customId: ${interaction.customId}`);
+
           await this.processInteraction(
             interaction,
             () => modalPrefix,
@@ -166,6 +170,8 @@ export class InteractionController {
         break;
       case interaction.isStringSelectMenu(): {
         const selectMenuPrefix = interaction.customId.split('-')[0];
+        if (!selectMenuPrefix) return this.logger.warn(`Select menu has invalid customId: ${interaction.customId}`);
+
         await this.processInteraction(
           interaction,
           () => selectMenuPrefix,

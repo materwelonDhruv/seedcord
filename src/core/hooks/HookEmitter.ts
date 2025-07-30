@@ -5,17 +5,17 @@ import type { AllHooks, HookKeys } from './types/Hooks';
 export class HookEmitter {
   private readonly emitter = new EventEmitter();
 
-  public on<E extends HookKeys>(event: E, listener: (data: AllHooks[E]) => void): this {
+  public on<KeyOfHooks extends HookKeys>(event: KeyOfHooks, listener: (data: AllHooks[KeyOfHooks]) => void): this {
     this.emitter.on(event, listener);
     return this;
   }
 
-  public once<E extends HookKeys>(event: E, listener: (data: AllHooks[E]) => void): this {
+  public once<KeyOfHooks extends HookKeys>(event: KeyOfHooks, listener: (data: AllHooks[KeyOfHooks]) => void): this {
     this.emitter.once(event, listener);
     return this;
   }
 
-  public emit<E extends HookKeys>(event: E, data: AllHooks[E]): boolean {
+  public emit<KeyOfHooks extends HookKeys>(event: KeyOfHooks, data: AllHooks[KeyOfHooks]): boolean {
     return this.emitter.emit(event, data);
   }
 }

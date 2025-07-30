@@ -5,9 +5,12 @@ import type { ServiceKeys } from '../types/Services';
 export const ModelMetadataKey = Symbol('db:model');
 
 export function DatabaseModel<TService extends ServiceKeys>(collection: TService) {
-  return <T extends Record<K, mongoose.Schema>, K extends keyof T & (string | symbol)>(
-    target: T,
-    propertyKey: K
+  return <
+    SchemaObj extends Record<KeyOfSchema, mongoose.Schema>,
+    KeyOfSchema extends keyof SchemaObj & (string | symbol)
+  >(
+    target: SchemaObj,
+    propertyKey: KeyOfSchema
   ): void => {
     const schema = target[propertyKey];
     const name = String(collection);

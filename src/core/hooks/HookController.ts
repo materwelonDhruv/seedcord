@@ -28,7 +28,7 @@ export class HookController {
     }
     this.isInitialized = true;
 
-    const hooksDir = path.resolve(__dirname, './handlers');
+    const hooksDir = path.resolve(import.meta.dirname, './handlers');
     this.logger.info(chalk.bold(hooksDir));
 
     await this.loadHooks(hooksDir);
@@ -84,7 +84,7 @@ export class HookController {
     }
   }
 
-  public emit<E extends HookKeys>(event: E, data: AllHooks[E]): boolean {
+  public emit<KeyOfHooks extends HookKeys>(event: KeyOfHooks, data: AllHooks[KeyOfHooks]): boolean {
     return this.emitter.emit(event, data);
   }
 }

@@ -38,14 +38,20 @@ export function percentage(num1: number, num2: number): number {
  * @returns The generated ASCII table as a string.
  */
 export function generateAsciiTable(data: string[][]): string {
+  if (data.length === 0) return '';
+
+  const firstRow = data[0];
+  if (!firstRow || firstRow.length === 0) return '';
+
   let table = '';
   const columnWidths: number[] = [];
 
   // Determine the maximum width for each column
-  for (let i = 0; i < data[0].length; i++) {
+  for (let i = 0; i < firstRow.length; i++) {
     let maxWidth = 0;
     for (const row of data) {
-      maxWidth = Math.max(maxWidth, row[i].length);
+      const cell = row[i];
+      if (cell !== undefined) maxWidth = Math.max(maxWidth, cell.length);
     }
     columnWidths.push(maxWidth);
   }
@@ -55,11 +61,8 @@ export function generateAsciiTable(data: string[][]): string {
     let line = left;
     columnWidths.forEach((width, index) => {
       line += char.repeat(width + 2);
-      if (index < columnWidths.length - 1) {
-        line += intersect;
-      } else {
-        line += right;
-      }
+      if (index < columnWidths.length - 1) line += intersect;
+      else line += right;
     });
     line += '\n';
     return line;
@@ -72,16 +75,14 @@ export function generateAsciiTable(data: string[][]): string {
     // Row content
     table += '║';
     row.forEach((cell, columnIndex) => {
-      table += ` ${cell.padEnd(columnWidths[columnIndex])} ║`;
+      const columnWidth = columnWidths[columnIndex];
+      if (columnWidth !== undefined) table += ` ${cell.padEnd(columnWidth)} ║`;
     });
     table += '\n';
 
     // Separator or bottom border
-    if (rowIndex < data.length - 1) {
-      table += createLine('─', '╠', '╬', '╣');
-    } else {
-      table += createLine('═', '╚', '╩', '╝');
-    }
+    if (rowIndex < data.length - 1) table += createLine('─', '╠', '╬', '╣');
+    else table += createLine('═', '╚', '╩', '╝');
   });
 
   return table;
@@ -112,11 +113,9 @@ export function currentTime(): number {
 }
 
 /**
- * Returns the ordinal form of a number (e.g., `1st`, `2nd`, `3rd`, `4th`, etc.).
+ * Returns the ordinal suffix for a given number.
  *
- * Handles special cases like `11th`, `12th`, and `13th` correctly.
- *
- * @param n - The number to convert
+ * @param n - The number to get the ordinal for
  * @returns The number with its ordinal suffix
  *
  * @example
@@ -127,7 +126,11 @@ export function currentTime(): number {
 export function ordinal(n: number): string {
   const s = ['th', 'st', 'nd', 'rd'];
   const v = n % 100;
-  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+  const index = (v - 20) % 10;
+  const suffix = s[index] ?? s[v] ?? s[0];
+  if (!suffix) return `${n}th`;
+
+  return `${n}${suffix}`;
 }
 
 /**
@@ -216,10 +219,10 @@ export async function traverseDirectory(
  *   throwCustomError(e, "Something went wrong", MyCustomError);
  * }
  */
-export function throwCustomError<T extends CustomErrorConstructor>(
+export function throwCustomError<Ctor extends CustomErrorConstructor>(
   error: unknown,
   message: string,
-  customError: T
+  customError: Ctor
 ): never {
   const uuid = crypto.randomUUID();
   Logger.Error('Throwing Custom Error', (error as Error).name);
@@ -263,9 +266,9 @@ export function prettify(key: string): string {
  * This function creates a new array with the same elements in a random order,
  * without modifying the original array.
  *
- * @template T - The type of elements in the array
- * @param {T[]} items - The array to shuffle
- * @returns {T[]} A new array with the same elements in a random order
+ * @template TArray - The type of elements in the array
+ * @param {TArray[]} items - The array to shuffle
+ * @returns {TArray[]} A new array with the same elements in a random order
  *
  * @example
  * const numbers = [1, 2, 3, 4, 5];
@@ -273,10 +276,11 @@ export function prettify(key: string): string {
  * // shuffled might be [3, 1, 5, 2, 4]
  * // numbers is still [1, 2, 3, 4, 5]
  */
-export function fyShuffle<T>(items: T[]): T[] {
+export function fyShuffle<TArray>(items: TArray[]): TArray[] {
   const array = items.slice();
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
+    // @ts-ignore - TypeScript doesn't recognize that TArray can be swapped
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;

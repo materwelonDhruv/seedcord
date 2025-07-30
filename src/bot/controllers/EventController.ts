@@ -25,7 +25,7 @@ export class EventController {
     }
     this.isInitialized = true;
 
-    const handlersDir = path.resolve(__dirname, '../events');
+    const handlersDir = path.resolve(import.meta.dirname, '../events');
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);
@@ -85,7 +85,10 @@ export class EventController {
     }
   }
 
-  private async processEvent<T extends keyof ClientEvents>(eventName: T, args: ClientEvents[T]): Promise<void> {
+  private async processEvent<KeyOfEvents extends keyof ClientEvents>(
+    eventName: KeyOfEvents,
+    args: ClientEvents[KeyOfEvents]
+  ): Promise<void> {
     const handlerCtors = this.eventMap.get(eventName);
     if (!handlerCtors || handlerCtors.length === 0) return;
 

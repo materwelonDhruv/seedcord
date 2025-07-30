@@ -10,7 +10,7 @@ interface IUser extends IDocument {
 }
 
 @DatabaseService('users')
-export class Users<D extends IUser = IUser> extends BaseService<D> {
+export class Users<Doc extends IUser = IUser> extends BaseService<Doc> {
   @DatabaseModel('users')
   public static schema = new mongoose.Schema<IUser>({
     username: { type: String, required: true, unique: true }
