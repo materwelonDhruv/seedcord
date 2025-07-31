@@ -45,7 +45,7 @@
 
     // Language and Environment
     "experimentalDecorators": true,
-    "lib": ["ESNext", "esnext.disposable", "Decorators", "Decorators.Legacy"],
+    "lib": ["ESNext", "Decorators", "Decorators.Legacy"],
     "target": "ESNext",
     "useDefineForClassFields": true,
     "emitDecoratorMetadata": true
