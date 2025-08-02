@@ -1,21 +1,21 @@
 import type { CoreBot } from '../../core/CoreBot';
 import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 import type {
+  AnySelectMenuInteraction,
   AutocompleteInteraction,
   ButtonInteraction,
   ChatInputCommandInteraction,
   ClientEvents,
   Events,
-  ModalSubmitInteraction,
-  StringSelectMenuInteraction
+  ModalSubmitInteraction
 } from 'discord.js';
 
 export type ValidInteractionTypes =
   | ChatInputCommandInteraction
   | ButtonInteraction
-  | StringSelectMenuInteraction
   | ModalSubmitInteraction
-  | AutocompleteInteraction;
+  | AutocompleteInteraction
+  | AnySelectMenuInteraction;
 
 export type ValidNonInteractionTypes = ClientEvents[Exclude<keyof ClientEvents, Events.InteractionCreate>];
 export type ValidEventTypes = ValidInteractionTypes | ValidNonInteractionTypes;
