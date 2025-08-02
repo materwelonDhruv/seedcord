@@ -164,8 +164,7 @@ export abstract class CustomError extends Error {
 
   public constructor(public override message: string) {
     super(message);
-    Object.setPrototypeOf(this, new.target.prototype);
-    this.name = new.target.name;
+    Error.captureStackTrace(this, this.constructor);
   }
 
   public get emit(): boolean {
