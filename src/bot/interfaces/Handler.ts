@@ -1,4 +1,4 @@
-import type { CoreBot } from '../../core/CoreBot';
+import type { Core } from '../../core/library/interfaces/Core';
 import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 import type {
   AnySelectMenuInteraction,
@@ -42,7 +42,7 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handle
 
   protected constructor(
     event: ValidEvent,
-    public core: CoreBot
+    public core: Core
   ) {
     this.event = event;
   }
@@ -80,7 +80,7 @@ export abstract class InteractionHandler<Repliable extends Repliables>
   extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: CoreBot) {
+  constructor(event: Repliable, core: Core) {
     super(event, core);
   }
 }
@@ -89,7 +89,7 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
   extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: CoreBot) {
+  constructor(event: Repliable, core: Core) {
     super(event, core);
   }
 }
@@ -104,7 +104,7 @@ export abstract class EventHandler<Repliable extends keyof ClientEvents>
   extends BaseHandler<ClientEvents[Repliable]>
   implements Handler
 {
-  constructor(event: ClientEvents[Repliable], core: CoreBot) {
+  constructor(event: ClientEvents[Repliable], core: Core) {
     super(event, core);
   }
 }

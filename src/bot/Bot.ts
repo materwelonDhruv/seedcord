@@ -9,7 +9,7 @@ import { Globals } from '../core/library/globals/Globals';
 import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
 import { Logger } from '../core/services/Logger';
 
-import type { CoreBot } from '../core/CoreBot';
+import type { Core } from '../core/library/interfaces/Core';
 
 export class Bot {
   private readonly logger = new Logger('Bot');
@@ -21,7 +21,7 @@ export class Bot {
   private readonly commands: CommandRegistry;
   private readonly emojiInjector: EmojiInjector;
 
-  constructor(protected core: CoreBot) {
+  constructor(protected core: Core) {
     this._client = new Client(core.config.clientOptions);
 
     this.interactions = new InteractionController(core);

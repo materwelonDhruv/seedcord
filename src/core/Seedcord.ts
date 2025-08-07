@@ -10,7 +10,7 @@ import { Logger } from './services/Logger';
 import type { Core } from './library/interfaces/Core';
 import type { CoreBotConfig } from './library/interfaces/CoreBotConfig';
 
-export class CoreBot implements Core {
+export class Seedcord implements Core {
   private static _isInstantiated = false;
   private readonly logger = new Logger('CoreBot');
   public readonly shutdown: CoordinatedShutdown = CoordinatedShutdown.instance;
@@ -21,10 +21,10 @@ export class CoreBot implements Core {
   private readonly healthCheck: HealthCheck;
 
   constructor(public readonly config: CoreBotConfig) {
-    if (CoreBot._isInstantiated) {
+    if (Seedcord._isInstantiated) {
       throw new Error('CoreBot can only be instantiated once. Use the existing instance instead.');
     }
-    CoreBot._isInstantiated = true;
+    Seedcord._isInstantiated = true;
 
     this.db = new Database(this);
     this.hooks = new HookController(this);

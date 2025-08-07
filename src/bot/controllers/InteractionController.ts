@@ -7,7 +7,7 @@ import { InteractionMetadataKey, InteractionRoutes } from '../decorators/Interac
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
 import { InteractionHandler } from '../interfaces/Handler';
 
-import type { CoreBot } from '../../core/CoreBot';
+import type { Core } from '../../core/library/interfaces/Core';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
 import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
 
@@ -24,7 +24,7 @@ export class InteractionController {
 
   private readonly middlewares: MiddlewareConstructor[] = [];
 
-  constructor(protected core: CoreBot) {}
+  constructor(protected core: Core) {}
 
   public async init(): Promise<void> {
     if (this.isInitialized) {

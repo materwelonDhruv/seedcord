@@ -4,10 +4,10 @@ import { resolve } from 'node:path';
 
 import { GatewayIntentBits, Partials } from 'discord.js';
 
-import { CoreBot } from './src/core/CoreBot';
+import { Seedcord } from './src/core/Seedcord';
 
 async function main(): Promise<void> {
-  await new CoreBot({
+  await new Seedcord({
     clientOptions: {
       intents: [
         GatewayIntentBits.MessageContent,

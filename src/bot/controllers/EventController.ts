@@ -5,7 +5,7 @@ import { Logger } from '../../core/services/Logger';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
 import { EventHandler } from '../interfaces/Handler';
 
-import type { CoreBot } from '../../core/CoreBot';
+import type { Core } from '../../core/library/interfaces/Core';
 import type { EventHandlerConstructor } from '../interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 
@@ -15,7 +15,7 @@ export class EventController {
 
   private readonly eventMap = new Map<keyof ClientEvents, EventHandlerConstructor[]>();
 
-  public constructor(protected core: CoreBot) {}
+  public constructor(protected core: Core) {}
 
   public async init(): Promise<void> {
     if (this.isInitialized) {
