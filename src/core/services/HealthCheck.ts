@@ -6,7 +6,7 @@ import { ShutdownPhase } from './CoordinatedShutdown';
 import { Logger } from './Logger';
 import { Globals } from '../library/globals/Globals';
 
-import type { Seedcord } from '../Seedcord';
+import type { Core } from '../library/interfaces/Core';
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 
 const HTTP_OK = 200;
@@ -18,7 +18,7 @@ export class HealthCheck {
   private readonly path: string = Globals.healthCheckPath;
   private server?: Server;
 
-  constructor(private readonly core: Seedcord) {
+  constructor(private readonly core: Core) {
     // Register shutdown task
     this.core.shutdown.addTask(ShutdownPhase.StopServices, 'stop-healthcheck-server', async () => await this.stop());
   }

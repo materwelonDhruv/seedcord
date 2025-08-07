@@ -17,8 +17,8 @@ export type PluginCtor<TPlugin extends Plugin = Plugin> = new (core: Core, ...ar
 export type PluginArgs<Ctor extends PluginCtor> = Tail<ConstructorParameters<Ctor>>;
 
 export class Pluggable {
-  private isInitialized = false;
-  private readonly pluginOrder = new Map<string, InstanceType<PluginCtor>>();
+  protected isInitialized = false;
+  protected readonly pluginOrder = new Map<string, InstanceType<PluginCtor>>();
 
   protected async init(): Promise<this> {
     if (this.isInitialized) return this;

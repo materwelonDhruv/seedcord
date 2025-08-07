@@ -5,15 +5,15 @@ import { BaseService } from './BaseService';
 import { DatabaseConnectionFailure } from '../../bot/errors/Database';
 import { Globals } from '../library/globals/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
+import { ShutdownPhase } from '../services/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
-import { ShutdownPhase } from '../services/CoordinatedShutdown';
 
-import type { Seedcord } from '../Seedcord';
+import type { BaseServiceConstructor } from './BaseService';
 import type { Services } from './types/Services';
-import type { TypeOfIDocument } from '../library/types/Miscellaneous';
+import type { Core } from '../library/interfaces/Core';
 
-export class Mongo<Seed extends Seedcord = Seedcord> {
+export class Mongo {
   private readonly logger = new Logger('MongoDB');
   private isInitialised = false;
   private readonly uri: string;
@@ -24,7 +24,7 @@ export class Mongo<Seed extends Seedcord = Seedcord> {
    */
   public readonly services: Services = {} as Services;
 
-  constructor(public readonly core: Seed) {
+  constructor(public readonly core: Core) {
     this.uri = Globals.mongoUri;
 
     this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
@@ -66,7 +66,7 @@ export class Mongo<Seed extends Seedcord = Seedcord> {
     await traverseDirectory(servicesDir, (_full, rel, mod) => {
       for (const Service of Object.values(mod)) {
         if (this.isServiceClass(Service)) {
-          const instance = new Service(this);
+          const instance = new Service(this, this.core);
           this.logger.info(
             `${chalk.italic('Registered')} ${chalk.bold.yellow(instance.constructor.name)} from ${chalk.gray(rel)}`
           );
@@ -77,7 +77,7 @@ export class Mongo<Seed extends Seedcord = Seedcord> {
     this.logger.info(`${chalk.bold.green('Loaded')}: ${chalk.magenta(Object.keys(this.services).length)} services`);
   }
 
-  private isServiceClass(obj: unknown): obj is new (db: Mongo) => BaseService<TypeOfIDocument> {
+  private isServiceClass(obj: unknown): obj is BaseServiceConstructor {
     return (
       typeof obj === 'function' && obj.prototype instanceof BaseService && Reflect.hasMetadata(ServiceMetadataKey, obj)
     );
