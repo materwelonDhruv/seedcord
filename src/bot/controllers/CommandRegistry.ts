@@ -5,21 +5,21 @@ import { Logger } from '../../core/services/Logger';
 import { CommandMetadataKey } from '../decorators/CommandRegisterable';
 import { BuilderComponent } from '../interfaces/Components';
 
+import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
-import type { Seedcord } from '../../core/Seedcord';
 import type { CommandMeta } from '../decorators/CommandRegisterable';
 import type { SlashCommandBuilder } from 'discord.js';
 
 type CommandCtor = new () => BuilderComponent<'command'>;
 
-export class CommandRegistry<Seed extends Seedcord = Seedcord> implements Initializeable {
+export class CommandRegistry implements Initializeable {
   private readonly logger = new Logger('Commands');
   private isInitialised = false;
 
   public readonly globalCommands: SlashCommandBuilder[] = [];
   public readonly guildCommands = new Map<string, SlashCommandBuilder[]>();
 
-  public constructor(private readonly core: Seed) {}
+  public constructor(private readonly core: Core) {}
 
   public async init(): Promise<void> {
     if (this.isInitialised) return;

@@ -2,42 +2,42 @@ import type { ClientOptions } from 'discord.js';
 
 // interactions, events, commands, services, hooks
 
-export interface InteractionsConfig {
+interface InteractionsConfig {
   /**
    * Path for interaction handlers, such as slash commands and buttons.
    */
   path: string;
 }
 
-export interface EventsConfig {
+interface EventsConfig {
   /**
    * Path for event handlers.
    */
   path: string;
 }
 
-export interface CommandsConfig {
+interface CommandsConfig {
   /**
    * Path for command handlers.
    */
   path: string;
 }
 
-export interface ServicesConfig {
+interface ServicesConfig {
   /**
    * Path for service handlers.
    */
   path: string;
 }
 
-export interface HooksConfig {
+interface HooksConfig {
   /**
    * Path for hook handlers.
    */
   path: string;
 }
 
-export interface CoreBotConfig {
+export interface Config {
   /**
    * Discord interaction handlers configuration
    */

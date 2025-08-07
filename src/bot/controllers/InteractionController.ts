@@ -7,12 +7,12 @@ import { InteractionMetadataKey, InteractionRoutes } from '../decorators/Interac
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
 import { InteractionHandler } from '../interfaces/Handler';
 
+import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
-import type { Seedcord } from '../../core/Seedcord';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
 import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
 
-export class InteractionController<Seed extends Seedcord = Seedcord> implements Initializeable {
+export class InteractionController implements Initializeable {
   private readonly logger = new Logger('Interactions');
   private isInitialized = false;
 
@@ -25,7 +25,7 @@ export class InteractionController<Seed extends Seedcord = Seedcord> implements 
 
   private readonly middlewares: MiddlewareConstructor[] = [];
 
-  constructor(protected core: Seed) {}
+  constructor(protected core: Core) {}
 
   public async init(): Promise<void> {
     if (this.isInitialized) {

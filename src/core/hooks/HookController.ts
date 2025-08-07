@@ -9,19 +9,19 @@ import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
 
-import type { Seedcord } from '../Seedcord';
 import type { AllHooks, HookKeys } from './types/Hooks';
+import type { Core } from '../library/interfaces/Core';
 import type { TypedConstructor } from '../library/types/Miscellaneous';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 
-export class HookController<Seed extends Seedcord = Seedcord> extends Plugin {
+export class HookController extends Plugin {
   private readonly logger = new Logger('Hooks');
   private isInitialized = false;
   private readonly hookMap = new Map<HookKeys, HookConstructor[]>();
   private readonly emitter = new HookEmitter();
 
-  constructor(protected core: Seed) {
+  constructor(protected core: Core) {
     super(core);
   }
 

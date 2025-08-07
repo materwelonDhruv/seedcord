@@ -10,7 +10,7 @@ import { Plugin } from '../core/library/interfaces/Plugin';
 import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
 import { Logger } from '../core/services/Logger';
 
-import type { Seedcord } from '../core/Seedcord';
+import type { Core } from '../core/library/interfaces/Core';
 
 export class Bot extends Plugin {
   private readonly logger = new Logger('Bot');
@@ -22,7 +22,7 @@ export class Bot extends Plugin {
   private readonly commands: CommandRegistry;
   private readonly emojiInjector: EmojiInjector;
 
-  constructor(protected core: Seedcord) {
+  constructor(protected core: Core) {
     super(core);
 
     this._client = new Client(core.config.clientOptions);

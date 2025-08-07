@@ -4,7 +4,29 @@ import { resolve } from 'node:path';
 
 import { GatewayIntentBits, Partials } from 'discord.js';
 
+import { Plugin } from './src/core/library/interfaces/Plugin';
 import { Seedcord } from './src/core/Seedcord';
+
+import type { Core } from './src/core/library/interfaces/Core';
+
+class Test extends Plugin {
+  constructor(
+    core: Core,
+    private readonly str: string,
+    private readonly num: number
+  ) {
+    super(core);
+  }
+
+  async init(): Promise<void> {
+    // Initialization logic for the test plugin
+  }
+
+  public logIt(): void {
+    // eslint-disable-next-line no-console
+    console.log(`Test Plugin: ${this.str}, Number: ${this.num}`);
+  }
+}
 
 async function main(): Promise<void> {
   await new Seedcord({
@@ -34,7 +56,16 @@ async function main(): Promise<void> {
     events: {
       path: resolve(import.meta.dirname, './src/bot/events')
     }
-  }).start();
+  })
+    // eslint-disable-next-line no-magic-numbers
+    .attach('test', Test, 'Hello World', 42)
+    .start();
+}
+
+declare module './src/core/library/interfaces/Core' {
+  interface Core {
+    test: Test;
+  }
 }
 
 await main().catch(void 0);

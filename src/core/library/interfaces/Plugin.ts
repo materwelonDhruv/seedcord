@@ -1,3 +1,4 @@
+import type { Core } from './Core';
 import type { Tail } from '../types/Miscellaneous';
 
 export interface Initializeable {
@@ -5,15 +6,15 @@ export interface Initializeable {
 }
 
 export abstract class Plugin implements Initializeable {
-  constructor(protected pluggable: Pluggable) {}
+  constructor(protected pluggable: Core) {}
   abstract init(): Promise<void>;
 }
 
 /** A plugin constructor can accept any tail of args after Core */
-type PluginCtor<TPlugin extends Plugin = Plugin> = new (core: Pluggable, ...args: any[]) => TPlugin;
+export type PluginCtor<TPlugin extends Plugin = Plugin> = new (core: Core, ...args: any[]) => TPlugin;
 
 /** Convenience: the argument list a given constructor expects */
-type PluginArgs<Ctor extends PluginCtor> = Tail<ConstructorParameters<Ctor>>;
+export type PluginArgs<Ctor extends PluginCtor> = Tail<ConstructorParameters<Ctor>>;
 
 export class Pluggable {
   private isInitialized = false;
@@ -38,7 +39,7 @@ export class Pluggable {
     if (this.isInitialized) throw new Error('Cannot attach a plugin after initialization.');
     if ((this as Record<string, unknown>)[key]) throw new Error(`Plugin with key "${key}" already exists.`);
 
-    const instance = new Plugin(this, ...args);
+    const instance = new Plugin(this as unknown as Core, ...args);
 
     const entry = {
       [key]: instance

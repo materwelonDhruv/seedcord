@@ -4,8 +4,8 @@ import { Logger } from '../../core/services/Logger';
 import { DatabaseError } from '../errors/Database';
 import { CustomError } from '../interfaces/Components';
 
+import type { Core } from '../../core/library/interfaces/Core';
 import type { Nullish } from '../../core/library/types/Miscellaneous';
-import type { Seedcord } from '../../core/Seedcord';
 import type { UUID } from 'crypto';
 import type { EmbedBuilder, Guild, User } from 'discord.js';
 
@@ -14,7 +14,7 @@ export class ErrorHandlingUtils {
 
   public static handleError(
     error: Error,
-    core: Seedcord,
+    core: Core,
     guild: Nullish<Guild>,
     user: Nullish<User>
   ): { uuid: UUID; response: EmbedBuilder } {

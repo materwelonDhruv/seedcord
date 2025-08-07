@@ -1,10 +1,10 @@
-import type { Seedcord } from '../../Seedcord';
+import type { Core } from '../../library/interfaces/Core';
 import type { AllHooks, HookKeys } from '../types/Hooks';
 
-export abstract class HookHandler<KeyOfHooks extends HookKeys, Seed extends Seedcord = Seedcord> {
+export abstract class HookHandler<KeyOfHooks extends HookKeys> {
   constructor(
     protected readonly data: AllHooks[KeyOfHooks],
-    protected readonly core: Seed
+    protected readonly core: Core
   ) {
     this.data = data;
     this.core = core;

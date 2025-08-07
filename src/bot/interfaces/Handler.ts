@@ -1,5 +1,5 @@
+import type { Core } from '../../core/library/interfaces/Core';
 import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
-import type { Seedcord } from '../../core/Seedcord';
 import type {
   AnySelectMenuInteraction,
   AutocompleteInteraction,
@@ -34,7 +34,7 @@ export interface WithChecks {
 
 interface HandlerWithChecks extends WithChecks, Handler {}
 
-abstract class BaseHandler<ValidEvent extends ValidEventTypes, Seed extends Seedcord = Seedcord> implements Handler {
+abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handler {
   protected checkable = false;
   protected break = false;
   protected errored = false;
@@ -42,7 +42,7 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes, Seed extends Seed
 
   protected constructor(
     event: ValidEvent,
-    public core: Seed
+    public core: Core
   ) {
     this.event = event;
   }
@@ -76,20 +76,20 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes, Seed extends Seed
  * @implements Handler
  * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
  */
-export abstract class InteractionHandler<Repliable extends Repliables, Seed extends Seedcord = Seedcord>
-  extends BaseHandler<Repliable, Seed>
+export abstract class InteractionHandler<Repliable extends Repliables>
+  extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: Seed) {
+  constructor(event: Repliable, core: Core) {
     super(event, core);
   }
 }
 
-export abstract class InteractionMiddleware<Repliable extends Repliables, Seed extends Seedcord = Seedcord>
-  extends BaseHandler<Repliable, Seed>
+export abstract class InteractionMiddleware<Repliable extends Repliables>
+  extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: Seed) {
+  constructor(event: Repliable, core: Core) {
     super(event, core);
   }
 }
@@ -100,11 +100,11 @@ export abstract class InteractionMiddleware<Repliable extends Repliables, Seed e
  * @implements Handler
  * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
  */
-export abstract class EventHandler<Repliable extends keyof ClientEvents, Seed extends Seedcord = Seedcord>
-  extends BaseHandler<ClientEvents[Repliable], Seed>
+export abstract class EventHandler<Repliable extends keyof ClientEvents>
+  extends BaseHandler<ClientEvents[Repliable]>
   implements Handler
 {
-  constructor(event: ClientEvents[Repliable], core: Seed) {
+  constructor(event: ClientEvents[Repliable], core: Core) {
     super(event, core);
   }
 }
