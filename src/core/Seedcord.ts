@@ -1,32 +1,34 @@
 import chalk from 'chalk';
 
 import { Bot } from '../bot/Bot';
-import { Database } from './database/Database';
+import { Mongo } from './database/Database';
 import { HookController } from './hooks/HookController';
+import { Pluggable } from './library/interfaces/Plugin';
 import { CoordinatedShutdown } from './services/CoordinatedShutdown';
 import { HealthCheck } from './services/HealthCheck';
 import { Logger } from './services/Logger';
 
-import type { Core } from './library/interfaces/Core';
 import type { CoreBotConfig } from './library/interfaces/CoreBotConfig';
 
-export class Seedcord implements Core {
+export class Seedcord extends Pluggable {
   private static _isInstantiated = false;
   private readonly logger = new Logger('CoreBot');
   public readonly shutdown: CoordinatedShutdown = CoordinatedShutdown.instance;
 
-  public readonly db: Database;
+  public readonly db: Mongo;
   public readonly hooks: HookController;
   public readonly bot: Bot;
   private readonly healthCheck: HealthCheck;
 
   constructor(public readonly config: CoreBotConfig) {
+    super();
+
     if (Seedcord._isInstantiated) {
       throw new Error('CoreBot can only be instantiated once. Use the existing instance instead.');
     }
     Seedcord._isInstantiated = true;
 
-    this.db = new Database(this);
+    this.db = new Mongo(this);
     this.hooks = new HookController(this);
     this.bot = new Bot(this);
     this.healthCheck = new HealthCheck(this);
@@ -42,7 +44,7 @@ export class Seedcord implements Core {
     this.logger.info(chalk.bold('Hooks initialized'));
 
     this.logger.info(chalk.bold('Starting Bot'));
-    await this.bot.start();
+    await this.bot.init();
     this.logger.info(chalk.bold('Bot started'));
 
     this.logger.info(chalk.bold('Starting Health Check'));

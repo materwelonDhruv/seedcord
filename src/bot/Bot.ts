@@ -6,12 +6,13 @@ import { EventController } from './controllers/EventController';
 import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
 import { Globals } from '../core/library/globals/Globals';
+import { Plugin } from '../core/library/interfaces/Plugin';
 import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
 import { Logger } from '../core/services/Logger';
 
-import type { Core } from '../core/library/interfaces/Core';
+import type { Seedcord } from '../core/Seedcord';
 
-export class Bot {
+export class Bot extends Plugin {
   private readonly logger = new Logger('Bot');
   private isInitialized = false;
 
@@ -21,7 +22,9 @@ export class Bot {
   private readonly commands: CommandRegistry;
   private readonly emojiInjector: EmojiInjector;
 
-  constructor(protected core: Core) {
+  constructor(protected core: Seedcord) {
+    super(core);
+
     this._client = new Client(core.config.clientOptions);
 
     this.interactions = new InteractionController(core);
@@ -33,7 +36,7 @@ export class Bot {
     this.core.shutdown.addTask(ShutdownPhase.DiscordCleanup, 'stop-bot', async () => await this.stop());
   }
 
-  public async start(): Promise<void> {
+  public async init(): Promise<void> {
     if (this.isInitialized) {
       return;
     }

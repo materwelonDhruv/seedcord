@@ -5,17 +5,18 @@ import { Logger } from '../../core/services/Logger';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
 import { EventHandler } from '../interfaces/Handler';
 
-import type { Core } from '../../core/library/interfaces/Core';
+import type { Initializeable } from '../../core/library/interfaces/Plugin';
+import type { Seedcord } from '../../core/Seedcord';
 import type { EventHandlerConstructor } from '../interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 
-export class EventController {
+export class EventController<Seed extends Seedcord = Seedcord> implements Initializeable {
   private readonly logger = new Logger('Events');
   private isInitialized = false;
 
   private readonly eventMap = new Map<keyof ClientEvents, EventHandlerConstructor[]>();
 
-  public constructor(protected core: Core) {}
+  public constructor(protected core: Seed) {}
 
   public async init(): Promise<void> {
     if (this.isInitialized) {

@@ -51,6 +51,9 @@ type UnionToIntersection<UnionType> = (UnionType extends unknown ? (x: UnionType
 type LastOf<UnionType> =
   UnionToIntersection<UnionType extends unknown ? (x: UnionType) => 0 : never> extends (x: infer L) => 0 ? L : never;
 
+/** Extracts every parameter _after_ the first one */
+export type Tail<TArgs extends unknown[]> = TArgs extends [unknown, ...infer R] ? R : never;
+
 export type UnionToTuple<UnionType, TupleArray extends unknown[] = []> = [UnionType] extends [never]
   ? TupleArray
   : UnionToTuple<Exclude<UnionType, LastOf<UnionType>>, [LastOf<UnionType>, ...TupleArray]>;

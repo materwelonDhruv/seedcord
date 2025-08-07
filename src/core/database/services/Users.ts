@@ -15,6 +15,8 @@ export class Users<Doc extends IUser = IUser> extends BaseService<Doc> {
   public static schema = new mongoose.Schema<IUser>({
     username: { type: String, required: true, unique: true }
   });
+
+  public test(): void {}
 }
 
 /* Declare Users to augment the ServiceMap */

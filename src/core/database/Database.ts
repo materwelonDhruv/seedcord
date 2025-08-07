@@ -9,12 +9,12 @@ import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
 import { ShutdownPhase } from '../services/CoordinatedShutdown';
 
+import type { Seedcord } from '../Seedcord';
 import type { Services } from './types/Services';
-import type { Core } from '../library/interfaces/Core';
 import type { TypeOfIDocument } from '../library/types/Miscellaneous';
 
-export class Database {
-  private readonly logger = new Logger('Database');
+export class Mongo<Seed extends Seedcord = Seedcord> {
+  private readonly logger = new Logger('MongoDB');
   private isInitialised = false;
   private readonly uri: string;
 
@@ -24,7 +24,7 @@ export class Database {
    */
   public readonly services: Services = {} as Services;
 
-  constructor(public readonly core: Core) {
+  constructor(public readonly core: Seed) {
     this.uri = Globals.mongoUri;
 
     this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
@@ -77,7 +77,7 @@ export class Database {
     this.logger.info(`${chalk.bold.green('Loaded')}: ${chalk.magenta(Object.keys(this.services).length)} services`);
   }
 
-  private isServiceClass(obj: unknown): obj is new (db: Database) => BaseService<TypeOfIDocument> {
+  private isServiceClass(obj: unknown): obj is new (db: Mongo) => BaseService<TypeOfIDocument> {
     return (
       typeof obj === 'function' && obj.prototype instanceof BaseService && Reflect.hasMetadata(ServiceMetadataKey, obj)
     );

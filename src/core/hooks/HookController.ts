@@ -3,24 +3,27 @@ import * as path from 'node:path';
 import chalk from 'chalk';
 
 import { traverseDirectory } from '../library/Helpers';
+import { Plugin } from '../library/interfaces/Plugin';
 import { Logger } from '../services/Logger';
 import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
 
+import type { Seedcord } from '../Seedcord';
 import type { AllHooks, HookKeys } from './types/Hooks';
-import type { Core } from '../library/interfaces/Core';
 import type { TypedConstructor } from '../library/types/Miscellaneous';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 
-export class HookController {
+export class HookController<Seed extends Seedcord = Seedcord> extends Plugin {
   private readonly logger = new Logger('Hooks');
   private isInitialized = false;
   private readonly hookMap = new Map<HookKeys, HookConstructor[]>();
   private readonly emitter = new HookEmitter();
 
-  constructor(protected core: Core) {}
+  constructor(protected core: Seed) {
+    super(core);
+  }
 
   public async init(): Promise<void> {
     if (this.isInitialized) {
