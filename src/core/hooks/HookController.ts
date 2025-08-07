@@ -74,7 +74,7 @@ export class HookController {
       this.emitter.on(hookName, (data) => {
         for (const HandlerCtor of handlerCtors) {
           try {
-            const instance = new HandlerCtor(data);
+            const instance = new HandlerCtor(data, this.core);
             void instance.execute();
           } catch (err) {
             this.logger.error(`Error in hook ${String(hookName)} handler ${HandlerCtor.name}:`, err);
