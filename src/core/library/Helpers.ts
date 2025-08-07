@@ -1,11 +1,11 @@
-import { readdir } from 'fs/promises';
-import * as path from 'path';
+import { readdir } from 'node:fs/promises';
+import * as path from 'node:path';
 
 import { DatabaseError } from '../../bot/errors/Database';
 import { Logger } from '../services/Logger';
 
 import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
-import type * as fs from 'fs';
+import type * as fs from 'node:fs';
 
 /**
  * Rounds a number to a specified number of decimal places.
@@ -183,7 +183,7 @@ export async function traverseDirectory(
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch {
-    Logger.Error('Failed to read directory', dir);
+    Logger.Warn('Failed to read directory', dir);
     entries = [];
   }
 

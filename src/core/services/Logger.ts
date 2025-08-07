@@ -54,7 +54,7 @@ export class Logger {
     const transportsArray: any[] = [consoleTransport];
 
     // Add file transport only in non-production environments
-    if (!Globals.isProduction) {
+    if (Globals.isDevelopment) {
       const maxSizeInMB = 10;
       transportsArray.push(
         new transports.File({

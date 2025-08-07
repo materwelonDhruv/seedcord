@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import chalk from 'chalk';
 import { Events } from 'discord.js';
@@ -50,8 +50,7 @@ export class InteractionController {
 
   private async loadHandlers(dir: string): Promise<void> {
     await traverseDirectory(dir, (_fullPath, relativePath, imported) => {
-      for (const exportName of Object.keys(imported)) {
-        const val = imported[exportName];
+      for (const val of Object.values(imported)) {
         if (this.isHandlerClass(val)) {
           this.registerHandler(val);
           this.logger.info(

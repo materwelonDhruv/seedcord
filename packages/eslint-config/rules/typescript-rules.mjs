@@ -105,6 +105,12 @@ export const TYPESCRIPT_RULES = {
         regex: '^\\w{3,}',
         match: true
       }
+    },
+    {
+      selector: 'import',
+      format: ['camelCase', 'PascalCase'],
+      leadingUnderscore: 'allow',
+      trailingUnderscore: 'allow'
     }
   ],
   '@typescript-eslint/no-extraneous-class': 'off',

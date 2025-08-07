@@ -1,4 +1,4 @@
-import * as path from 'path';
+import * as path from 'node:path';
 
 import chalk from 'chalk';
 
@@ -39,11 +39,7 @@ export class CommandRegistry {
 
   private async loadCommands(dir: string): Promise<void> {
     await traverseDirectory(dir, (_full, rel, mod) => {
-      for (const exported of Object.values(mod)) {
-        if (this.isCommandClass(exported)) {
-          this.registerCommand(exported, rel);
-        }
-      }
+      for (const exported of Object.values(mod)) if (this.isCommandClass(exported)) this.registerCommand(exported, rel);
     });
   }
 

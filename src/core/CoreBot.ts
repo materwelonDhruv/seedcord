@@ -10,21 +10,23 @@ import { Logger } from './services/Logger';
 import type { Core } from './library/interfaces/Core';
 
 export class CoreBot implements Core {
+  private static _instance: CoreBot;
   private readonly logger = new Logger('CoreBot');
   public readonly shutdown = CoordinatedShutdown.instance;
-  private isInitialized = false;
 
   public readonly db: Database = new Database(this);
   public readonly hooks: HookController = new HookController(this);
   public readonly bot: Bot = new Bot(this);
   private readonly healthCheck: HealthCheck = new HealthCheck(this);
 
-  constructor() {}
+  private constructor() {}
+
+  public static get instance(): CoreBot {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    return (this._instance ??= new CoreBot());
+  }
 
   public async start(): Promise<void> {
-    if (this.isInitialized) return;
-    this.isInitialized = true;
-
     this.logger.info(chalk.bold('Starting Database'));
     await this.db.start();
     this.logger.info(chalk.bold('Database started'));
