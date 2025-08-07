@@ -4,9 +4,9 @@ import chalk from 'chalk';
 
 import { ShutdownPhase } from './CoordinatedShutdown';
 import { Logger } from './Logger';
-import { Globals } from '../library/globals/Globals';
 
 import type { Core } from '../library/interfaces/Core';
+import type { HealthCheckConfig } from '../library/interfaces/CoreBotConfig';
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 
 const HTTP_OK = 200;
@@ -14,11 +14,21 @@ const HTTP_NOT_FOUND = 404;
 
 export class HealthCheck {
   private readonly logger = new Logger('HealthCheck');
-  private readonly port: number = Globals.healthCheckPort;
-  private readonly path: string = Globals.healthCheckPath;
+  private readonly port: number;
+  private readonly path: string;
   private server?: Server;
 
   constructor(private readonly core: Core) {
+    const healthCheckConfig = this.core.config.healthCheck;
+    if (healthCheckConfig === false) {
+      throw new Error('HealthCheck should not be instantiated when disabled');
+    }
+
+    // TypeScript now knows healthCheckConfig is HealthCheckConfig
+    const config = healthCheckConfig as HealthCheckConfig;
+    this.port = config.port;
+    this.path = config.path;
+
     // Register shutdown task
     this.core.shutdown.addTask(ShutdownPhase.StopServices, 'stop-healthcheck-server', async () => await this.stop());
   }

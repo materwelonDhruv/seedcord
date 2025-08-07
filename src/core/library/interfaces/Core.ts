@@ -1,3 +1,4 @@
+import type { CoreBotConfig } from './CoreBotConfig';
 import type { Bot } from '../../../bot/Bot';
 import type { Database } from '../../database/Database';
 import type { HookController } from '../../hooks/HookController';
@@ -7,6 +8,7 @@ export type BotMode = 'bot';
 export type CoreMode = BotMode;
 
 interface CoreBase {
+  readonly config: CoreBotConfig;
   readonly db: Database;
   readonly hooks: HookController;
   readonly shutdown: CoordinatedShutdown;

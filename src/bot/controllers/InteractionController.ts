@@ -1,5 +1,3 @@
-import * as path from 'node:path';
-
 import chalk from 'chalk';
 import { Events } from 'discord.js';
 
@@ -34,7 +32,7 @@ export class InteractionController {
     }
     this.isInitialized = true;
 
-    const handlersDir = path.resolve(import.meta.dirname, '../handlers');
+    const handlersDir = this.core.config.paths.handlers;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

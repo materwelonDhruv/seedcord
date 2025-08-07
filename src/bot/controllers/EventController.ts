@@ -1,5 +1,3 @@
-import * as path from 'node:path';
-
 import chalk from 'chalk';
 
 import { traverseDirectory } from '../../core/library/Helpers';
@@ -25,7 +23,7 @@ export class EventController {
     }
     this.isInitialized = true;
 
-    const handlersDir = path.resolve(import.meta.dirname, '../events');
+    const handlersDir = this.core.config.paths.events;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

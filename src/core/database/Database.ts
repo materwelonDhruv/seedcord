@@ -1,5 +1,3 @@
-import path from 'node:path';
-
 import chalk from 'chalk';
 import mongoose from 'mongoose';
 
@@ -65,7 +63,7 @@ export class Database {
   }
 
   private async loadServices(): Promise<void> {
-    const servicesDir = path.resolve(import.meta.dirname, './services');
+    const servicesDir = this.core.config.paths.services;
     this.logger.info(chalk.bold(servicesDir));
 
     await traverseDirectory(servicesDir, (_full, rel, mod) => {

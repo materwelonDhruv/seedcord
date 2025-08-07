@@ -1,5 +1,3 @@
-import * as path from 'node:path';
-
 import chalk from 'chalk';
 
 import { traverseDirectory } from '../../core/library/Helpers';
@@ -19,16 +17,18 @@ export class CommandRegistry {
   public readonly globalCommands: SlashCommandBuilder[] = [];
   public readonly guildCommands = new Map<string, SlashCommandBuilder[]>();
 
-  public constructor(private readonly client: Client) {}
+  public constructor(
+    private readonly client: Client,
+    private readonly commandsPath: string
+  ) {}
 
   public async init(): Promise<void> {
     if (this.isInitialised) return;
     this.isInitialised = true;
 
-    const commandsDir = path.resolve(import.meta.dirname, '../components/commands');
-    this.logger.info(chalk.bold(commandsDir));
+    this.logger.info(chalk.bold(this.commandsPath));
 
-    await this.loadCommands(commandsDir);
+    await this.loadCommands(this.commandsPath);
 
     this.logger.info(
       `${chalk.bold.green('Loaded')}: ${chalk.magenta.bold(
