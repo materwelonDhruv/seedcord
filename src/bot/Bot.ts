@@ -1,10 +1,11 @@
 import chalk from 'chalk';
-import { Client, GatewayIntentBits, Partials } from 'discord.js';
+import { Client } from 'discord.js';
 
 import { CommandRegistry } from './controllers/CommandRegistry';
 import { EventController } from './controllers/EventController';
 import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
+import { Globals } from '../core/library/globals/Globals';
 import { ShutdownPhase } from '../core/services/CoordinatedShutdown';
 import { Logger } from '../core/services/Logger';
 
@@ -21,24 +22,12 @@ export class Bot {
   private readonly emojiInjector: EmojiInjector;
 
   constructor(protected core: CoreBot) {
-    this._client = new Client(
-      core.config.clientOptions ?? {
-        intents: [
-          GatewayIntentBits.MessageContent,
-          GatewayIntentBits.GuildMessages,
-          GatewayIntentBits.Guilds,
-          GatewayIntentBits.GuildPresences,
-          GatewayIntentBits.GuildMembers,
-          GatewayIntentBits.GuildWebhooks
-        ],
-        partials: [Partials.GuildMember, Partials.User]
-      }
-    );
+    this._client = new Client(core.config.clientOptions);
 
     this.interactions = new InteractionController(core);
     this.events = new EventController(core);
 
-    this.commands = new CommandRegistry(this._client, core.config.paths.commands);
+    this.commands = new CommandRegistry(this.core);
     this.emojiInjector = new EmojiInjector(this._client);
 
     this.core.shutdown.addTask(ShutdownPhase.DiscordCleanup, 'stop-bot', async () => await this.stop());
@@ -68,7 +57,7 @@ export class Bot {
   }
 
   private async login(): Promise<Bot> {
-    await this._client.login(this.core.config.token);
+    await this._client.login(Globals.botToken);
     this.logger.info(`Logged in as ${chalk.bold.magenta(this._client.user?.username)}!`);
     return this;
   }

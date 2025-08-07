@@ -23,7 +23,7 @@ export class EventController {
     }
     this.isInitialized = true;
 
-    const handlersDir = this.core.config.paths.events;
+    const handlersDir = this.core.config.events.path;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

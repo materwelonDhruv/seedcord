@@ -32,7 +32,7 @@ export class InteractionController {
     }
     this.isInitialized = true;
 
-    const handlersDir = this.core.config.paths.handlers;
+    const handlersDir = this.core.config.interactions.path;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

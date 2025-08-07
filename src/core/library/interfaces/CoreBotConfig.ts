@@ -1,53 +1,70 @@
 import type { ClientOptions } from 'discord.js';
 
-export interface HealthCheckConfig {
-  port: number;
+// interactions, events, commands, services, hooks
+
+export interface InteractionsConfig {
+  /**
+   * Path for interaction handlers, such as slash commands and buttons.
+   */
   path: string;
 }
 
-export interface PathConfig {
-  commands: string;
-  events: string;
-  handlers: string;
-  services: string;
+export interface EventsConfig {
+  /**
+   * Path for event handlers.
+   */
+  path: string;
+}
+
+export interface CommandsConfig {
+  /**
+   * Path for command handlers.
+   */
+  path: string;
+}
+
+export interface ServicesConfig {
+  /**
+   * Path for service handlers.
+   */
+  path: string;
+}
+
+export interface HooksConfig {
+  /**
+   * Path for hook handlers.
+   */
+  path: string;
 }
 
 export interface CoreBotConfig {
   /**
-   * Discord bot token
+   * Discord interaction handlers configuration
    */
-  token: string;
+  interactions: InteractionsConfig;
 
   /**
-   * Path configuration for various components
+   * Discord event handlers configuration
    */
-  paths: PathConfig;
+  events: EventsConfig;
+
+  /**
+   * Discord command registry configuration
+   */
+  commands: CommandsConfig;
+
+  /**
+   * Discord service handlers configuration
+   */
+  services: ServicesConfig;
+
+  /**
+   * Discord hook handlers configuration
+   */
+  hooks: HooksConfig;
 
   /**
    * Discord.js ClientOptions passed directly to the Client constructor
    */
-  clientOptions?: ClientOptions;
-
-  /**
-   * Health check configuration. Set to false to disable health check.
-   */
-  healthCheck?: HealthCheckConfig | false;
-
-  /**
-   * Enable or disable coordinated shutdown
-   * @default true
-   */
-  coordinatedShutdown?: boolean;
-
-  /**
-   * MongoDB connection URI
-   * @default 'mongodb://localhost:27017/'
-   */
-  mongoUri?: string;
-
-  /**
-   * Database name
-   * @default 'seedcord'
-   */
-  dbName?: string;
+  clientOptions: ClientOptions;
 }

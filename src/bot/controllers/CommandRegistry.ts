@@ -5,8 +5,9 @@ import { Logger } from '../../core/services/Logger';
 import { CommandMetadataKey } from '../decorators/CommandRegisterable';
 import { BuilderComponent } from '../interfaces/Components';
 
+import type { Core } from '../../core/library/interfaces/Core';
 import type { CommandMeta } from '../decorators/CommandRegisterable';
-import type { Client, SlashCommandBuilder } from 'discord.js';
+import type { SlashCommandBuilder } from 'discord.js';
 
 type CommandCtor = new () => BuilderComponent<'command'>;
 
@@ -17,18 +18,15 @@ export class CommandRegistry {
   public readonly globalCommands: SlashCommandBuilder[] = [];
   public readonly guildCommands = new Map<string, SlashCommandBuilder[]>();
 
-  public constructor(
-    private readonly client: Client,
-    private readonly commandsPath: string
-  ) {}
+  public constructor(private readonly core: Core) {}
 
   public async init(): Promise<void> {
     if (this.isInitialised) return;
     this.isInitialised = true;
 
-    this.logger.info(chalk.bold(this.commandsPath));
+    this.logger.info(chalk.bold(this.core.config.commands.path));
 
-    await this.loadCommands(this.commandsPath);
+    await this.loadCommands(this.core.config.commands.path);
 
     this.logger.info(
       `${chalk.bold.green('Loaded')}: ${chalk.magenta.bold(
@@ -71,7 +69,7 @@ export class CommandRegistry {
 
   public async setCommands(): Promise<void> {
     if (this.globalCommands.length > 0) {
-      await this.client.application?.commands.set(this.globalCommands);
+      await this.core.bot.client.application?.commands.set(this.globalCommands);
       const tag = this.globalCommands.length === 1 ? 'command' : 'commands';
       this.logger.info(
         `${chalk.bold.green('Configured')} ${chalk.magenta.bold(this.globalCommands.length)} global ${tag}`
@@ -80,7 +78,7 @@ export class CommandRegistry {
     }
 
     for (const [guildId, commands] of this.guildCommands.entries()) {
-      const guild = this.client.guilds.cache.get(guildId);
+      const guild = this.core.bot.client.guilds.cache.get(guildId);
       if (!guild) {
         this.logger.warn(`Guild with ID ${guildId} not found, skipping command registration.`);
         continue;

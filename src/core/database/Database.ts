@@ -24,11 +24,8 @@ export class Database {
    */
   public readonly services: Services = {} as Services;
 
-  constructor(
-    public readonly core: Core,
-    uriOverride?: string
-  ) {
-    this.uri = uriOverride ?? Globals.mongoUri;
+  constructor(public readonly core: Core) {
+    this.uri = Globals.mongoUri;
 
     this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
   }
@@ -63,7 +60,7 @@ export class Database {
   }
 
   private async loadServices(): Promise<void> {
-    const servicesDir = this.core.config.paths.services;
+    const servicesDir = this.core.config.services.path;
     this.logger.info(chalk.bold(servicesDir));
 
     await traverseDirectory(servicesDir, (_full, rel, mod) => {
