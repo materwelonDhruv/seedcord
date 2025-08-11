@@ -10,7 +10,17 @@ import { InteractionHandler } from '../interfaces/Handler';
 import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
-import type { ChatInputCommandInteraction, Interaction } from 'discord.js';
+import type {
+  ButtonInteraction,
+  ChannelSelectMenuInteraction,
+  ChatInputCommandInteraction,
+  Interaction,
+  MentionableSelectMenuInteraction,
+  ModalSubmitInteraction,
+  RoleSelectMenuInteraction,
+  StringSelectMenuInteraction,
+  UserSelectMenuInteraction
+} from 'discord.js';
 
 export class InteractionController implements Initializeable {
   private readonly logger = new Logger('Interactions');
@@ -19,7 +29,11 @@ export class InteractionController implements Initializeable {
   private readonly slashMap = new Map<string, HandlerConstructor>();
   private readonly buttonMap = new Map<string, HandlerConstructor>();
   private readonly modalMap = new Map<string, HandlerConstructor>();
-  private readonly stringSelectMenuMap = new Map<string, HandlerConstructor>();
+  private readonly stringSelectMap = new Map<string, HandlerConstructor>();
+  private readonly userSelectMap = new Map<string, HandlerConstructor>();
+  private readonly roleSelectMap = new Map<string, HandlerConstructor>();
+  private readonly channelSelectMap = new Map<string, HandlerConstructor>();
+  private readonly mentionableSelectMap = new Map<string, HandlerConstructor>();
 
   private readonly keysToIgnore = new Set(['confirm!confirmable', 'cancel!confirmable']);
 
@@ -28,9 +42,8 @@ export class InteractionController implements Initializeable {
   constructor(protected core: Core) {}
 
   public async init(): Promise<void> {
-    if (this.isInitialized) {
-      return;
-    }
+    if (this.isInitialized) return;
+
     this.isInitialized = true;
 
     const handlersDir = this.core.config.interactions.path;
@@ -40,10 +53,15 @@ export class InteractionController implements Initializeable {
     this.attachToClient();
 
     this.logger.info(
-      `${chalk.bold.green('Loaded')}: ${chalk.magenta.bold(this.slashMap.size)} slash, ` +
-        `${chalk.magenta.bold(this.buttonMap.size)} buttons, ` +
-        `${chalk.magenta.bold(this.modalMap.size)} modals, ` +
-        `${chalk.magenta.bold(this.stringSelectMenuMap.size)} string selects`
+      `${chalk.bold.green('Loaded')}:` +
+        `\n  ${chalk.magenta.bold(this.slashMap.size)} slash,` +
+        `\n  ${chalk.magenta.bold(this.buttonMap.size)} buttons,` +
+        `\n  ${chalk.magenta.bold(this.modalMap.size)} modals,` +
+        `\n  ${chalk.magenta.bold(this.stringSelectMap.size)} string selects,` +
+        `\n  ${chalk.magenta.bold(this.userSelectMap.size)} user selects,` +
+        `\n  ${chalk.magenta.bold(this.roleSelectMap.size)} role selects,` +
+        `\n  ${chalk.magenta.bold(this.channelSelectMap.size)} channel selects,` +
+        `\n  ${chalk.magenta.bold(this.mentionableSelectMap.size)} mentionable selects`
     );
   }
 
@@ -74,7 +92,11 @@ export class InteractionController implements Initializeable {
       [InteractionRoutes.Slash, this.slashMap],
       [InteractionRoutes.Button, this.buttonMap],
       [InteractionRoutes.Modal, this.modalMap],
-      [InteractionRoutes.StringMenu, this.stringSelectMenuMap]
+      [InteractionRoutes.StringMenu, this.stringSelectMap],
+      [InteractionRoutes.UserMenu, this.userSelectMap],
+      [InteractionRoutes.RoleMenu, this.roleSelectMap],
+      [InteractionRoutes.ChannelMenu, this.channelSelectMap],
+      [InteractionRoutes.MentionableMenu, this.mentionableSelectMap]
     ];
     for (const [routeType, map] of routeTypes) {
       const meta: unknown = Reflect.getMetadata(routeType, handlerClass);
@@ -93,22 +115,45 @@ export class InteractionController implements Initializeable {
     });
   }
 
+  private parseCustomId(customId: string): { prefix: string; args: string[] } {
+    const parts = customId.split(':');
+    const prefix = parts[0] ?? '';
+    const argString = parts[1] ?? '';
+    const args = argString ? argString.split('-') : [];
+
+    return { prefix, args };
+  }
+
+  private async handleCustomIdInteraction<TInteraction extends Interaction & { customId: string }>(
+    interaction: TInteraction,
+    getMap: () => Map<string, HandlerConstructor>,
+    interactionType: string
+  ): Promise<void> {
+    const { prefix, args } = this.parseCustomId(interaction.customId);
+    if (!prefix) return this.logger.warn(`${interactionType} has invalid customId: ${interaction.customId}`);
+
+    await this.processInteraction(
+      interaction,
+      () => prefix,
+      (key) => getMap().get(key),
+      args
+    );
+  }
+
   public async processInteraction<TInteraction extends Interaction>(
     interaction: TInteraction,
     extractKey: (i: TInteraction) => string,
-    getHandler: (key: string) => HandlerConstructor | undefined
+    getHandler: (key: string) => HandlerConstructor | undefined,
+    args?: string[]
   ): Promise<void> {
     const key = extractKey(interaction);
-    if (this.keysToIgnore.has(key)) {
-      return;
-    }
+    if (this.keysToIgnore.has(key)) return;
+
     // Run middlewares first
     for (const MiddlewareCtor of this.middlewares) {
-      const middleware = new MiddlewareCtor(interaction as Repliables, this.core);
+      const middleware = new MiddlewareCtor(interaction as Repliables, this.core, args);
       await middleware.execute();
-      if (middleware.hasErrors()) {
-        return;
-      }
+      if (middleware.hasErrors()) return;
     }
     let HandlerCtor = getHandler(key);
     if (!HandlerCtor) {
@@ -118,69 +163,79 @@ export class InteractionController implements Initializeable {
     }
 
     this.logger.debug(`Processing ${chalk.bold.green(key)} with ${chalk.gray(HandlerCtor.name)}`);
-    const handler = new HandlerCtor(interaction as Repliables, this.core);
-    if (handler.hasChecks()) {
-      await handler.runChecks();
-    }
-
+    const handler = new HandlerCtor(interaction as Repliables, this.core, args);
+    if (handler.hasChecks()) await handler.runChecks();
     if (handler.shouldBreak()) return;
-
-    if (!handler.hasErrors()) {
-      await handler.execute();
-    }
+    if (!handler.hasErrors()) await handler.execute();
   }
 
   private async handleInteraction(interaction: Interaction): Promise<void> {
     switch (true) {
       case interaction.isChatInputCommand():
-        {
-          const route = this.buildSlashRoute(interaction);
-          await this.processInteraction(
-            interaction,
-            () => route,
-            (key) => this.slashMap.get(key)
-          );
-        }
+        await this.handleSlashCommand(interaction);
         break;
       case interaction.isButton():
-        {
-          const buttonPrefix = interaction.customId.split('-')[0];
-          if (!buttonPrefix) return this.logger.warn(`Button has invalid customId: ${interaction.customId}`);
-
-          await this.processInteraction(
-            interaction,
-            () => buttonPrefix,
-            (key) => this.buttonMap.get(key)
-          );
-        }
+        await this.handleButton(interaction);
         break;
       case interaction.isModalSubmit():
-        {
-          const modalPrefix = interaction.customId.split('-')[0];
-          if (!modalPrefix) return this.logger.warn(`Modal has invalid customId: ${interaction.customId}`);
-
-          await this.processInteraction(
-            interaction,
-            () => modalPrefix,
-            (key) => this.modalMap.get(key)
-          );
-        }
+        await this.handleModal(interaction);
         break;
-      case interaction.isStringSelectMenu(): {
-        const selectMenuPrefix = interaction.customId.split('-')[0];
-        if (!selectMenuPrefix) return this.logger.warn(`Select menu has invalid customId: ${interaction.customId}`);
-
-        await this.processInteraction(
-          interaction,
-          () => selectMenuPrefix,
-          (key) => this.stringSelectMenuMap.get(key)
-        );
+      case interaction.isStringSelectMenu():
+        await this.handleStringSelectMenu(interaction);
         break;
-      }
+      case interaction.isUserSelectMenu():
+        await this.handleUserSelectMenu(interaction);
+        break;
+      case interaction.isRoleSelectMenu():
+        await this.handleRoleSelectMenu(interaction);
+        break;
+      case interaction.isChannelSelectMenu():
+        await this.handleChannelSelectMenu(interaction);
+        break;
+      case interaction.isMentionableSelectMenu():
+        await this.handleMentionableSelectMenu(interaction);
+        break;
       default:
         this.logger.warn(`Unhandled interaction type: ${interaction.type}`);
         break;
     }
+  }
+
+  private async handleSlashCommand(interaction: ChatInputCommandInteraction): Promise<void> {
+    const route = this.buildSlashRoute(interaction);
+    await this.processInteraction(
+      interaction,
+      () => route,
+      (key) => this.slashMap.get(key)
+    );
+  }
+
+  private async handleButton(interaction: ButtonInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.buttonMap, 'Button');
+  }
+
+  private async handleModal(interaction: ModalSubmitInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.modalMap, 'Modal');
+  }
+
+  private async handleStringSelectMenu(interaction: StringSelectMenuInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.stringSelectMap, 'String select menu');
+  }
+
+  private async handleUserSelectMenu(interaction: UserSelectMenuInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.userSelectMap, 'User select menu');
+  }
+
+  private async handleRoleSelectMenu(interaction: RoleSelectMenuInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.roleSelectMap, 'Role select menu');
+  }
+
+  private async handleChannelSelectMenu(interaction: ChannelSelectMenuInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.channelSelectMap, 'Channel select menu');
+  }
+
+  private async handleMentionableSelectMenu(interaction: MentionableSelectMenuInteraction): Promise<void> {
+    await this.handleCustomIdInteraction(interaction, () => this.mentionableSelectMap, 'Mentionable select menu');
   }
 
   // Build the route from commandName, subcommandGroup, subcommand

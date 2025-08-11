@@ -117,6 +117,7 @@ export abstract class BuilderComponent<BuilderKey extends BuilderType> extends B
   }
 
   public buildCustomId(prefix: string, ...args: string[]): string {
+    if (args.length === 0) return prefix;
     return `${prefix}:${args.join('-')}`;
   }
 }

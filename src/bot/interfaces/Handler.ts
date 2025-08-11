@@ -80,8 +80,26 @@ export abstract class InteractionHandler<Repliable extends Repliables>
   extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: Core) {
+  protected args: string[] = [];
+
+  constructor(event: Repliable, core: Core, args?: string[]) {
     super(event, core);
+    this.args = args ?? [];
+  }
+
+  /**
+   * Get the arguments passed from the customId
+   * For example, if customId is "accept:user123-guild456", args will be ["user123", "guild456"]
+   */
+  protected getArgs(): string[] {
+    return this.args;
+  }
+
+  /**
+   * Get a specific argument by index
+   */
+  protected getArg(index: number): string | undefined {
+    return this.args[index];
   }
 }
 
@@ -89,8 +107,9 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
   extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: Core) {
+  constructor(event: Repliable, core: Core, _args?: string[]) {
     super(event, core);
+    // Middleware doesn't typically need args, but gotta keep it consistent
   }
 }
 

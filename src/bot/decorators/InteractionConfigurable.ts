@@ -4,7 +4,19 @@ export enum InteractionRoutes {
   Slash = 'interaction:slash',
   Button = 'interaction:button',
   Modal = 'interaction:modal',
-  StringMenu = 'interaction:stringMenu'
+  StringMenu = 'interaction:stringMenu',
+  UserMenu = 'interaction:userMenu',
+  RoleMenu = 'interaction:roleMenu',
+  ChannelMenu = 'interaction:channelMenu',
+  MentionableMenu = 'interaction:mentionableMenu'
+}
+
+export enum SelectMenuType {
+  String = 'string',
+  User = 'user',
+  Role = 'role',
+  Channel = 'channel',
+  Mentionable = 'mentionable'
 }
 
 export const InteractionMetadataKey = Symbol('interaction:metadata');
@@ -43,11 +55,19 @@ export function ModalRoute(routeOrRoutes: string | string[]) {
 }
 
 /**
- * Decorator for string select menu routes. This should match a `customId` prefix.
+ * Decorator for select menu routes. This should match a `customId` prefix.
  */
-export function StringSelectMenuRoute(routeOrRoutes: string | string[]) {
+export function SelectMenuRoute(type: SelectMenuType, routeOrRoutes: string | string[]) {
   return function (constructor: ConstructorFunction): void {
-    storeMetadata(InteractionRoutes.StringMenu, routeOrRoutes, constructor);
+    const routeMap = {
+      [SelectMenuType.String]: InteractionRoutes.StringMenu,
+      [SelectMenuType.User]: InteractionRoutes.UserMenu,
+      [SelectMenuType.Role]: InteractionRoutes.RoleMenu,
+      [SelectMenuType.Channel]: InteractionRoutes.ChannelMenu,
+      [SelectMenuType.Mentionable]: InteractionRoutes.MentionableMenu
+    };
+
+    storeMetadata(routeMap[type], routeOrRoutes, constructor);
   };
 }
 
