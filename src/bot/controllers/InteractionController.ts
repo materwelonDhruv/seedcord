@@ -278,15 +278,16 @@ export class InteractionController implements Initializeable {
   }
 
   private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+    const route = this.buildSlashRoute(interaction);
     await this.processInteraction(
       interaction,
-      () => interaction.commandName,
+      () => route,
       (key) => this.autocompleteMap.get(key)
     );
   }
 
   // Build the route from commandName, subcommandGroup, subcommand
-  private buildSlashRoute(interaction: ChatInputCommandInteraction): string {
+  private buildSlashRoute(interaction: ChatInputCommandInteraction | AutocompleteInteraction): string {
     const command = interaction.commandName;
     const group = interaction.options.getSubcommandGroup(false);
     const sub = interaction.options.getSubcommand(false);

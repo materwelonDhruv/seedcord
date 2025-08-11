@@ -1,5 +1,4 @@
 import chalk from 'chalk';
-import { ApplicationCommandType, ContextMenuCommandBuilder, type SlashCommandBuilder } from 'discord.js';
 
 import { traverseDirectory } from '../../core/library/Helpers';
 import { Logger } from '../../core/services/Logger';
@@ -9,6 +8,7 @@ import { BuilderComponent } from '../interfaces/Components';
 import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
 import type { CommandMeta } from '../decorators/CommandRegisterable';
+import type { SlashCommandBuilder } from 'discord.js';
 
 type CommandCtor = new () => BuilderComponent<'command'>;
 
