@@ -2,7 +2,7 @@ import type { BuilderComponent } from '../interfaces/Components';
 
 export const CommandMetadataKey = Symbol('command:metadata');
 
-type CommandCtor = new (...args: any[]) => BuilderComponent<'command'>;
+type CommandCtor = new (...args: any[]) => BuilderComponent<'command' | 'context_menu'>;
 
 interface GlobalMeta {
   scope: 'global';
