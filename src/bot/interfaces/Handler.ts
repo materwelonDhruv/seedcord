@@ -7,10 +7,9 @@ import type {
   ButtonInteraction,
   ChatInputCommandInteraction,
   ClientEvents,
+  ContextMenuCommandInteraction,
   Events,
-  MessageContextMenuCommandInteraction,
-  ModalSubmitInteraction,
-  UserContextMenuCommandInteraction
+  ModalSubmitInteraction
 } from 'discord.js';
 
 export type ValidInteractionTypes =
@@ -19,8 +18,7 @@ export type ValidInteractionTypes =
   | ModalSubmitInteraction
   | AutocompleteInteraction
   | AnySelectMenuInteraction
-  | MessageContextMenuCommandInteraction
-  | UserContextMenuCommandInteraction;
+  | ContextMenuCommandInteraction;
 
 export type ValidNonInteractionTypes = ClientEvents[Exclude<keyof ClientEvents, Events.InteractionCreate>];
 export type ValidEventTypes = ValidInteractionTypes | ValidNonInteractionTypes;
@@ -44,12 +42,15 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handle
   protected break = false;
   protected errored = false;
   protected event: ValidEvent;
+  protected args: string[] = [];
 
   protected constructor(
     event: ValidEvent,
-    public core: Core
+    public core: Core,
+    args?: string[]
   ) {
     this.event = event;
+    this.args = args ?? [];
   }
 
   abstract execute(): Promise<void>;
@@ -73,24 +74,6 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handle
   public getEvent(): ValidEvent {
     return this.event;
   }
-}
-
-/**
- * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
- * This class implements ICheckable when the decorator Checkable is used on the class.
- * @implements Handler
- * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
- */
-export abstract class InteractionHandler<Repliable extends Repliables>
-  extends BaseHandler<Repliable>
-  implements Handler
-{
-  protected args: string[] = [];
-
-  constructor(event: Repliable, core: Core, args?: string[]) {
-    super(event, core);
-    this.args = args ?? [];
-  }
 
   /**
    * Get the arguments passed from the customId
@@ -108,13 +91,27 @@ export abstract class InteractionHandler<Repliable extends Repliables>
   }
 }
 
+/**
+ * All interactions with the bot including Handlers and what those handlers do or pass to other services should extend this class.
+ * This class implements ICheckable when the decorator Checkable is used on the class.
+ * @implements Handler
+ * @template Repliable - A type that extends one of the ValidEventTypes. Can add more types to the ValidEventTypes union type if needed.
+ */
+export abstract class InteractionHandler<Repliable extends Repliables>
+  extends BaseHandler<Repliable>
+  implements Handler
+{
+  constructor(event: Repliable, core: Core, args?: string[]) {
+    super(event, core, args);
+  }
+}
+
 export abstract class InteractionMiddleware<Repliable extends Repliables>
   extends BaseHandler<Repliable>
   implements Handler
 {
-  constructor(event: Repliable, core: Core, _args?: string[]) {
-    super(event, core);
-    // Middleware doesn't typically need args, but gotta keep it consistent
+  constructor(event: Repliable, core: Core, args?: string[]) {
+    super(event, core, args);
   }
 }
 
@@ -123,10 +120,9 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
  */
 export abstract class AutocompleteHandler extends BaseHandler<AutocompleteInteraction> implements Handler {
   protected readonly focused: AutocompleteFocusedOption;
-  constructor(event: AutocompleteInteraction, core: Core, _args?: string[]) {
-    super(event, core);
+  constructor(event: AutocompleteInteraction, core: Core, args?: string[]) {
+    super(event, core, args);
     this.focused = this.event.options.getFocused(true);
-    // Autocomplete doesn't typically need args, but keeping consistent interface
   }
 }
 
@@ -140,8 +136,8 @@ export abstract class EventHandler<Repliable extends keyof ClientEvents>
   extends BaseHandler<ClientEvents[Repliable]>
   implements Handler
 {
-  constructor(event: ClientEvents[Repliable], core: Core) {
-    super(event, core);
+  constructor(event: ClientEvents[Repliable], core: Core, args?: string[]) {
+    super(event, core, args);
   }
 }
 

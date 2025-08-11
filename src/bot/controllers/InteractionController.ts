@@ -58,18 +58,18 @@ export class InteractionController implements Initializeable {
     await this.loadHandlers(handlersDir);
     this.attachToClient();
 
-    this.logger.info(`${chalk.bold.green('Loaded handlers:')}`);
-    this.logger.info(`— ${chalk.magenta.bold(this.slashMap.size)} slash commands`);
-    this.logger.info(`— ${chalk.magenta.bold(this.buttonMap.size)} buttons`);
-    this.logger.info(`— ${chalk.magenta.bold(this.modalMap.size)} modals`);
-    this.logger.info(`— ${chalk.magenta.bold(this.stringSelectMap.size)} string selects`);
-    this.logger.info(`— ${chalk.magenta.bold(this.userSelectMap.size)} user selects`);
-    this.logger.info(`— ${chalk.magenta.bold(this.roleSelectMap.size)} role selects`);
-    this.logger.info(`— ${chalk.magenta.bold(this.channelSelectMap.size)} channel selects`);
-    this.logger.info(`— ${chalk.magenta.bold(this.mentionableSelectMap.size)} mentionable selects`);
-    this.logger.info(`— ${chalk.magenta.bold(this.messageContextMenuMap.size)} message context menus`);
-    this.logger.info(`— ${chalk.magenta.bold(this.userContextMenuMap.size)} user context menus`);
-    this.logger.info(`— ${chalk.magenta.bold(this.autocompleteMap.size)} autocomplete`);
+    this.logger.info(`${chalk.bold.green('Loaded interaction handlers:')}`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.slashMap.size)} slash commands`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.buttonMap.size)} buttons`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.modalMap.size)} modals`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.stringSelectMap.size)} string selects`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.userSelectMap.size)} user selects`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.roleSelectMap.size)} role selects`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.channelSelectMap.size)} channel selects`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.mentionableSelectMap.size)} mentionable selects`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.messageContextMenuMap.size)} message context menus`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.userContextMenuMap.size)} user context menus`);
+    this.logger.info(`→ ${chalk.magenta.bold(this.autocompleteMap.size)} autocomplete`);
   }
 
   private async loadHandlers(dir: string): Promise<void> {
@@ -279,9 +279,12 @@ export class InteractionController implements Initializeable {
 
   private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
     const route = this.buildSlashRoute(interaction);
+    const focused = interaction.options.getFocused(true);
+    const autocompleteKey = `${route}:${focused.name}`;
+
     await this.processInteraction(
       interaction,
-      () => route,
+      () => autocompleteKey,
       (key) => this.autocompleteMap.get(key)
     );
   }

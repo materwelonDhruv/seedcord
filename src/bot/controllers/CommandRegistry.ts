@@ -1,4 +1,5 @@
 import chalk from 'chalk';
+import { SlashCommandBuilder } from 'discord.js';
 
 import { traverseDirectory } from '../../core/library/Helpers';
 import { Logger } from '../../core/services/Logger';
@@ -8,16 +9,16 @@ import { BuilderComponent } from '../interfaces/Components';
 import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
 import type { CommandMeta } from '../decorators/CommandRegisterable';
-import type { SlashCommandBuilder } from 'discord.js';
+import type { ContextMenuCommandBuilder } from 'discord.js';
 
-type CommandCtor = new () => BuilderComponent<'command'>;
+type CommandCtor = new () => BuilderComponent<'command' | 'context_menu'>;
 
 export class CommandRegistry implements Initializeable {
   private readonly logger = new Logger('Commands');
   private isInitialised = false;
 
-  public readonly globalCommands: SlashCommandBuilder[] = [];
-  public readonly guildCommands = new Map<string, SlashCommandBuilder[]>();
+  public readonly globalCommands: (SlashCommandBuilder | ContextMenuCommandBuilder)[] = [];
+  public readonly guildCommands = new Map<string, (SlashCommandBuilder | ContextMenuCommandBuilder)[]>();
 
   public constructor(private readonly core: Core) {}
 
@@ -55,17 +56,23 @@ export class CommandRegistry implements Initializeable {
     const instance = new ctor();
     const comp = instance.component;
 
+    const commandType = comp instanceof SlashCommandBuilder ? 'slash command' : 'context menu command';
+
     if (meta.scope === 'global') {
       this.globalCommands.push(comp);
+      this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(ctor.name)} from ${chalk.gray(rel)}`);
+      this.logger.info(`  → Global ${commandType}: ${chalk.bold.cyan(comp.name)}`);
     } else {
       for (const g of meta.guilds) {
         const arr = this.guildCommands.get(g) ?? [];
         arr.push(comp);
         this.guildCommands.set(g, arr);
       }
+      this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(ctor.name)} from ${chalk.gray(rel)}`);
+      this.logger.info(
+        `  → Guild ${commandType}: ${chalk.bold.cyan(comp.name)} for ${chalk.magenta.bold(meta.guilds.length)} guild(s)`
+      );
     }
-
-    this.logger.info(`${chalk.italic('Registered')} ${chalk.bold.yellow(ctor.name)} from ${chalk.gray(rel)}`);
   }
 
   public async setCommands(): Promise<void> {
@@ -75,7 +82,7 @@ export class CommandRegistry implements Initializeable {
       this.logger.info(
         `${chalk.bold.green('Configured')} ${chalk.magenta.bold(this.globalCommands.length)} global ${tag}`
       );
-      this.logger.info(` - ${this.globalCommands.map((command) => chalk.bold.cyan(command.name)).join(', ')}`);
+      this.logger.info(` → ${this.globalCommands.map((command) => chalk.bold.cyan(command.name)).join(', ')}`);
     }
 
     for (const [guildId, commands] of this.guildCommands.entries()) {
@@ -90,7 +97,7 @@ export class CommandRegistry implements Initializeable {
       this.logger.info(
         `${chalk.bold.green('Configured')} ${chalk.magenta.bold(commands.length)} ${tag} for guild ${chalk.bold.yellow(guild.name)}`
       );
-      this.logger.info(` - ${commands.map((command) => chalk.bold.cyan(command.name)).join(', ')}`);
+      this.logger.info(` → ${commands.map((command) => chalk.bold.cyan(command.name)).join(', ')}`);
     }
   }
 }

@@ -1,30 +1,5 @@
 import type { ConstructorFunction } from '../../core/library/types/Miscellaneous';
 
-/**
- * Interaction System with Enhanced CustomId Support
- *
- * CustomId Format: "prefix:arg1-arg2-arg3"
- *
- * Supported Interaction Types:
- * - Slash Commands: @SlashRoute('command-name')
- * - Buttons: @ButtonRoute('button-prefix')
- * - Modals: @ModalRoute('modal-prefix')
- * - Select Menus: @SelectMenuRoute(SelectMenuType.String, 'menu-prefix')
- * - Message Context Menus: @MessageContextMenuRoute('Context Menu Name')
- * - User Context Menus: @UserContextMenuRoute('Context Menu Name')
- * - Autocomplete: @AutocompleteRoute('command-name')
- *
- * Usage Examples:
- * - Button: "accept:user123-action456" → prefix: "accept", args: ["user123", "action456"]
- * - Modal: "editProfile:userId-guildId" → prefix: "editProfile", args: ["userId", "guildId"]
- * - Select Menu: "selectRole:contextId" → prefix: "selectRole", args: ["contextId"]
- *
- * In your handlers, access arguments using:
- * - this.getArgs() → returns all arguments as string[]
- * - this.getArg(0) → returns first argument (or undefined)
- * - this.getArg(1) → returns second argument (or undefined)
- */
-
 export enum InteractionRoutes {
   Slash = 'interaction:slash',
   Button = 'interaction:button',
@@ -83,29 +58,36 @@ export function ModalRoute(routeOrRoutes: string | string[]) {
 }
 
 /**
- * Decorator for message context menu commands. This should match the command name.
+ * Decorator for context menu commands. This should match the command name.
+ * @param type - The type of context menu ('message' or 'user')
+ * @param routeOrRoutes - The command name(s) to route to this handler
  */
-export function MessageContextMenuRoute(routeOrRoutes: string | string[]) {
+export function ContextMenuRoute(type: 'message' | 'user', routeOrRoutes: string | string[]) {
   return function (constructor: ConstructorFunction): void {
-    storeMetadata(InteractionRoutes.MessageContextMenu, routeOrRoutes, constructor);
+    const routeType = type === 'message' ? InteractionRoutes.MessageContextMenu : InteractionRoutes.UserContextMenu;
+    storeMetadata(routeType, routeOrRoutes, constructor);
   };
 }
 
 /**
- * Decorator for user context menu commands. This should match the command name.
+ * Decorator for autocomplete interactions. Supports routing by command and focused field.
+ * @param commandRoutes - Command name or subcommand paths
+ * @param focusedFields - Focused option names to handle
+ * @example @AutocompleteRoute('user', 'name') // Single command, single field
+ * @example @AutocompleteRoute(['user', 'profile'], ['name', 'bio']) // Multiple commands, multiple fields
  */
-export function UserContextMenuRoute(routeOrRoutes: string | string[]) {
+export function AutocompleteRoute(commandRoutes: string | string[], focusedFields: string | string[]) {
   return function (constructor: ConstructorFunction): void {
-    storeMetadata(InteractionRoutes.UserContextMenu, routeOrRoutes, constructor);
-  };
-}
+    const routes = Array.isArray(commandRoutes) ? commandRoutes : [commandRoutes];
+    const fields = Array.isArray(focusedFields) ? focusedFields : [focusedFields];
 
-/**
- * Decorator for autocomplete interactions. This should match the command name or option name.
- */
-export function AutocompleteRoute(routeOrRoutes: string | string[]) {
-  return function (constructor: ConstructorFunction): void {
-    storeMetadata(InteractionRoutes.Autocomplete, routeOrRoutes, constructor);
+    // Create unique keys for each route-focused combination
+    routes.forEach((route) => {
+      fields.forEach((field) => {
+        const autocompleteKey = `${route}:${field}`;
+        storeMetadata(InteractionRoutes.Autocomplete, autocompleteKey, constructor);
+      });
+    });
   };
 }
 
