@@ -24,20 +24,54 @@ export class Logger {
   }
 
   private getFormatCustomizations(): Logform.Format[] {
-    const padding = 7; // Padding for log level
+    const padding = 7;
     return [
       format.errors({ stack: true }),
+      format.splat(),
       format.colorize({ level: true }),
       format.timestamp({ format: 'D MMM, hh:mm:ss a' }),
-      format.printf((info) => {
-        const ts = String(info.timestamp);
+      format.printf((info: Logform.TransformableInfo) => {
+        const ts = String(info.timestamp ?? '');
         const lvl = String(info.level).padEnd(padding);
-        const lbl = String(info.label);
-        const msg = String(info.message);
+        const lbl = String(info.label ?? '');
+        const msg = String(info.message ?? '');
+
         const base = `${ts} [${lvl}]: ${lbl} - ${msg}`;
 
-        if (typeof info.stack === 'string') return `${base}\n${info.stack}`;
-        return base;
+        const splatSym = Symbol.for('splat');
+        const raw = (info as unknown as Record<string | symbol, unknown>)[splatSym];
+        const extras = Array.isArray(raw) ? raw : [];
+
+        const cleaned = extras
+          .filter((x) => !(x instanceof Error))
+          .filter((x) => {
+            if (!x) return false;
+            if (typeof x !== 'object') return true;
+            return Object.keys(x as object).length > 0;
+          });
+
+        let rendered = base;
+
+        if (typeof info.stack === 'string') {
+          rendered += `\n${String(info.stack)}`;
+        }
+
+        if (cleaned.length) {
+          const parts: string[] = [];
+          for (const x of cleaned) {
+            if (typeof x === 'string') parts.push(x);
+            else {
+              try {
+                parts.push(JSON.stringify(x, null, 2));
+              } catch {
+                parts.push(String(x));
+              }
+            }
+          }
+          rendered += `\n${parts.join(' ')}`;
+        }
+
+        return rendered;
       })
     ];
   }
@@ -45,7 +79,7 @@ export class Logger {
   private createConsoleTransport(transportName: string): ConsoleTransportInstance {
     return new transports.Console({
       format: format.combine(format.label({ label: transportName }), ...this.getFormatCustomizations()),
-      level: Globals.isProduction ? 'info' : 'debug'
+      level: Globals.isDevelopment ? 'silly' : Globals.isStaging ? 'debug' : 'info'
     });
   }
 
@@ -60,7 +94,12 @@ export class Logger {
         new transports.File({
           filename: 'logs/application.log',
           level: 'debug',
-          format: format.combine(format.uncolorize(), format.json({ space: 2 })),
+          format: format.combine(
+            format.uncolorize(),
+            format.errors({ stack: true }),
+            format.timestamp(),
+            format.json({ bigint: true, space: 2 })
+          ),
           maxsize: maxSizeInMB * 1024 * 1024, // 10MB
           maxFiles: 5,
           tailable: true
@@ -123,5 +162,11 @@ export class Logger {
   public static Debug(prefix: string, msg: string, ...args: unknown[]): void {
     const logger = this.instance(prefix);
     logger.debug(msg, ...args);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  public static Silly(prefix: string, msg: string, ...args: unknown[]): void {
+    const logger = this.instance(prefix);
+    logger.silly(msg, ...args);
   }
 }
