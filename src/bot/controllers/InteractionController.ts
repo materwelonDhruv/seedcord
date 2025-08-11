@@ -5,20 +5,23 @@ import { traverseDirectory } from '../../core/library/Helpers';
 import { Logger } from '../../core/services/Logger';
 import { InteractionMetadataKey, InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
-import { InteractionHandler } from '../interfaces/Handler';
+import { AutocompleteHandler, InteractionHandler } from '../interfaces/Handler';
 
 import type { Core } from '../../core/library/interfaces/Core';
 import type { Initializeable } from '../../core/library/interfaces/Plugin';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
 import type {
+  AutocompleteInteraction,
   ButtonInteraction,
   ChannelSelectMenuInteraction,
   ChatInputCommandInteraction,
   Interaction,
   MentionableSelectMenuInteraction,
+  MessageContextMenuCommandInteraction,
   ModalSubmitInteraction,
   RoleSelectMenuInteraction,
   StringSelectMenuInteraction,
+  UserContextMenuCommandInteraction,
   UserSelectMenuInteraction
 } from 'discord.js';
 
@@ -34,6 +37,9 @@ export class InteractionController implements Initializeable {
   private readonly roleSelectMap = new Map<string, HandlerConstructor>();
   private readonly channelSelectMap = new Map<string, HandlerConstructor>();
   private readonly mentionableSelectMap = new Map<string, HandlerConstructor>();
+  private readonly messageContextMenuMap = new Map<string, HandlerConstructor>();
+  private readonly userContextMenuMap = new Map<string, HandlerConstructor>();
+  private readonly autocompleteMap = new Map<string, HandlerConstructor>();
 
   private readonly keysToIgnore = new Set(['confirm!confirmable', 'cancel!confirmable']);
 
@@ -52,17 +58,18 @@ export class InteractionController implements Initializeable {
     await this.loadHandlers(handlersDir);
     this.attachToClient();
 
-    this.logger.info(
-      `${chalk.bold.green('Loaded')}:` +
-        `\n  ${chalk.magenta.bold(this.slashMap.size)} slash,` +
-        `\n  ${chalk.magenta.bold(this.buttonMap.size)} buttons,` +
-        `\n  ${chalk.magenta.bold(this.modalMap.size)} modals,` +
-        `\n  ${chalk.magenta.bold(this.stringSelectMap.size)} string selects,` +
-        `\n  ${chalk.magenta.bold(this.userSelectMap.size)} user selects,` +
-        `\n  ${chalk.magenta.bold(this.roleSelectMap.size)} role selects,` +
-        `\n  ${chalk.magenta.bold(this.channelSelectMap.size)} channel selects,` +
-        `\n  ${chalk.magenta.bold(this.mentionableSelectMap.size)} mentionable selects`
-    );
+    this.logger.info(`${chalk.bold.green('Loaded handlers:')}`);
+    this.logger.info(`— ${chalk.magenta.bold(this.slashMap.size)} slash commands`);
+    this.logger.info(`— ${chalk.magenta.bold(this.buttonMap.size)} buttons`);
+    this.logger.info(`— ${chalk.magenta.bold(this.modalMap.size)} modals`);
+    this.logger.info(`— ${chalk.magenta.bold(this.stringSelectMap.size)} string selects`);
+    this.logger.info(`— ${chalk.magenta.bold(this.userSelectMap.size)} user selects`);
+    this.logger.info(`— ${chalk.magenta.bold(this.roleSelectMap.size)} role selects`);
+    this.logger.info(`— ${chalk.magenta.bold(this.channelSelectMap.size)} channel selects`);
+    this.logger.info(`— ${chalk.magenta.bold(this.mentionableSelectMap.size)} mentionable selects`);
+    this.logger.info(`— ${chalk.magenta.bold(this.messageContextMenuMap.size)} message context menus`);
+    this.logger.info(`— ${chalk.magenta.bold(this.userContextMenuMap.size)} user context menus`);
+    this.logger.info(`— ${chalk.magenta.bold(this.autocompleteMap.size)} autocomplete`);
   }
 
   private async loadHandlers(dir: string): Promise<void> {
@@ -80,7 +87,10 @@ export class InteractionController implements Initializeable {
 
   private isHandlerClass(obj: unknown): obj is HandlerConstructor {
     if (typeof obj !== 'function') return false;
-    return obj.prototype instanceof InteractionHandler && Reflect.hasMetadata(InteractionMetadataKey, obj);
+    return (
+      (obj.prototype instanceof InteractionHandler && Reflect.hasMetadata(InteractionMetadataKey, obj)) ||
+      (obj.prototype instanceof AutocompleteHandler && Reflect.hasMetadata(InteractionMetadataKey, obj))
+    );
   }
 
   private registerHandler(handlerClass: HandlerConstructor): void {
@@ -96,7 +106,10 @@ export class InteractionController implements Initializeable {
       [InteractionRoutes.UserMenu, this.userSelectMap],
       [InteractionRoutes.RoleMenu, this.roleSelectMap],
       [InteractionRoutes.ChannelMenu, this.channelSelectMap],
-      [InteractionRoutes.MentionableMenu, this.mentionableSelectMap]
+      [InteractionRoutes.MentionableMenu, this.mentionableSelectMap],
+      [InteractionRoutes.MessageContextMenu, this.messageContextMenuMap],
+      [InteractionRoutes.UserContextMenu, this.userContextMenuMap],
+      [InteractionRoutes.Autocomplete, this.autocompleteMap]
     ];
     for (const [routeType, map] of routeTypes) {
       const meta: unknown = Reflect.getMetadata(routeType, handlerClass);
@@ -163,6 +176,7 @@ export class InteractionController implements Initializeable {
     }
 
     this.logger.debug(`Processing ${chalk.bold.green(key)} with ${chalk.gray(HandlerCtor.name)}`);
+    // @ts-expect-error TS can't infer the type of interaction here
     const handler = new HandlerCtor(interaction as Repliables, this.core, args);
     if (handler.hasChecks()) await handler.runChecks();
     if (handler.shouldBreak()) return;
@@ -194,6 +208,15 @@ export class InteractionController implements Initializeable {
         break;
       case interaction.isMentionableSelectMenu():
         await this.handleMentionableSelectMenu(interaction);
+        break;
+      case interaction.isMessageContextMenuCommand():
+        await this.handleMessageContextMenu(interaction);
+        break;
+      case interaction.isUserContextMenuCommand():
+        await this.handleUserContextMenu(interaction);
+        break;
+      case interaction.isAutocomplete():
+        await this.handleAutocomplete(interaction);
         break;
       default:
         this.logger.warn(`Unhandled interaction type: ${interaction.type}`);
@@ -236,6 +259,30 @@ export class InteractionController implements Initializeable {
 
   private async handleMentionableSelectMenu(interaction: MentionableSelectMenuInteraction): Promise<void> {
     await this.handleCustomIdInteraction(interaction, () => this.mentionableSelectMap, 'Mentionable select menu');
+  }
+
+  private async handleMessageContextMenu(interaction: MessageContextMenuCommandInteraction): Promise<void> {
+    await this.processInteraction(
+      interaction,
+      () => interaction.commandName,
+      (key) => this.messageContextMenuMap.get(key)
+    );
+  }
+
+  private async handleUserContextMenu(interaction: UserContextMenuCommandInteraction): Promise<void> {
+    await this.processInteraction(
+      interaction,
+      () => interaction.commandName,
+      (key) => this.userContextMenuMap.get(key)
+    );
+  }
+
+  private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
+    await this.processInteraction(
+      interaction,
+      () => interaction.commandName,
+      (key) => this.autocompleteMap.get(key)
+    );
   }
 
   // Build the route from commandName, subcommandGroup, subcommand

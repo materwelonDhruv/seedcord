@@ -1,5 +1,30 @@
 import type { ConstructorFunction } from '../../core/library/types/Miscellaneous';
 
+/**
+ * Interaction System with Enhanced CustomId Support
+ *
+ * CustomId Format: "prefix:arg1-arg2-arg3"
+ *
+ * Supported Interaction Types:
+ * - Slash Commands: @SlashRoute('command-name')
+ * - Buttons: @ButtonRoute('button-prefix')
+ * - Modals: @ModalRoute('modal-prefix')
+ * - Select Menus: @SelectMenuRoute(SelectMenuType.String, 'menu-prefix')
+ * - Message Context Menus: @MessageContextMenuRoute('Context Menu Name')
+ * - User Context Menus: @UserContextMenuRoute('Context Menu Name')
+ * - Autocomplete: @AutocompleteRoute('command-name')
+ *
+ * Usage Examples:
+ * - Button: "accept:user123-action456" → prefix: "accept", args: ["user123", "action456"]
+ * - Modal: "editProfile:userId-guildId" → prefix: "editProfile", args: ["userId", "guildId"]
+ * - Select Menu: "selectRole:contextId" → prefix: "selectRole", args: ["contextId"]
+ *
+ * In your handlers, access arguments using:
+ * - this.getArgs() → returns all arguments as string[]
+ * - this.getArg(0) → returns first argument (or undefined)
+ * - this.getArg(1) → returns second argument (or undefined)
+ */
+
 export enum InteractionRoutes {
   Slash = 'interaction:slash',
   Button = 'interaction:button',
@@ -8,7 +33,10 @@ export enum InteractionRoutes {
   UserMenu = 'interaction:userMenu',
   RoleMenu = 'interaction:roleMenu',
   ChannelMenu = 'interaction:channelMenu',
-  MentionableMenu = 'interaction:mentionableMenu'
+  MentionableMenu = 'interaction:mentionableMenu',
+  MessageContextMenu = 'interaction:messageContextMenu',
+  UserContextMenu = 'interaction:userContextMenu',
+  Autocomplete = 'interaction:autocomplete'
 }
 
 export enum SelectMenuType {
@@ -51,6 +79,33 @@ export function ButtonRoute(routeOrRoutes: string | string[]) {
 export function ModalRoute(routeOrRoutes: string | string[]) {
   return function (constructor: ConstructorFunction): void {
     storeMetadata(InteractionRoutes.Modal, routeOrRoutes, constructor);
+  };
+}
+
+/**
+ * Decorator for message context menu commands. This should match the command name.
+ */
+export function MessageContextMenuRoute(routeOrRoutes: string | string[]) {
+  return function (constructor: ConstructorFunction): void {
+    storeMetadata(InteractionRoutes.MessageContextMenu, routeOrRoutes, constructor);
+  };
+}
+
+/**
+ * Decorator for user context menu commands. This should match the command name.
+ */
+export function UserContextMenuRoute(routeOrRoutes: string | string[]) {
+  return function (constructor: ConstructorFunction): void {
+    storeMetadata(InteractionRoutes.UserContextMenu, routeOrRoutes, constructor);
+  };
+}
+
+/**
+ * Decorator for autocomplete interactions. This should match the command name or option name.
+ */
+export function AutocompleteRoute(routeOrRoutes: string | string[]) {
+  return function (constructor: ConstructorFunction): void {
+    storeMetadata(InteractionRoutes.Autocomplete, routeOrRoutes, constructor);
   };
 }
 

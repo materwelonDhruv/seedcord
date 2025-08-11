@@ -2,6 +2,7 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ChannelSelectMenuBuilder,
+  ContextMenuCommandBuilder,
   EmbedBuilder,
   InteractionContextType,
   MentionableSelectMenuBuilder,
@@ -32,7 +33,8 @@ const BuilderTypes = {
   menu_role: RoleSelectMenuBuilder,
   modal: ModalBuilder,
   subcommand: SlashCommandSubcommandBuilder,
-  group: SlashCommandSubcommandGroupBuilder
+  group: SlashCommandSubcommandGroupBuilder,
+  context_menu: ContextMenuCommandBuilder
 };
 
 const RowTypes: {
@@ -100,12 +102,10 @@ export abstract class BuilderComponent<BuilderKey extends BuilderType> extends B
     super(ComponentClass as new () => InstantiatedBuilder<BuilderKey>);
 
     // Override in builders
-    if (this.instance instanceof EmbedBuilder) {
-      this.instance.setColor(Globals.botColor);
-    }
+    if (this.instance instanceof EmbedBuilder) this.instance.setColor(Globals.botColor);
 
     // Override in builders
-    if (this.instance instanceof SlashCommandBuilder) {
+    if (this.instance instanceof SlashCommandBuilder || this.instance instanceof ContextMenuCommandBuilder) {
       this.instance.setContexts(InteractionContextType.Guild);
     }
   }

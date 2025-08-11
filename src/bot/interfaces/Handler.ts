@@ -2,12 +2,15 @@ import type { Core } from '../../core/library/interfaces/Core';
 import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
 import type {
   AnySelectMenuInteraction,
+  AutocompleteFocusedOption,
   AutocompleteInteraction,
   ButtonInteraction,
   ChatInputCommandInteraction,
   ClientEvents,
   Events,
-  ModalSubmitInteraction
+  MessageContextMenuCommandInteraction,
+  ModalSubmitInteraction,
+  UserContextMenuCommandInteraction
 } from 'discord.js';
 
 export type ValidInteractionTypes =
@@ -15,7 +18,9 @@ export type ValidInteractionTypes =
   | ButtonInteraction
   | ModalSubmitInteraction
   | AutocompleteInteraction
-  | AnySelectMenuInteraction;
+  | AnySelectMenuInteraction
+  | MessageContextMenuCommandInteraction
+  | UserContextMenuCommandInteraction;
 
 export type ValidNonInteractionTypes = ClientEvents[Exclude<keyof ClientEvents, Events.InteractionCreate>];
 export type ValidEventTypes = ValidInteractionTypes | ValidNonInteractionTypes;
@@ -114,6 +119,18 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
 }
 
 /**
+ * Autocomplete interactions handler - separate from repliable interactions
+ */
+export abstract class AutocompleteHandler extends BaseHandler<AutocompleteInteraction> implements Handler {
+  protected readonly focused: AutocompleteFocusedOption;
+  constructor(event: AutocompleteInteraction, core: Core, _args?: string[]) {
+    super(event, core);
+    this.focused = this.event.options.getFocused(true);
+    // Autocomplete doesn't typically need args, but keeping consistent interface
+  }
+}
+
+/**
  * All non-interaction events with the bot including Handlers and what those handlers do or pass to other services should extend this class.
  * This class implements ICheckable when the decorator Checkable is used on the class.
  * @implements Handler
@@ -129,8 +146,12 @@ export abstract class EventHandler<Repliable extends keyof ClientEvents>
 }
 
 // A generic type alias for a handler constructor
-export type HandlerConstructor = TypedConstructor<typeof InteractionHandler>;
+export type HandlerConstructor = TypedConstructor<typeof InteractionHandler | typeof AutocompleteHandler>;
 
-export type MiddlewareConstructor = TypedConstructor<typeof InteractionMiddleware>;
+export type MiddlewareConstructor = TypedConstructor<typeof InteractionMiddleware> &
+  (new (event: Repliables, core: Core, args?: string[]) => InteractionMiddleware<Repliables>);
+
+export type AutocompleteHandlerConstructor = TypedConstructor<typeof AutocompleteHandler> &
+  (new (event: AutocompleteInteraction, core: Core, args?: string[]) => AutocompleteHandler);
 
 export type EventHandlerConstructor = TypedConstructor<typeof EventHandler>;
