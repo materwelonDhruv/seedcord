@@ -1,4 +1,10 @@
+import chalk from 'chalk';
+
+import { CoordinatedShutdown } from '../../services/CoordinatedShutdown';
+import { CoordinatedStartup } from '../../services/CoordinatedStartup';
+
 import type { Core } from './Core';
+import type { StartupPhase } from '../../services/CoordinatedStartup';
 import type { Logger } from '../../services/Logger';
 import type { Tail } from '../types/Miscellaneous';
 
@@ -20,12 +26,15 @@ export type PluginArgs<Ctor extends PluginCtor> = Tail<ConstructorParameters<Cto
 
 export class Pluggable {
   protected isInitialized = false;
-  protected readonly pluginOrder = new Map<string, InstanceType<PluginCtor>>();
+  protected readonly shutdown = CoordinatedShutdown.instance;
+  protected readonly startup = CoordinatedStartup.instance;
+
+  private static readonly PLUGIN_INIT_TIMEOUT_MS = 15000;
 
   protected async init(): Promise<this> {
     if (this.isInitialized) return this;
 
-    for (const [_key, Plugin] of this.pluginOrder) await Plugin.init();
+    await this.startup.run();
     this.isInitialized = true;
 
     return this;
@@ -36,6 +45,7 @@ export class Pluggable {
     key: Key,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     Plugin: Ctor,
+    startupPhase: StartupPhase,
     ...args: PluginArgs<Ctor>
   ): this & Record<Key, InstanceType<Ctor>> {
     if (this.isInitialized) throw new Error('Cannot attach a plugin after initialization.');
@@ -47,8 +57,17 @@ export class Pluggable {
       [key]: instance
     } as Record<Key, InstanceType<Ctor>>;
 
-    this.pluginOrder.set(key, instance);
+    this.startup.addTask(
+      startupPhase,
+      `Plugin:${key}`,
+      async () => {
+        instance.logger.info(chalk.bold('Initializing'));
+        await instance.init();
+        instance.logger.info(chalk.bold('Initialized'));
+      },
+      Pluggable.PLUGIN_INIT_TIMEOUT_MS
+    );
 
-    return Object.assign(this, entry) as unknown as this & Record<Key, InstanceType<Ctor>>;
+    return Object.assign(this, entry);
   }
 }

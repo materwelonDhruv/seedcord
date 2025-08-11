@@ -19,7 +19,5 @@ export class Maintenance extends InteractionHandler<ChatInputCommandInteraction>
     await this.event.editReply({
       content: 'Maintenance message sent.'
     });
-
-    this.core.test.logIt();
   }
 }

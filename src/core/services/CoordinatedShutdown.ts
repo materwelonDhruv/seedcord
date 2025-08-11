@@ -103,8 +103,8 @@ export class CoordinatedShutdown {
     if (!tasks) throw new Error(`Unknown shutdown phase: ${phase}`);
 
     tasks.push({ name: taskName, task, timeout: timeoutMs });
-    this.logger.info(
-      `${chalk.italic('Added')} shutdown task ${chalk.bold.cyan(taskName)} to phase ${chalk.bold.magenta(phase)}`
+    this.logger.debug(
+      `${chalk.italic('Added')} shutdown task ${chalk.bold.cyan(taskName)} to phase ${chalk.bold.magenta(ShutdownPhase[phase])}`
     );
   }
 
@@ -121,7 +121,7 @@ export class CoordinatedShutdown {
 
     const removed = initialLength !== filteredTasks.length;
     if (removed) {
-      this.logger.info(
+      this.logger.debug(
         `${chalk.italic('Removed')} shutdown task ${chalk.bold.cyan(taskName)} from phase ${chalk.bold.magenta(phase)}`
       );
     }
@@ -172,7 +172,7 @@ export class CoordinatedShutdown {
   private async runPhase(phase: ShutdownPhase): Promise<void> {
     const tasks = this.tasksMap.get(phase) ?? [];
     if (tasks.length === 0) {
-      this.logger.warn(`No tasks to run in phase '${phase}'`);
+      this.logger.warn(`No tasks to run in phase ${chalk.bold.magenta(ShutdownPhase[phase])}`);
       return;
     }
 

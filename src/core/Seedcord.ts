@@ -1,23 +1,20 @@
 import chalk from 'chalk';
 
 import { Bot } from '../bot/Bot';
-import { Mongo } from './database/Database';
 import { HookController } from './hooks/HookController';
 import { Pluggable } from './library/interfaces/Plugin';
 import { CoordinatedShutdown } from './services/CoordinatedShutdown';
+import { CoordinatedStartup, StartupPhase } from './services/CoordinatedStartup';
 import { HealthCheck } from './services/HealthCheck';
-import { Logger } from './services/Logger';
 
 import type { Config } from './library/interfaces/Config';
 import type { Core } from './library/interfaces/Core';
 
 export class Seedcord extends Pluggable implements Core {
   private static isInstantiated = false;
-  private readonly logger = new Logger('CoreBot');
+  public override readonly shutdown: CoordinatedShutdown = CoordinatedShutdown.instance;
+  public override readonly startup: CoordinatedStartup = CoordinatedStartup.instance;
 
-  public readonly shutdown: CoordinatedShutdown = CoordinatedShutdown.instance;
-
-  public readonly db: Mongo;
   public readonly hooks: HookController;
   public readonly bot: Bot;
   private readonly healthCheck: HealthCheck;
@@ -30,31 +27,36 @@ export class Seedcord extends Pluggable implements Core {
     }
     Seedcord.isInstantiated = true;
 
-    this.db = new Mongo(this as unknown as Core);
     this.hooks = new HookController(this as unknown as Core);
     this.bot = new Bot(this as unknown as Core);
     this.healthCheck = new HealthCheck(this as unknown as Core);
+
+    this.registerStartupTasks();
   }
 
-  public async start(): Promise<void> {
-    this.logger.info(chalk.bold('Starting Database'));
-    await this.db.init();
-    this.logger.info(chalk.bold('Database started'));
+  private registerStartupTasks(): void {
+    this.startup.addTask(StartupPhase.Configuration, 'Hook Initialization', async () => {
+      this.hooks.logger.info(chalk.bold('Initializing'));
+      await this.hooks.init();
+      this.hooks.logger.info(chalk.bold('Initialized'));
+    });
 
-    this.logger.info(chalk.bold('Initializing Hooks'));
-    await this.hooks.init();
-    this.logger.info(chalk.bold('Hooks initialized'));
+    this.startup.addTask(StartupPhase.Instantiation, 'Bot Initialization', async () => {
+      this.bot.logger.info(chalk.bold('Initializing'));
+      await this.bot.init();
+      this.bot.logger.info(chalk.bold('Initialized'));
+    });
 
-    this.logger.info(chalk.bold('Starting Bot'));
-    await this.bot.init();
-    this.logger.info(chalk.bold('Bot started'));
+    this.startup.addTask(StartupPhase.Ready, 'Health Check', async () => {
+      this.healthCheck.logger.info(chalk.bold('Initializing'));
+      await this.healthCheck.init();
+      this.healthCheck.logger.info(chalk.bold('Initialized'));
+    });
+  }
 
-    this.logger.info(chalk.bold('Starting Health Check'));
-    await this.healthCheck.start();
-    this.logger.info(chalk.bold('Health Check started'));
-
-    // Initialize plugins after all core services are started
+  public async start(): Promise<this> {
     await super.init();
+    return this;
   }
 }
 

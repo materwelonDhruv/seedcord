@@ -1,7 +1,7 @@
 import { ModelMetadataKey } from './decorators/DatabaseModel';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
 
-import type { Mongo } from './Database';
+import type { Mongo } from './Mongo';
 import type { Services } from './types/Services';
 import type { Core } from '../library/interfaces/Core';
 import type { IDocument, TypedConstructor } from '../library/types/Miscellaneous';

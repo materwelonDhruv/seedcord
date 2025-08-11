@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { ShutdownPhase } from './CoordinatedShutdown';
 import { Logger } from './Logger';
 import { Globals } from '../library/globals/Globals';
+import { Plugin } from '../library/interfaces/Plugin';
 
 import type { Core } from '../library/interfaces/Core';
 import type { IncomingMessage, Server, ServerResponse } from 'http';
@@ -12,13 +13,14 @@ import type { IncomingMessage, Server, ServerResponse } from 'http';
 const HTTP_OK = 200;
 const HTTP_NOT_FOUND = 404;
 
-export class HealthCheck {
-  private readonly logger = new Logger('HealthCheck');
+export class HealthCheck extends Plugin {
+  public readonly logger = new Logger('HealthCheck');
   private readonly port: number = Globals.healthCheckPort;
   private readonly path: string = Globals.healthCheckPath;
   private server?: Server;
 
   constructor(private readonly core: Core) {
+    super(core);
     // Register shutdown task
     this.core.shutdown.addTask(ShutdownPhase.StopServices, 'stop-healthcheck-server', async () => await this.stop());
   }
@@ -27,7 +29,7 @@ export class HealthCheck {
    * Starts the health check server.
    * @returns Promise that resolves when the server is listening
    */
-  public async start(): Promise<void> {
+  public async init(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       this.server = createServer((req: IncomingMessage, res: ServerResponse) => {
         if (req.method === 'GET' && req.url === this.path) {

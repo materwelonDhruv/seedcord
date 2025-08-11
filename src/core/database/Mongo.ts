@@ -25,7 +25,10 @@ export class Mongo extends Plugin {
    */
   public readonly services: Services = {} as Services;
 
-  constructor(public readonly core: Core) {
+  constructor(
+    public readonly core: Core,
+    private readonly servicesDir: string
+  ) {
     super(core);
     this.uri = Globals.mongoUri;
 
@@ -62,7 +65,7 @@ export class Mongo extends Plugin {
   }
 
   private async loadServices(): Promise<void> {
-    const servicesDir = this.core.config.services.path;
+    const servicesDir = this.servicesDir;
     this.logger.info(chalk.bold(servicesDir));
 
     await traverseDirectory(servicesDir, (_full, rel, mod) => {

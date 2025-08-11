@@ -23,13 +23,6 @@ interface CommandsConfig {
   path: string;
 }
 
-interface ServicesConfig {
-  /**
-   * Path for service handlers.
-   */
-  path: string;
-}
-
 interface HooksConfig {
   /**
    * Path for hook handlers.
@@ -52,11 +45,6 @@ export interface Config {
    * Discord command registry configuration
    */
   commands: CommandsConfig;
-
-  /**
-   * Discord service handlers configuration
-   */
-  services: ServicesConfig;
 
   /**
    * Discord hook handlers configuration
