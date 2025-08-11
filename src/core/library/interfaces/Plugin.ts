@@ -1,4 +1,5 @@
 import type { Core } from './Core';
+import type { Logger } from '../../services/Logger';
 import type { Tail } from '../types/Miscellaneous';
 
 export interface Initializeable {
@@ -6,6 +7,7 @@ export interface Initializeable {
 }
 
 export abstract class Plugin implements Initializeable {
+  public abstract logger: Logger;
   constructor(protected pluggable: Core) {}
   abstract init(): Promise<void>;
 }

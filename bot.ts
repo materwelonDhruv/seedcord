@@ -6,10 +6,12 @@ import { GatewayIntentBits, Partials } from 'discord.js';
 
 import { Plugin } from './src/core/library/interfaces/Plugin';
 import { Seedcord } from './src/core/Seedcord';
+import { Logger } from './src/core/services/Logger';
 
 import type { Core } from './src/core/library/interfaces/Core';
 
 class Test extends Plugin {
+  public readonly logger = new Logger('TestPlugin');
   constructor(
     core: Core,
     private readonly str: string,

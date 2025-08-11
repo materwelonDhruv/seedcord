@@ -13,7 +13,7 @@ import { Logger } from '../core/services/Logger';
 import type { Core } from '../core/library/interfaces/Core';
 
 export class Bot extends Plugin {
-  private readonly logger = new Logger('Bot');
+  public readonly logger = new Logger('Bot');
   private isInitialized = false;
 
   private readonly _client: Client;

@@ -8,13 +8,14 @@ import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { ShutdownPhase } from '../services/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
+import { Plugin } from '../library/interfaces/Plugin';
 
 import type { BaseServiceConstructor } from './BaseService';
 import type { Services } from './types/Services';
 import type { Core } from '../library/interfaces/Core';
 
-export class Mongo {
-  private readonly logger = new Logger('MongoDB');
+export class Mongo extends Plugin {
+  public readonly logger = new Logger('MongoDB');
   private isInitialised = false;
   private readonly uri: string;
 
@@ -25,12 +26,13 @@ export class Mongo {
   public readonly services: Services = {} as Services;
 
   constructor(public readonly core: Core) {
+    super(core);
     this.uri = Globals.mongoUri;
 
     this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
   }
 
-  public async start(): Promise<void> {
+  public async init(): Promise<void> {
     if (this.isInitialised) return;
     this.isInitialised = true;
 

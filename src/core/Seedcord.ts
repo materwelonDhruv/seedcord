@@ -38,7 +38,7 @@ export class Seedcord extends Pluggable implements Core {
 
   public async start(): Promise<void> {
     this.logger.info(chalk.bold('Starting Database'));
-    await this.db.start();
+    await this.db.init();
     this.logger.info(chalk.bold('Database started'));
 
     this.logger.info(chalk.bold('Initializing Hooks'));

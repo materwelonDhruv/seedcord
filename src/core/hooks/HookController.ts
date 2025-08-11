@@ -16,7 +16,7 @@ import type { TypedConstructor } from '../library/types/Miscellaneous';
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 
 export class HookController extends Plugin {
-  private readonly logger = new Logger('Hooks');
+  public readonly logger = new Logger('Hooks');
   private isInitialized = false;
   private readonly hookMap = new Map<HookKeys, HookConstructor[]>();
   private readonly emitter = new HookEmitter();
@@ -26,9 +26,8 @@ export class HookController extends Plugin {
   }
 
   public async init(): Promise<void> {
-    if (this.isInitialized) {
-      return;
-    }
+    if (this.isInitialized) return;
+
     this.isInitialized = true;
 
     const hooksDir = path.resolve(import.meta.dirname, './handlers');
