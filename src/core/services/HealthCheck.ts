@@ -2,7 +2,7 @@ import { createServer } from 'http';
 
 import chalk from 'chalk';
 
-import { ShutdownPhase } from './CoordinatedShutdown';
+import { ShutdownPhase } from './Lifecycle/CoordinatedShutdown';
 import { Logger } from './Logger';
 import { Globals } from '../library/globals/Globals';
 import { Plugin } from '../library/interfaces/Plugin';

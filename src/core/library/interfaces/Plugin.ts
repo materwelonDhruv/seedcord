@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
-import { CoordinatedShutdown } from '../../services/CoordinatedShutdown';
-import { CoordinatedStartup } from '../../services/CoordinatedStartup';
+import { CoordinatedShutdown } from '../../services/Lifecycle/CoordinatedShutdown';
+import { CoordinatedStartup } from '../../services/Lifecycle/CoordinatedStartup';
 
 import type { Core } from './Core';
-import type { StartupPhase } from '../../services/CoordinatedStartup';
+import type { StartupPhase } from '../../services/Lifecycle/CoordinatedStartup';
 import type { Logger } from '../../services/Logger';
 import type { Tail } from '../types/Miscellaneous';
 

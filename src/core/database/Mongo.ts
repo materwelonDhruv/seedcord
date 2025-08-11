@@ -5,7 +5,7 @@ import { BaseService } from './BaseService';
 import { DatabaseConnectionFailure } from '../../bot/errors/Database';
 import { Globals } from '../library/globals/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
-import { ShutdownPhase } from '../services/CoordinatedShutdown';
+import { ShutdownPhase } from '../services/Lifecycle/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
 import { Plugin } from '../library/interfaces/Plugin';
@@ -13,6 +13,12 @@ import { Plugin } from '../library/interfaces/Plugin';
 import type { BaseServiceConstructor } from './BaseService';
 import type { Services } from './types/Services';
 import type { Core } from '../library/interfaces/Core';
+
+interface MongoOptions {
+  servicesDir: string;
+  uri: string;
+  dbName: string;
+}
 
 export class Mongo extends Plugin {
   public readonly logger = new Logger('MongoDB');
@@ -27,10 +33,10 @@ export class Mongo extends Plugin {
 
   constructor(
     public readonly core: Core,
-    private readonly servicesDir: string
+    private readonly options: MongoOptions
   ) {
     super(core);
-    this.uri = Globals.mongoUri;
+    this.uri = options.uri;
 
     this.core.shutdown.addTask(ShutdownPhase.ExternalResources, 'stop-database', async () => await this.stop());
   }
@@ -50,7 +56,7 @@ export class Mongo extends Plugin {
   private async connect(): Promise<void> {
     await mongoose
       .connect(this.uri, {
-        dbName: Globals.dbName,
+        dbName: this.options.dbName,
         ...(Globals.isProduction && { tls: true, ssl: true })
       })
       .then((i) => this.logger.info(`Connected to MongoDB: ${chalk.bold.magenta(i.connection.name)}`))
@@ -65,7 +71,7 @@ export class Mongo extends Plugin {
   }
 
   private async loadServices(): Promise<void> {
-    const servicesDir = this.servicesDir;
+    const servicesDir = this.options.servicesDir;
     this.logger.info(chalk.bold(servicesDir));
 
     await traverseDirectory(servicesDir, (_full, rel, mod) => {

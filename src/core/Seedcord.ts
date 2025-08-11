@@ -3,9 +3,9 @@ import chalk from 'chalk';
 import { Bot } from '../bot/Bot';
 import { HookController } from './hooks/HookController';
 import { Pluggable } from './library/interfaces/Plugin';
-import { CoordinatedShutdown } from './services/CoordinatedShutdown';
-import { CoordinatedStartup, StartupPhase } from './services/CoordinatedStartup';
 import { HealthCheck } from './services/HealthCheck';
+import { CoordinatedShutdown } from './services/Lifecycle/CoordinatedShutdown';
+import { CoordinatedStartup, StartupPhase } from './services/Lifecycle/CoordinatedStartup';
 
 import type { Config } from './library/interfaces/Config';
 import type { Core } from './library/interfaces/Core';

@@ -5,8 +5,9 @@ import { resolve } from 'node:path';
 import { GatewayIntentBits, Partials } from 'discord.js';
 
 import { Mongo } from './src/core/database/Mongo';
+import { Globals } from './src/core/library/globals/Globals';
 import { Seedcord } from './src/core/Seedcord';
-import { StartupPhase } from './src/core/services/CoordinatedStartup';
+import { StartupPhase } from './src/core/services/Lifecycle/CoordinatedStartup';
 
 async function main(): Promise<void> {
   const seedcord = new Seedcord({
@@ -33,7 +34,11 @@ async function main(): Promise<void> {
     events: {
       path: resolve(import.meta.dirname, './src/bot/events')
     }
-  }).attach('db', Mongo, StartupPhase.Configuration, resolve(import.meta.dirname, './src/core/database/services'));
+  }).attach('db', Mongo, StartupPhase.Configuration, {
+    servicesDir: resolve(import.meta.dirname, './src/core/database/services'),
+    uri: Globals.mongoUri,
+    dbName: Globals.dbName
+  });
 
   await seedcord.start();
 }
