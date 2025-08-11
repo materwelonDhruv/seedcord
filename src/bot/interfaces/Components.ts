@@ -115,6 +115,10 @@ export abstract class BuilderComponent<BuilderKey extends BuilderType> extends B
 
     return this.instance;
   }
+
+  public buildCustomId(prefix: string, ...args: string[]): string {
+    return `${prefix}:${args.join('-')}`;
+  }
 }
 
 export abstract class RowComponent<RowKey extends ActionRowComponentType> extends BaseComponent<
