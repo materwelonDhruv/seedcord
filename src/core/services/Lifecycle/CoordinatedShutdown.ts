@@ -38,21 +38,14 @@ export interface ShutdownTask extends LifecycleTask {}
 const LOG_FLUSH_DELAY_MS = 500;
 
 export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
-  private static _instance: CoordinatedShutdown;
-
   private isShuttingDown = false;
   private exitCode = 0;
 
-  private constructor() {
+  public constructor() {
     super('CoordinatedShutdown', PHASE_ORDER, ShutdownPhase);
 
     // Register signal handlers
     this.registerSignalHandlers();
-  }
-
-  public static get instance(): CoordinatedShutdown {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return (this._instance ??= new CoordinatedShutdown());
   }
 
   protected canAddTask(): boolean {

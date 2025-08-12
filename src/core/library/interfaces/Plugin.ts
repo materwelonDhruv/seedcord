@@ -1,10 +1,8 @@
 import chalk from 'chalk';
 
-import { CoordinatedShutdown } from '../../services/Lifecycle/CoordinatedShutdown';
-import { CoordinatedStartup } from '../../services/Lifecycle/CoordinatedStartup';
-
 import type { Core } from './Core';
-import type { StartupPhase } from '../../services/Lifecycle/CoordinatedStartup';
+import type { CoordinatedShutdown } from '../../services/Lifecycle/CoordinatedShutdown';
+import type { CoordinatedStartup, StartupPhase } from '../../services/Lifecycle/CoordinatedStartup';
 import type { Logger } from '../../services/Logger';
 import type { Tail } from '../types/Miscellaneous';
 
@@ -26,10 +24,15 @@ export type PluginArgs<Ctor extends PluginCtor> = Tail<ConstructorParameters<Cto
 
 export class Pluggable {
   protected isInitialized = false;
-  protected readonly shutdown = CoordinatedShutdown.instance;
-  protected readonly startup = CoordinatedStartup.instance;
+  protected readonly shutdown: CoordinatedShutdown;
+  protected readonly startup: CoordinatedStartup;
 
   private static readonly PLUGIN_INIT_TIMEOUT_MS = 15000;
+
+  constructor(shutdown: CoordinatedShutdown, startup: CoordinatedStartup) {
+    this.shutdown = shutdown;
+    this.startup = startup;
+  }
 
   protected async init(): Promise<this> {
     if (this.isInitialized) return this;

@@ -12,15 +12,24 @@ import type { Core } from './library/interfaces/Core';
 
 export class Seedcord extends Pluggable implements Core {
   private static isInstantiated = false;
-  public override readonly shutdown: CoordinatedShutdown = CoordinatedShutdown.instance;
-  public override readonly startup: CoordinatedStartup = CoordinatedStartup.instance;
+  public override readonly shutdown: CoordinatedShutdown;
+  public override readonly startup: CoordinatedStartup;
 
   public readonly hooks: HookController;
   public readonly bot: Bot;
   private readonly healthCheck: HealthCheck;
 
   constructor(public readonly config: Config) {
-    super();
+    // Create lifecycle instances
+    const shutdown = new CoordinatedShutdown();
+    const startup = new CoordinatedStartup();
+
+    // Pass them to parent constructor
+    super(shutdown, startup);
+
+    // Store references for public access
+    this.shutdown = shutdown;
+    this.startup = startup;
 
     if (Seedcord.isInstantiated) {
       throw new Error('Seedcord can only be instantiated once. Use the existing instance instead.');

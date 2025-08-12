@@ -41,18 +41,11 @@ type CoordinatedStartupEventKey = PhaseEvents<'startup', UnionToTuple<StartupPha
 export interface StartupTask extends LifecycleTask {}
 
 export class CoordinatedStartup extends CoordinatedLifecycle<StartupPhase> {
-  private static _instance: CoordinatedStartup;
-
   private isStartingUp = false;
   private hasStarted = false;
 
-  private constructor() {
+  public constructor() {
     super('CoordinatedStartup', PHASE_ORDER, StartupPhase);
-  }
-
-  public static get instance(): CoordinatedStartup {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    return (this._instance ??= new CoordinatedStartup());
   }
 
   /**
