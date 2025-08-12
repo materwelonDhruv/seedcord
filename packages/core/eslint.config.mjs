@@ -1,3 +1,5 @@
-import { createConfig } from '@seedcord/eslint-config';
+import createConfig from '@seedcord/eslint-config';
 
-export default createConfig();
+export default createConfig({
+  tsconfigRootDir: import.meta.dirname
+});

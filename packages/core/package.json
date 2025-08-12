@@ -28,5 +28,8 @@
     "mongoose": "^8.16.4",
     "winston": "^3.17.0",
     "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@seedcord/eslint-config": "workspace:^"
   }
 }

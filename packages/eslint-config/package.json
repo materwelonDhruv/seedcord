@@ -11,7 +11,7 @@
     "directory": "packages/eslint-config"
   },
   "exports": {
-    "./create-config": {
+    ".": {
       "import": "./create-config.mjs",
       "types": "./create-config.d.mts"
     },

@@ -90,6 +90,10 @@ importers:
       winston:
         specifier: ^3.17.0
         version: 3.17.0
+    devDependencies:
+      '@seedcord/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
 
   packages/eslint-config:
     dependencies:
