@@ -19,7 +19,7 @@ importers:
         version: 0.2.2
       seedcord:
         specifier: workspace:^
-        version: 'link:'
+        version: link:packages/core
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.1

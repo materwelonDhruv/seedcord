@@ -1,5 +1,5 @@
 {
-  "name": "seedcord",
+  "name": "@seedcord/seedcord",
   "version": "0.1.0",
   "description": "A focused OOP framework for Discord.js bots.",
   "main": "packages/core/core/Seedcord.js",

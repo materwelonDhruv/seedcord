@@ -5,10 +5,7 @@ import { resolve } from 'node:path';
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Envapt } from 'envapt';
 
-import { Mongo } from './packages/core/core/database/Mongo';
-import { Globals } from './packages/core/core/library/globals/Globals';
-import { Seedcord } from './packages/core/core/Seedcord';
-import { StartupPhase } from './packages/core/core/services/Lifecycle/CoordinatedStartup';
+import { Seedcord, Globals, StartupPhase, Mongo } from 'seedcord';
 
 export class Vars extends Globals {
   // Mongo Plugin

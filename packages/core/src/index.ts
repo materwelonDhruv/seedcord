@@ -5,7 +5,7 @@ export * from '../core/Seedcord';
 
 // Bot exports
 export * from '../bot/Bot';
-export * from '../bot/Types';
+export type * from '../bot/Types';
 
 // Services exports
 export * from '../core/services/Logger';

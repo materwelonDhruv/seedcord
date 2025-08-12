@@ -1,7 +1,7 @@
 import { spawn } from 'child_process';
 import os from 'os';
 
-import { Logger } from './packages/core/core/services/Logger';
+import { Logger } from 'seedcord';
 
 const isMac = os.platform() === 'darwin';
 
