@@ -1,3 +1,5 @@
+import 'reflect-metadata';
+
 // Main exports
 export * from '../core/Seedcord';
 

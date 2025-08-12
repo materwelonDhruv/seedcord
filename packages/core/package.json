@@ -1,5 +1,5 @@
 {
-  "name": "@seedcord/core",
+  "name": "seedcord",
   "type": "module",
   "version": "0.0.0",
   "description": "A Discord bot framework built on top of Discord.js",

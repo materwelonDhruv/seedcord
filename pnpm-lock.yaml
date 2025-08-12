@@ -8,27 +8,18 @@ importers:
 
   .:
     dependencies:
-      chalk:
-        specifier: ^5.4.1
-        version: 5.4.1
       discord.js:
         specifier: ^14.21.0
         version: 14.21.0
-      dotenv:
-        specifier: ^17.2.0
-        version: 17.2.0
       envapt:
         specifier: ^2.2.5
         version: 2.2.5
-      mongoose:
-        specifier: ^8.16.4
-        version: 8.16.4
       reflect-metadata:
         specifier: ^0.2.2
         version: 0.2.2
-      winston:
-        specifier: ^3.17.0
-        version: 3.17.0
+      seedcord:
+        specifier: workspace:^
+        version: 'link:'
     devDependencies:
       '@commitlint/cli':
         specifier: ^19.8.1
@@ -1026,10 +1017,6 @@ packages:
   dot-prop@5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
     engines: {node: '>=8'}
-
-  dotenv@17.2.0:
-    resolution: {integrity: sha512-Q4sgBT60gzd0BB0lSyYD3xM4YxrXA9y4uBDof1JNYGzOXrQdQ6yX+7XIAqoFOGQFOTK1D3Hts5OllpxMDZFONQ==}
-    engines: {node: '>=12'}
 
   dotenv@17.2.1:
     resolution: {integrity: sha512-kQhDYKZecqnM0fCnzI5eIv5L4cAe/iRI+HqMbO/hbRdTAeXDG+M9FjipUxNfbARuEg4iHIbhnhs78BCHNbSxEQ==}
@@ -3296,8 +3283,6 @@ snapshots:
   dot-prop@5.3.0:
     dependencies:
       is-obj: 2.0.0
-
-  dotenv@17.2.0: {}
 
   dotenv@17.2.1: {}
 
