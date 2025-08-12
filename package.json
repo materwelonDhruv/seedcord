@@ -2,7 +2,7 @@
   "name": "seedcord",
   "version": "0.1.0",
   "description": "A focused OOP framework for Discord.js bots.",
-  "main": "index.js",
+  "main": "packages/core/core/Seedcord.js",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.12.0",

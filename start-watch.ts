@@ -1,11 +1,7 @@
 import { spawn } from 'child_process';
 import os from 'os';
 
-import { config } from 'dotenv';
-
-import { Logger } from './src/core/services/Logger';
-
-config({ path: '.env' });
+import { Logger } from './packages/core/core/services/Logger';
 
 const isMac = os.platform() === 'darwin';
 

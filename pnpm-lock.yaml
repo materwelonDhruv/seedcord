@@ -79,6 +79,27 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  packages/core:
+    dependencies:
+      chalk:
+        specifier: ^5.4.1
+        version: 5.4.1
+      discord.js:
+        specifier: ^14.0.0
+        version: 14.21.0
+      mongoose:
+        specifier: ^8.16.4
+        version: 8.16.4
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      typescript:
+        specifier: ^5.0.0
+        version: 5.8.3
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
+
   packages/eslint-config:
     dependencies:
       typescript:

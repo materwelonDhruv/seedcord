@@ -5,10 +5,10 @@ import { resolve } from 'node:path';
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Envapt } from 'envapt';
 
-import { Mongo } from './src/core/database/Mongo';
-import { Globals } from './src/core/library/globals/Globals';
-import { Seedcord } from './src/core/Seedcord';
-import { StartupPhase } from './src/core/services/Lifecycle/CoordinatedStartup';
+import { Mongo } from './packages/core/core/database/Mongo';
+import { Globals } from './packages/core/core/library/globals/Globals';
+import { Seedcord } from './packages/core/core/Seedcord';
+import { StartupPhase } from './packages/core/core/services/Lifecycle/CoordinatedStartup';
 
 export class Vars extends Globals {
   // Mongo Plugin
@@ -53,7 +53,7 @@ async function main(): Promise<void> {
   await seedcord.start();
 }
 
-declare module './src/core/library/interfaces/Core' {
+declare module './packages/core/core/library/interfaces/Core' {
   interface Core {
     db: Mongo;
   }
