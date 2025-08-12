@@ -23,7 +23,7 @@ export class Seedcord extends Pluggable implements Core {
     super();
 
     if (Seedcord.isInstantiated) {
-      throw new Error('CoreBot can only be instantiated once. Use the existing instance instead.');
+      throw new Error('Seedcord can only be instantiated once. Use the existing instance instead.');
     }
     Seedcord.isInstantiated = true;
 

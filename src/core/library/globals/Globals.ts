@@ -1,19 +1,16 @@
 import { ColorResolvable } from 'discord.js';
-import { Envapter, Envapt } from 'envapt';
+import { Envapt, Envapter } from 'envapt';
 
+/**
+ * Global configuration variables for the application. These ENV variables are reserved for the framework.
+ *
+ * Set them in your `.env` file to override the defaults.
+ */
 export class Globals extends Envapter {
-  // Secrets
-  @Envapt('BOT_TOKEN', { fallback: undefined })
+  @Envapt('DISCORD_BOT_TOKEN', { fallback: undefined })
   public static readonly botToken: string;
 
-  // General
-  @Envapt('MONGO_URI', { fallback: 'mongodb://localhost:27017/' })
-  public static readonly mongoUri: string;
-
-  @Envapt('DB_NAME', { fallback: 'seedcord' })
-  public static readonly dbName: string;
-
-  // Health Check
+  // Healthcheck
   @Envapt('HEALTH_CHECK_PORT', { fallback: 6956 })
   public static readonly healthCheckPort: number;
 
@@ -24,6 +21,10 @@ export class Globals extends Envapter {
   @Envapt('SHUTDOWN_IS_ENABLED', { fallback: false })
   public static readonly shutdownIsEnabled: boolean;
 
+  // Unknown Exception Webhook URL
+  @Envapt('UNKNOWN_EXCEPTION_WEBHOOK_URL', { fallback: undefined })
+  public static readonly unknownExceptionWebhookUrl: string;
+
   // Variables
-  public static readonly botColor: ColorResolvable = this.isProduction ? '#dcc8f0' : '#fe565a';
+  public static readonly botColor: ColorResolvable = this.isProduction ? '#fe565a' : '#3fa045';
 }

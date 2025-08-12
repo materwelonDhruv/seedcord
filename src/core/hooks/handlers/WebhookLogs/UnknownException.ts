@@ -1,7 +1,6 @@
 import { DiscordAPIError, SnowflakeUtil, WebhookClient } from 'discord.js';
 
 import { BuilderComponent } from '../../../../bot/interfaces/Components';
-import { Images } from '../../../library/globals/Assets';
 import { Globals } from '../../../library/globals/Globals';
 import { RegisterHook } from '../../decorators/RegisterHook';
 import { WebhookLog } from '../../interfaces/abstracts/WebhookLog';
@@ -10,13 +9,13 @@ import { AllHooks } from '../../types/Hooks';
 @RegisterHook('unknownException')
 export class UnknownException extends WebhookLog<'unknownException'> {
   webhook = new WebhookClient({
-    url: Globals.isDevelopment ? '' : ''
+    url: Globals.unknownExceptionWebhookUrl
   });
 
   async execute(): Promise<void> {
     await this.webhook.send({
       username: 'Unknown Exception',
-      avatarURL: Images.Error,
+      avatarURL: 'https://cdn.discordapp.com/attachments/1351446034827579466/1351446912947191830/warning-2.png',
       embeds: [new UnhandledErrorEmbed(this.data).component]
     });
   }
