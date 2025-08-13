@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup';
 import type { Options } from 'tsup';
 
 // eslint-disable-next-line complexity
-export function createTsupConfig({
+function createTsupConfig({
   format = ['esm', 'cjs'],
   entry = ['src/index.ts'],
   dts = true,
@@ -49,3 +49,6 @@ export function createTsupConfig({
     outExtension
   });
 }
+
+export { createTsupConfig };
+export default createTsupConfig();

@@ -1,16 +1,15 @@
-import * as path from 'node:path';
-
 import chalk from 'chalk';
 
 import { Plugin } from '../interfaces/Plugin';
 import { traverseDirectory } from '../library/Helpers';
 import { Logger } from '../services/Logger';
 import { HookMetadataKey } from './decorators/RegisterHook';
+import { UnknownException } from './default/UnknownException';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
 
-import type { AllHooks, HookKeys } from './types/Hooks';
 import type { Core } from '../interfaces/Core';
+import type { AllHooks, HookKeys } from './types/Hooks';
 import type { TypedConstructor } from '@seedcord/types';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
@@ -31,10 +30,10 @@ export class HookController extends Plugin {
     this.isInitialized = true;
 
     const hooksDir = this.core.config.hooks.path;
-    const defaultHooksDir = path.resolve(import.meta.dirname, './default');
     this.logger.info(chalk.bold(hooksDir));
 
-    await this.loadHooks(defaultHooksDir);
+    this.registerHook('unknownException', UnknownException);
+
     await this.loadHooks(hooksDir);
 
     this.attachHooks();

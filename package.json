@@ -16,11 +16,17 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "clean": "turbo clean",
+    "rebuild": "turbo clean && turbo build",
     "prebuild": "turbo clean && turbo lint && turbo typecheck",
     "turbo:prune": "turbo prune",
     "turbo:graph": "turbo build --graph",
     "turbo:trace": "turbo build --trace",
-    "prepare": "husky"
+    "prepare": "husky",
+    "local:core": "cd packages/core && NODE_OPTIONS=--conditions=development tsx watch src/index.ts",
+    "local:mock": "cd packages/mock && NODE_OPTIONS=--conditions=development tsx watch src/bot.ts",
+    "local:mock:watch": "cd packages/mock && tsx src/start-watch.ts",
+    "local:test:core": "cd packages/core && NODE_OPTIONS=--conditions=development vitest",
+    "local:test:mock": "cd packages/mock && NODE_OPTIONS=--conditions=development vitest"
   },
   "keywords": [
     "discord",

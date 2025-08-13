@@ -10,19 +10,26 @@
     "directory": "packages/mock"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
   },
   "files": [],
   "scripts": {
+    "dev": "NODE_OPTIONS=--conditions=development tsx watch src/bot.ts",
     "dev:bot": "nodemon --config nodemon.json",
     "start:watch": "tsx src/start-watch.ts",
-    "build": "tsc -p .",
+    "build": "tsup",
+    "clean": "rm -rf dist",
     "lint": "eslint 'src/**/*.{ts,tsx}' --cache",
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
     "fmt": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
     "fmt:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
     "typecheck": "tsc --noEmit",
-    "clean": "rm -rf dist"
+    "test": "NODE_OPTIONS=--conditions=development vitest run",
+    "test:watch": "NODE_OPTIONS=--conditions=development vitest dev",
+    "coverage": "NODE_OPTIONS=--conditions=development vitest run --coverage"
   },
   "peerDependencies": {
     "typescript": "^5.9.2"

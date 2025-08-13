@@ -5,8 +5,8 @@ import { CommandRegistry } from './controllers/CommandRegistry';
 import { EventController } from './controllers/EventController';
 import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
-import { Globals } from '../library/Globals';
 import { Plugin } from '../interfaces/Plugin';
+import { Globals } from '../library/Globals';
 import { ShutdownPhase } from '../services/Lifecycle/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 

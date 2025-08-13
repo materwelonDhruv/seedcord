@@ -7,12 +7,14 @@
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
     "lint": {
-      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"]
     },
     "lint:fix": {
-      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"],
       "cache": false
     },
@@ -21,8 +23,15 @@
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"]
     },
     "test": {
-      "dependsOn": ["^build"],
-      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*"]
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*", "src/**", "tests/**"]
+    },
+    "test:watch": {
+      "cache": false,
+      "persistent": true
+    },
+    "coverage": {
+      "inputs": ["$TURBO_DEFAULT$", "jest.config.*", "vitest.config.*", "src/**", "tests/**"],
+      "outputs": ["coverage/**"]
     },
     "format": {
       "inputs": ["$TURBO_DEFAULT$", ".prettierrc*", "prettier.config.*"],

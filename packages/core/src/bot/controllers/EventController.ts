@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 
+import { EventHandler } from '../../interfaces/Handler';
 import { traverseDirectory } from '../../library/Helpers';
 import { Logger } from '../../services/Logger';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import { EventHandler } from '../../interfaces/Handler';
 
 import type { Core } from '../../interfaces/Core';
-import type { Initializeable } from '../../interfaces/Plugin';
 import type { EventHandlerConstructor } from '../../interfaces/Handler';
+import type { Initializeable } from '../../interfaces/Plugin';
 import type { ClientEvents } from 'discord.js';
 
 export class EventController implements Initializeable {

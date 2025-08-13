@@ -4,8 +4,8 @@ import chalk from 'chalk';
 
 import { ShutdownPhase } from './Lifecycle/CoordinatedShutdown';
 import { Logger } from './Logger';
-import { Globals } from '../library/Globals';
 import { Plugin } from '../interfaces/Plugin';
+import { Globals } from '../library/Globals';
 
 import type { Core } from '../interfaces/Core';
 import type { IncomingMessage, Server, ServerResponse } from 'http';

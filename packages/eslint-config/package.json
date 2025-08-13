@@ -41,8 +41,13 @@
     "rules/*.mjs"
   ],
   "scripts": {
-    "build": "tsc",
-    "clean": "rm -rf dist"
+    "build": "echo 'Already built as .mjs files'",
+    "clean": "echo 'No build artifacts to clean'",
+    "lint": "eslint '*.{mjs,ts}' --cache",
+    "lint:fix": "eslint '*.{mjs,ts}' --fix --cache",
+    "fmt": "prettier --write '*.{mjs,ts,json,md}' --cache",
+    "fmt:check": "prettier --check '*.{mjs,ts,json,md}' --cache",
+    "typecheck": "tsc --noEmit"
   },
   "peerDependencies": {
     "typescript": "^5.9.2"

@@ -21,6 +21,7 @@
     "allowImportingTsExtensions": false,
     "module": "esnext",
     "moduleResolution": "bundler",
+    "customConditions": ["development"],
     "resolveJsonModule": true,
     "resolvePackageJsonExports": true,
     "resolvePackageJsonImports": true,

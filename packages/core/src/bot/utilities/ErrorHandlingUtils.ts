@@ -1,8 +1,8 @@
 import * as crypto from 'crypto';
 
+import { CustomError } from '../../interfaces/Components';
 import { Logger } from '../../services/Logger';
 import { DatabaseError } from '../errors/Database';
-import { CustomError } from '../../interfaces/Components';
 
 import type { Core } from '../../interfaces/Core';
 import type { Nullish } from '@seedcord/types';
