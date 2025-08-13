@@ -2,7 +2,7 @@
   "name": "@seedcord/tsup-config",
   "type": "module",
   "version": "1.0.0",
-  "description": "Shared Tsup configuration for seedcord projects",
+  "description": "Shared Tsup configuration for seedcord packages",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "private": true,

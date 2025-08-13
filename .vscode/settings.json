@@ -35,7 +35,7 @@
     "**/node_modules": true,
     "**/dist": true,
     "**/.turbo": true,
-    "**/.coverage": true,
+    "**/coverage": true,
     "**/.eslintcache": true
     // "**/logs": true
   },
