@@ -35,12 +35,12 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
-    "seedcord": "workspace:^",
     "@seedcord/types": "workspace:^",
     "discord.js": "^14.21.0",
     "envapt": "^2.2.8",
-    "mongoose": "^8.16.4",
-    "reflect-metadata": "^0.2.2"
+    "mongoose": "^8.17.1",
+    "reflect-metadata": "^0.2.2",
+    "seedcord": "workspace:^"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
