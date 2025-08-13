@@ -2,7 +2,7 @@
   "name": "@seedcord/seedcord",
   "version": "0.1.0",
   "description": "A focused OOP framework for Discord.js bots.",
-  "main": "packages/core/core/Seedcord.js",
+  "main": "packages/seedcord/core/Seedcord.js",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.12.0",
@@ -27,10 +27,10 @@
     "cs:status": "changeset status",
     "release": "pnpm run build && pnpm run cs:publish",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "local:core": "cd packages/core && tsx watch src/index.ts --conditions=development",
+    "local:core": "cd packages/seedcord && tsx watch src/index.ts --conditions=development",
     "local:mock": "cd packages/mock && tsx watch src/bot.ts --conditions=development",
     "local:mock:watch": "cd packages/mock && tsx src/start-watch.ts",
-    "local:test:core": "cd packages/core && NODE_OPTIONS=--conditions=development vitest",
+    "local:test:core": "cd packages/seedcord && NODE_OPTIONS=--conditions=development vitest",
     "local:test:mock": "cd packages/mock && NODE_OPTIONS=--conditions=development vitest"
   },
   "keywords": [

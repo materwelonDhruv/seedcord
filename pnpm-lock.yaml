@@ -69,43 +69,6 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.2.1)(jiti@2.5.1)(tsx@4.20.4)
 
-  packages/core:
-    dependencies:
-      '@seedcord/types':
-        specifier: workspace:^
-        version: link:../types
-      chalk:
-        specifier: ^5.4.1
-        version: 5.5.0
-      discord.js:
-        specifier: ^14.0.0
-        version: 14.21.0
-      envapt:
-        specifier: ^2.2.8
-        version: 2.2.8
-      mongoose:
-        specifier: ^8.16.4
-        version: 8.17.1
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-      winston:
-        specifier: ^3.17.0
-        version: 3.17.0
-    devDependencies:
-      '@seedcord/eslint-config':
-        specifier: workspace:^
-        version: link:../eslint-config
-      '@seedcord/tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@seedcord/tsup-config':
-        specifier: workspace:^
-        version: link:../tsup-config
-
   packages/eslint-config:
     dependencies:
       typescript:
@@ -171,10 +134,47 @@ importers:
         version: 0.2.2
       seedcord:
         specifier: workspace:^
-        version: link:../core
+        version: link:../seedcord
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
+    devDependencies:
+      '@seedcord/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@seedcord/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+      '@seedcord/tsup-config':
+        specifier: workspace:^
+        version: link:../tsup-config
+
+  packages/seedcord:
+    dependencies:
+      '@seedcord/types':
+        specifier: workspace:^
+        version: link:../types
+      chalk:
+        specifier: ^5.4.1
+        version: 5.5.0
+      discord.js:
+        specifier: ^14.0.0
+        version: 14.21.0
+      envapt:
+        specifier: ^2.2.8
+        version: 2.2.8
+      mongoose:
+        specifier: ^8.16.4
+        version: 8.17.1
+      reflect-metadata:
+        specifier: ^0.2.2
+        version: 0.2.2
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+      winston:
+        specifier: ^3.17.0
+        version: 3.17.0
     devDependencies:
       '@seedcord/eslint-config':
         specifier: workspace:^

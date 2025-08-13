@@ -20,7 +20,7 @@ export enum StartupPhase {
   Instantiation,
   /** Activate plugins by calling their init/setup hooks */
   Activation,
-  /** Mark core as ready and start handling interactions */
+  /** Mark seedcord as ready and start handling interactions */
   Ready
 }
 
