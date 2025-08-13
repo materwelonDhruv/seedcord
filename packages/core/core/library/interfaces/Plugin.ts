@@ -4,7 +4,7 @@ import type { Core } from './Core';
 import type { CoordinatedShutdown } from '../../services/Lifecycle/CoordinatedShutdown';
 import type { CoordinatedStartup, StartupPhase } from '../../services/Lifecycle/CoordinatedStartup';
 import type { Logger } from '../../services/Logger';
-import type { Tail } from '../types/Miscellaneous';
+import type { Tail } from '@seedcord/types';
 
 export interface Initializeable {
   init(): Promise<void>;

@@ -3,8 +3,7 @@ import chalk from 'chalk';
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
 import { Globals } from '../../library/globals/Globals';
 
-import type { LifecycleTask, PhaseEvents } from './LifecycleTypes';
-import type { UnionToTuple } from '../../library/types/Miscellaneous';
+import type { LifecycleTask, PhaseEvents, UnionToTuple } from '@seedcord/types';
 
 /**
  * Shutdown phases for coordinated application shutdown.

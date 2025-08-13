@@ -1,6 +1,6 @@
+import { IDocument } from '@seedcord/types';
 import mongoose from 'mongoose';
 
-import { IDocument } from '../../library/types/Miscellaneous';
 import { BaseService } from '../BaseService';
 import { DatabaseModel } from '../decorators/DatabaseModel';
 import { DatabaseService } from '../decorators/DatabaseService';

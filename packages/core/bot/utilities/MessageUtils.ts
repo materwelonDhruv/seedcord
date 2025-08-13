@@ -1,5 +1,4 @@
-import type { Nullish } from '../../core/library/types/Miscellaneous';
-import type { AtleastOneMessageComponent } from '../Types';
+import type { Nullish, AtleastOneMessageComponent } from '@seedcord/types';
 import type { Message, TextChannel, User } from 'discord.js';
 
 export class MessageUtils {

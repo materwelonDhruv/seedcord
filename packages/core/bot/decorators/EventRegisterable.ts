@@ -1,4 +1,4 @@
-import type { ConstructorFunction } from '../../core/library/types/Miscellaneous';
+import type { ConstructorFunction } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
 
 export const EventMetadataKey = Symbol('event:metadata');

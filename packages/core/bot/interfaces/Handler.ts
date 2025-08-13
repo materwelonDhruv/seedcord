@@ -1,5 +1,5 @@
 import type { Core } from '../../core/library/interfaces/Core';
-import type { TypedConstructor } from '../../core/library/types/Miscellaneous';
+import type { TypedConstructor } from '@seedcord/types';
 import type {
   AnySelectMenuInteraction,
   AutocompleteFocusedOption,

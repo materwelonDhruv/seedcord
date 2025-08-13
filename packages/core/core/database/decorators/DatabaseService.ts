@@ -1,6 +1,6 @@
-import type { ConstructorFunction } from '../../library/types/Miscellaneous';
 import type { BaseService } from '../BaseService';
 import type { ServiceKeys } from '../types/Services';
+import type { ConstructorFunction } from '@seedcord/types';
 
 export const ServiceMetadataKey = Symbol('db:serviceKey');
 

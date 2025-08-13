@@ -1,4 +1,4 @@
-import type { NumberRange, TypedExclude } from '../../library/types/Miscellaneous';
+import type { NumberRange, TypedExclude } from './Misc';
 
 export type LifecycleAction = 'start' | 'complete' | 'error';
 

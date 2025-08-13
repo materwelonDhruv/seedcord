@@ -27,6 +27,7 @@
     "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@seedcord/eslint-config": "workspace:^"
+    "@seedcord/eslint-config": "workspace:^",
+    "@seedcord/types": "workspace:^"
   }
 }

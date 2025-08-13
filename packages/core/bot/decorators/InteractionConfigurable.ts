@@ -1,4 +1,4 @@
-import type { ConstructorFunction } from '../../core/library/types/Miscellaneous';
+import type { ConstructorFunction } from '@seedcord/types';
 
 export enum InteractionRoutes {
   Slash = 'interaction:slash',

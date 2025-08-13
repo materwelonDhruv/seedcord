@@ -11,7 +11,7 @@ import { HookHandler } from './interfaces/HookHandler';
 
 import type { AllHooks, HookKeys } from './types/Hooks';
 import type { Core } from '../library/interfaces/Core';
-import type { TypedConstructor } from '../library/types/Miscellaneous';
+import type { TypedConstructor } from '@seedcord/types';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 

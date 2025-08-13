@@ -1,5 +1,5 @@
-import type { ConstructorFunction } from '../../library/types/Miscellaneous';
 import type { HookKeys } from '../types/Hooks';
+import type { ConstructorFunction } from '@seedcord/types';
 
 export const HookMetadataKey = Symbol('hook:metadata');
 

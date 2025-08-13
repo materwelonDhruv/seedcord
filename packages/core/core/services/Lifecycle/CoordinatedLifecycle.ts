@@ -9,7 +9,7 @@ import chalk from 'chalk';
 
 import { Logger } from '../Logger';
 
-import type { LifecycleTask } from './LifecycleTypes';
+import type { LifecycleTask } from '@seedcord/types';
 
 /**
  * Abstract base class for coordinated lifecycle management (startup/shutdown)

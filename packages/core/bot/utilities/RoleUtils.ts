@@ -9,7 +9,7 @@ import {
   RoleHigherThanMe
 } from '../errors/Roles';
 
-import type { BotPermissionScope, Nullish } from '../../core/library/types/Miscellaneous';
+import type { BotPermissionScope, Nullish } from '@seedcord/types';
 import type { Client, PermissionsBitField, TextChannel } from 'discord.js';
 
 export const PermissionNames = new Map<bigint, string>(

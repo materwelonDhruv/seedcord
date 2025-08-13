@@ -5,7 +5,7 @@ import { DatabaseError } from '../errors/Database';
 import { CustomError } from '../interfaces/Components';
 
 import type { Core } from '../../core/library/interfaces/Core';
-import type { Nullish } from '../../core/library/types/Miscellaneous';
+import type { Nullish } from '@seedcord/types';
 import type { UUID } from 'crypto';
 import type { EmbedBuilder, Guild, User } from 'discord.js';
 

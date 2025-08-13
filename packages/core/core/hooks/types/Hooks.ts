@@ -1,4 +1,4 @@
-import type { Nullish } from '../../library/types/Miscellaneous';
+import type { Nullish } from '@seedcord/types';
 import type { UUID } from 'crypto';
 import type { Guild, User } from 'discord.js';
 

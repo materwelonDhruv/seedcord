@@ -5,7 +5,6 @@ export * from '../core/Seedcord';
 
 // Bot exports
 export * from '../bot/Bot';
-export type * from '../bot/Types';
 
 // Services exports
 export * from '../core/services/Logger';
@@ -23,7 +22,6 @@ export * from '../core/library/globals/Globals';
 export * from '../core/library/Helpers';
 export type * from '../core/library/interfaces/Core';
 export type * from '../core/library/interfaces/Config';
-export type * from '../core/library/types/Miscellaneous';
 
 // Hooks exports
 export * from '../core/hooks/HookController';
