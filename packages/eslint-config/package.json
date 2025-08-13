@@ -45,7 +45,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

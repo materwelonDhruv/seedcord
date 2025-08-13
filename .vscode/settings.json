@@ -34,6 +34,7 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
+    "**/.turbo": true,
     "**/.eslintcache": true
     // "**/logs": true
   },

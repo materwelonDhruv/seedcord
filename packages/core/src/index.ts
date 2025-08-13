@@ -1,7 +1,5 @@
 import 'reflect-metadata';
 
-export * from 'envapt';
-
 // Main exports
 export * from './Seedcord';
 

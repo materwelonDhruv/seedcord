@@ -25,13 +25,14 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.2"
   },
   "dependencies": {
+    "seedcord": "workspace:^",
     "discord.js": "^14.21.0",
+    "envapt": "^2.2.8",
     "mongoose": "^8.16.4",
-    "reflect-metadata": "^0.2.2",
-    "seedcord": "workspace:^"
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",

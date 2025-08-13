@@ -17,7 +17,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.9.2"
   },
   "dependencies": {
     "discord.js": "^14.21.0"
