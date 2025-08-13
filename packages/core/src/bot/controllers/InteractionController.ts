@@ -58,7 +58,7 @@ export class InteractionController implements Initializeable {
     await this.loadHandlers(handlersDir);
     this.attachToClient();
 
-    this.logger.info(`${chalk.bold.green('Loaded interaction hooks:')}`);
+    this.logger.info(`${chalk.bold.green('Loaded interaction handlers:')}`);
     this.logger.info(`→ ${chalk.magenta.bold(this.slashMap.size)} slash commands`);
     this.logger.info(`→ ${chalk.magenta.bold(this.buttonMap.size)} buttons`);
     this.logger.info(`→ ${chalk.magenta.bold(this.modalMap.size)} modals`);

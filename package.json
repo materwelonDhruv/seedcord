@@ -22,8 +22,8 @@
     "turbo:graph": "turbo build --graph",
     "turbo:trace": "turbo build --trace",
     "prepare": "husky",
-    "local:core": "cd packages/core && NODE_OPTIONS=--conditions=development tsx watch src/index.ts",
-    "local:mock": "cd packages/mock && NODE_OPTIONS=--conditions=development tsx watch src/bot.ts",
+    "local:core": "cd packages/core && tsx watch src/index.ts --conditions=development",
+    "local:mock": "cd packages/mock && tsx watch src/bot.ts --conditions=development",
     "local:mock:watch": "cd packages/mock && tsx src/start-watch.ts",
     "local:test:core": "cd packages/core && NODE_OPTIONS=--conditions=development vitest",
     "local:test:mock": "cd packages/mock && NODE_OPTIONS=--conditions=development vitest"

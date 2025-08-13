@@ -17,7 +17,7 @@
   },
   "files": [],
   "scripts": {
-    "dev": "NODE_OPTIONS=--conditions=development tsx watch src/bot.ts",
+    "dev": "tsx watch src/bot.ts --conditions=development",
     "dev:bot": "nodemon --config nodemon.json",
     "start:watch": "tsx src/start-watch.ts",
     "build": "tsup",
