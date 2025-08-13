@@ -52,7 +52,7 @@ export class InteractionController implements Initializeable {
 
     this.isInitialized = true;
 
-    const handlersDir = this.core.config.interactions.path;
+    const handlersDir = this.core.config.bot.interactions.path;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

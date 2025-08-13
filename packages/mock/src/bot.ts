@@ -19,28 +19,30 @@ export class Vars extends Globals {
 
 async function main(): Promise<void> {
   const seedcord = new Seedcord({
-    clientOptions: {
-      intents: [
-        GatewayIntentBits.MessageContent,
-        GatewayIntentBits.GuildMessages,
-        GatewayIntentBits.Guilds,
-        GatewayIntentBits.GuildPresences,
-        GatewayIntentBits.GuildMembers,
-        GatewayIntentBits.GuildWebhooks
-      ],
-      partials: [Partials.GuildMember, Partials.User]
+    bot: {
+      clientOptions: {
+        intents: [
+          GatewayIntentBits.MessageContent,
+          GatewayIntentBits.GuildMessages,
+          GatewayIntentBits.Guilds,
+          GatewayIntentBits.GuildPresences,
+          GatewayIntentBits.GuildMembers,
+          GatewayIntentBits.GuildWebhooks
+        ],
+        partials: [Partials.GuildMember, Partials.User]
+      },
+      interactions: {
+        path: resolve(import.meta.dirname, './handlers')
+      },
+      commands: {
+        path: resolve(import.meta.dirname, './components/commands')
+      },
+      events: {
+        path: resolve(import.meta.dirname, './events')
+      }
     },
     hooks: {
       path: resolve(import.meta.dirname, './hooks')
-    },
-    interactions: {
-      path: resolve(import.meta.dirname, './handlers')
-    },
-    commands: {
-      path: resolve(import.meta.dirname, './components/commands')
-    },
-    events: {
-      path: resolve(import.meta.dirname, './events')
     }
   }).attach('db', Mongo, StartupPhase.Configuration, {
     servicesDir: resolve(import.meta.dirname, './services'),

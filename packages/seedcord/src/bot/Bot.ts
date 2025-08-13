@@ -25,7 +25,7 @@ export class Bot extends Plugin {
   constructor(protected core: Core) {
     super(core);
 
-    this._client = new Client(core.config.clientOptions);
+    this._client = new Client(core.config.bot.clientOptions);
 
     this.interactions = new InteractionController(core);
     this.events = new EventController(core);

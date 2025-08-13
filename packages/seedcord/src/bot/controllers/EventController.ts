@@ -24,7 +24,7 @@ export class EventController implements Initializeable {
     }
     this.isInitialized = true;
 
-    const handlersDir = this.core.config.events.path;
+    const handlersDir = this.core.config.bot.events.path;
     this.logger.info(chalk.bold(handlersDir));
 
     await this.loadHandlers(handlersDir);

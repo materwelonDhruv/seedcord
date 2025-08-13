@@ -26,9 +26,9 @@ export class CommandRegistry implements Initializeable {
     if (this.isInitialised) return;
     this.isInitialised = true;
 
-    this.logger.info(chalk.bold(this.core.config.commands.path));
+    this.logger.info(chalk.bold(this.core.config.bot.commands.path));
 
-    await this.loadCommands(this.core.config.commands.path);
+    await this.loadCommands(this.core.config.bot.commands.path);
 
     this.logger.info(
       `${chalk.bold.green('Loaded')}: ${chalk.magenta.bold(
