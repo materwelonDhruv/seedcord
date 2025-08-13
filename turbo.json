@@ -19,6 +19,7 @@
       "cache": false
     },
     "tc": {
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", "tsconfig*.json"]
     },
     "test": {

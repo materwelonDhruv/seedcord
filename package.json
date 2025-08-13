@@ -49,6 +49,7 @@
     "@seedcord/eslint-config": "workspace:^",
     "@seedcord/tsconfig": "workspace:^",
     "@seedcord/tsup-config": "workspace:^",
+    "@swc/core": "^1.13.3",
     "@types/chai": "^5.2.2",
     "@types/eslint-plugin-security": "^3.0.0",
     "@types/node": "^24.1.0",
@@ -64,7 +65,6 @@
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
   },
-  "dependencies": {},
   "engines": {
     "node": ">=22.12.0"
   }
