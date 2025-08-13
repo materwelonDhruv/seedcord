@@ -50,7 +50,7 @@ async function main(): Promise<void> {
   await seedcord.start();
 }
 
-declare module './packages/core/core/library/interfaces/Core' {
+declare module 'seedcord' {
   interface Core {
     db: Mongo;
   }

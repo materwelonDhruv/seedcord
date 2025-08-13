@@ -14,8 +14,8 @@ export * from './core/services/HealthCheck';
 export * from './core/services/CooldownManager';
 
 // Database exports
-export * from './core/database/Mongo';
-export * from './core/database/BaseService';
+export * from './core/mongo/Mongo';
+export * from './core/mongo/BaseService';
 
 // Library exports
 export * from './core/library/Globals';
