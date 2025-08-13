@@ -26,7 +26,7 @@
     "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
     "fmt": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
     "fmt:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
-    "typecheck": "tsc --noEmit",
+    "tc": "tsc --noEmit",
     "test": "NODE_OPTIONS=--conditions=development vitest run",
     "test:watch": "NODE_OPTIONS=--conditions=development vitest dev",
     "coverage": "NODE_OPTIONS=--conditions=development vitest run --coverage"
