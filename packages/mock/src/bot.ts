@@ -17,6 +17,13 @@ export class Vars extends Globals {
   public static readonly dbName: string;
 }
 
+export const Emojis = {
+  success: 'checkmark',
+  error: 'cross',
+  loading: 'ritual_loader_1',
+  heart: 'red_heart'
+};
+
 async function main(): Promise<void> {
   const seedcord = new Seedcord({
     bot: {
@@ -39,7 +46,8 @@ async function main(): Promise<void> {
       },
       events: {
         path: resolve(import.meta.dirname, './events')
-      }
+      },
+      emojis: Emojis
     },
     hooks: {
       path: resolve(import.meta.dirname, './hooks')

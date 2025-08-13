@@ -26,5 +26,8 @@ export class Globals extends Envapter {
   public static readonly unknownExceptionWebhookUrl: string;
 
   // Variables
-  public static readonly botColor: ColorResolvable = this.isProduction ? '#fe565a' : '#3fa045';
+  /**
+   * The default color of the bot's embeds. Can simply override by `Globals.botColor =`
+   */
+  public static botColor: ColorResolvable = this.isProduction ? '#fe565a' : '#3fa045';
 }

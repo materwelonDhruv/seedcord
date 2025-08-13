@@ -54,6 +54,11 @@ interface BotConfig {
    * Discord.js ClientOptions passed directly to the Client constructor
    */
   clientOptions: ClientOptions;
+
+  /**
+   * Optional emoji mappings for the bot
+   */
+  emojis?: Record<string, string>;
 }
 
 export interface Config {

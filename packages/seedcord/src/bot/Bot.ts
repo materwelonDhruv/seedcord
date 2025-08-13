@@ -31,7 +31,7 @@ export class Bot extends Plugin {
     this.events = new EventController(core);
 
     this.commands = new CommandRegistry(this.core);
-    this.emojiInjector = new EmojiInjector(this._client);
+    this.emojiInjector = new EmojiInjector(this.core);
 
     this.core.shutdown.addTask(ShutdownPhase.DiscordCleanup, 'stop-bot', async () => await this.stop());
   }
