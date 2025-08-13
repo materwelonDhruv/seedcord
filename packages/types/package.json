@@ -3,6 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "description": "Types for Seedcord",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/seedcord/seedcord.git",
@@ -53,6 +54,8 @@
     "discord.js": "^14.21.0"
   },
   "devDependencies": {
-    "@seedcord/eslint-config": "workspace:^"
+    "@seedcord/eslint-config": "workspace:^",
+    "@seedcord/tsconfig": "workspace:^",
+    "@seedcord/tsup-config": "workspace:^"
   }
 }

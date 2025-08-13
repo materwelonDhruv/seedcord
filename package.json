@@ -43,6 +43,8 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@seedcord/eslint-config": "workspace:^",
+    "@seedcord/tsconfig": "workspace:^",
+    "@seedcord/tsup-config": "workspace:^",
     "@types/chai": "^5.2.2",
     "@types/eslint-plugin-security": "^3.0.0",
     "@types/node": "^24.1.0",

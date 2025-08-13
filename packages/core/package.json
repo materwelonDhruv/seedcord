@@ -50,6 +50,7 @@
     "typescript": "^5.9.2"
   },
   "dependencies": {
+    "@seedcord/types": "workspace:^",
     "chalk": "^5.4.1",
     "discord.js": "^14.0.0",
     "envapt": "^2.2.8",
@@ -59,6 +60,7 @@
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
-    "@seedcord/types": "workspace:^"
+    "@seedcord/tsconfig": "workspace:^",
+    "@seedcord/tsup-config": "workspace:^"
   }
 }

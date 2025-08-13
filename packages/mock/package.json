@@ -36,6 +36,7 @@
   },
   "dependencies": {
     "seedcord": "workspace:^",
+    "@seedcord/types": "workspace:^",
     "discord.js": "^14.21.0",
     "envapt": "^2.2.8",
     "mongoose": "^8.16.4",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
-    "@seedcord/types": "workspace:^"
+    "@seedcord/tsconfig": "workspace:^",
+    "@seedcord/tsup-config": "workspace:^"
   }
 }
