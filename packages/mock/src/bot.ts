@@ -7,8 +7,6 @@ import { Envapt } from 'envapt';
 import { Seedcord, Globals, StartupPhase, Mongo } from 'seedcord';
 
 Globals.envPaths = resolve(import.meta.dirname, '../../../.env');
-// eslint-disable-next-line no-console
-console.log(Globals.botToken);
 
 export class Vars extends Globals {
   // Mongo Plugin

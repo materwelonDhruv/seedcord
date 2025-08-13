@@ -25,6 +25,7 @@ export * from './mongo/BaseService';
 export * from './mongo/decorators/DBCatchable';
 export * from './mongo/decorators/DatabaseModel';
 export * from './mongo/decorators/DatabaseService';
+export type * from './mongo/types/Services';
 
 // Library exports
 export * from './library/Globals';

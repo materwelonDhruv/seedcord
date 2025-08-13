@@ -2,8 +2,8 @@ import * as path from 'node:path';
 
 import chalk from 'chalk';
 
-import { traverseDirectory } from '../library/Helpers';
 import { Plugin } from '../interfaces/Plugin';
+import { traverseDirectory } from '../library/Helpers';
 import { Logger } from '../services/Logger';
 import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
@@ -30,7 +30,7 @@ export class HookController extends Plugin {
 
     this.isInitialized = true;
 
-    const hooksDir = path.resolve(import.meta.dirname, './hooks');
+    const hooksDir = this.core.config.hooks.path;
     const defaultHooksDir = path.resolve(import.meta.dirname, './default');
     this.logger.info(chalk.bold(hooksDir));
 

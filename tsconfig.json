@@ -29,6 +29,7 @@
     "declaration": true,
     "declarationMap": true,
     // "composite": true,
+    "noEmit": true,
     "importHelpers": false,
     "newLine": "lf",
     "noEmitHelpers": true,

@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import { SlashCommandBuilder } from 'discord.js';
 
+import { BuilderComponent } from '../../interfaces/Components';
 import { traverseDirectory } from '../../library/Helpers';
 import { Logger } from '../../services/Logger';
 import { CommandMetadataKey } from '../decorators/CommandRegisterable';
-import { BuilderComponent } from '../../interfaces/Components';
 
 import type { Core } from '../../interfaces/Core';
 import type { Initializeable } from '../../interfaces/Plugin';

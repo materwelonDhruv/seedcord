@@ -17,7 +17,7 @@ export class Users<Doc extends IUser = IUser> extends BaseService<Doc> {
 }
 
 /* Declare Users to augment the ServiceMap */
-declare module '../../../core/src/mongo/types/Services' {
+declare module 'seedcord' {
   interface Services {
     users: Users;
   }
