@@ -1,4 +1,4 @@
-import { CustomError } from '../interfaces/Components';
+import { CustomError } from '../../core/interfaces/Components';
 
 import type { UUID } from 'crypto';
 

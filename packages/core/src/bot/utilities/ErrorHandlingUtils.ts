@@ -2,9 +2,9 @@ import * as crypto from 'crypto';
 
 import { Logger } from '../../core/services/Logger';
 import { DatabaseError } from '../errors/Database';
-import { CustomError } from '../interfaces/Components';
+import { CustomError } from '../../core/interfaces/Components';
 
-import type { Core } from '../../core/library/interfaces/Core';
+import type { Core } from '../../core/interfaces/Core';
 import type { Nullish } from '@seedcord/types';
 import type { UUID } from 'crypto';
 import type { EmbedBuilder, Guild, User } from 'discord.js';

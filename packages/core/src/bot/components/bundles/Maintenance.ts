@@ -1,4 +1,4 @@
-import { BuilderComponent } from '../../interfaces/Components';
+import { BuilderComponent } from '../../../core/interfaces/Components';
 
 import type { Client } from 'discord.js';
 

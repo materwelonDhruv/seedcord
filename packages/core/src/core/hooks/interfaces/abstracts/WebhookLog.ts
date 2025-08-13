@@ -1,6 +1,6 @@
 import { HookHandler } from '../HookHandler';
 
-import type { Core } from '../../../library/interfaces/Core';
+import type { Core } from '../../../interfaces/Core';
 import type { AllHooks, HookKeys } from '../../types/Hooks';
 import type { WebhookClient } from 'discord.js';
 

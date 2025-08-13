@@ -1,6 +1,6 @@
 import { createLogger, format, transports } from 'winston';
 
-import { Globals } from '../library/globals/Globals';
+import { Globals } from '../library/Globals';
 
 import type { Logform, Logger as Winston } from 'winston';
 import type { ConsoleTransportInstance } from 'winston/lib/winston/transports';

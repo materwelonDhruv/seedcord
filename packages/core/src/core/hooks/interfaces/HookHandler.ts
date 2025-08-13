@@ -1,4 +1,4 @@
-import type { Core } from '../../library/interfaces/Core';
+import type { Core } from '../../interfaces/Core';
 import type { AllHooks, HookKeys } from '../types/Hooks';
 
 export abstract class HookHandler<KeyOfHooks extends HookKeys> {

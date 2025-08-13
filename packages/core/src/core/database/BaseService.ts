@@ -3,7 +3,7 @@ import { ServiceMetadataKey } from './decorators/DatabaseService';
 
 import type { Mongo } from './Mongo';
 import type { Services } from './types/Services';
-import type { Core } from '../library/interfaces/Core';
+import type { Core } from '../interfaces/Core';
 import type { IDocument, TypedConstructor } from '@seedcord/types';
 import type mongoose from 'mongoose';
 

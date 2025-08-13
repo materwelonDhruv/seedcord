@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
-import { Globals } from '../../library/globals/Globals';
+import { Globals } from '../../library/Globals';
 
 import type { LifecycleTask, PhaseEvents, UnionToTuple } from '@seedcord/types';
 

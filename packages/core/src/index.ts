@@ -18,10 +18,10 @@ export * from './core/database/Mongo';
 export * from './core/database/BaseService';
 
 // Library exports
-export * from './core/library/globals/Globals';
+export * from './core/library/Globals';
 export * from './core/library/Helpers';
-export type * from './core/library/interfaces/Core';
-export type * from './core/library/interfaces/Config';
+export type * from './core/interfaces/Core';
+export type * from './core/interfaces/Config';
 
 // Hooks exports
 export * from './core/hooks/HookController';

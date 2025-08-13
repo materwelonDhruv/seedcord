@@ -4,10 +4,10 @@ import chalk from 'chalk';
 
 import { ShutdownPhase } from './Lifecycle/CoordinatedShutdown';
 import { Logger } from './Logger';
-import { Globals } from '../library/globals/Globals';
-import { Plugin } from '../library/interfaces/Plugin';
+import { Globals } from '../library/Globals';
+import { Plugin } from '../interfaces/Plugin';
 
-import type { Core } from '../library/interfaces/Core';
+import type { Core } from '../interfaces/Core';
 import type { IncomingMessage, Server, ServerResponse } from 'http';
 
 const HTTP_OK = 200;

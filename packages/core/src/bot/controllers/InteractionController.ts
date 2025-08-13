@@ -5,11 +5,11 @@ import { traverseDirectory } from '../../core/library/Helpers';
 import { Logger } from '../../core/services/Logger';
 import { InteractionMetadataKey, InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../handlers/UnhandledEvent';
-import { AutocompleteHandler, InteractionHandler } from '../interfaces/Handler';
+import { AutocompleteHandler, InteractionHandler } from '../../core/interfaces/Handler';
 
-import type { Core } from '../../core/library/interfaces/Core';
-import type { Initializeable } from '../../core/library/interfaces/Plugin';
-import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../interfaces/Handler';
+import type { Core } from '../../core/interfaces/Core';
+import type { Initializeable } from '../../core/interfaces/Plugin';
+import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../../core/interfaces/Handler';
 import type {
   AutocompleteInteraction,
   ButtonInteraction,

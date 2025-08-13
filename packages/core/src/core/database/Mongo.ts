@@ -3,16 +3,16 @@ import mongoose from 'mongoose';
 
 import { BaseService } from './BaseService';
 import { DatabaseConnectionFailure } from '../../bot/errors/Database';
-import { Globals } from '../library/globals/Globals';
+import { Globals } from '../library/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { ShutdownPhase } from '../services/Lifecycle/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
-import { Plugin } from '../library/interfaces/Plugin';
+import { Plugin } from '../interfaces/Plugin';
 
 import type { BaseServiceConstructor } from './BaseService';
 import type { Services } from './types/Services';
-import type { Core } from '../library/interfaces/Core';
+import type { Core } from '../interfaces/Core';
 
 interface MongoOptions {
   servicesDir: string;

@@ -2,13 +2,13 @@ import chalk from 'chalk';
 
 import { Bot } from '../bot/Bot';
 import { HookController } from './hooks/HookController';
-import { Pluggable } from './library/interfaces/Plugin';
+import { Pluggable } from './interfaces/Plugin';
 import { HealthCheck } from './services/HealthCheck';
 import { CoordinatedShutdown } from './services/Lifecycle/CoordinatedShutdown';
 import { CoordinatedStartup, StartupPhase } from './services/Lifecycle/CoordinatedStartup';
 
-import type { Config } from './library/interfaces/Config';
-import type { Core } from './library/interfaces/Core';
+import type { Config } from './interfaces/Config';
+import type { Core } from './interfaces/Core';
 
 export class Seedcord extends Pluggable implements Core {
   private static isInstantiated = false;

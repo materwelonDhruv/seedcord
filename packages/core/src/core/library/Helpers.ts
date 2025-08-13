@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { DatabaseError } from '../../bot/errors/Database';
 import { Logger } from '../services/Logger';
 
-import type { CustomErrorConstructor } from '../../bot/interfaces/Components';
+import type { CustomErrorConstructor } from '../interfaces/Components';
 import type * as fs from 'node:fs';
 
 /**

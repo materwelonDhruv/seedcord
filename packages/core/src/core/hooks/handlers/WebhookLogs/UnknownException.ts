@@ -1,7 +1,7 @@
 import { DiscordAPIError, SnowflakeUtil, WebhookClient } from 'discord.js';
 
-import { BuilderComponent } from '../../../../bot/interfaces/Components';
-import { Globals } from '../../../library/globals/Globals';
+import { BuilderComponent } from '../../../interfaces/Components';
+import { Globals } from '../../../library/Globals';
 import { RegisterHook } from '../../decorators/RegisterHook';
 import { WebhookLog } from '../../interfaces/abstracts/WebhookLog';
 import { AllHooks } from '../../types/Hooks';

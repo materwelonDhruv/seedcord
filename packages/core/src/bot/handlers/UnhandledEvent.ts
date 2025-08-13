@@ -1,7 +1,7 @@
 import { MessageFlags } from 'discord.js';
 
 import { Catchable } from '../decorators/Catchable';
-import { InteractionHandler, Repliables } from '../interfaces/Handler';
+import { InteractionHandler, Repliables } from '../../core/interfaces/Handler';
 
 export class UnhandledEvent extends InteractionHandler<Repliables> {
   @Catchable()

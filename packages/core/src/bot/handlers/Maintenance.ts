@@ -3,7 +3,7 @@ import { ChatInputCommandInteraction, MessageFlags, TextChannel } from 'discord.
 import { MaintenanceEmbed } from '../components/bundles/Maintenance';
 import { Catchable } from '../decorators/Catchable';
 import { SlashRoute } from '../decorators/InteractionConfigurable';
-import { InteractionHandler } from '../interfaces/Handler';
+import { InteractionHandler } from '../../core/interfaces/Handler';
 
 @SlashRoute('maintenance')
 export class Maintenance extends InteractionHandler<ChatInputCommandInteraction> {

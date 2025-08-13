@@ -1,5 +1,5 @@
 import { DatabaseError } from '../../../bot/errors/Database';
-import { CustomError } from '../../../bot/interfaces/Components';
+import { CustomError } from '../../interfaces/Components';
 import { throwCustomError } from '../../library/Helpers';
 
 export function DBCatchable<TypeReturn>(errorMessage: string) {

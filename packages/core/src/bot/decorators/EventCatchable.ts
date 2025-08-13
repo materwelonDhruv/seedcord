@@ -3,7 +3,7 @@ import { Message } from 'discord.js';
 
 import { ErrorHandlingUtils } from '../utilities/ErrorHandlingUtils';
 
-import type { EventHandler } from '../interfaces/Handler';
+import type { EventHandler } from '../../core/interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 
 export function EventCatchable(log?: boolean) {

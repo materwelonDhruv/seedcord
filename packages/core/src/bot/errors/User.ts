@@ -1,4 +1,4 @@
-import { CustomError } from '../interfaces/Components';
+import { CustomError } from '../../core/interfaces/Components';
 
 export class UserNotInGuild extends CustomError {
   constructor(message = 'User is not in the guild.') {

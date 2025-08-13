@@ -17,7 +17,7 @@ import {
   UserSelectMenuBuilder
 } from 'discord.js';
 
-import { Globals } from '../../core/library/globals/Globals';
+import { Globals } from '../library/Globals';
 
 import type { ModalActionRowComponentBuilder } from 'discord.js';
 

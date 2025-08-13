@@ -1,4 +1,4 @@
-import type { Core } from '../../core/library/interfaces/Core';
+import type { Core } from './Core';
 import type { TypedConstructor } from '@seedcord/types';
 import type {
   AnySelectMenuInteraction,

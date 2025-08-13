@@ -5,12 +5,12 @@ import { CommandRegistry } from './controllers/CommandRegistry';
 import { EventController } from './controllers/EventController';
 import { InteractionController } from './controllers/InteractionController';
 import { EmojiInjector } from './injectors/EmojiInjector';
-import { Globals } from '../core/library/globals/Globals';
-import { Plugin } from '../core/library/interfaces/Plugin';
+import { Globals } from '../core/library/Globals';
+import { Plugin } from '../core/interfaces/Plugin';
 import { ShutdownPhase } from '../core/services/Lifecycle/CoordinatedShutdown';
 import { Logger } from '../core/services/Logger';
 
-import type { Core } from '../core/library/interfaces/Core';
+import type { Core } from '../core/interfaces/Core';
 
 export class Bot extends Plugin {
   public readonly logger = new Logger('Bot');

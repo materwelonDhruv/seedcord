@@ -1,5 +1,5 @@
 import { RegisterCommand } from '../../decorators/CommandRegisterable';
-import { BuilderComponent } from '../../interfaces/Components';
+import { BuilderComponent } from '../../../core/interfaces/Components';
 
 @RegisterCommand('global')
 export class TestCommand extends BuilderComponent<'command'> {

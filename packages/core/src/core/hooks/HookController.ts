@@ -3,14 +3,14 @@ import * as path from 'node:path';
 import chalk from 'chalk';
 
 import { traverseDirectory } from '../library/Helpers';
-import { Plugin } from '../library/interfaces/Plugin';
+import { Plugin } from '../interfaces/Plugin';
 import { Logger } from '../services/Logger';
 import { HookMetadataKey } from './decorators/RegisterHook';
 import { HookEmitter } from './HookEmitter';
 import { HookHandler } from './interfaces/HookHandler';
 
 import type { AllHooks, HookKeys } from './types/Hooks';
-import type { Core } from '../library/interfaces/Core';
+import type { Core } from '../interfaces/Core';
 import type { TypedConstructor } from '@seedcord/types';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;

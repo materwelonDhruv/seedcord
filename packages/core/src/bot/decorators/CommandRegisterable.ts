@@ -1,4 +1,4 @@
-import type { BuilderComponent } from '../interfaces/Components';
+import type { BuilderComponent } from '../../core/interfaces/Components';
 
 export const CommandMetadataKey = Symbol('command:metadata');
 

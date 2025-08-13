@@ -2,7 +2,7 @@ import { MessageFlags } from 'discord.js';
 
 import { ErrorHandlingUtils } from '../utilities/ErrorHandlingUtils';
 
-import type { RepliableInteractionHandler } from '../interfaces/Handler';
+import type { RepliableInteractionHandler } from '../../core/interfaces/Handler';
 
 interface CatchableOptions {
   log?: boolean;
