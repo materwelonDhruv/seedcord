@@ -47,7 +47,10 @@
     "lint:fix": "eslint '*.{mjs,ts}' --fix --cache",
     "fmt": "prettier --write '*.{mjs,ts,json,md}' --cache",
     "fmt:check": "prettier --check '*.{mjs,ts,json,md}' --cache",
-    "tc": "tsc --noEmit"
+    "tc": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest dev",
+    "coverage": "vitest run --coverage"
   },
   "peerDependencies": {
     "typescript": "^5.9.2"
