@@ -2,8 +2,8 @@ import { defineConfig } from 'tsup';
 
 import type { Options } from 'tsup';
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type, complexity
-function createTsupConfig({
+// eslint-disable-next-line complexity
+export function createTsupConfig({
   format = ['esm', 'cjs'],
   entry = ['src/index.ts'],
   dts = true,
@@ -29,7 +29,7 @@ function createTsupConfig({
     }
     return { js: '.js' };
   }
-}: Options = {}) {
+}: Options = {}): ReturnType<typeof defineConfig> {
   return defineConfig({
     format,
     entry,
@@ -49,5 +49,3 @@ function createTsupConfig({
     outExtension
   });
 }
-
-export default createTsupConfig();
