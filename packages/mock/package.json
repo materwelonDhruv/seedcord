@@ -1,0 +1,40 @@
+{
+  "name": "@seedcord/mock",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Mock bot for testing",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/seedcord/seedcord.git",
+    "directory": "packages/mock"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [],
+  "scripts": {
+    "dev:bot": "nodemon --config nodemon.json",
+    "start:watch": "tsx src/start-watch.ts",
+    "build": "tsc -p .",
+    "lint": "eslint 'src/**/*.{ts,tsx}' --cache",
+    "lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
+    "fmt": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
+    "fmt:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "discord.js": "^14.21.0",
+    "mongoose": "^8.16.4",
+    "reflect-metadata": "^0.2.2",
+    "seedcord": "workspace:^"
+  },
+  "devDependencies": {
+    "@seedcord/eslint-config": "workspace:^",
+    "@seedcord/types": "workspace:^"
+  }
+}

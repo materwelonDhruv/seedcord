@@ -31,19 +31,6 @@
     },
     {
       "type": "node",
-      "request": "launch",
-      "name": "🧪 Run Tests",
-      "skipFiles": ["<node_internals>/**"],
-      "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["test"],
-      "console": "integratedTerminal",
-      "presentation": {
-        "hidden": false,
-        "group": "secondary"
-      }
-    },
-    {
-      "type": "node",
       "request": "attach",
       "name": "🔗 Attach to Process",
       "port": 9229,

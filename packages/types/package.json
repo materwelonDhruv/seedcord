@@ -19,7 +19,9 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "dependencies": {},
+  "dependencies": {
+    "discord.js": "^14.21.0"
+  },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^"
   }

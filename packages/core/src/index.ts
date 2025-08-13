@@ -1,28 +1,48 @@
 import 'reflect-metadata';
 
+export * from 'envapt';
+
 // Main exports
-export * from './core/Seedcord';
+export * from './Seedcord';
 
 // Bot exports
 export * from './bot/Bot';
+export * from './bot/decorators/Checkable';
+export * from './bot/decorators/Catchable';
+export * from './bot/decorators/CommandRegisterable';
+export * from './bot/decorators/EventCatchable';
+export * from './bot/decorators/EventRegisterable';
+export * from './bot/decorators/InteractionConfigurable';
 
 // Services exports
-export * from './core/services/Logger';
-export * from './core/services/Lifecycle/CoordinatedStartup';
-export * from './core/services/Lifecycle/CoordinatedShutdown';
-export * from './core/services/HealthCheck';
-export * from './core/services/CooldownManager';
+export * from './services/Logger';
+export * from './services/Lifecycle/CoordinatedStartup';
+export * from './services/Lifecycle/CoordinatedShutdown';
+export * from './services/HealthCheck';
+export * from './services/CooldownManager';
 
 // Database exports
-export * from './core/mongo/Mongo';
-export * from './core/mongo/BaseService';
+export * from './mongo/Mongo';
+export * from './mongo/BaseService';
+export * from './mongo/decorators/DBCatchable';
+export * from './mongo/decorators/DatabaseModel';
+export * from './mongo/decorators/DatabaseService';
 
 // Library exports
-export * from './core/library/Globals';
-export * from './core/library/Helpers';
-export type * from './core/interfaces/Core';
-export type * from './core/interfaces/Config';
+export * from './library/Globals';
+export * from './library/Helpers';
+
+// Interfaces exports
+export * from './interfaces/Components';
+export * from './interfaces/Handler';
+export * from './interfaces/Plugin';
+export type * from './interfaces/Core';
+export type * from './interfaces/Config';
 
 // Hooks exports
-export * from './core/hooks/HookController';
-export * from './core/hooks/HookEmitter';
+export * from './hooks/HookController';
+export * from './hooks/HookEmitter';
+export * from './hooks/decorators/RegisterHook';
+export * from './hooks/interfaces/HookHandler';
+export * from './hooks/interfaces/abstracts/WebhookLog';
+export type * from './hooks/types/Hooks';

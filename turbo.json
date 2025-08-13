@@ -33,23 +33,6 @@
     },
     "clean": {
       "cache": false
-    },
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "start": {
-      "cache": false,
-      "persistent": true
-    },
-    "start:bot": {
-      "dependsOn": ["build"],
-      "cache": false,
-      "persistent": true
-    },
-    "start:watch": {
-      "cache": false,
-      "persistent": true
     }
   },
   "globalDependencies": ["package.json", "pnpm-workspace.yaml", "turbo.json", ".env*"],

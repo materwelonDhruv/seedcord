@@ -22,9 +22,10 @@
   "dependencies": {
     "chalk": "^5.4.1",
     "discord.js": "^14.0.0",
+    "envapt": "^2.2.8",
     "mongoose": "^8.16.4",
-    "winston": "^3.17.0",
-    "reflect-metadata": "^0.2.2"
+    "reflect-metadata": "^0.2.2",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",

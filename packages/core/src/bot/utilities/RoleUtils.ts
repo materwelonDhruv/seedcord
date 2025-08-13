@@ -1,6 +1,6 @@
 import { Guild, PermissionFlagsBits, Role } from 'discord.js';
 
-import { prettify } from '../../core/library/Helpers';
+import { prettify } from '../../library/Helpers';
 import {
   BotMissingPermissionsError,
   CannotAssignBotRole,

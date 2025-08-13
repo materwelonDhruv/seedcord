@@ -1,15 +1,15 @@
 import chalk from 'chalk';
 import { Events } from 'discord.js';
 
-import { traverseDirectory } from '../../core/library/Helpers';
-import { Logger } from '../../core/services/Logger';
+import { AutocompleteHandler, InteractionHandler } from '../../interfaces/Handler';
+import { traverseDirectory } from '../../library/Helpers';
+import { Logger } from '../../services/Logger';
 import { InteractionMetadataKey, InteractionRoutes } from '../decorators/InteractionConfigurable';
-import { UnhandledEvent } from '../handlers/UnhandledEvent';
-import { AutocompleteHandler, InteractionHandler } from '../../core/interfaces/Handler';
+import { UnhandledEvent } from '../defaults/UnhandledEvent';
 
-import type { Core } from '../../core/interfaces/Core';
-import type { Initializeable } from '../../core/interfaces/Plugin';
-import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../../core/interfaces/Handler';
+import type { Core } from '../../interfaces/Core';
+import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../../interfaces/Handler';
+import type { Initializeable } from '../../interfaces/Plugin';
 import type {
   AutocompleteInteraction,
   ButtonInteraction,
@@ -58,7 +58,7 @@ export class InteractionController implements Initializeable {
     await this.loadHandlers(handlersDir);
     this.attachToClient();
 
-    this.logger.info(`${chalk.bold.green('Loaded interaction handlers:')}`);
+    this.logger.info(`${chalk.bold.green('Loaded interaction hooks:')}`);
     this.logger.info(`→ ${chalk.magenta.bold(this.slashMap.size)} slash commands`);
     this.logger.info(`→ ${chalk.magenta.bold(this.buttonMap.size)} buttons`);
     this.logger.info(`→ ${chalk.magenta.bold(this.modalMap.size)} modals`);

@@ -1,4 +1,4 @@
-import { CustomError } from '../../core/interfaces/Components';
+import { CustomError } from '../../interfaces/Components';
 
 export class ChannelNotFoundError extends CustomError {
   constructor(

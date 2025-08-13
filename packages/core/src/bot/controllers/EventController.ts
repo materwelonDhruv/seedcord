@@ -1,13 +1,13 @@
 import chalk from 'chalk';
 
-import { traverseDirectory } from '../../core/library/Helpers';
-import { Logger } from '../../core/services/Logger';
+import { traverseDirectory } from '../../library/Helpers';
+import { Logger } from '../../services/Logger';
 import { EventMetadataKey } from '../decorators/EventRegisterable';
-import { EventHandler } from '../../core/interfaces/Handler';
+import { EventHandler } from '../../interfaces/Handler';
 
-import type { Core } from '../../core/interfaces/Core';
-import type { Initializeable } from '../../core/interfaces/Plugin';
-import type { EventHandlerConstructor } from '../../core/interfaces/Handler';
+import type { Core } from '../../interfaces/Core';
+import type { Initializeable } from '../../interfaces/Plugin';
+import type { EventHandlerConstructor } from '../../interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 
 export class EventController implements Initializeable {
@@ -71,7 +71,7 @@ export class EventController implements Initializeable {
 
   private attachToClient(): void {
     for (const [eventName] of this.eventMap) {
-      // For each event type, call all relevant handlers in sequence.
+      // For each event type, call all relevant hooks in sequence.
       this.logger.debug(
         `Attaching ${chalk.bold.green(eventName)} to ${chalk.bold.yellow(this.core.bot.client.user?.username)}`
       );

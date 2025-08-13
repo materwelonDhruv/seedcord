@@ -16,22 +16,11 @@
     "typecheck": "turbo typecheck",
     "test": "turbo test",
     "clean": "turbo clean",
-    "start:bot": "turbo start:bot",
     "prebuild": "turbo clean && turbo lint && turbo typecheck",
     "turbo:prune": "turbo prune",
     "turbo:graph": "turbo build --graph",
     "turbo:trace": "turbo build --trace",
-    "prepare": "husky",
-    "dev:bot": "nodemon --config nodemon.json",
-    "start:watch": "tsx start-watch.ts",
-    "local:build": "tsc -p .",
-    "local:lint": "eslint 'src/**/*.{ts,tsx}' --cache",
-    "local:lint:fix": "eslint 'src/**/*.{ts,tsx}' --fix --cache",
-    "local:format": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
-    "local:format:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
-    "local:typecheck": "tsc --noEmit",
-    "local:test": "mocha",
-    "local:clean": "rm -rf dist"
+    "prepare": "husky"
   },
   "keywords": [
     "discord",
@@ -44,27 +33,26 @@
   "author": "Dhruv <materwelondhruv@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@seedcord/eslint-config": "workspace:^",
+    "@changesets/cli": "^2.29.5",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@seedcord/eslint-config": "workspace:^",
     "@types/chai": "^5.2.2",
     "@types/eslint-plugin-security": "^3.0.0",
     "@types/node": "^24.1.0",
+    "@vitest/coverage-v8": "^3.2.4",
     "chai": "^5.2.1",
     "eslint": "^9.32.0",
     "husky": "^9.1.7",
     "nodemon": "^3.1.10",
     "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
     "tsx": "^4.20.3",
     "turbo": "^2.5.5",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
   },
-  "dependencies": {
-    "seedcord": "workspace:^",
-    "discord.js": "^14.21.0",
-    "envapt": "^2.2.5",
-    "reflect-metadata": "^0.2.2"
-  },
+  "dependencies": {},
   "engines": {
     "node": ">=22.12.0"
   }
