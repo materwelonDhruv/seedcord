@@ -12,6 +12,7 @@
       "persistent": true
     },
     "lint": {
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".eslintrc*", "eslint.config.*"]
     },
     "lint:fix": {
