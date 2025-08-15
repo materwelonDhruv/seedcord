@@ -81,7 +81,7 @@ export class EventController implements Initializeable {
 
   private attachToClient(): void {
     for (const [eventName] of this.eventMap) {
-      // For each event type, call all relevant hooks in sequence.
+      // For each event type, call all relevant effects in sequence.
       this.logger.debug(
         `Attaching ${chalk.bold.green(eventName)} to ${chalk.bold.yellow(this.core.bot.client.user?.username)}`
       );

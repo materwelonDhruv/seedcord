@@ -16,10 +16,10 @@ export class ErrorHandlingUtils {
   private static readonly logger = new Logger('Errors');
 
   /**
-   * Processes an error and generates a standardized response.
+   * Processes an error and extracts the standardized response, if available.
    *
    * Handles different error types (CustomError, DatabaseError) with appropriate
-   * logging, hook emissions, and user-facing error messages.
+   * logging, side effects, and user-facing error messages.
    *
    * @param error - The error to process
    * @param core - The core framework instance
@@ -37,7 +37,7 @@ export class ErrorHandlingUtils {
 
     if (error instanceof CustomError) {
       if (error instanceof DatabaseError) {
-        core.hooks.emit('unknownException', { uuid, error, guild, user });
+        core.effects.emit('unknownException', { uuid, error, guild, user });
 
         this.logger.error(`DatabaseError: ${error.uuid}`);
       } else if (error.emit) {
@@ -51,7 +51,7 @@ export class ErrorHandlingUtils {
     }
 
     this.logger.error(uuid, error);
-    core.hooks.emit('unknownException', { uuid, error, guild, user });
+    core.effects.emit('unknownException', { uuid, error, guild, user });
 
     return {
       uuid,

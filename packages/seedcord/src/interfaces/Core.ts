@@ -2,14 +2,14 @@ import type { Config } from './Config';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { Plugin } from './Plugin';
 import type { Bot } from '../bot/Bot';
-import type { HookController } from '../hooks/HookController';
+import type { EffectsRegistry } from '../effects/EffectsRegistry';
 import type { CoordinatedShutdown } from '../services/Lifecycle/CoordinatedShutdown';
 import type { CoordinatedStartup } from '../services/Lifecycle/CoordinatedStartup';
 
 /** Base interface defining core Seedcord functionality */
 interface BaseCore {
   readonly bot: Bot;
-  readonly hooks: HookController;
+  readonly effects: EffectsRegistry;
   readonly shutdown: CoordinatedShutdown;
   readonly startup: CoordinatedStartup;
 

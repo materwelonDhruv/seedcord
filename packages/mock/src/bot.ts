@@ -49,8 +49,8 @@ async function main(): Promise<void> {
       },
       emojis: Emojis
     },
-    hooks: {
-      path: resolve(import.meta.dirname, './hooks')
+    effects: {
+      path: resolve(import.meta.dirname, './effects')
     }
   }).attach('db', Mongo, StartupPhase.Configuration, {
     servicesDir: resolve(import.meta.dirname, './services'),

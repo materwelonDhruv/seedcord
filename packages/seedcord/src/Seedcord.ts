@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { Bot } from './bot/Bot';
-import { HookController } from './hooks/HookController';
+import { EffectsRegistry } from './effects/EffectsRegistry';
 import { Pluggable } from './interfaces/Plugin';
 import { HealthCheck } from './services/HealthCheck';
 import { CoordinatedShutdown } from './services/Lifecycle/CoordinatedShutdown';
@@ -27,8 +27,8 @@ export class Seedcord extends Pluggable implements Core {
   /** @see {@link CoordinatedStartup} */
   public override readonly startup: CoordinatedStartup;
 
-  /** @see {@link HookController} */
-  public readonly hooks: HookController;
+  /** @see {@link EffectsRegistry} */
+  public readonly effects: EffectsRegistry;
 
   /** @see {@link Bot} */
   public readonly bot: Bot;
@@ -59,7 +59,7 @@ export class Seedcord extends Pluggable implements Core {
     }
     Seedcord.isInstantiated = true;
 
-    this.hooks = new HookController(this as unknown as Core);
+    this.effects = new EffectsRegistry(this as unknown as Core);
     this.bot = new Bot(this as unknown as Core);
     this.healthCheck = new HealthCheck(this as unknown as Core);
 
@@ -71,10 +71,10 @@ export class Seedcord extends Pluggable implements Core {
    * @internal
    */
   private registerStartupTasks(): void {
-    this.startup.addTask(StartupPhase.Configuration, 'Hook Initialization', async () => {
-      this.hooks.logger.info(chalk.bold('Initializing'));
-      await this.hooks.init();
-      this.hooks.logger.info(chalk.bold('Initialized'));
+    this.startup.addTask(StartupPhase.Configuration, 'Effect Initialization', async () => {
+      this.effects.logger.info(chalk.bold('Initializing'));
+      await this.effects.init();
+      this.effects.logger.info(chalk.bold('Initialized'));
     });
 
     this.startup.addTask(StartupPhase.Instantiation, 'Bot Initialization', async () => {

@@ -43,7 +43,7 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
   public constructor() {
     super('CoordinatedShutdown', PHASE_ORDER, ShutdownPhase);
 
-    // Register signal hooks
+    // Register signal effects
     this.registerSignalHandlers();
   }
 
