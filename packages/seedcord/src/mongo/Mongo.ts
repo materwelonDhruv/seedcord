@@ -2,17 +2,16 @@ import chalk from 'chalk';
 import mongoose from 'mongoose';
 
 import { BaseService } from './BaseService';
-import { MongoConnectionFailure } from '../bot/errors/Database';
+import { Plugin } from '../interfaces/Plugin';
 import { Globals } from '../library/Globals';
-import { throwCustomError, traverseDirectory } from '../library/Helpers';
+import { traverseDirectory } from '../library/Helpers';
 import { ShutdownPhase } from '../services/Lifecycle/CoordinatedShutdown';
 import { Logger } from '../services/Logger';
 import { ServiceMetadataKey } from './decorators/DatabaseService';
-import { Plugin } from '../interfaces/Plugin';
 
 import type { BaseServiceConstructor } from './BaseService';
-import type { Services } from './types/Services';
 import type { Core } from '../interfaces/Core';
+import type { Services } from './types/Services';
 
 /**
  * Configuration options for MongoDB connection and service loading.
@@ -72,7 +71,9 @@ export class Mongo extends Plugin {
         ...(Globals.isProduction && { tls: true, ssl: true })
       })
       .then((i) => this.logger.info(`Connected to MongoDB: ${chalk.bold.magenta(i.connection.name)}`))
-      .catch((err) => throwCustomError(err, 'Could not connect to MongoDB', MongoConnectionFailure));
+      .catch((err) => {
+        throw new Error(`Could not connect to MongoDB`, err);
+      });
   }
 
   private async disconnect(): Promise<void> {

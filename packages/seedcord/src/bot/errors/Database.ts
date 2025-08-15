@@ -3,25 +3,6 @@ import { CustomError } from '../../interfaces/Components';
 import type { UUID } from 'crypto';
 
 /**
- * Error thrown when database connection fails.
- *
- * Provides a user-friendly message when the bot cannot establish
- * a connection to the database.
- */
-export class MongoConnectionFailure extends CustomError {
-  /**
-   * Creates a new MongoConnectionFailure error.
-   *
-   * @param message - The error message
-   */
-  constructor(message = 'Failed to connect to the MongoDB.') {
-    super(message);
-
-    this.response.setDescription('Failed to connect to MongoDB.');
-  }
-}
-
-/**
  * Generic database operation error with UUID tracking.
  *
  * Thrown for various database operation failures and includes

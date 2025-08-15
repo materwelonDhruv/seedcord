@@ -4,7 +4,7 @@ import * as path from 'node:path';
 import { DatabaseError } from '../bot/errors/Database';
 import { Logger } from '../services/Logger';
 
-// @ts-ignore TS thinks it's unused. But it's used in TSDoc
+// @ts-expect-error - TS thinks it's unused. But it's used in TSDoc
 //  eslint-disable-next-line @typescript-eslint/no-unused-vars
 import type { CustomErrorConstructor, CustomError } from '../interfaces/Components';
 import type * as fs from 'node:fs';
@@ -283,7 +283,7 @@ export function fyShuffle<TArray>(items: TArray[]): TArray[] {
   const array = items.slice();
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    // @ts-ignore - TypeScript doesn't recognize that TArray can be swapped
+    // @ts-expect-error - TypeScript doesn't recognize that TArray can be swapped
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
