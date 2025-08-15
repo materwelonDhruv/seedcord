@@ -2,7 +2,7 @@ import chalk from 'chalk';
 import mongoose from 'mongoose';
 
 import { BaseService } from './BaseService';
-import { DatabaseConnectionFailure } from '../bot/errors/Database';
+import { MongoConnectionFailure } from '../bot/errors/Database';
 import { Globals } from '../library/Globals';
 import { throwCustomError, traverseDirectory } from '../library/Helpers';
 import { ShutdownPhase } from '../services/Lifecycle/CoordinatedShutdown';
@@ -14,12 +14,24 @@ import type { BaseServiceConstructor } from './BaseService';
 import type { Services } from './types/Services';
 import type { Core } from '../interfaces/Core';
 
+/**
+ * Configuration options for MongoDB connection and service loading.
+ */
 interface MongoOptions {
+  /** Directory path containing database service classes */
   servicesDir: string;
+  /** MongoDB connection URI */
   uri: string;
+  /** Database name to use */
   dbName: string;
 }
 
+/**
+ * MongoDB integration plugin for Seedcord.
+ *
+ * Manages MongoDB connections, service loading, and provides type-safe
+ * access to database services through service registration decorators.
+ */
 export class Mongo extends Plugin {
   public readonly logger = new Logger('MongoDB');
   private isInitialised = false;
@@ -60,7 +72,7 @@ export class Mongo extends Plugin {
         ...(Globals.isProduction && { tls: true, ssl: true })
       })
       .then((i) => this.logger.info(`Connected to MongoDB: ${chalk.bold.magenta(i.connection.name)}`))
-      .catch((err) => throwCustomError(err, 'Could not connect to MongoDB', DatabaseConnectionFailure));
+      .catch((err) => throwCustomError(err, 'Could not connect to MongoDB', MongoConnectionFailure));
   }
 
   private async disconnect(): Promise<void> {

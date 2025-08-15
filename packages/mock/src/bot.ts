@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 import { GatewayIntentBits, Partials } from 'discord.js';
 import { Envapt } from 'envapt';
-import { Seedcord, Globals, StartupPhase, Mongo } from 'seedcord';
+import { Globals, Mongo, Seedcord, StartupPhase } from 'seedcord';
 
 Globals.envPaths = resolve(import.meta.dirname, '../../../.env');
 

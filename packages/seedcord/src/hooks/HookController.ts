@@ -14,6 +14,15 @@ import type { TypedConstructor } from '@seedcord/types';
 
 type HookConstructor = TypedConstructor<typeof HookHandler>;
 
+/**
+ * Manages application hooks and event handling
+ *
+ * Provides a centralized system for registering and executing custom hooks
+ * throughout the application lifecycle. Hooks are loaded from configured directories
+ * and can be triggered programmatically or by framework events.
+ *
+ * @internal Accessed via core.hooks, not directly instantiated
+ */
 export class HookController extends Plugin {
   public readonly logger = new Logger('Hooks');
   private isInitialized = false;

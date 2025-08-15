@@ -61,6 +61,7 @@ interface BotConfig {
   emojis?: Record<string, string>;
 }
 
+/** Main configuration object for Seedcord bot */
 export interface Config {
   bot: BotConfig;
   hooks: HooksConfig;

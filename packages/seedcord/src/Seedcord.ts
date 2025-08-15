@@ -10,15 +10,38 @@ import { CoordinatedStartup, StartupPhase } from './services/Lifecycle/Coordinat
 import type { Config } from './interfaces/Config';
 import type { Core } from './interfaces/Core';
 
+// Seedcord interface extension to to tell TypeScript that plugin will be available at runtime
+export interface Seedcord extends Core {}
+
+/**
+ * Main Seedcord bot framework class
+ *
+ * Primary entry point for creating Discord bots with Seedcord.
+ * Manages component lifecycle and provides plugin support.
+ */
 export class Seedcord extends Pluggable implements Core {
   private static isInstantiated = false;
+  /** @see {@link CoordinatedShutdown} */
   public override readonly shutdown: CoordinatedShutdown;
+
+  /** @see {@link CoordinatedStartup} */
   public override readonly startup: CoordinatedStartup;
 
+  /** @see {@link HookController} */
   public readonly hooks: HookController;
+
+  /** @see {@link Bot} */
   public readonly bot: Bot;
+
+  /** @see {@link HealthCheck} */
   private readonly healthCheck: HealthCheck;
 
+  /**
+   * Creates a new Seedcord instance
+   *
+   * @param config - Bot configuration including paths and Discord client options
+   * @throws An {@link Error} When attempting to create multiple instances (singleton)
+   */
   constructor(public readonly config: Config) {
     // Create lifecycle instances
     const shutdown = new CoordinatedShutdown();
@@ -43,6 +66,10 @@ export class Seedcord extends Pluggable implements Core {
     this.registerStartupTasks();
   }
 
+  /**
+   * Registers default startup tasks
+   * @internal
+   */
   private registerStartupTasks(): void {
     this.startup.addTask(StartupPhase.Configuration, 'Hook Initialization', async () => {
       this.hooks.logger.info(chalk.bold('Initializing'));
@@ -63,11 +90,13 @@ export class Seedcord extends Pluggable implements Core {
     });
   }
 
+  /**
+   * Starts the bot and runs all initialization tasks
+   *
+   * @returns This Seedcord instance when fully initialized
+   */
   public async start(): Promise<this> {
     await super.init();
     return this;
   }
 }
-
-// Type assertion to tell TypeScript that plugins will exist at runtime
-export interface Seedcord extends Core {}
