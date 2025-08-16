@@ -88,8 +88,7 @@ abstract class BaseComponent<TComponent> {
    *
    * Returns the finalized component ready for use in Discord messages.
    *
-   * Please do not use for further configuration - use `instance` for that.
-   * @see "instance" for mutating the component
+   * Please do not use for further configuration, use `this.instance` for that.
    * @example new SomeComponent().component
    */
   public abstract get component(): InstantiatedBuilder<BuilderType> | InstantiatedActionRow<ActionRowComponentType>;
