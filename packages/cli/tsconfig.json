@@ -2,11 +2,9 @@
   "$schema": "https://json.schemastore.org/tsconfig",
   "extends": "../tsconfig/node.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": ".",
-    "allowJs": true,
-    "checkJs": false
+    "rootDir": "./",
+    "outDir": "./dist"
   },
-  "include": ["*.ts", "*.mjs", "**/*.mjs", "tsup.config.ts"],
+  "include": ["src/**/*.ts", "tests/**/*.ts", "tsup.config.ts"],
   "exclude": ["node_modules", "dist"]
 }
