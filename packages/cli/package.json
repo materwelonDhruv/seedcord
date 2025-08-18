@@ -1,0 +1,48 @@
+{
+  "name": "@seedcord/cli",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "CLI fro seedcord",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/materwelondhruv/seedcord.git",
+    "directory": "packages/cli"
+  },
+  "exports": {
+    ".": {
+      "development": "./src/index.ts",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "files": [],
+  "scripts": {
+    "dev": "tsx src/index.ts --conditions=development",
+    "start:watch": "tsx src/start-watch.ts",
+    "build": "tsup",
+    "clean": "rm -rf dist",
+    "lint": "#eslint --config eslint.config.mts 'src/**/*.{ts,tsx}' --cache",
+    "lint:fix": "eslint --config eslint.config.mts 'src/**/*.{ts,tsx}' --fix --cache",
+    "fmt": "prettier --write 'src/**/*.{ts,tsx,json,md}' --cache",
+    "fmt:check": "prettier --check 'src/**/*.{ts,tsx,json,md}' --cache",
+    "tc": "tsc --noEmit",
+    "test": "NODE_OPTIONS=--conditions=development vitest run",
+    "test:watch": "NODE_OPTIONS=--conditions=development vitest dev",
+    "coverage": "NODE_OPTIONS=--conditions=development vitest run --coverage"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "@eslint/js": "^9.33.0",
+    "chalk": "^5.5.0",
+    "eslint": "^9.33.0",
+    "lodash.merge": "^4.6.2",
+    "typescript-eslint": "^8.39.1"
+  },
+  "devDependencies": {
+    "@seedcord/eslint-config": "workspace:^",
+    "@seedcord/tsconfig": "workspace:^",
+    "@seedcord/tsup-config": "workspace:^",
+    "@types/lodash.merge": "^4.6.9",
+    "tsx": "^4.20.4"
+  }
+}
