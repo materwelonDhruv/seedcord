@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
-import { existsSync, readFileSync } from 'node:fs';
-import { copyFile, mkdir, readdir, rename, stat, writeFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import { copyFile, mkdir, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
 import { setTimeout } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
@@ -115,7 +115,7 @@ function fetchPackageManager(): string | undefined {
 async function extractTools(root: string, tools: string[], spinner: Spinner): Promise<void> {
   spinner.start(`Adding additional tools`);
   const packagePath = resolve(root, './package.json');
-  let packageJson = JSON.parse(readFileSync(packagePath, 'utf-8')) as Record<string, unknown>;
+  let packageJson = JSON.parse(await readFile(packagePath, 'utf-8')) as Record<string, unknown>;
   for (const tool of tools) {
     packageJson = installTool(tool, packageJson);
   }
