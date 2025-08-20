@@ -1,20 +1,15 @@
-import { spawnSync } from 'node:child_process';
-import {
-  copyFileSync,
-  existsSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  renameSync,
-  statSync,
-  writeFileSync
-} from 'node:fs';
+import { spawn } from 'node:child_process';
+import { existsSync, readFileSync } from 'node:fs';
+import { copyFile, mkdir, readdir, rename, stat, writeFile } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { setTimeout } from 'node:timers/promises';
 import { fileURLToPath } from 'node:url';
 
 import * as p from '@clack/prompts';
 import { Chalk } from 'chalk';
 import merge from 'lodash.merge';
+
+import type { SpawnSyncOptions } from 'node:child_process';
 
 interface Spinner {
   start: (msg?: string) => void;
@@ -91,12 +86,12 @@ async function init(): Promise<void> {
   const root = join(process.cwd(), formatDir(project.path));
   const templateDir = resolve(fileURLToPath(import.meta.url), '../../template');
 
-  extractBaseTemplate(templateDir, root);
+  await extractBaseTemplate(templateDir, root, p.spinner());
 
   const tools = project.tools;
 
-  if (tools.length > 0) extractTools(root, tools, p.spinner());
-  if (project.install) installPackages(root, packageManager, p.spinner());
+  if (tools.length > 0) await extractTools(root, tools, p.spinner());
+  if (project.install) await installPackages(root, packageManager, p.spinner());
 
   const nextSteps =
     `cd ${project.path}\n` +
@@ -117,47 +112,64 @@ function fetchPackageManager(): string | undefined {
   return agent?.split(' ')[0]?.split('/')[0];
 }
 
-function extractTools(root: string, tools: string[], spinner: Spinner): void {
-  // TODO: actually make spinner work, it requires things to be async
+async function extractTools(root: string, tools: string[], spinner: Spinner): Promise<void> {
   spinner.start(`Adding additional tools`);
   const packagePath = resolve(root, './package.json');
   let packageJson = JSON.parse(readFileSync(packagePath, 'utf-8')) as Record<string, unknown>;
   for (const tool of tools) {
-    const toolObject = additionalTools[tool];
-    if (!toolObject) throw new Error(`unable to find tool ${tool}`);
-    packageJson = merge<Record<string, unknown>, Record<string, unknown>>(packageJson, toolObject);
+    packageJson = installTool(tool, packageJson);
   }
-  writeFileSync(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf-8');
-  spinner.stop();
+  await writeFile(packagePath, `${JSON.stringify(packageJson, null, 2)}\n`, 'utf-8');
+  spinner.stop('Added tools');
 }
 
-function extractBaseTemplate(base: string, to: string): void {
-  mkdirSync(to, { recursive: true });
-  copyDir(base, to);
-  renameSync(`${to}/_gitignore`, `${to}/.gitignore`);
+async function extractBaseTemplate(base: string, to: string, spinner: Spinner): Promise<void> {
+  spinner.start('extracting base files');
+  await mkdir(to, { recursive: true });
+  await copyDir(base, to);
+  await rename(`${to}/_gitignore`, `${to}/.gitignore`);
+  spinner.stop('extracted base files');
 }
 
-function installPackages(root: string, packageManager: string, spinner: Spinner): void {
+async function installPackages(root: string, packageManager: string, spinner: Spinner): Promise<void> {
   spinner.start(`Installing via ${packageManager}`);
-  spawnSync(`${packageManager}`, ['install'], {
+  await setTimeout(1000);
+  await spawnProcess(`${packageManager}`, ['install'], {
     cwd: root
   });
   spinner.stop(`Installed via ${packageManager}`);
 }
 
-function copyDir(src: string, to: string): void {
-  mkdirSync(to, { recursive: true });
-  for (const file of readdirSync(src)) {
-    copy(resolve(src, file), resolve(to, file));
+function installTool(tool: string, packageJson: Record<string, unknown>): Record<string, unknown> {
+  const toolObject = additionalTools[tool];
+  if (!toolObject) throw new Error(`unable to find tool ${tool}`);
+  return merge<Record<string, unknown>, Record<string, unknown>>(packageJson, toolObject);
+}
+
+async function spawnProcess(command: string, args: string[], options: SpawnSyncOptions): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const commandProcess = spawn(command, args, options);
+    commandProcess.on('error', (err) => reject(err));
+    commandProcess.on('close', (code) => {
+      if (code === 0) resolve();
+      else reject(commandProcess.stdout);
+    });
+  });
+}
+
+async function copyDir(src: string, to: string): Promise<void> {
+  await mkdir(to, { recursive: true });
+  for (const file of await readdir(src)) {
+    await copy(resolve(src, file), resolve(to, file));
   }
 }
 
-function copy(src: string, to: string): void {
-  const isDir = statSync(src).isDirectory();
+async function copy(src: string, to: string): Promise<void> {
+  const isDir = (await stat(src)).isDirectory();
   if (isDir) {
-    copyDir(src, to);
+    await copyDir(src, to);
   } else {
-    copyFileSync(src, to);
+    await copyFile(src, to);
   }
 }
 

@@ -39,9 +39,6 @@ importers:
       '@clack/prompts':
         specifier: ^0.11.0
         version: 0.11.0
-      '@clack/prompts':
-        specifier: ^0.11.0
-        version: 0.11.0
       '@commitlint/cli':
         specifier: ^19.8.1
         version: 19.8.1(@types/node@24.3.0)(typescript@5.9.2)
@@ -91,32 +88,29 @@ importers:
         specifier: ^3.2.4
         version: 3.2.4(@types/node@24.3.0)(jiti@2.5.1)(tsx@4.20.5)
 
-  packages/clis:
+  packages/cli:
     dependencies:
-      '@seedcord/plugins':
-        specifier: workspace:*
-        version: link:../plugins
-      '@seedcord/types':
-        specifier: workspace:^
-        version: link:../types
-      discord.js:
-        specifier: ^14.21.0
-        version: 14.21.0
-      envapt:
-        specifier: ^2.2.9
-        version: 2.2.9
-      mongoose:
-        specifier: ^8.17.1
-        version: 8.17.1
-      reflect-metadata:
-        specifier: ^0.2.2
-        version: 0.2.2
-      seedcord:
-        specifier: workspace:^
-        version: link:../seedcord
+      '@clack/prompts':
+        specifier: ^0.11.0
+        version: 0.11.0
+      '@eslint/js':
+        specifier: ^9.33.0
+        version: 9.33.0
+      chalk:
+        specifier: ^5.5.0
+        version: 5.5.0
+      eslint:
+        specifier: ^9.33.0
+        version: 9.33.0(jiti@2.5.1)
+      lodash.merge:
+        specifier: ^4.6.2
+        version: 4.6.2
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
+      typescript-eslint:
+        specifier: ^8.39.1
+        version: 8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
     devDependencies:
       '@seedcord/eslint-config':
         specifier: workspace:^
@@ -127,6 +121,12 @@ importers:
       '@seedcord/tsup-config':
         specifier: workspace:^
         version: link:../tsup-config
+      '@types/lodash.merge':
+        specifier: ^4.6.9
+        version: 4.6.9
+      tsx:
+        specifier: ^4.20.4
+        version: 4.20.4
 
   packages/eslint-config:
     dependencies:
@@ -216,46 +216,6 @@ importers:
       '@seedcord/tsup-config':
         specifier: workspace:^
         version: link:../tsup-config
-
-  packages/mocktest:
-    dependencies:
-      '@clack/prompts':
-        specifier: ^0.11.0
-        version: 0.11.0
-      '@eslint/js':
-        specifier: ^9.33.0
-        version: 9.33.0
-      chalk:
-        specifier: ^5.5.0
-        version: 5.5.0
-      eslint:
-        specifier: ^9.33.0
-        version: 9.33.0(jiti@2.5.1)
-      lodash.merge:
-        specifier: ^4.6.2
-        version: 4.6.2
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-      typescript-eslint:
-        specifier: ^8.39.1
-        version: 8.39.1(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
-    devDependencies:
-      '@seedcord/eslint-config':
-        specifier: workspace:^
-        version: link:../eslint-config
-      '@seedcord/tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@seedcord/tsup-config':
-        specifier: workspace:^
-        version: link:../tsup-config
-      '@types/lodash.merge':
-        specifier: ^4.6.9
-        version: 4.6.9
-      tsx:
-        specifier: ^4.20.4
-        version: 4.20.4
 
   packages/plugins:
     dependencies:
@@ -519,12 +479,6 @@ packages:
 
   '@changesets/write@0.4.0':
     resolution: {integrity: sha512-CdTLvIOPiCNuH71pyDu3rA+Q0n65cmAbXnwWH84rKGiFumFzkmHNT8KHTMEchcxN+Kl8I54xGUhJ7l3E7X396Q==}
-
-  '@clack/core@0.5.0':
-    resolution: {integrity: sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow==}
-
-  '@clack/prompts@0.11.0':
-    resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
 
   '@clack/core@0.5.0':
     resolution: {integrity: sha512-p3y0FIOwaYRUPRcMO7+dlmLh8PSRcrjuTndsiA0WAFbWES0mLZlrjVoBRZ9DzkPFJZG6KGkJmoEAY0ZcVWTkow==}
@@ -2944,9 +2898,6 @@ packages:
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
-  sisteransi@1.0.5:
-    resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
-
   slash@3.0.0:
     resolution: {integrity: sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==}
     engines: {node: '>=8'}
@@ -3606,17 +3557,6 @@ snapshots:
       fs-extra: 7.0.1
       human-id: 4.1.1
       prettier: 2.8.8
-
-  '@clack/core@0.5.0':
-    dependencies:
-      picocolors: 1.1.1
-      sisteransi: 1.0.5
-
-  '@clack/prompts@0.11.0':
-    dependencies:
-      '@clack/core': 0.5.0
-      picocolors: 1.1.1
-      sisteransi: 1.0.5
 
   '@clack/core@0.5.0':
     dependencies:
@@ -6126,8 +6066,6 @@ snapshots:
   simple-update-notifier@2.0.0:
     dependencies:
       semver: 7.7.2
-
-  sisteransi@1.0.5: {}
 
   sisteransi@1.0.5: {}
 
