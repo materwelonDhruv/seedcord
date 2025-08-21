@@ -28,11 +28,8 @@
   },
   "dependencies": {
     "@clack/prompts": "^0.11.0",
-    "@eslint/js": "^9.33.0",
     "chalk": "^5.5.0",
-    "eslint": "^9.33.0",
-    "lodash.merge": "^4.6.2",
-    "typescript-eslint": "^8.39.1"
+    "lodash.merge": "^4.6.2"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
