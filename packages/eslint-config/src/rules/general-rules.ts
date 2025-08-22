@@ -1,5 +1,3 @@
-/* eslint-disable no-magic-numbers */
-
 import { Linter } from 'eslint';
 
 // General JavaScript rules

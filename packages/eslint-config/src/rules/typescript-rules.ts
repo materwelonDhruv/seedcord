@@ -118,5 +118,6 @@ export const TYPESCRIPT_RULES: Linter.RulesRecord = {
   '@typescript-eslint/no-extraneous-class': 'off',
   '@typescript-eslint/no-useless-constructor': 'off',
   '@typescript-eslint/no-empty-function': 'off',
-  '@typescript-eslint/unified-signatures': 'warn'
+  '@typescript-eslint/unified-signatures': 'warn',
+  '@typescript-eslint/no-empty-object-type': 'off'
 };

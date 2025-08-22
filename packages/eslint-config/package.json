@@ -3,8 +3,6 @@
   "type": "module",
   "version": "1.0.2",
   "description": "ESlint config for Seedcord projects",
-  "main": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
   "repository": {
     "type": "git",
     "url": "https://github.com/materwelondhruv/seedcord.git",
