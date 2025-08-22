@@ -12,26 +12,14 @@
   },
   "exports": {
     ".": {
-      "import": "./create-config.mjs",
-      "types": "./create-config.d.mts"
-    },
-    "./constants": {
-      "import": "./constants.mjs"
-    },
-    "./rules/general": {
-      "import": "./rules/general-rules.mjs"
-    },
-    "./rules/typescript": {
-      "import": "./rules/typescript-rules.mjs"
-    },
-    "./rules/import": {
-      "import": "./rules/import-rules.mjs"
-    },
-    "./rules/prettier": {
-      "import": "./rules/prettier-rules.mjs"
-    },
-    "./rules/tsdoc": {
-      "import": "./rules/tsdoc-rules.mjs"
+      "import": {
+        "types": "./create-config.d.mts",
+        "default": "./create-config.mjs"
+      },
+      "require": {
+        "types": "./create-config.d.cts",
+        "default": "./create-config.cjs"
+      }
     }
   },
   "files": [
@@ -58,7 +46,7 @@
   "peerDependencies": {
     "typescript": "^5.9.2"
   },
-  "devDependencies": {
+  "dependencies": {
     "@eslint/eslintrc": "^3.3.1",
     "@eslint/js": "^9.33.0",
     "@types/lodash.merge": "^4.6.9",
