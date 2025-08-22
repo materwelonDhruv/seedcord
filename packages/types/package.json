@@ -39,10 +39,10 @@
     "coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "catalog:peer"
   },
   "dependencies": {
-    "discord.js": "^14.21.0"
+    "discord.js": "catalog:deps"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",

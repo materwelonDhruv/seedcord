@@ -31,15 +31,15 @@
     "coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "catalog:peer"
   },
   "dependencies": {
     "@seedcord/plugins": "workspace:*",
     "@seedcord/types": "workspace:^",
-    "discord.js": "^14.21.0",
-    "envapt": "^2.2.9",
-    "mongoose": "^8.17.1",
-    "reflect-metadata": "^0.2.2",
+    "discord.js": "catalog:deps",
+    "envapt": "catalog:deps",
+    "mongoose": "catalog:deps",
+    "reflect-metadata": "catalog:deps",
     "seedcord": "workspace:^"
   },
   "devDependencies": {

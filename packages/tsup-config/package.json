@@ -34,14 +34,10 @@
     "test:watch": "vitest dev",
     "coverage": "vitest run --coverage"
   },
-  "peerDependencies": {
-    "tsup": "^8.0.0",
-    "typescript": "^5.9.2"
-  },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
     "@seedcord/tsconfig": "workspace:^",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "catalog:peer"
   }
 }

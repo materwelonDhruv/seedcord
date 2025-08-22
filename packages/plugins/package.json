@@ -39,14 +39,14 @@
     "coverage": "vitest run --coverage"
   },
   "peerDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "catalog:peer"
   },
   "dependencies": {
     "@seedcord/types": "workspace:^",
     "seedcord": "workspace:^",
-    "chalk": "^5.5.0",
-    "mongoose": "^8.17.1",
-    "reflect-metadata": "^0.2.2"
+    "chalk": "catalog:deps",
+    "mongoose": "catalog:deps",
+    "reflect-metadata": "catalog:deps"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",
