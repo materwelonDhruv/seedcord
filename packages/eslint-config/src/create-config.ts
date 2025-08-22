@@ -15,12 +15,18 @@ import {
   TEST_FILES,
   TS_FILES,
   TYPESCRIPT_LANGUAGE_OPTIONS
-} from './constants.mjs';
-import { GENERAL_RULES, OVERRIDE_RULES, SECURITY_RULES } from './rules/general-rules.mjs';
-import { IMPORT_RULES, IMPORT_SETTINGS } from './rules/import-rules.mjs';
-import { PRETTIER_RULES } from './rules/prettier-rules.mjs';
-import { TSDOC_RULES, DOCUMENTATION_RULES } from './rules/tsdoc-rules.mjs';
-import { TYPESCRIPT_RULES } from './rules/typescript-rules.mjs';
+} from './constants';
+import {
+  DOCUMENTATION_RULES,
+  GENERAL_RULES,
+  IMPORT_RULES,
+  IMPORT_SETTINGS,
+  OVERRIDE_RULES,
+  PRETTIER_RULES,
+  SECURITY_RULES,
+  TSDOC_RULES,
+  TYPESCRIPT_RULES
+} from './rules';
 
 /**
  * @typedef {import('typescript-eslint').Config} Config
@@ -111,7 +117,7 @@ export default function createConfig(options = {}) {
       plugins: {
         tsdoc: eslintTsdoc
       },
-      rules: merge({}, TYPESCRIPT_RULES, TSDOC_RULES)
+      rules: merge({}, TYPESCRIPT_RULES, TSDOC_RULES, DOCUMENTATION_RULES)
     },
 
     // Additional rules configuration

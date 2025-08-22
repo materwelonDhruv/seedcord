@@ -132,6 +132,10 @@ importers:
       typescript-eslint:
         specifier: ^8.40.0
         version: 8.40.0(eslint@9.33.0(jiti@2.5.1))(typescript@5.9.2)
+    devDependencies:
+      '@types/eslint-plugin-security':
+        specifier: ^3.0.0
+        version: 3.0.0
 
   packages/mock:
     dependencies:
@@ -1067,6 +1071,9 @@ packages:
 
   '@types/deep-eql@4.0.2':
     resolution: {integrity: sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw==}
+
+  '@types/eslint-plugin-security@3.0.0':
+    resolution: {integrity: sha512-CpJ7dhqhfURdYHAlaQM4vfl75lDYnGl5+EZKoO/fW0hEREZa9+EBn1g10XLDM6n5yJSuTAPn5afkM4vNzhlyFQ==}
 
   '@types/eslint@9.6.1':
     resolution: {integrity: sha512-FXx2pKgId/WyYo2jXw63kk7/+TY7u7AziEJxJAnSFzHlqTAS3Ync6SvgYAN/k4/PQpnnVuzoMuVnByKK2qp0ag==}
@@ -4132,11 +4139,14 @@ snapshots:
 
   '@types/deep-eql@4.0.2': {}
 
+  '@types/eslint-plugin-security@3.0.0':
+    dependencies:
+      '@types/eslint': 9.6.1
+
   '@types/eslint@9.6.1':
     dependencies:
       '@types/estree': 1.0.8
       '@types/json-schema': 7.0.15
-    optional: true
 
   '@types/estree@1.0.8': {}
 
