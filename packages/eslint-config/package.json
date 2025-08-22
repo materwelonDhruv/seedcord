@@ -3,8 +3,8 @@
   "type": "module",
   "version": "1.0.2",
   "description": "ESlint config for Seedcord projects",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "repository": {
     "type": "git",
     "url": "https://github.com/materwelondhruv/seedcord.git",
@@ -13,27 +13,24 @@
   "exports": {
     ".": {
       "import": {
-        "types": "./create-config.d.mts",
-        "default": "./create-config.mjs"
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
       },
       "require": {
-        "types": "./create-config.d.cts",
-        "default": "./create-config.cjs"
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
       }
     }
   },
   "files": [
     "dist",
-    "create-config.mjs",
-    "create-config.d.mts",
-    "constants.mjs",
-    "prettier.mjs",
-    "prettier.d.mts",
-    "rules/*.mjs"
+    "package.json",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
-    "build": "echo 'Already built as .mjs files'",
-    "clean": "echo 'No build artifacts to clean'",
+    "build": "tsup && cp dist/index.d.cts dist/index.d.mts",
+    "clean": "rm -rf dist",
     "lint": "eslint '*.{mjs,ts}' --cache",
     "lint:fix": "eslint '*.{mjs,ts}' --fix --cache",
     "fmt": "prettier --write '*.{mjs,ts,json,md}' --cache",
@@ -63,6 +60,7 @@
     "typescript-eslint": "^8.40.0"
   },
   "devDependencies": {
-    "@types/eslint-plugin-security": "^3.0.0"
+    "@types/eslint-plugin-security": "^3.0.0",
+    "tsup": "^8.5.0"
   }
 }
