@@ -152,8 +152,7 @@ async function spawnProcess(command: string, args: string[], options: SpawnSyncO
     commandProcess.on('error', (err) => reject(err));
     commandProcess.on('close', (code) => {
       if (code === 0) resolve();
-      // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-      else reject(commandProcess.stdout);
+      else reject(new Error(`${command} exited with ${code} code, output: ${commandProcess.stdout?.read()}`));
     });
   });
 }
