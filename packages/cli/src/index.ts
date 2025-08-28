@@ -1,7 +1,8 @@
+import * as p from '@clack/prompts';
 import { program } from '@commander-js/extra-typings';
 
 import { availableComponents, createComponent } from './create';
-import { scaffoldProject } from './scaffold';
+import { scaffoldQuestions, scaffoldProject } from './scaffold';
 import { colors } from './utils';
 
 program
@@ -13,9 +14,21 @@ program
 program
   .command('scaffold')
   .description('scaffold a seedcord project')
-  // TODO: add cli options
-  .action(async () => {
-    await scaffoldProject();
+  .option('-t --tools [TOOLS]', "tools to install, separated by comma, example: 'scaffold -t prettier'", "prettier")
+  .option('-i --install [BOOLEAN]', 'install deps automatically', undefined)
+  .option('-p --path [PATH]', 'path to install', '')
+  .addHelpText('after', 'when not specifying options, interactive questions will be asked')
+  .action(async (args) => {
+    if (args.path) {
+      await scaffoldProject(
+        {
+          path: args.path.toString(),
+          projectTools: args.tools.toString().split(','),
+          installDeps: Boolean(args.install)
+        },
+        p
+      );
+    } else await scaffoldQuestions();
   });
 
 program
