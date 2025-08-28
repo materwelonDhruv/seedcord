@@ -19,8 +19,8 @@ const packageManager = fetchPackageManager() ?? 'npm';
 
 const prompts: p.PromptGroup<{
   path: string | symbol;
-  tools: string[] | symbol;
-  install: boolean | symbol;
+  projectTools: string[] | symbol;
+  installDeps: boolean | symbol;
 }> = {
   path: () =>
     p.text({
@@ -33,7 +33,7 @@ const prompts: p.PromptGroup<{
         return undefined;
       }
     }),
-  tools: () =>
+  projectTools: () =>
     p.multiselect({
       message: 'Select additional tools.',
       initialValues: ['prettier'],
@@ -43,7 +43,7 @@ const prompts: p.PromptGroup<{
         { value: 'prettier', label: 'Prettier', hint: 'recommended' }
       ]
     }),
-  install: () =>
+  installDeps: () =>
     p.confirm({
       message: `Install dependencies with ${packageManager}?`,
       initialValue: false
@@ -62,7 +62,7 @@ const additionalTools: Record<string, Record<string, unknown>> = {
   }
 };
 
-export async function scaffoldProject(): Promise<void> {
+export async function scaffoldQuestions(): Promise<void> {
   p.updateSettings({
     aliases: {
       w: 'up',
@@ -80,24 +80,30 @@ export async function scaffoldProject(): Promise<void> {
       process.exit(0);
     }
   });
+  await scaffoldProject(project, p);
+  const nextSteps =
+    `cd ${project.path}\n` +
+    `${project.installDeps ? '' : `${packageManager} install\n`}` +
+    `fill .env.example and rename it to .env\n` +
+    `${packageManager} dev`;
+  p.note(nextSteps, 'Next steps.');
+  p.outro(`Problems? ${colors.underline(colors.cyan('https://github.com/materwelondhruv/seedcord/issues'))}`);
+}
+
+export async function scaffoldProject(
+  project: { path: string; projectTools: string[]; installDeps: boolean },
+  clack: typeof p
+): Promise<void> {
+  console.log(project.path + " " + project.installDeps + " " + project.projectTools)
   const root = join(process.cwd(), formatDir(project.path));
   const templateDir = resolve(fileURLToPath(import.meta.url), '../../template');
 
-  await extractBaseTemplate(templateDir, root, p.spinner());
+  await extractBaseTemplate(templateDir, root, clack.spinner());
 
-  const tools = project.tools;
+  const tools = project.projectTools || [];
 
-  if (tools.length > 0) await extractTools(root, tools, p.spinner());
-  if (project.install) await installPackages(root, packageManager, p.spinner());
-
-  const nextSteps =
-    `cd ${project.path}\n` +
-    `${project.install ? '' : `${packageManager} install\n`}` +
-    `fill .env.example and rename it to .env\n` +
-    `${packageManager} dev`;
-
-  p.note(nextSteps, 'Next steps.');
-  p.outro(`Problems? ${colors.underline(colors.cyan('https://github.com/materwelondhruv/seedcord/issues'))}`);
+  if (tools.length > 0) await extractTools(root, tools, clack.spinner());
+  if (project.installDeps) await installPackages(root, packageManager, clack.spinner());
 }
 
 function fetchPackageManager(): string | undefined {
