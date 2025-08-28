@@ -94,7 +94,6 @@ export async function scaffoldProject(
   project: { path: string; projectTools: string[]; installDeps: boolean },
   clack: typeof p
 ): Promise<void> {
-  console.log(project.path + " " + project.installDeps + " " + project.projectTools)
   const root = join(process.cwd(), formatDir(project.path));
   const templateDir = resolve(fileURLToPath(import.meta.url), '../../template');
 
