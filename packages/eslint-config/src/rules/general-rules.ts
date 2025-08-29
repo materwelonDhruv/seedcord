@@ -1,4 +1,4 @@
-import { Linter } from 'eslint';
+import type { Linter } from 'eslint';
 
 // General JavaScript rules
 export const GENERAL_RULES: Linter.RulesRecord = {

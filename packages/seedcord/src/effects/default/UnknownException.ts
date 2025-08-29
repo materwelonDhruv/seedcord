@@ -4,7 +4,8 @@ import { BuilderComponent } from '../../interfaces/Components';
 import { Globals } from '../../library/Globals';
 import { RegisterEffect } from '../decorators/RegisterEffect';
 import { WebhookLog } from '../interfaces/abstracts/WebhookLog';
-import { AllEffects } from '../types/Effects';
+
+import type { AllEffects } from '../types/Effects';
 
 @RegisterEffect('unknownException')
 export class UnknownException extends WebhookLog<'unknownException'> {

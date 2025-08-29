@@ -1,5 +1,6 @@
-import { ColorResolvable } from 'discord.js';
 import { Envapt, Envapter } from 'envapt';
+
+import type { ColorResolvable } from 'discord.js';
 
 /**
  * Global configuration variables and environment settings

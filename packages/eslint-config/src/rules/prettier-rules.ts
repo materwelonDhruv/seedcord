@@ -1,6 +1,6 @@
 // Prettier configuration
 
-import { Linter } from 'eslint';
+import type { Linter } from 'eslint';
 
 // Make sure these match .prettierrc at root
 export const PRETTIER_CONFIG = {

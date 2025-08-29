@@ -1,4 +1,4 @@
-import { Linter } from 'eslint';
+import type { Linter } from 'eslint';
 
 // TypeScript-specific rules
 export const TYPESCRIPT_RULES: Linter.RulesRecord = {

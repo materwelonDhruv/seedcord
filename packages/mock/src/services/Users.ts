@@ -1,6 +1,7 @@
 import { BaseService, DatabaseModel, DatabaseService } from '@seedcord/plugins';
-import { IDocument } from '@seedcord/types';
 import mongoose from 'mongoose';
+
+import type { IDocument } from '@seedcord/types';
 
 interface IUser extends IDocument {
   username: string;

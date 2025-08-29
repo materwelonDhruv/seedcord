@@ -1,4 +1,4 @@
-import { Linter } from 'eslint';
+import type { Linter } from 'eslint';
 
 // TSDoc rules for enforcing documentation standards
 export const TSDOC_RULES = {

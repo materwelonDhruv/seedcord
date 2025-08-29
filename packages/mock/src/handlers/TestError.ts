@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
+import { type ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { Catchable, InteractionHandler, SlashRoute } from 'seedcord';
 
 @SlashRoute('throw')

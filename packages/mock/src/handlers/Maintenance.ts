@@ -1,4 +1,4 @@
-import { ChatInputCommandInteraction, MessageFlags, TextChannel } from 'discord.js';
+import { type ChatInputCommandInteraction, MessageFlags, type TextChannel } from 'discord.js';
 import { Catchable, SlashRoute, InteractionHandler } from 'seedcord';
 
 import { MaintenanceEmbed } from '../components/bundles/Maintenance';

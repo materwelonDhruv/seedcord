@@ -1,4 +1,4 @@
-import { Linter } from 'eslint';
+import type { Linter } from 'eslint';
 
 // Import plugin configuration
 export const IMPORT_SETTINGS = {
