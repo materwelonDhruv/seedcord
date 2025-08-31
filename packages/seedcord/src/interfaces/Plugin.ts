@@ -87,7 +87,7 @@ export class Pluggable {
    * @throws An {@link Error} When called after initialization or if key already exists
    * @example
    * ```typescript
-   * seedcord.attach('db', Mongo, StartupPhase.Configuration, { uri: 'mongodb://...', dbName: 'seedcord' })
+   * seedcord.attach('db', Mongo, StartupPhase.Configuration, { uri: 'mongodb://...', name: 'seedcord', dir: ... })
    * ```
    */
   public attach<Key extends string, Ctor extends PluginCtor>(

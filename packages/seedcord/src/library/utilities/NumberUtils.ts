@@ -80,4 +80,18 @@ export class NumberUtils {
     const max = Math.pow(10, digits) - 1;
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
+
+  /**
+   * Converts hexcode to number
+   *
+   * @param hex - The hex code to convert.
+   * @returns The converted number.
+   */
+  public static hexToNumber(hex: unknown): number {
+    const converted = parseInt(String(hex).replace(/^#/, ''), 16);
+
+    if (Number.isNaN(converted)) return 0;
+
+    return converted;
+  }
 }

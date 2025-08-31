@@ -2,17 +2,23 @@ import {
   ActionRowBuilder,
   ButtonBuilder,
   ChannelSelectMenuBuilder,
+  ContainerBuilder,
   ContextMenuCommandBuilder,
   EmbedBuilder,
+  FileBuilder,
   InteractionContextType,
+  MediaGalleryBuilder,
   MentionableSelectMenuBuilder,
   ModalBuilder,
   RoleSelectMenuBuilder,
+  SectionBuilder,
+  SeparatorBuilder,
   SlashCommandBuilder,
   SlashCommandSubcommandBuilder,
   SlashCommandSubcommandGroupBuilder,
   StringSelectMenuBuilder,
   StringSelectMenuOptionBuilder,
+  TextDisplayBuilder,
   TextInputBuilder,
   UserSelectMenuBuilder
 } from 'discord.js';
@@ -34,7 +40,13 @@ const BuilderTypes = {
   modal: ModalBuilder,
   context_menu: ContextMenuCommandBuilder,
   subcommand: SlashCommandSubcommandBuilder,
-  group: SlashCommandSubcommandGroupBuilder
+  group: SlashCommandSubcommandGroupBuilder,
+  container: ContainerBuilder,
+  text_display: TextDisplayBuilder,
+  file: FileBuilder,
+  media: MediaGalleryBuilder,
+  section: SectionBuilder,
+  separator: SeparatorBuilder
 };
 
 const RowTypes: {
