@@ -28,6 +28,8 @@ export class EmojiInjector {
         configEmojis[key] = `<${emoji.identifier}>`;
 
         foundCount++;
+
+        this.logger.debug(`${chalk.bold.green('Found')}: ${chalk.magenta.bold(emojiName)} (${emoji.id})`);
       }
     });
 
