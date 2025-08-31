@@ -210,6 +210,9 @@ importers:
       '@seedcord/types':
         specifier: workspace:^
         version: link:../types
+      '@seedcord/utils':
+        specifier: workspace:*
+        version: link:../utils
       chalk:
         specifier: catalog:deps
         version: 5.6.0
@@ -268,6 +271,28 @@ importers:
 
   packages/types:
     dependencies:
+      discord.js:
+        specifier: catalog:deps
+        version: 14.22.1
+      typescript:
+        specifier: catalog:peer
+        version: 5.9.2
+    devDependencies:
+      '@seedcord/eslint-config':
+        specifier: workspace:^
+        version: link:../eslint-config
+      '@seedcord/tsconfig':
+        specifier: workspace:^
+        version: link:../tsconfig
+      '@seedcord/tsup-config':
+        specifier: workspace:^
+        version: link:../tsup-config
+
+  packages/utils:
+    dependencies:
+      '@seedcord/types':
+        specifier: workspace:^
+        version: link:../types
       discord.js:
         specifier: catalog:deps
         version: 14.22.1

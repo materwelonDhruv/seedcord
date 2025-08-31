@@ -87,10 +87,20 @@ export class NumberUtils {
    * @param hex - The hex code to convert.
    * @returns The converted number.
    */
-  public static hexToNumber(hex: unknown): number {
-    const converted = parseInt(String(hex).replace(/^#/, ''), 16);
+  public static hexToNumber(hex: string): number {
+    if (typeof hex !== 'string') {
+      throw new TypeError('hexToNumber expects a string input');
+    }
 
-    if (Number.isNaN(converted)) return 0;
+    const normalized = hex.replace(/^#/, '');
+    if (!/^[0-9a-fA-F]+$/.test(normalized)) {
+      throw new Error('Invalid hex string');
+    }
+
+    const converted = parseInt(normalized, 16);
+    if (Number.isNaN(converted)) {
+      throw new Error('Invalid hex string');
+    }
 
     return converted;
   }
