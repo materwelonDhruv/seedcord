@@ -1,6 +1,5 @@
+import { Logger } from '@seedcord/services';
 import chalk from 'chalk';
-
-import { Logger } from '../../services/Logger';
 
 import type { Core } from '../../interfaces/Core';
 

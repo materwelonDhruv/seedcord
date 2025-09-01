@@ -46,6 +46,7 @@
     "seedcord": "workspace:^",
     "chalk": "catalog:deps",
     "mongoose": "catalog:deps",
+    "envapt": "catalog:deps",
     "reflect-metadata": "catalog:deps"
   },
   "devDependencies": {

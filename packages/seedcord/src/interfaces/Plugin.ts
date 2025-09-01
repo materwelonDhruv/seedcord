@@ -1,9 +1,7 @@
 import chalk from 'chalk';
 
 import type { Core } from './Core';
-import type { CoordinatedShutdown } from '../services/Lifecycle/CoordinatedShutdown';
-import type { CoordinatedStartup, StartupPhase } from '../services/Lifecycle/CoordinatedStartup';
-import type { Logger } from '../services/Logger';
+import type { CoordinatedShutdown, CoordinatedStartup, StartupPhase, Logger } from '@seedcord/services';
 import type { Tail } from '@seedcord/types';
 
 /** Interface for objects that can be initialized asynchronously */

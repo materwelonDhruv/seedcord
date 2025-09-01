@@ -22,10 +22,9 @@ import {
   TextInputBuilder,
   UserSelectMenuBuilder
 } from 'discord.js';
+import { Envapt } from 'envapt';
 
-import { Globals } from '../library/Globals';
-
-import type { ModalActionRowComponentBuilder } from 'discord.js';
+import type { ColorResolvable, ModalActionRowComponentBuilder } from 'discord.js';
 
 const BuilderTypes = {
   command: SlashCommandBuilder,
@@ -144,12 +143,15 @@ abstract class BaseComponent<TComponent> {
 export abstract class BuilderComponent<BuilderKey extends BuilderType> extends BaseComponent<
   InstantiatedBuilder<BuilderKey>
 > {
+  @Envapt<ColorResolvable>('DEFAULT_BOT_COLOR', { fallback: 'Default' })
+  declare private readonly botColor: ColorResolvable;
+
   protected constructor(type: BuilderKey) {
     const ComponentClass = BuilderTypes[type] as unknown;
     super(ComponentClass as new () => InstantiatedBuilder<BuilderKey>);
 
     // Override in builders
-    if (this.instance instanceof EmbedBuilder) this.instance.setColor(Globals.botColor);
+    if (this.instance instanceof EmbedBuilder) this.instance.setColor(this.botColor);
 
     // Override in builders
     if (this.instance instanceof SlashCommandBuilder || this.instance instanceof ContextMenuCommandBuilder) {

@@ -1,12 +1,12 @@
 {
-  "name": "@seedcord/utils",
+  "name": "@seedcord/services",
   "type": "module",
   "version": "0.0.0",
-  "description": "Utility functions for Seedcord packages",
+  "description": "Services for Seedcord packages",
   "repository": {
     "type": "git",
     "url": "https://github.com/materwelondhruv/seedcord.git",
-    "directory": "packages/utils"
+    "directory": "packages/services"
   },
   "exports": {
     ".": {
@@ -43,8 +43,10 @@
   },
   "dependencies": {
     "@seedcord/types": "workspace:^",
-    "@seedcord/services": "workspace:^",
-    "discord.js": "catalog:deps"
+    "discord.js": "catalog:deps",
+    "chalk": "catalog:deps",
+    "envapt": "catalog:deps",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "@seedcord/eslint-config": "workspace:^",

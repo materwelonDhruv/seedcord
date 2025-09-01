@@ -1,6 +1,7 @@
 import { readdir } from 'node:fs/promises';
 import * as path from 'node:path';
 
+import type { Logger } from '@seedcord/services';
 import type * as fs from 'node:fs';
 /**
  * Determines if a directory entry is a TypeScript or JavaScript file.
@@ -26,15 +27,15 @@ export function isTsOrJsFile(entry: fs.Dirent): boolean {
  */
 export async function traverseDirectory(
   dir: string,
-  callback: (fullPath: string, relativePath: string, imported: Record<string, unknown>) => Promise<void> | void
+  callback: (fullPath: string, relativePath: string, imported: Record<string, unknown>) => Promise<void> | void,
+  logger: Logger
 ): Promise<void> {
   let entries: fs.Dirent[];
 
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch {
-    // TODO: Move Logger out of seedcord so it can be used here. Or, pass an instance of Logger. Create an interface in the types package so we can add a param here
-    // Logger.Error('Failed to read directory', dir);
+    logger.error('Failed to read directory', dir);
     entries = [];
   }
 
@@ -43,7 +44,7 @@ export async function traverseDirectory(
     const relativePath = path.relative(process.cwd(), fullPath);
 
     if (entry.isDirectory()) {
-      await traverseDirectory(fullPath, callback);
+      await traverseDirectory(fullPath, callback, logger);
     } else if (isTsOrJsFile(entry)) {
       const imported = (await import(fullPath)) as Record<string, unknown>;
       await callback(fullPath, relativePath, imported);
