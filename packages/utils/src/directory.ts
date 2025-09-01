@@ -35,7 +35,7 @@ export async function traverseDirectory(
   try {
     entries = await readdir(dir, { withFileTypes: true });
   } catch {
-    logger.error('Failed to read directory', dir);
+    logger.error('Failed to read this directory');
     entries = [];
   }
 

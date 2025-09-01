@@ -50,14 +50,13 @@ export class HealthCheck {
       });
 
       this.server.on('error', reject);
+      this.server.once('listening', () => resolve());
 
       this.server.listen(this.port, () => {
         this.logger.info(
           `${chalk.green.bold('✓')} Health check server listening on ${chalk.cyan(`http://localhost:${this.port}${this.path}`)}`
         );
       });
-
-      this.server.once('listening', () => resolve());
     });
   }
 
@@ -70,11 +69,11 @@ export class HealthCheck {
     if (this.server !== undefined) {
       const server = this.server;
       return new Promise((resolve) => {
+        server.once('close', () => resolve());
+
         server.close(() => {
           this.logger.info(chalk.bold.red('Health check server stopped'));
         });
-
-        server.once('close', () => resolve());
       });
     }
 
