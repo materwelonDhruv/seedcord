@@ -3,7 +3,11 @@
   "extends": "../tsconfig/node.json",
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "commander": ["./node_modules/@commander-js/extra-typings"]
+    }
   },
   "include": ["src/**/*.ts", "tests/**/*.ts", "tsup.config.ts"],
   "exclude": ["node_modules", "dist"]

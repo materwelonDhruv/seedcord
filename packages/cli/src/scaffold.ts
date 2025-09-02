@@ -99,6 +99,7 @@ export async function scaffoldProject(
 
   await extractBaseTemplate(templateDir, root, clack.spinner());
 
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   const tools = project.projectTools || [];
 
   if (tools.length > 0) await extractTools(root, tools, clack.spinner());
