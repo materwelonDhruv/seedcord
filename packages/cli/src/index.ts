@@ -1,5 +1,5 @@
 import * as p from '@clack/prompts';
-import { program } from '@commander-js/extra-typings';
+import { program } from 'commander';
 
 import { availableComponents, createComponent } from './create';
 import { scaffoldQuestions, scaffoldProject } from './scaffold';
@@ -14,7 +14,7 @@ program
 program
   .command('scaffold')
   .description('scaffold a seedcord project')
-  .option('-t --tools [TOOLS]', "tools to install, separated by comma, example: 'scaffold -t prettier'", "prettier")
+  .option('-t --tools [TOOLS]', "tools to install, separated by comma, example: 'scaffold -t prettier'", 'prettier')
   .option('-i --install [BOOLEAN]', 'install deps automatically', undefined)
   .option('-p --path [PATH]', 'path to install', '')
   .addHelpText('after', 'when not specifying options, interactive questions will be asked')
