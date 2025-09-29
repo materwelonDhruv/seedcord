@@ -48,7 +48,6 @@
     "chalk": "catalog:deps",
     "discord.js": "catalog:deps",
     "envapt": "catalog:deps",
-    "mongoose": "catalog:deps",
     "reflect-metadata": "catalog:deps"
   },
   "devDependencies": {
