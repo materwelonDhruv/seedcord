@@ -61,7 +61,7 @@ export class HealthCheck {
         resolve();
       });
 
-      if (this.host && this.host.length > 0) {
+      if (this.host) {
         this.logger.debug(`Binding health check server to ${this.host}`);
         this.server.listen(this.port, this.host);
       } else {
