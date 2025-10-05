@@ -17,6 +17,8 @@ pkg:tsconfig:
   - 'packages/tsconfig/**'
 pkg:tsup-config:
   - 'packages/tsup-config/**'
+pkg:api-docs:
+  - 'packages/api-docs/**'
 area:docs:
   - 'docs/**'
   - '**/*.md'

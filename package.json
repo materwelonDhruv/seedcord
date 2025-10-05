@@ -33,7 +33,7 @@
     "local:test:seedcord": "cd packages/seedcord && vitest",
     "local:test:mock": "cd packages/mock && vitest",
     "bump:deps": "for dir in packages/*/; do echo \"Updating $dir...\"; (cd \"$dir\" && pnpm update --latest); done",
-    "docs:extract": "tsx scripts/generate-api-docs.ts"
+    "docs:extract": "pnpm --filter @seedcord/api-docs run extract"
   },
   "keywords": [
     "discord",
@@ -63,7 +63,6 @@
     "tsup": "^8.5.0",
     "tsx": "^4.20.5",
     "turbo": "^2.5.6",
-    "typedoc": "^0.28.13",
     "typescript": "catalog:peer",
     "vitest": "^3.2.4"
   },
