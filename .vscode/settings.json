@@ -34,8 +34,10 @@
   "files.exclude": {
     "**/node_modules": true,
     "**/dist": true,
-    "**/.eslintcache": true,
-    "**/logs": true
+    "**/.turbo": true,
+    "**/coverage": true,
+    "**/.eslintcache": true
+    // "**/logs": true
   },
 
   // Terminal
@@ -75,5 +77,16 @@
   "[markdown]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "files.trimTrailingWhitespace": false
+  },
+
+  // Vitest configuration
+  "vitest.shellType": "terminal",
+
+  // Markdownlint configuration
+  "markdownlint.config": {
+    "MD033": false,
+    "MD013": false,
+    "MD041": false,
+    "MD024": false
   }
 }
