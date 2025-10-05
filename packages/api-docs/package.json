@@ -15,7 +15,10 @@
     "lint:fix": "eslint 'src/**/*.ts' --cache --fix",
     "fmt": "prettier --write 'src/**/*.{ts,md,json}' --cache",
     "fmt:check": "prettier --check 'src/**/*.{ts,md,json}' --cache",
-    "tc": "tsc --noEmit"
+    "tc": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest dev",
+    "coverage": "vitest run --coverage"
   },
   "files": [
     "dist",
