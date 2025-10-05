@@ -24,6 +24,10 @@ jobs:
     name: Apply PR labels
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Apply labels from config
         uses: actions/labeler@v5
         with:
@@ -35,6 +39,10 @@ jobs:
     name: Apply issue labels
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Apply labels from config
         uses: actions/labeler@v5
         with:
