@@ -9,8 +9,8 @@ export default function Home(): ReactElement {
     return (
         <main id="main-content" className="bg-[color-mix(in_srgb,var(--bg)_94%,#050507_6%)]">
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 md:px-6 lg:py-24">
-                <section className="flex flex-wrap items-center justify-center gap-12 text-center sm:text-left lg:justify-between">
-                    <div className="flex min-w-0 max-w-xl flex-1 flex-col items-center gap-6 sm:items-start">
+                <section className="flex flex-wrap items-start justify-start gap-12 text-left lg:justify-between">
+                    <div className="flex min-w-0 max-w-xl flex-1 flex-col items-start gap-6">
                         <h1 className="text-4xl font-black tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl">
                             A modern developer portal for the Seedcord ecosystem.
                         </h1>
@@ -18,7 +18,7 @@ export default function Home(): ReactElement {
                             Seedcord is an opinionated Discord bot framework built on top of Discord.js. You handle the
                             logic, we orchestrate the rest.
                         </p>
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="flex flex-row flex-wrap items-center gap-3">
                             <Link
                                 href="/docs"
                                 className="inline-flex items-center justify-center rounded-2xl bg-[var(--accent-a)] px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-a)_88%,black)] focus-visible:outline-2 focus-visible:outline-[var(--accent-a)] focus-visible:outline-offset-2"
