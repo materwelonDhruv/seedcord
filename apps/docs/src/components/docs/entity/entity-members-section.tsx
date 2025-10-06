@@ -37,9 +37,6 @@ function MemberList({
                 >
                     {title}
                 </h2>
-                <span className="rounded-full border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-subtle">
-                    {items.length} items
-                </span>
             </div>
             <ul className="space-y-2">
                 {items.map((item) => (
