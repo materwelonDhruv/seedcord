@@ -18,7 +18,7 @@ interface CommandHeaderProps {
 export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: CommandHeaderProps): ReactElement {
     return (
         <div className="border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2 rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-2 transition focus-within:border-[color-mix(in_srgb,var(--accent-a)_42%,var(--border))] focus-within:bg-[color-mix(in_srgb,var(--surface)_92%,var(--accent-a)_6%)]">
+            <div className="flex items-center gap-2 rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 transition focus-within:border-[color-mix(in_srgb,var(--accent-b)_35%,var(--border))] focus-within:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-b)_4%)]">
                 <Icon icon={Search} size={16} className="text-subtle" aria-hidden />
                 <Command.Input
                     ref={inputRef}
@@ -41,7 +41,7 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
                     type="button"
                     onClick={onClose}
                     aria-label="Close command palette"
-                    className="hidden items-center gap-1 rounded-md border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-subtle transition hover:text-[var(--text)] sm:inline-flex"
+                    className="hidden items-center gap-1 rounded-md border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-subtle transition hover:text-[var(--text)] sm:inline-flex"
                 >
                     Esc
                 </button>

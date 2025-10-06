@@ -13,7 +13,7 @@ interface SidebarCategoryListProps {
 
 export function SidebarCategoryList({ categories }: SidebarCategoryListProps): ReactElement {
     return (
-        <div className="flex flex-col gap-6 pb-2">
+        <div className="flex flex-col gap-6 pb-2 pr-1">
             {categories.map((category) => (
                 <SidebarCategory key={`${category.title}-${category.tone}`} category={category} />
             ))}

@@ -1,6 +1,5 @@
 'use client';
 
-import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { useCallback } from 'react';
 
 import { cn } from '@lib/utils';
@@ -10,10 +9,11 @@ import { SidebarHeader } from './sidebar/sidebar-header';
 import { useCatalogSelection } from './sidebar/use-catalog-selection';
 
 import type { SidebarProps } from './sidebar/types';
-import type { CSSProperties, ReactElement, WheelEvent } from 'react';
+import type { CSSProperties, ReactElement, TouchEvent, UIEvent, WheelEvent } from 'react';
 
-const DESKTOP_CONTAINER_HEIGHT = 'calc(100vh - 8rem)';
+const DESKTOP_CONTAINER_HEIGHT = 'calc(100vh - 3rem)';
 const MOBILE_MAX_HEIGHT = 'min(70vh, 520px)';
+const SCROLL_EDGE_THRESHOLD = 1;
 
 function getContainerStyles(variant: 'desktop' | 'mobile'): CSSProperties | undefined {
     if (variant === 'desktop') {
@@ -31,14 +31,16 @@ function getContainerStyles(variant: 'desktop' | 'mobile'): CSSProperties | unde
 export function Sidebar({ variant = 'desktop', className }: SidebarProps): ReactElement {
     const selection = useCatalogSelection();
     const containerStyles = getContainerStyles(variant);
-    const scrollAreaStyles: CSSProperties | undefined =
+    const listStyles: CSSProperties | undefined =
         variant === 'desktop'
             ? {
                   height: '100%',
-                  maxHeight: '100%'
+                  maxHeight: '100%',
+                  WebkitOverflowScrolling: 'touch'
               }
             : {
-                  maxHeight: MOBILE_MAX_HEIGHT
+                  maxHeight: MOBILE_MAX_HEIGHT,
+                  WebkitOverflowScrolling: 'touch'
               };
 
     if (!selection) {
@@ -54,19 +56,27 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
 
     const { packageOptions, versionOptions, activePackage, activeVersion, onPackageChange, onVersionChange } =
         selection;
-    const handleViewportWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+    const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+        event.stopPropagation();
         const viewport = event.currentTarget;
         const { scrollTop, scrollHeight, clientHeight } = viewport;
-        const isScrollable = scrollHeight > clientHeight;
+        const isScrollable = scrollHeight - clientHeight > SCROLL_EDGE_THRESHOLD;
         const isScrollingUp = event.deltaY < 0;
         const isScrollingDown = event.deltaY > 0;
         const isAtTop = scrollTop <= 0;
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - 1;
+        const isAtBottom = scrollTop + clientHeight >= scrollHeight - SCROLL_EDGE_THRESHOLD;
 
         if (!isScrollable || (isAtTop && isScrollingUp) || (isAtBottom && isScrollingDown)) {
             event.preventDefault();
-            event.stopPropagation();
         }
+    }, []);
+
+    const handleScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+    }, []);
+
+    const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
+        event.stopPropagation();
     }, []);
 
     return (
@@ -88,25 +98,15 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
                     onVersionChange={onVersionChange}
                 />
             </div>
-            <ScrollArea.Root
-                className="relative mt-4 flex-1 min-h-0 overflow-hidden"
-                style={scrollAreaStyles}
-                type="hover"
+            <div
+                className="relative mt-4 flex-1 min-h-0 overflow-y-auto pe-1 [overscroll-behavior:contain]"
+                style={listStyles}
+                onWheel={handleWheel}
+                onScroll={handleScroll}
+                onTouchMove={handleTouchMove}
             >
-                <ScrollArea.Viewport
-                    className="h-full w-full pr-2 overscroll-contain"
-                    onWheelCapture={handleViewportWheel}
-                >
-                    <SidebarCategoryList categories={activeVersion.categories} />
-                </ScrollArea.Viewport>
-                <ScrollArea.Scrollbar
-                    orientation="vertical"
-                    className="flex w-2 touch-none select-none transition-opacity data-[state=hidden]:opacity-0"
-                >
-                    <ScrollArea.Thumb className="relative flex-1 rounded-full bg-[color-mix(in_srgb,var(--border)_86%,var(--accent-b)_14%)]" />
-                </ScrollArea.Scrollbar>
-                <ScrollArea.Corner className="bg-transparent" />
-            </ScrollArea.Root>
+                <SidebarCategoryList categories={activeVersion.categories} />
+            </div>
         </nav>
     );
 }

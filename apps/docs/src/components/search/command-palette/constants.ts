@@ -49,18 +49,18 @@ export const SEARCH_KIND_LABELS: Record<SearchResultKind, string> = {
 };
 
 export const SEARCH_KIND_ACCENTS: Record<SearchResultKind, string> = {
-    package: 'text-[color-mix(in_srgb,var(--accent-a)_70%,var(--text))]',
-    page: 'text-[color-mix(in_srgb,var(--accent-a)_68%,var(--text))]',
-    resource: 'text-[color-mix(in_srgb,#8b90a7_70%,var(--text))]',
-    class: 'text-[color-mix(in_srgb,var(--entity-class-color)_78%,var(--text))]',
-    interface: 'text-[color-mix(in_srgb,var(--entity-interface-color)_78%,var(--text))]',
-    type: 'text-[color-mix(in_srgb,var(--entity-type-color)_75%,var(--text))]',
-    enum: 'text-[color-mix(in_srgb,var(--entity-enum-color)_75%,var(--text))]',
-    function: 'text-[color-mix(in_srgb,var(--entity-function-color)_78%,var(--text))]',
-    method: 'text-[color-mix(in_srgb,var(--entity-function-color)_78%,var(--text))]',
-    property: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
-    variable: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
-    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_70%,var(--text))]'
+    package: 'text-[color-mix(in_srgb,var(--accent-b)_55%,var(--text))]',
+    page: 'text-[color-mix(in_srgb,var(--accent-a)_35%,var(--text))]',
+    resource: 'text-[color-mix(in_srgb,#8b90a7_45%,var(--text))]',
+    class: 'text-[color-mix(in_srgb,var(--entity-class-color)_55%,var(--text))]',
+    interface: 'text-[color-mix(in_srgb,var(--entity-interface-color)_55%,var(--text))]',
+    type: 'text-[color-mix(in_srgb,var(--entity-type-color)_48%,var(--text))]',
+    enum: 'text-[color-mix(in_srgb,var(--entity-enum-color)_50%,var(--text))]',
+    function: 'text-[color-mix(in_srgb,var(--entity-function-color)_55%,var(--text))]',
+    method: 'text-[color-mix(in_srgb,var(--entity-function-color)_55%,var(--text))]',
+    property: 'text-[color-mix(in_srgb,var(--entity-variable-color)_55%,var(--text))]',
+    variable: 'text-[color-mix(in_srgb,var(--entity-variable-color)_55%,var(--text))]',
+    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_48%,var(--text))]'
 };
 
 export const COMMAND_GROUPS: CommandGroupModel[] = [

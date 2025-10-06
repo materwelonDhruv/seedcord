@@ -3,33 +3,14 @@ import Link from 'next/link';
 
 import type { ReactElement } from 'react';
 
-const FEATURE_CARDS = [
-    {
-        title: 'TypeDoc powered reference',
-        description:
-            'Browse the generated API surface with filters for packages, symbol kinds, and versioned artifacts.'
-    },
-    {
-        title: 'Powerful search ergonomics',
-        description: 'Jump anywhere with the command palette, keyboard shortcuts, and contextual navigation.'
-    },
-    {
-        title: 'Developer-first theming',
-        description: 'Dark mode, responsive layout primitives, and accessible defaults ship out of the box.'
-    }
-] as const;
-
 const GUIDE_URL = 'https://github.com/materwelonDhruv/seedcord-guide';
 
 export default function Home(): ReactElement {
     return (
         <main id="main-content" className="bg-[color-mix(in_srgb,var(--bg)_94%,#050507_6%)]">
-            <div className="mx-auto flex w-full max-w-6xl flex-col gap-16 px-4 py-16 md:px-6 lg:py-24">
-                <section className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
-                    <div className="space-y-6">
-                        <p className="inline-flex items-center gap-2 rounded-full border border-border bg-surface/60 px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] text-subtle">
-                            Seedcord
-                        </p>
+            <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 md:px-6 lg:py-24">
+                <section className="flex flex-wrap items-center justify-center gap-12 text-center sm:text-left lg:justify-between">
+                    <div className="flex min-w-0 max-w-xl flex-1 flex-col items-center gap-6 sm:items-start">
                         <h1 className="text-4xl font-black tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl">
                             A modern developer portal for the Seedcord ecosystem.
                         </h1>
@@ -54,14 +35,14 @@ export default function Home(): ReactElement {
                             </Link>
                         </div>
                     </div>
-                    <div className="relative flex items-center justify-center">
+                    <div className="relative hidden items-center justify-center lg:flex lg:flex-1 lg:max-w-md">
                         <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
                             <div
-                                className="h-[320px] w-[320px] max-w-[70vw] rounded-[36px] bg-[radial-gradient(circle_at_center,color-mix(in_srgb,var(--text)_15%,var(--surface)_85%)_0%,transparent_70%)] opacity-55 blur-3xl transition-opacity dark:opacity-70"
+                                className="h-[220px] w-[220px] max-w-[60vw] rounded-[32px] bg-[radial-gradient(circle_at_center,color-mix(in_srgb,var(--text)_12%,var(--surface)_88%)_0%,transparent_70%)] opacity-55 blur-3xl transition-opacity dark:opacity-70"
                                 aria-hidden
                             />
                         </div>
-                        <div className="relative flex aspect-square w-full max-w-[320px] items-center justify-center overflow-hidden rounded-3xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-8 shadow-[0_32px_70px_-38px_color-mix(in_srgb,var(--text)_30%,transparent)] dark:shadow-[0_42px_90px_-45px_color-mix(in_srgb,var(--text)_24%,transparent)]">
+                        <div className="relative flex aspect-square w-32 items-center justify-center overflow-hidden rounded-3xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-[0_28px_60px_-36px_color-mix(in_srgb,var(--text)_28%,transparent)] sm:w-40 md:w-52 lg:w-64">
                             <Image
                                 src="/logo.svg"
                                 alt="Seedcord logo"
@@ -73,17 +54,6 @@ export default function Home(): ReactElement {
                             <div className="pointer-events-none absolute inset-0 rounded-3xl border border-white/10" />
                         </div>
                     </div>
-                </section>
-                <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    {FEATURE_CARDS.map((feature) => (
-                        <div
-                            key={feature.title}
-                            className="flex h-full flex-col gap-4 rounded-2xl border border-border bg-surface/80 p-6 shadow-soft"
-                        >
-                            <h2 className="text-2xl font-semibold text-[var(--text)]">{feature.title}</h2>
-                            <p className="text-sm leading-relaxed text-subtle">{feature.description}</p>
-                        </div>
-                    ))}
                 </section>
             </div>
         </main>

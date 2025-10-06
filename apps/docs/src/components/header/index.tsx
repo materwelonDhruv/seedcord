@@ -33,7 +33,7 @@ export function Header(): ReactElement {
                         </Link>
                     </nav>
                 </div>
-                <Tooltip.Provider delayDuration={150}>
+                <Tooltip.Provider>
                     <div className="flex items-center gap-2">
                         <HeaderSearchControls />
                         <Tooltip.Root>

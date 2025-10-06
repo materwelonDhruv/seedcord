@@ -2,7 +2,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
+import { cloneElement, isValidElement, useState } from 'react';
 
 import Button from '@components/ui/button';
 import { ScrollToTopButton } from '@components/ui/scroll-to-top-button';
@@ -10,7 +10,8 @@ import { cn } from '@lib/utils';
 
 import Sidebar from './sidebar';
 
-import type { ReactNode } from 'react';
+import type { SidebarProps as SidebarComponentProps } from './sidebar/types';
+import type { ReactElement, ReactNode } from 'react';
 
 interface ContainerProps {
     sidebar: ReactNode;
@@ -58,6 +59,17 @@ function MobilePanelDialog({
 
 export function Container({ sidebar, children, className }: ContainerProps): ReactNode {
     const [navigationOpen, setNavigationOpen] = useState(false);
+    const desktopSidebar: ReactNode = isValidElement(sidebar)
+        ? (() => {
+              const sidebarElement = sidebar as ReactElement<SidebarComponentProps>;
+              const mergedClassName = cn('h-full w-[280px] flex-col', sidebarElement.props.className);
+
+              return cloneElement<SidebarComponentProps>(sidebarElement, {
+                  className: mergedClassName,
+                  variant: sidebarElement.props.variant ?? 'desktop'
+              });
+          })()
+        : sidebar;
 
     return (
         <div
@@ -84,9 +96,9 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
                 <Sidebar variant="mobile" className="border-transparent bg-transparent p-0 shadow-none" />
             </MobilePanelDialog>
 
-            <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[280px_minmax(0,1fr)]">
+            <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
                 <aside className="hidden lg:block">
-                    <div className="sticky top-28 max-h-[calc(100vh-8rem)]">{sidebar}</div>
+                    <div className="sticky top-0 flex h-screen items-stretch py-6">{desktopSidebar}</div>
                 </aside>
                 <div className="min-w-0">{children}</div>
             </div>

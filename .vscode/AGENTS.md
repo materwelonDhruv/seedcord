@@ -6,3 +6,4 @@
 - Run only the commands available in the package or app's package.json scripts.
 - At the end of your response, always include a summary of changes made in the files.
 - The user is watching you change the files. If they see lint errors, they'll save the file which will auto-fix issues. In that case, just move on instead of getting stuck in a loop trying to fix errors that don't exist anymore.
+- DO NOT edit AGENTS.md or TASKS.md unless explicitly told to do so.
