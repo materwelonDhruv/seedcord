@@ -39,10 +39,10 @@ export async function extractPackageDocs(packageDir: string): Promise<PackageDoc
         readme: 'none',
         includeVersion: true,
         categorizeByGroup: false,
-        excludeExternals: true,
-        excludePrivate: true,
-        excludeProtected: true,
-        excludeInternal: true,
+        excludeExternals: false,
+        excludePrivate: false,
+        excludeProtected: false,
+        excludeInternal: false,
         logLevel: LogLevel.Warn
     });
 
