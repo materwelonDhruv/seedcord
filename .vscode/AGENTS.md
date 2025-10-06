@@ -1,0 +1,8 @@
+- DO NOT try to lint or run scripts unless it's absolutely needed to complete the given task.
+- DO NOT run `pnpm lint`. ALWAYS run `pnpm lint:fix` instead.
+- ALWAYS, I repeat, ALWAYS first cd into the package or app's directory, then run the command via pnpm.
+- For most eslint issues, after you make multiple file changes, just run lint:fix regularly instead of trying to fix each file individually. eslint will let you know if there are any remaining issues.
+- If the linter it executes without finding any problems and you’re done with all tasks, just proceed to the summary section.
+- Run only the commands available in the package or app's package.json scripts.
+- At the end of your response, always include a summary of changes made in the files.
+- The user is watching you change the files. If they see lint errors, they'll save the file which will auto-fix issues. In that case, just move on instead of getting stuck in a loop trying to fix errors that don't exist anymore.

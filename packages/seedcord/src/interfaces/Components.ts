@@ -70,13 +70,13 @@ const ModalTypes = {
     text: TextInputBuilder
 };
 
-type BuilderType = keyof typeof BuilderTypes;
+export type BuilderType = keyof typeof BuilderTypes;
 type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
 
-type ActionRowComponentType = keyof typeof RowTypes;
+export type ActionRowComponentType = keyof typeof RowTypes;
 type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
 
-type ModalFieldTypes = keyof typeof ModalTypes;
+export type ModalFieldTypes = keyof typeof ModalTypes;
 type InstantiatedModalField<ModalKey extends ModalFieldTypes> = InstanceType<(typeof ModalTypes)[ModalKey]>;
 
 /**

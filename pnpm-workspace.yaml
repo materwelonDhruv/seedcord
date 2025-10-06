@@ -1,5 +1,6 @@
 packages:
     - packages/*
+    - apps/*
 
 catalogs:
     deps:
@@ -11,3 +12,10 @@ catalogs:
     peer:
         eslint: 9.37.0
         typescript: 5.9.3
+
+onlyBuiltDependencies:
+    - '@swc/core'
+    - '@tailwindcss/oxide'
+    - esbuild
+    - sharp
+    - unrs-resolver

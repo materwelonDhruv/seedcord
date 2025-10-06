@@ -16,6 +16,7 @@
         "test": "turbo test",
         "lint-staged": "lint-staged",
         "clean": "turbo clean",
+        "clean:node": "find . -name node_modules -type d -prune -exec rm -rf '{}' +",
         "rebuild": "turbo clean && turbo build",
         "prebuild": "turbo clean && turbo lint && turbo tc",
         "turbo:prune": "turbo prune",
