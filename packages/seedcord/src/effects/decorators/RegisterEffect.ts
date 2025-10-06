@@ -1,6 +1,11 @@
 import type { EffectKeys } from '../types/Effects';
 import type { ConstructorFunction } from '@seedcord/types';
 
+/**
+ * Metadata key used to store effect handler information
+ *
+ * @internal
+ */
 export const EffectMetadataKey = Symbol('effect:metadata');
 
 /**
@@ -9,6 +14,7 @@ export const EffectMetadataKey = Symbol('effect:metadata');
  * Associates the decorated class with a side effect event type for automatic
  * registration and execution when the side effect is emitted.
  *
+ * @typeParam TEffect - The side effect event name to register for
  * @param effect - The side effect event name to register for
  * @decorator
  * @example

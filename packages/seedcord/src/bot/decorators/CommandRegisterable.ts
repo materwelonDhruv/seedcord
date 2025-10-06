@@ -1,28 +1,51 @@
 import type { BuilderComponent } from '../../interfaces/Components';
 
+/**
+ * Metadata key for command registration information.
+ *
+ * @internal
+ */
 export const CommandMetadataKey = Symbol('command:metadata');
 
-type CommandCtor = new (...args: any[]) => BuilderComponent<'command' | 'context_menu'>;
+/**
+ * Constructor type for command classes.
+ *
+ * @internal
+ */
+export type CommandCtor = new (...args: any[]) => BuilderComponent<'command' | 'context_menu'>;
 
 /**
  * Metadata for global command registration.
+ *
+ * @internal
  */
-interface GlobalMeta {
+export interface GlobalMeta {
     scope: 'global';
 }
 
 /**
  * Metadata for guild-specific command registration.
+ *
+ * @internal
  */
-interface GuildMeta {
+export interface GuildMeta {
     scope: 'guild';
     guilds: string[];
 }
 
 /**
  * Union type for command registration metadata.
+ *
+ * @internal
  */
 export type CommandMeta = GlobalMeta | GuildMeta;
+
+/**
+ * Type representing command registration scope.
+ *
+ * @internal
+ */
+export type CommandScope = CommandMeta['scope'];
 
 /**
  * Registers a command for global deployment.
@@ -62,7 +85,7 @@ export function RegisterCommand(scope: 'guild', guilds: string[]): (ctor: Comman
  * @param guilds - Guild IDs for guild-scoped registration
  * @decorator
  */
-export function RegisterCommand(scope: 'global' | 'guild', guilds: string[] = []) {
+export function RegisterCommand(scope: CommandScope, guilds: string[] = []) {
     return (ctor: CommandCtor): void => {
         const meta: GlobalMeta | GuildMeta = scope === 'global' ? { scope } : { scope, guilds };
         Reflect.defineMetadata(CommandMetadataKey, meta, ctor);

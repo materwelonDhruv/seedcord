@@ -9,6 +9,7 @@ export const EventMetadataKey = Symbol('event:metadata');
  * Associates the decorated class with a Discord client event for automatic
  * registration and execution when the event is emitted.
  *
+ * @typeParam KeyofEvents - The key of the Discord.js ClientEvents to register for
  * @param eventName - The Discord.js event name to listen for
  * @decorator
  * @example

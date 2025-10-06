@@ -70,14 +70,35 @@ const ModalTypes = {
     text: TextInputBuilder
 };
 
+/**
+ * Available Discord.js builder types for use with BuilderComponent
+ */
 export type BuilderType = keyof typeof BuilderTypes;
-type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
 
+/**
+ * @internal
+ */
+export type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
+
+/**
+ * Available Discord.js action row types for use with RowComponent
+ */
 export type ActionRowComponentType = keyof typeof RowTypes;
-type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
 
+/**
+ * @internal
+ */
+export type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
+
+/*
+ * Available Discord.js modal field types for use with ModalComponent
+ */
 export type ModalFieldTypes = keyof typeof ModalTypes;
-type InstantiatedModalField<ModalKey extends ModalFieldTypes> = InstanceType<(typeof ModalTypes)[ModalKey]>;
+
+/**
+ * @internal
+ */
+export type InstantiatedModalField<ModalKey extends ModalFieldTypes> = InstanceType<(typeof ModalTypes)[ModalKey]>;
 
 /**
  * Base class for Discord component wrappers
@@ -194,7 +215,7 @@ export abstract class RowComponent<RowKey extends ActionRowComponentType> extend
  * @typeParam ModalKey - The type of modal field component being wrapped
  * @internal
  */
-class ModalRow<ModalKey extends ModalFieldTypes> extends RowComponent<'modal'> {
+export class ModalRow<ModalKey extends ModalFieldTypes> extends RowComponent<'modal'> {
     /**
      * Creates a new modal action row with the specified component.
      *

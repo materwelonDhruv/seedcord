@@ -56,7 +56,12 @@ export interface WithChecks {
     runChecks(): Promise<void>;
 }
 
-interface HandlerWithChecks extends WithChecks, Handler {}
+/**
+ * Interface for handlers that implement pre-execution checks
+ *
+ * @internal
+ */
+export interface HandlerWithChecks extends WithChecks, Handler {}
 
 abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handler {
     protected checkable = false;

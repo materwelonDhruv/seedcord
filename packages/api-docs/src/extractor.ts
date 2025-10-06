@@ -8,6 +8,9 @@ import { readPackageManifest, resolveEntryPoints, resolveTsconfigPath } from './
 
 import type { PackageDocResult } from './types';
 
+const EXTERNAL_PLUGINS = ['typedoc-plugin-missing-exports', 'typedoc-plugin-mdn-links', 'typedoc-plugin-dt-links'];
+let externalPluginsLoaded = false;
+
 /**
  * run typedoc for one package and collect the status, warnings, and output location
  */
@@ -43,8 +46,11 @@ export async function extractPackageDocs(packageDir: string): Promise<PackageDoc
         excludePrivate: false,
         excludeProtected: false,
         excludeInternal: false,
-        logLevel: LogLevel.Warn
+        logLevel: LogLevel.Warn,
+        plugin: externalPluginsLoaded ? [] : EXTERNAL_PLUGINS
     });
+
+    externalPluginsLoaded = true;
 
     const blockTags = (app.options.getValue('blockTags') as string[] | undefined) ?? [];
     // typedoc ignores @decorator out of the box and spams warnings, so we tell it that tag is legit here

@@ -205,6 +205,15 @@ importers:
             '@seedcord/tsup-config':
                 specifier: workspace:^
                 version: link:../tsup-config
+            typedoc-plugin-dt-links:
+                specifier: ^2.0.22
+                version: 2.0.22(typedoc@0.28.13(typescript@5.9.3))
+            typedoc-plugin-mdn-links:
+                specifier: ^5.0.9
+                version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
+            typedoc-plugin-missing-exports:
+                specifier: ^4.1.0
+                version: 4.1.0(typedoc@0.28.13(typescript@5.9.3))
 
     packages/eslint-config:
         dependencies:
@@ -7442,6 +7451,30 @@ packages:
             }
         engines: { node: '>= 0.4' }
 
+    typedoc-plugin-dt-links@2.0.22:
+        resolution:
+            {
+                integrity: sha512-rrFyEHEKhIGk1jqMjPj2Un5jLKa7ej+rt/L0B/r+Qk6oH1NwDi8+vjEzHLCi/E51s+4BRu/nxlsWGMaziLWbVQ==
+            }
+        peerDependencies:
+            typedoc: 0.28.x
+
+    typedoc-plugin-mdn-links@5.0.9:
+        resolution:
+            {
+                integrity: sha512-kXssRKBhUd0JeHzFmxWVsGWVFR9WXafe70Y8Ed+MYH2Nu2647cqfGQN1OBKgvXpmAT8MTpACmUIQ7GnQnh1/iw==
+            }
+        peerDependencies:
+            typedoc: 0.27.x || 0.28.x
+
+    typedoc-plugin-missing-exports@4.1.0:
+        resolution:
+            {
+                integrity: sha512-p1M5jXnEbQ4qqy0erJz41BBZEDb8XDrbLjndlH4RhYEcymbdQr0xLF6yUw1GWBrhSIfkU98m3BELMAiQh+R1zA==
+            }
+        peerDependencies:
+            typedoc: ^0.28.1
+
     typedoc@0.28.13:
         resolution:
             {
@@ -12659,6 +12692,18 @@ snapshots:
             is-typed-array: 1.1.15
             possible-typed-array-names: 1.1.0
             reflect.getprototypeof: 1.0.10
+
+    typedoc-plugin-dt-links@2.0.22(typedoc@0.28.13(typescript@5.9.3)):
+        dependencies:
+            typedoc: 0.28.13(typescript@5.9.3)
+
+    typedoc-plugin-mdn-links@5.0.9(typedoc@0.28.13(typescript@5.9.3)):
+        dependencies:
+            typedoc: 0.28.13(typescript@5.9.3)
+
+    typedoc-plugin-missing-exports@4.1.0(typedoc@0.28.13(typescript@5.9.3)):
+        dependencies:
+            typedoc: 0.28.13(typescript@5.9.3)
 
     typedoc@0.28.13(typescript@5.9.3):
         dependencies:

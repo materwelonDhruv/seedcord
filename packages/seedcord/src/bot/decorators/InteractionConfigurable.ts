@@ -1,5 +1,10 @@
 import type { ConstructorFunction } from '@seedcord/types';
 
+/**
+ * Enum defining interaction route types for decorators
+ *
+ * @internal
+ */
 export enum InteractionRoutes {
     Slash = 'interaction:slash',
     Button = 'interaction:button',
@@ -14,6 +19,11 @@ export enum InteractionRoutes {
     Autocomplete = 'interaction:autocomplete'
 }
 
+/**
+ * Types of select menus supported for routing
+ *
+ * @internal
+ */
 export enum SelectMenuType {
     String = 'string',
     User = 'user',
@@ -22,6 +32,11 @@ export enum SelectMenuType {
     Mentionable = 'mentionable'
 }
 
+/**
+ * Metadata key used to mark classes as interaction handlers
+ *
+ * @internal
+ */
 export const InteractionMetadataKey = Symbol('interaction:metadata');
 
 /**

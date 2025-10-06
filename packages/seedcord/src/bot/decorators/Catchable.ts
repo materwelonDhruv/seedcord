@@ -7,10 +7,10 @@ import type { RepliableInteractionHandler } from '../../interfaces/Handler';
 /**
  * Configuration options for the Catchable decorator.
  */
-interface CatchableOptions {
-    /** Whether to log errors to console (default: false) */
+export interface CatchableOptions {
+    /** Whether to log errors to console (default: `false`) */
     log?: boolean;
-    /** Always use followUp instead of reply/editReply (default: false) */
+    /** Always use followUp instead of reply/editReply (default: `false`) */
     forceFollowup?: boolean;
 }
 
