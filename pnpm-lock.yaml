@@ -4,31 +4,6 @@ settings:
     autoInstallPeers: true
     excludeLinksFromLockfile: false
 
-catalogs:
-    deps:
-        chalk:
-            specifier: 5.6.2
-            version: 5.6.2
-        discord.js:
-            specifier: 14.22.1
-            version: 14.22.1
-        envapt:
-            specifier: 4.0.0
-            version: 4.0.0
-        mongoose:
-            specifier: 8.19.0
-            version: 8.19.0
-        reflect-metadata:
-            specifier: 0.2.2
-            version: 0.2.2
-    peer:
-        eslint:
-            specifier: 9.37.0
-            version: 9.37.0
-        typescript:
-            specifier: 5.9.3
-            version: 5.9.3
-
 importers:
     .:
         devDependencies:
@@ -211,9 +186,6 @@ importers:
             typedoc-plugin-mdn-links:
                 specifier: ^5.0.9
                 version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
-            typedoc-plugin-missing-exports:
-                specifier: ^4.1.0
-                version: 4.1.0(typedoc@0.28.13(typescript@5.9.3))
 
     packages/eslint-config:
         dependencies:
@@ -7467,14 +7439,6 @@ packages:
         peerDependencies:
             typedoc: 0.27.x || 0.28.x
 
-    typedoc-plugin-missing-exports@4.1.0:
-        resolution:
-            {
-                integrity: sha512-p1M5jXnEbQ4qqy0erJz41BBZEDb8XDrbLjndlH4RhYEcymbdQr0xLF6yUw1GWBrhSIfkU98m3BELMAiQh+R1zA==
-            }
-        peerDependencies:
-            typedoc: ^0.28.1
-
     typedoc@0.28.13:
         resolution:
             {
@@ -12698,10 +12662,6 @@ snapshots:
             typedoc: 0.28.13(typescript@5.9.3)
 
     typedoc-plugin-mdn-links@5.0.9(typedoc@0.28.13(typescript@5.9.3)):
-        dependencies:
-            typedoc: 0.28.13(typescript@5.9.3)
-
-    typedoc-plugin-missing-exports@4.1.0(typedoc@0.28.13(typescript@5.9.3)):
         dependencies:
             typedoc: 0.28.13(typescript@5.9.3)
 

@@ -8,7 +8,7 @@ import { readPackageManifest, resolveEntryPoints, resolveTsconfigPath } from './
 
 import type { PackageDocResult } from './types';
 
-const EXTERNAL_PLUGINS = ['typedoc-plugin-missing-exports', 'typedoc-plugin-mdn-links', 'typedoc-plugin-dt-links'];
+const EXTERNAL_PLUGINS = ['typedoc-plugin-mdn-links', 'typedoc-plugin-dt-links'];
 let externalPluginsLoaded = false;
 
 /**

@@ -35,7 +35,6 @@
         "@seedcord/tsconfig": "workspace:^",
         "@seedcord/tsup-config": "workspace:^",
         "typedoc-plugin-dt-links": "^2.0.22",
-        "typedoc-plugin-mdn-links": "^5.0.9",
-        "typedoc-plugin-missing-exports": "^4.1.0"
+        "typedoc-plugin-mdn-links": "^5.0.9"
     }
 }
