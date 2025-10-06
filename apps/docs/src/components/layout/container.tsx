@@ -2,7 +2,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X } from 'lucide-react';
-import { cloneElement, isValidElement, useState } from 'react';
+import { cloneElement, isValidElement, useLayoutEffect, useRef, useState } from 'react';
 
 import Button from '@components/ui/button';
 import { ScrollToTopButton } from '@components/ui/scroll-to-top-button';
@@ -11,7 +11,7 @@ import { cn } from '@lib/utils';
 import Sidebar from './sidebar';
 
 import type { SidebarProps as SidebarComponentProps } from './sidebar/types';
-import type { ReactElement, ReactNode } from 'react';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
 
 interface ContainerProps {
     sidebar: ReactNode;
@@ -58,11 +58,12 @@ function MobilePanelDialog({
 }
 
 export function Container({ sidebar, children, className }: ContainerProps): ReactNode {
+    const containerRef = useRef<HTMLDivElement | null>(null);
     const [navigationOpen, setNavigationOpen] = useState(false);
     const desktopSidebar: ReactNode = isValidElement(sidebar)
         ? (() => {
               const sidebarElement = sidebar as ReactElement<SidebarComponentProps>;
-              const mergedClassName = cn('h-full w-[280px] flex-col', sidebarElement.props.className);
+              const mergedClassName = cn('flex h-full w-full flex-col', sidebarElement.props.className);
 
               return cloneElement<SidebarComponentProps>(sidebarElement, {
                   className: mergedClassName,
@@ -71,8 +72,36 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
           })()
         : sidebar;
 
+    useLayoutEffect(() => {
+        const updateNavigationHeight = (): void => {
+            const header = document.querySelector<HTMLElement>('header');
+            const height = header?.getBoundingClientRect().height ?? 0;
+
+            if (containerRef.current && height > 0) {
+                containerRef.current.style.setProperty('--nav-h', `${height}px`);
+            }
+        };
+
+        updateNavigationHeight();
+        window.addEventListener('resize', updateNavigationHeight);
+
+        return () => {
+            window.removeEventListener('resize', updateNavigationHeight);
+        };
+    }, []);
+
+    const containerStyle: CSSProperties & {
+        '--nav-h': string;
+        '--sb-pad': string;
+    } = {
+        '--nav-h': '64px',
+        '--sb-pad': '24px'
+    };
+
     return (
         <div
+            ref={containerRef}
+            style={containerStyle}
             className={cn(
                 'mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:gap-8 lg:pb-20 lg:pt-10',
                 className
@@ -96,9 +125,17 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
                 <Sidebar variant="mobile" className="border-transparent bg-transparent p-0 shadow-none" />
             </MobilePanelDialog>
 
-            <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[300px_minmax(0,1fr)]">
-                <aside className="hidden lg:block">
-                    <div className="sticky top-0 flex h-screen items-stretch py-6">{desktopSidebar}</div>
+            <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
+                <aside className="relative hidden lg:block">
+                    <div
+                        className="sticky"
+                        style={{
+                            top: 'calc(var(--nav-h) + var(--sb-pad))',
+                            height: 'calc(100dvh - var(--nav-h) - calc(var(--sb-pad) * 2))'
+                        }}
+                    >
+                        <div className="box-border flex h-full w-full flex-col">{desktopSidebar}</div>
+                    </div>
                 </aside>
                 <div className="min-w-0">{children}</div>
             </div>

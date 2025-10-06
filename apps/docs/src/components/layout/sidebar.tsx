@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useRef } from 'react';
 
 import { cn } from '@lib/utils';
 
@@ -11,20 +11,131 @@ import { useCatalogSelection } from './sidebar/use-catalog-selection';
 import type { SidebarProps } from './sidebar/types';
 import type { CSSProperties, ReactElement, TouchEvent, UIEvent, WheelEvent } from 'react';
 
-const DESKTOP_CONTAINER_HEIGHT = 'calc(100vh - 3rem)';
 const MOBILE_MAX_HEIGHT = 'min(70vh, 520px)';
-const SCROLL_EDGE_THRESHOLD = 1;
+const LINE_SCROLL_PIXELS = 16;
+
+function applyScrollDelta(viewport: HTMLDivElement, deltaY: number): void {
+    const { scrollHeight, clientHeight, scrollTop } = viewport;
+    const maxScrollTop = Math.max(scrollHeight - clientHeight, 0);
+
+    if (maxScrollTop === 0) {
+        return;
+    }
+
+    const nextScrollTop = Math.min(Math.max(scrollTop + deltaY, 0), maxScrollTop);
+
+    if (nextScrollTop !== scrollTop) {
+        viewport.scrollTop = nextScrollTop;
+    }
+}
+
+function normalizeWheelDelta(event: WheelEvent<HTMLDivElement>, viewport: HTMLDivElement): number {
+    if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+        return event.deltaY * LINE_SCROLL_PIXELS;
+    }
+
+    if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+        return event.deltaY * viewport.clientHeight;
+    }
+
+    return event.deltaY;
+}
 
 function getContainerStyles(variant: 'desktop' | 'mobile'): CSSProperties | undefined {
-    if (variant === 'desktop') {
+    if (variant === 'mobile') {
         return {
-            height: DESKTOP_CONTAINER_HEIGHT,
-            maxHeight: DESKTOP_CONTAINER_HEIGHT
+            maxHeight: MOBILE_MAX_HEIGHT
         };
     }
 
+    const viewportHeight = 'calc(100dvh - var(--nav-h, 64px) - calc(var(--sb-pad, 24px) * 2))';
+
     return {
-        maxHeight: MOBILE_MAX_HEIGHT
+        height: viewportHeight,
+        maxHeight: viewportHeight
+    };
+}
+
+function useSidebarScrollGuards(): {
+    handleWheel: (event: WheelEvent<HTMLDivElement>) => void;
+    handleScroll: (event: UIEvent<HTMLDivElement>) => void;
+    handleTouchStart: (event: TouchEvent<HTMLDivElement>) => void;
+    handleTouchMove: (event: TouchEvent<HTMLDivElement>) => void;
+    handleTouchEnd: () => void;
+} {
+    const lastTouchYRef = useRef<number | null>(null);
+
+    const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const viewport = event.currentTarget;
+
+        if (viewport.scrollHeight <= viewport.clientHeight) {
+            return;
+        }
+
+        const normalizedDeltaY = normalizeWheelDelta(event, viewport);
+
+        applyScrollDelta(viewport, normalizedDeltaY);
+    }, []);
+
+    const handleScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
+        event.stopPropagation();
+    }, []);
+
+    const handleTouchStart = useCallback((event: TouchEvent<HTMLDivElement>) => {
+        const touch = event.touches[0];
+
+        if (!touch) {
+            return;
+        }
+
+        lastTouchYRef.current = touch.clientY;
+    }, []);
+
+    const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const viewport = event.currentTarget;
+
+        if (viewport.scrollHeight <= viewport.clientHeight) {
+            return;
+        }
+
+        const touch = event.touches[0];
+
+        if (!touch) {
+            return;
+        }
+
+        const previousY = lastTouchYRef.current;
+
+        if (previousY === null) {
+            lastTouchYRef.current = touch.clientY;
+            return;
+        }
+
+        const deltaY = previousY - touch.clientY;
+
+        if (deltaY !== 0) {
+            applyScrollDelta(viewport, deltaY);
+        }
+
+        lastTouchYRef.current = touch.clientY;
+    }, []);
+
+    const handleTouchEnd = useCallback(() => {
+        lastTouchYRef.current = null;
+    }, []);
+
+    return {
+        handleWheel,
+        handleScroll,
+        handleTouchStart,
+        handleTouchMove,
+        handleTouchEnd
     };
 }
 
@@ -42,6 +153,7 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
                   maxHeight: MOBILE_MAX_HEIGHT,
                   WebkitOverflowScrolling: 'touch'
               };
+    const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
 
     if (!selection) {
         return (
@@ -56,28 +168,6 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
 
     const { packageOptions, versionOptions, activePackage, activeVersion, onPackageChange, onVersionChange } =
         selection;
-    const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-        const viewport = event.currentTarget;
-        const { scrollTop, scrollHeight, clientHeight } = viewport;
-        const isScrollable = scrollHeight - clientHeight > SCROLL_EDGE_THRESHOLD;
-        const isScrollingUp = event.deltaY < 0;
-        const isScrollingDown = event.deltaY > 0;
-        const isAtTop = scrollTop <= 0;
-        const isAtBottom = scrollTop + clientHeight >= scrollHeight - SCROLL_EDGE_THRESHOLD;
-
-        if (!isScrollable || (isAtTop && isScrollingUp) || (isAtBottom && isScrollingDown)) {
-            event.preventDefault();
-        }
-    }, []);
-
-    const handleScroll = useCallback((event: UIEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-    }, []);
-
-    const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
-        event.stopPropagation();
-    }, []);
 
     return (
         <nav
@@ -103,7 +193,10 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
                 style={listStyles}
                 onWheel={handleWheel}
                 onScroll={handleScroll}
+                onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+                onTouchCancel={handleTouchEnd}
             >
                 <SidebarCategoryList categories={activeVersion.categories} />
             </div>
