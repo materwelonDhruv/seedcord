@@ -47,7 +47,7 @@ export function SidebarSelect({ id, label, value, options, onChange }: SidebarSe
                         aria-labelledby={labelId}
                         aria-expanded={open}
                         className={cn(
-                            'flex w-full items-center justify-between rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--bg)_96%,var(--surface)_4%)] px-3 py-2 text-sm font-medium text-[var(--text)] shadow-soft transition duration-200',
+                            'flex w-full items-center justify-between rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--bg)_96%,var(--surface)_4%)] px-3 py-2 text-sm font-medium text-[var(--text)] shadow-soft transition duration-0',
                             'focus:border-[color-mix(in_srgb,var(--accent-b)_55%,var(--border))] focus:bg-[color-mix(in_srgb,var(--bg)_94%,var(--accent-b)_10%)] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_srgb,var(--accent-b)_32%,transparent)] focus:ring-offset-2 focus:ring-offset-[color-mix(in_srgb,var(--bg)_96%,transparent)]',
                             open
                                 ? 'border-[color-mix(in_srgb,var(--accent-b)_62%,var(--border))] bg-[color-mix(in_srgb,var(--bg)_90%,var(--accent-b)_18%)] shadow-[0_10px_35px_-20px_color-mix(in_srgb,var(--accent-b)_45%,transparent)]'
