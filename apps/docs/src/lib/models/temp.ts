@@ -1,3 +1,5 @@
+/* eslint-disable complexity */
+/* eslint-disable max-statements */
 /* eslint-disable no-console */
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -6,7 +8,7 @@ import { resolveManifestPath } from './constants';
 import { DocsEngine } from './engine';
 import { ManifestReader } from './manifest-reader';
 
-import type { DocNode, DocManifestPackage } from './types';
+import type { DocNode, DocManifestPackage, DocPackageModel, DocSearchEntry } from './types';
 import type { ProjectReflection } from 'typedoc';
 
 const DIVIDER_WIDTH = 40;
@@ -68,13 +70,87 @@ const logEngineSummary = (engine: DocsEngine): void => {
         return;
     }
 
-    console.log('First package root:', firstPackage.root.name, 'children:', firstPackage.root.children.length);
-    logTransformedRoot(firstPackage.root);
-    logProjectOverview(firstPackage.project);
+    const thirdName = packages[2] as string;
+    const thirdPackage = engine.getPackage(thirdName) as DocPackageModel;
 
-    const sample = engine.search('Prettier', firstPackage.manifest.name).slice(0, 5);
-    const formattedSample = sample.length > 0 ? sample.map((entry) => entry.fullName).join(', ') : '(no matches)';
-    console.log('Search sample:', formattedSample);
+    // console.log('First package root:', firstPackage.root.name, 'children:', firstPackage.root.children.length);
+    // logTransformedRoot(firstPackage.root);
+    // logProjectOverview(firstPackage.project);
+
+    console.log('\nThird package:', thirdName);
+    console.log('Third package root:', thirdPackage.root.name, 'children:', thirdPackage.root.children.length);
+    logTransformedRoot(thirdPackage.root);
+    logProjectOverview(thirdPackage.project);
+
+    const sample = engine.search('Builder', thirdPackage.manifest.name).slice(0, 10);
+    const formattedNameSample = sample.length > 0 ? sample.map((entry) => entry.fullName).join(', ') : '(no matches)';
+    const formattedIdSample = sample.length > 0 ? sample.map((entry) => entry.id).join(', ') : '(no matches)';
+    console.log('Search sample:', formattedNameSample);
+    console.log('Search sample IDs:', formattedIdSample);
+
+    const expectedId = 315;
+    const expectedNode = thirdPackage.indexes.byId.get(expectedId) ?? null;
+    console.dir({ expectedNode }, { depth: 3 });
+    const expectedReflection =
+        typeof thirdPackage.project.getReflectionById === 'function'
+            ? (thirdPackage.project.getReflectionById(expectedId) ?? null)
+            : null;
+    console.log(
+        `Node lookup for #${expectedId}:`,
+        expectedNode ? `${expectedNode.fullName} (#${expectedNode.id})` : 'not found'
+    );
+    console.log(
+        `Reflection lookup for #${expectedId}:`,
+        expectedReflection
+            ? `${typeof expectedReflection.getFullName === 'function' ? expectedReflection.getFullName() : expectedReflection.name} (#${expectedReflection.id})`
+            : 'not found'
+    );
+    console.log('Slug sample (should not repeat package):', thirdPackage.root.slug);
+    const anyAccessor = thirdPackage.indexes.search.find((e) => e.kind.label === 'Accessor');
+    if (anyAccessor) {
+        const n = thirdPackage.indexes.byId.get(anyAccessor.id);
+        if (n) {
+            console.log(
+                'Accessor signatures:',
+                n.signatures.map((s) => s.fragment)
+            );
+        }
+    }
+
+    const withDefault = [...firstPackage.indexes.byId.values()].find((n) => typeof n.defaultValue === 'string');
+    const SLICE_LEN = 60;
+    console.log(
+        'Node with defaultValue:',
+        withDefault?.fullName,
+        withDefault?.defaultValue?.slice(0, SLICE_LEN) ?? 'n/a'
+    );
+
+    logSearchDiagnostics(thirdPackage, sample);
+};
+
+const logSearchDiagnostics = (pkg: DocPackageModel, entries: DocSearchEntry[]): void => {
+    if (entries.length === 0) {
+        return;
+    }
+
+    for (const entry of entries) {
+        const nodeById = pkg.indexes.byId.get(entry.id) ?? null;
+        const nodeBySlug = pkg.indexes.bySlug.get(entry.slug) ?? null;
+        const reflectionById =
+            typeof pkg.project.getReflectionById === 'function'
+                ? (pkg.project.getReflectionById(entry.id) ?? null)
+                : null;
+        const reflectionName =
+            reflectionById && typeof reflectionById.getFullName === 'function'
+                ? reflectionById.getFullName()
+                : (reflectionById?.name ?? null);
+        console.log('---');
+        console.log('Entry:', entry.fullName);
+        console.log('  ID:', entry.id, 'Slug:', entry.slug);
+        console.log('  Node by id:', nodeById ? `${nodeById.fullName} (#${nodeById.id})` : 'not found');
+        console.log('  Node by slug:', nodeBySlug ? `${nodeBySlug.fullName} (#${nodeBySlug.id})` : 'not found');
+        console.log('  Reflection by id:', reflectionById ? `${reflectionName} (#${reflectionById.id})` : 'not found');
+    }
 };
 
 const findWorkspaceRoot = (): string => {

@@ -78,39 +78,37 @@ export class DocsEngine {
         currentPackage: string,
         reference: DocReference | null
     ): { packageName?: string; slug?: string; externalUrl?: string } {
-        if (!reference) {
-            return {};
-        }
+        if (!reference) return {};
+        if (reference.externalUrl) return { externalUrl: reference.externalUrl };
 
-        if (reference.externalUrl) {
-            return { externalUrl: reference.externalUrl };
-        }
-
-        const packageName = reference.packageName ?? currentPackage;
-        const pkg = this.getPackage(packageName);
-        if (!pkg) {
-            return {};
-        }
-
-        if (typeof reference.target === 'number') {
-            const target = pkg.indexes.byId.get(reference.target);
-            if (target) {
-                return { packageName, slug: target.slug };
+        const tryPkg = (
+            pkgName: string
+        ): {
+            packageName: string;
+            slug: string;
+        } | null => {
+            const pkg = this.getPackage(pkgName);
+            if (!pkg) return null;
+            if (typeof reference.target === 'number') {
+                const n = pkg.indexes.byId.get(reference.target);
+                if (n) return { packageName: pkgName, slug: n.slug };
             }
-        }
-
-        if (reference.qualifiedName) {
-            const candidate = pkg.indexes.byFullName.get(reference.qualifiedName);
-            if (candidate) {
-                return { packageName, slug: candidate.slug };
+            if (reference.qualifiedName) {
+                const n = pkg.indexes.byFullName.get(reference.qualifiedName);
+                if (n) return { packageName: pkgName, slug: n.slug };
             }
-        }
+            const n = pkg.indexes.byFullName.get(reference.name);
+            if (n) return { packageName: pkgName, slug: n.slug };
+            return null;
+        };
 
-        const fallback = pkg.indexes.byFullName.get(reference.name);
-        if (fallback) {
-            return { packageName, slug: fallback.slug };
-        }
+        const fromHint = tryPkg(reference.packageName ?? currentPackage);
+        if (fromHint) return fromHint;
 
+        for (const name of this.listPackages()) {
+            const hit = tryPkg(name);
+            if (hit) return hit;
+        }
         return {};
     }
 }

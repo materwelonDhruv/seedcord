@@ -216,6 +216,20 @@ export const mapGroups = (group: ReflectionGroup, lookup: Map<number, DocNode>):
     };
 };
 
+function sigFragment(s: SignatureReflection): string {
+    const HASH_BASE = 36;
+    const name = s.name;
+    const params = (s.parameters ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        .map((p) => (p.type ? (serializer.toObject(p.type).type ?? 't') : 't'))
+        .join(',');
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const ret = s.type ? (serializer.toObject(s.type).type ?? 't') : 't';
+    let djb2HashSeed = 5381;
+    for (const ch of `${name}(${params}):${ret}`) djb2HashSeed = (djb2HashSeed << 5) + djb2HashSeed + ch.charCodeAt(0);
+    return `${name}-${(djb2HashSeed >>> 0).toString(HASH_BASE)}`;
+}
+
 export const mapSignature = (
     context: TransformContext,
     signature: SignatureReflection,
@@ -226,7 +240,7 @@ export const mapSignature = (
     const returnsTag = signature.comment?.getTag('@returns') ?? null;
     const throwsTags = signature.comment?.getTags('@throws') ?? [];
 
-    const fragment = `signature-${index + 1}`;
+    const fragment = sigFragment(signature);
     const anchor = `${parent.slug}#${fragment}`;
     let kindLabel: string;
     if (typeof ReflectionKind.singularString === 'function') {
