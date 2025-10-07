@@ -88,7 +88,7 @@ const logEngineSummary = (engine: DocsEngine): void => {
     console.log('Search sample:', formattedNameSample);
     console.log('Search sample IDs:', formattedIdSample);
 
-    const expectedId = 315;
+    const expectedId = 1122;
     const expectedNode = thirdPackage.indexes.byId.get(expectedId) ?? null;
     console.dir({ expectedNode }, { depth: 3 });
     const expectedReflection =
@@ -105,6 +105,9 @@ const logEngineSummary = (engine: DocsEngine): void => {
             ? `${typeof expectedReflection.getFullName === 'function' ? expectedReflection.getFullName() : expectedReflection.name} (#${expectedReflection.id})`
             : 'not found'
     );
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    console.log(`External Data Lookup for #${expectedId}:`, console.dir(expectedNode?.external, { depth: 3 }) ?? 'n/a');
+
     console.log('Slug sample (should not repeat package):', thirdPackage.root.slug);
     const anyAccessor = thirdPackage.indexes.search.find((e) => e.kind.label === 'Accessor');
     if (anyAccessor) {
