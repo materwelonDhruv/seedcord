@@ -4,6 +4,34 @@ settings:
     autoInstallPeers: true
     excludeLinksFromLockfile: false
 
+catalogs:
+    deps:
+        chalk:
+            specifier: 5.6.2
+            version: 5.6.2
+        discord.js:
+            specifier: 14.22.1
+            version: 14.22.1
+        envapt:
+            specifier: 4.0.0
+            version: 4.0.0
+        mongoose:
+            specifier: 8.19.0
+            version: 8.19.0
+        reflect-metadata:
+            specifier: 0.2.2
+            version: 0.2.2
+        typedoc:
+            specifier: 0.28.13
+            version: 0.28.13
+    peer:
+        eslint:
+            specifier: 9.37.0
+            version: 9.37.0
+        typescript:
+            specifier: 5.9.3
+            version: 5.9.3
+
 importers:
     .:
         devDependencies:
@@ -82,6 +110,9 @@ importers:
             '@radix-ui/react-tooltip':
                 specifier: ^1.2.8
                 version: 1.2.8(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+            '@seedcord/api-docs':
+                specifier: workspace:^
+                version: link:../../packages/api-docs
             cmdk:
                 specifier: ^1.1.1
                 version: 1.1.1(@types/react-dom@19.2.0(@types/react@19.2.0))(@types/react@19.2.0)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -104,7 +135,7 @@ importers:
                 specifier: ^3.13.0
                 version: 3.13.0
             typedoc:
-                specifier: ^0.28.13
+                specifier: catalog:deps
                 version: 0.28.13(typescript@5.9.3)
             zustand:
                 specifier: ^5.0.8
@@ -168,7 +199,7 @@ importers:
     packages/api-docs:
         dependencies:
             typedoc:
-                specifier: ^0.28.13
+                specifier: catalog:deps
                 version: 0.28.13(typescript@5.9.3)
         devDependencies:
             '@seedcord/eslint-config':

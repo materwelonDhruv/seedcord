@@ -9,6 +9,7 @@ catalogs:
         envapt: 4.0.0
         mongoose: 8.19.0
         reflect-metadata: 0.2.2
+        typedoc: 0.28.13
     peer:
         eslint: 9.37.0
         typescript: 5.9.3

@@ -9,8 +9,27 @@
         "url": "https://github.com/materwelondhruv/seedcord.git",
         "directory": "packages/api-docs"
     },
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "types": "./dist/index.d.ts",
+            "import": "./dist/index.mjs",
+            "require": "./dist/index.cjs",
+            "default": "./dist/index.mjs"
+        }
+    },
+    "typesVersions": {
+        "*": {
+            "*": [
+                "./dist/index.d.ts",
+                "./src/index.ts"
+            ]
+        }
+    },
     "scripts": {
-        "extract": "tsx src/index.ts",
+        "build": "tsup",
+        "clean": "rm -rf dist",
+        "extract": "tsx src/cli.ts",
         "lint": "eslint 'src/**/*.ts' --cache",
         "lint:fix": "eslint 'src/**/*.ts' --cache --fix",
         "fmt": "prettier --write 'src/**/*.{ts,md,json}' --cache",
@@ -28,7 +47,7 @@
         "LICENSE"
     ],
     "dependencies": {
-        "typedoc": "^0.28.13"
+        "typedoc": "catalog:deps"
     },
     "devDependencies": {
         "@seedcord/eslint-config": "workspace:^",
