@@ -279,7 +279,7 @@ const attemptCustomSearch = (query: string, packageName: string | undefined, eng
     console.log(
         `Modifiers: ${node?.signatures[0]?.comment?.modifierTags.join(', ') ?? node?.comment?.modifierTags.join(', ') ?? 'n/a'}`
     );
-    console.dir(node, { depth: 2 });
+    console.dir(node, { depth: 5 });
     console.dir(results, { depth: undefined });
 };
 
@@ -310,7 +310,7 @@ const main = async (): Promise<void> => {
     logDivider();
 
     performance.mark('smoke-start');
-    attemptCustomSearch('goo', undefined, engine);
+    attemptCustomSearch('atleastone', undefined, engine);
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 
