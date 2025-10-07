@@ -10,10 +10,7 @@
         "lint:fix": "eslint . --fix",
         "fmt": "prettier --write . --cache",
         "fmt:check": "prettier --check . --cache",
-        "tc": "tsc --noEmit",
-        "test": "vitest run",
-        "test:watch": "vitest dev",
-        "coverage": "vitest run --coverage"
+        "tc": "tsc --noEmit"
     },
     "dependencies": {
         "@radix-ui/react-dialog": "^1.1.15",
