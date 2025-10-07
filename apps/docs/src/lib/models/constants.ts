@@ -6,7 +6,16 @@ export const MANIFEST_FILENAME = 'manifest.json';
 export const DEFAULT_GENERATED_DIR = path.resolve(__dirname, GENERATED_RELATIVE_PATH);
 
 export const resolveGeneratedDir = (rootDir?: string): string => {
-    return rootDir ?? DEFAULT_GENERATED_DIR;
+    const envOverride = process.env.SEEDCORD_DOCS_DIR;
+    if (typeof envOverride === 'string' && envOverride.trim().length > 0) {
+        return path.resolve(process.cwd(), envOverride.trim());
+    }
+
+    if (rootDir) {
+        return rootDir;
+    }
+
+    return DEFAULT_GENERATED_DIR;
 };
 
 export const resolveManifestPath = (rootDir?: string, manifestPath?: string): string => {

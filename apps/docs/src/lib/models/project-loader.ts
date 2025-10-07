@@ -21,6 +21,10 @@ export class ProjectLoader {
         const raw = await fs.readFile(jsonPath, 'utf8');
         const payload = JSON.parse(raw) as JSONOutput.ProjectReflection;
 
+        return this.fromObject(payload);
+    }
+
+    fromObject(payload: JSONOutput.ProjectReflection): ProjectReflection {
         const registry = new FileRegistry();
 
         return this.deserializer.reviveProject(payload.name, payload, {

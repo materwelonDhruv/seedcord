@@ -1,12 +1,16 @@
-import type { PackageDocResult } from '@seedcord/api-docs';
-import type { CommentDisplayPart, JSONOutput, ProjectReflection, ReflectionKind, VarianceModifier } from 'typedoc';
+import type { GlobalId } from './ids';
+import type { JSONOutput, ProjectReflection, ReflectionKind, VarianceModifier } from 'typedoc';
 
-export interface DocManifestPackage extends Omit<PackageDocResult, 'outputPath' | 'warnings' | 'errors'> {
+export interface DocManifestPackage {
+    name: string;
+    version: string;
+    entryPoints: string[];
     output: string | null;
-    warningCount: number;
-    errorCount: number;
     warnings: string[];
     errors: string[];
+    warningCount: number;
+    errorCount: number;
+    succeeded: boolean;
 }
 
 export interface DocManifest {
@@ -14,22 +18,27 @@ export interface DocManifest {
     tool: string;
     typedocVersion: string;
     outputDir: string;
+    repository?: {
+        url: string;
+        branch?: string;
+        commit?: string;
+    };
     packages: DocManifestPackage[];
 }
 
 export interface DocReference {
     name: string;
-    packageName?: string;
+    targetKey?: GlobalId;
     qualifiedName?: string;
+    packageName?: string;
     externalUrl?: string;
-    target?: number | string | null;
 }
 
 export interface DocCommentBlockTag {
     tag: string;
-    content: CommentDisplayPart[];
     text: string;
     name?: string;
+    content: JSONOutput.CommentDisplayPart[];
 }
 
 export interface DocCommentExample {
@@ -40,7 +49,7 @@ export interface DocCommentExample {
 
 export interface DocComment {
     summary: string;
-    summaryParts: CommentDisplayPart[];
+    summaryParts: JSONOutput.CommentDisplayPart[];
     blockTags: DocCommentBlockTag[];
     modifierTags: string[];
     examples: DocCommentExample[];
@@ -78,20 +87,20 @@ export interface DocSignatureParameter {
     id: number;
     name: string;
     kind: ReflectionKind;
-    type?: DocType | null | undefined;
-    defaultValue?: string | undefined;
-    comment?: DocComment | null | undefined;
+    type?: DocType | null;
+    defaultValue?: string;
+    comment?: DocComment | null;
     flags: DocFlags;
 }
 
 export interface DocSignature {
-    id: number;
+    id?: number;
     name: string;
     kind: ReflectionKind;
-    kindLabel: string;
     fragment: string;
     anchor: string;
     overloadIndex: number;
+    kindLabel: string;
     type?: DocType | null;
     parameters: DocSignatureParameter[];
     typeParameters: DocTypeParameter[];
@@ -99,36 +108,16 @@ export interface DocSignature {
     returnsComment?: DocCommentBlockTag | null;
     throws?: DocCommentBlockTag[];
     sources: DocSource[];
+    sourceUrl?: string;
     overwrites?: DocReference | null;
     inheritedFrom?: DocReference | null;
     implementationOf?: DocReference | null;
 }
 
-export interface DocKind {
-    id: ReflectionKind;
-    label: string;
-}
-
-export interface DocMembersGroup {
+export interface DocGroup {
     title: string;
     kind: ReflectionKind | null;
-    children: DocNode[];
-}
-
-export interface DocMembers {
-    all: DocNode[];
-    properties: DocNode[];
-    methods: DocNode[];
-    accessors: DocNode[];
-    constructors: DocNode[];
-    enumMembers: DocNode[];
-    functions: DocNode[];
-    namespaces: DocNode[];
-    interfaces: DocNode[];
-    classes: DocNode[];
-    typeAliases: DocNode[];
-    variables: DocNode[];
-    others: DocNode[];
+    childKeys: GlobalId[];
 }
 
 export interface DocInheritance {
@@ -140,45 +129,48 @@ export interface DocInheritance {
 
 export interface DocNode {
     id: number;
-    name: string;
+    key: GlobalId;
     packageName: string;
+    packageVersion?: string;
+    name: string;
     path: string[];
-    fullName: string;
+    qualifiedName: string;
     slug: string;
-    kind: DocKind;
+    kind: ReflectionKind;
+    kindLabel: string;
     flags: DocFlags;
     comment?: DocComment | null;
-    external?: DocReference | null;
     type?: DocType | null;
     typeParameters: DocTypeParameter[];
-    signatures: DocSignature[];
-    members: DocMembers;
-    groups: DocMembersGroup[];
-    sources: DocSource[];
     defaultValue?: string;
+    signatures: DocSignature[];
+    children: DocNode[];
+    groups: DocGroup[];
+    sources: DocSource[];
+    sourceUrl?: string;
     inheritance: DocInheritance;
     overwrites?: DocReference | null;
     inheritedFrom?: DocReference | null;
     implementationOf?: DocReference | null;
-    children: DocNode[];
 }
 
 export interface DocSearchEntry {
-    id: number;
-    packageName: string;
     slug: string;
     name: string;
-    fullName: string;
-    kind: DocKind;
+    qualifiedName: string;
+    packageName: string;
+    packageVersion?: string;
+    kind: ReflectionKind;
     summary: string | null;
-    detail: string | null;
+    aliases?: string[];
+    file?: string;
     tokens: string[];
 }
 
 export interface DocIndexes {
     byId: Map<number, DocNode>;
-    byFullName: Map<string, DocNode>;
     bySlug: Map<string, DocNode>;
+    byQName: Map<string, DocNode>;
     byKind: Map<ReflectionKind, DocNode[]>;
     search: DocSearchEntry[];
 }
@@ -194,5 +186,6 @@ export interface DocPackageModel {
 export interface DocCollection {
     manifest: DocManifest;
     packages: DocPackageModel[];
-    indexes: DocIndexes;
+    byKey: Map<GlobalId, DocNode>;
+    byGlobalSlug: Map<string, DocNode>;
 }

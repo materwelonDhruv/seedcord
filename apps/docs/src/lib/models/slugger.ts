@@ -37,4 +37,6 @@ export class Slugger {
     }
 }
 
+export const slugForNode = (slugger: Slugger, path: string[]): string => slugger.fromSegments(path);
+
 export { slugifySegment };

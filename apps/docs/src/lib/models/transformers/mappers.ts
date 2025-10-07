@@ -1,11 +1,11 @@
 import {
-    ReflectionKind,
     Serializer,
     type Comment,
     type DeclarationReflection,
     type ParameterReflection,
     type Reflection,
     type ReflectionGroup,
+    type ReflectionKind,
     type ReflectionType,
     type SignatureReflection,
     type SomeType,
@@ -13,22 +13,42 @@ import {
     type TypeParameterReflection
 } from 'typedoc';
 
+import { toGlobalId, type GlobalId } from '../ids';
+import { kindLabel } from '../kinds';
+
 import type {
     DocComment,
     DocFlags,
-    DocInheritance,
-    DocMembersGroup,
-    DocNode,
+    DocGroup,
     DocReference,
     DocSignature,
     DocSignatureParameter,
     DocSource,
     DocType,
-    DocTypeParameter
+    DocTypeParameter,
+    DocInheritance
 } from '../types';
 import type { TransformContext } from './transform-context';
 
 const serializer = new Serializer();
+
+const typeToken = (type: SomeType | ReflectionType | undefined): string => {
+    if (!type) {
+        return 't';
+    }
+
+    try {
+        const serialized = serializer.toObject(type) as { type?: unknown };
+        const primitive = serialized.type;
+        if (typeof primitive === 'string' && primitive.length > 0) {
+            return primitive;
+        }
+    } catch {
+        // ignore serialization failures and fall back to placeholder token
+    }
+
+    return 't';
+};
 
 const toDocType = (type: SomeType | ReflectionType | undefined): DocType | null => {
     if (!type) {
@@ -38,9 +58,60 @@ const toDocType = (type: SomeType | ReflectionType | undefined): DocType | null 
     try {
         return serializer.toObject(type);
     } catch {
-        // Fallback to the raw object shape if serialization fails for exotic types.
         return type as unknown as DocType;
     }
+};
+
+interface ReferenceCandidate {
+    name?: string;
+    packageName?: string;
+    package?: string;
+    qualifiedName?: string;
+    target?: number | string | null;
+    id?: number;
+    externalUrl?: string;
+    url?: string;
+    sources?: { url?: string }[];
+}
+
+const selectPackageName = (candidate: ReferenceCandidate, fallback: string): string | undefined => {
+    const pkg = candidate.packageName ?? candidate.package;
+    if (typeof pkg === 'string' && pkg.length > 0) {
+        return pkg;
+    }
+
+    return fallback.length > 0 ? fallback : undefined;
+};
+
+const pickReferenceUrl = (candidate: ReferenceCandidate): string | undefined => {
+    if (candidate.externalUrl && candidate.externalUrl.length > 0) {
+        return candidate.externalUrl;
+    }
+
+    if (candidate.url && candidate.url.length > 0) {
+        return candidate.url;
+    }
+
+    if (Array.isArray(candidate.sources)) {
+        const found = candidate.sources.find((source) => typeof source.url === 'string' && source.url.length > 0);
+        if (found?.url) {
+            return found.url;
+        }
+    }
+
+    return undefined;
+};
+
+const pickReferenceTarget = (candidate: ReferenceCandidate): number | undefined => {
+    if (typeof candidate.target === 'number') {
+        return candidate.target;
+    }
+
+    if (typeof candidate.id === 'number') {
+        return candidate.id;
+    }
+
+    return undefined;
 };
 
 export const mapType = (type: SomeType | ReflectionType | undefined): DocType | null => toDocType(type);
@@ -83,6 +154,11 @@ export const mapSources = (sources: SourceReference[] | undefined): DocSource[] 
     });
 };
 
+export const primaryUrlFromSources = (sources?: SourceReference[]): string | undefined =>
+    Array.isArray(sources)
+        ? sources.find((source) => typeof source.url === 'string' && source.url.length > 0)?.url
+        : undefined;
+
 export const mapSignatureParameters = (
     context: TransformContext,
     parameters: readonly ParameterReflection[] | undefined
@@ -90,17 +166,20 @@ export const mapSignatureParameters = (
     if (!parameters) return [];
 
     return parameters.map((parameter) => {
-        const docParameter: DocSignatureParameter = {
+        const result: DocSignatureParameter = {
             id: parameter.id,
             name: parameter.name,
             kind: parameter.kind,
             type: mapType(parameter.type),
-            defaultValue: parameter.defaultValue,
             comment: mapComment(context, parameter.comment),
             flags: mapFlags(parameter)
         };
 
-        return docParameter;
+        if (typeof parameter.defaultValue === 'string') {
+            result.defaultValue = parameter.defaultValue;
+        }
+
+        return result;
     });
 };
 
@@ -140,149 +219,154 @@ export const mapTypeParameters = (
     });
 };
 
-export const mapReference = (reference: unknown): DocReference | null => {
+export const mapReference = (context: TransformContext, reference: unknown): DocReference | null => {
     if (!reference || typeof reference !== 'object') {
         return null;
     }
 
-    const candidate = reference as {
-        name?: string;
-        packageName?: string;
-        package?: string;
-        qualifiedName?: string;
-        target?: number | string | null;
-        externalUrl?: string;
-        url?: string;
-        id?: number;
-        sources?: { url?: string }[];
-    };
+    const candidate = reference as ReferenceCandidate;
 
-    if (!candidate.name) {
+    const name = typeof candidate.name === 'string' && candidate.name.length > 0 ? candidate.name : undefined;
+    if (!name) {
         return null;
     }
 
-    const sourceUrl = candidate.externalUrl ?? candidate.url ?? candidate.sources?.[0]?.url;
+    const packageName = selectPackageName(candidate, context.manifest.name);
+    const qualifiedName =
+        typeof candidate.qualifiedName === 'string' && candidate.qualifiedName.length > 0
+            ? candidate.qualifiedName
+            : undefined;
+    const target = pickReferenceTarget(candidate);
+    const externalUrl = pickReferenceUrl(candidate);
 
-    const result: DocReference = {
-        name: candidate.name
-    };
+    const result: DocReference = { name };
 
-    const packageName = candidate.packageName ?? candidate.package;
     if (packageName) {
         result.packageName = packageName;
     }
 
-    if (candidate.qualifiedName) {
-        result.qualifiedName = candidate.qualifiedName;
+    if (qualifiedName) {
+        result.qualifiedName = qualifiedName;
     }
 
-    if (sourceUrl) {
-        result.externalUrl = sourceUrl;
+    if (externalUrl) {
+        result.externalUrl = externalUrl;
     }
 
-    const resolvedTarget = candidate.target ?? (typeof candidate.id === 'number' ? candidate.id : null);
-    if (resolvedTarget !== null) {
-        result.target = resolvedTarget;
+    if (typeof target === 'number') {
+        const owningPackage = result.packageName ?? context.manifest.name;
+        result.targetKey = toGlobalId(owningPackage, target);
     }
 
     return result;
 };
 
-export const mapGroups = (group: ReflectionGroup, lookup: Map<number, DocNode>): DocMembersGroup => {
-    const rawChildren = Array.isArray(group.children) ? group.children : [];
-    const resolveChild = (child: unknown): DocNode | null => {
-        if (typeof child === 'number') {
-            return lookup.get(child) ?? null;
+export const mapGroups = (group: ReflectionGroup, packageName: string): DocGroup => {
+    const childIds = Array.isArray(group.children) ? group.children : [];
+    const childKeys: GlobalId[] = [];
+
+    for (const raw of childIds) {
+        if (typeof raw === 'number') {
+            childKeys.push(toGlobalId(packageName, raw));
+            continue;
         }
 
-        if (typeof child === 'object' && child !== null) {
-            const childId = (child as { id?: number }).id;
-            if (typeof childId === 'number') {
-                return lookup.get(childId) ?? null;
-            }
+        const maybeId = (raw as { id?: number }).id;
+        if (typeof maybeId === 'number') {
+            childKeys.push(toGlobalId(packageName, maybeId));
         }
-
-        return null;
-    };
-
-    const children = rawChildren
-        .map((child) => resolveChild(child))
-        .filter((child): child is DocNode => Boolean(child));
+    }
 
     return {
         title: group.title,
         kind: 'kind' in group ? ((group as { kind?: ReflectionKind }).kind ?? null) : null,
-        children
+        childKeys
     };
 };
 
-function sigFragment(s: SignatureReflection): string {
+function sigFragment(signature: SignatureReflection): string {
     const HASH_BASE = 36;
-    const name = s.name;
-    const params = (s.parameters ?? [])
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        .map((p) => (p.type ? (serializer.toObject(p.type).type ?? 't') : 't'))
-        .join(',');
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const ret = s.type ? (serializer.toObject(s.type).type ?? 't') : 't';
-    let djb2HashSeed = 5381;
-    for (const ch of `${name}(${params}):${ret}`) djb2HashSeed = (djb2HashSeed << 5) + djb2HashSeed + ch.charCodeAt(0);
-    return `${name}-${(djb2HashSeed >>> 0).toString(HASH_BASE)}`;
+    const name = signature.name;
+    const params = (signature.parameters ?? []).map((parameter) => typeToken(parameter.type)).join(',');
+    const ret = typeToken(signature.type);
+    let hash = 5381;
+    for (const ch of `${name}(${params}):${ret}`) {
+        hash = (hash << 5) + hash + ch.charCodeAt(0);
+    }
+    return `${name}-${(hash >>> 0).toString(HASH_BASE)}`;
 }
 
 export const mapSignature = (
     context: TransformContext,
     signature: SignatureReflection,
     parent: { id: number; name: string; slug: string },
-    index: number
+    index: number,
+    fragmentRegistry?: Set<string>
 ): DocSignature => {
     const comment = mapComment(context, signature.comment);
     const returnsTag = signature.comment?.getTag('@returns') ?? null;
     const throwsTags = signature.comment?.getTags('@throws') ?? [];
 
-    const fragment = sigFragment(signature);
-    const anchor = `${parent.slug}#${fragment}`;
-    let kindLabel: string;
-    if (typeof ReflectionKind.singularString === 'function') {
-        kindLabel = ReflectionKind.singularString(signature.kind);
-    } else {
-        const maybeLabel = ReflectionKind[signature.kind];
-        kindLabel = typeof maybeLabel === 'string' ? maybeLabel : `Signature ${signature.kind}`;
+    let fragment = sigFragment(signature);
+    if (fragmentRegistry) {
+        let attempt = 0;
+        let candidate = fragment;
+        while (fragmentRegistry.has(candidate)) {
+            attempt += 1;
+            candidate = `${fragment}-o${attempt}`;
+        }
+        fragment = candidate;
+        fragmentRegistry.add(fragment);
     }
 
-    const identifier = typeof signature.id === 'number' ? signature.id : parent.id * 1000 + index;
-    const name = signature.name && signature.name.length > 0 ? signature.name : parent.name;
+    const anchor = `${parent.slug}#${fragment}`;
 
-    return {
-        id: identifier,
-        name,
+    const returnsComment = returnsTag ? context.commentTransformer.toBlockTag(returnsTag) : null;
+    const throws = throwsTags.map((tag) => context.commentTransformer.toBlockTag(tag));
+
+    const docSignature: DocSignature = {
+        name: signature.name && signature.name.length > 0 ? signature.name : parent.name,
         kind: signature.kind,
-        kindLabel,
         fragment,
         anchor,
         overloadIndex: index,
+        kindLabel: kindLabel(signature.kind),
         type: mapType(signature.type),
         parameters: mapSignatureParameters(context, signature.parameters),
         typeParameters: mapTypeParameters(context, signature.typeParameters),
         comment,
-        returnsComment: returnsTag ? context.commentTransformer.toBlockTag(returnsTag) : null,
-        throws: throwsTags.map((tag) => context.commentTransformer.toBlockTag(tag)),
+        returnsComment,
         sources: mapSources(signature.sources),
-        overwrites: mapReference(signature.overwrites),
-        inheritedFrom: mapReference(signature.inheritedFrom),
-        implementationOf: mapReference(signature.implementationOf)
+        overwrites: mapReference(context, signature.overwrites),
+        inheritedFrom: mapReference(context, signature.inheritedFrom),
+        implementationOf: mapReference(context, signature.implementationOf)
     };
+
+    if (throws.length > 0) {
+        docSignature.throws = throws;
+    }
+
+    const sourceUrl = primaryUrlFromSources(signature.sources);
+    if (typeof sourceUrl === 'string') {
+        docSignature.sourceUrl = sourceUrl;
+    }
+
+    if (typeof signature.id === 'number') {
+        docSignature.id = signature.id;
+    }
+
+    return docSignature;
 };
 
 const mapDocTypeArray = (types: readonly (SomeType | ReflectionType)[] | undefined): DocType[] => {
-    const results: DocType[] = [];
+    const out: DocType[] = [];
     for (const type of types ?? []) {
         const mapped = mapType(type);
         if (mapped) {
-            results.push(mapped);
+            out.push(mapped);
         }
     }
-    return results;
+    return out;
 };
 
 export const mapInheritance = (reflection: DeclarationReflection): DocInheritance => ({

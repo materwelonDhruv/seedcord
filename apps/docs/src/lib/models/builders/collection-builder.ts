@@ -3,8 +3,8 @@ import path from 'node:path';
 
 import { buildPackage } from './package-builder';
 
-import type { DocCollection, DocIndexes, DocManifest, DocManifestPackage, DocPackageModel } from '../types';
-import type { ReflectionKind } from 'typedoc';
+import type { GlobalId } from '../ids';
+import type { DocCollection, DocManifest, DocManifestPackage, DocPackageModel } from '../types';
 
 export interface ResolveOptions {
     workspaceRoot: string;
@@ -20,16 +20,25 @@ const collectBaseCandidates = (options: ResolveOptions): string[] => {
         ordered.add(options.generatedRoot);
     }
 
-    ordered.add(options.workspaceRoot);
-
-    const trimmed = options.manifestOutputDir.trim();
-    if (trimmed.length > 0) {
-        ordered.add(path.resolve(options.workspaceRoot, trimmed));
-    }
-
     ordered.add(options.manifestDir);
 
+    const resolvedOutput = resolveOutputCandidate(options.workspaceRoot, options.manifestOutputDir);
+    if (resolvedOutput) {
+        ordered.add(resolvedOutput);
+    }
+
+    ordered.add(options.workspaceRoot);
+
     return Array.from(ordered);
+};
+
+const resolveOutputCandidate = (workspaceRoot: string, outputDir: string): string | null => {
+    const trimmed = outputDir.trim();
+    if (trimmed.length === 0) {
+        return null;
+    }
+
+    return path.resolve(workspaceRoot, trimmed);
 };
 
 const resolvePackageJsonPath = (pkg: DocManifestPackage, baseCandidates: string[]): string | null => {
@@ -72,38 +81,21 @@ export const buildCollection = async (manifest: DocManifest, options: ResolveOpt
         packages.push(model);
     }
 
-    const indexes = mergeIndexes(packages);
-    return { manifest, packages, indexes };
+    const { byKey, byGlobalSlug } = buildGlobalMaps(packages);
+    return { manifest, packages, byKey, byGlobalSlug };
 };
 
-const mergeIndexes = (packages: DocPackageModel[]): DocIndexes => {
-    const byId = new Map<number, DocPackageModel['root']>();
-    const byFullName = new Map<string, DocPackageModel['root']>();
-    const bySlug = new Map<string, DocPackageModel['root']>();
-    const byKind = new Map<ReflectionKind, DocPackageModel['root'][]>();
-    const search: DocPackageModel['indexes']['search'] = [];
+const buildGlobalMaps = (packages: DocPackageModel[]): Pick<DocCollection, 'byKey' | 'byGlobalSlug'> => {
+    const byKey = new Map<GlobalId, DocPackageModel['root']>();
+    const byGlobalSlug = new Map<string, DocPackageModel['root']>();
 
     for (const pkg of packages) {
-        for (const [id, node] of pkg.indexes.byId.entries()) {
-            byId.set(id, node);
+        for (const node of pkg.indexes.byId.values()) {
+            byKey.set(node.key, node);
+            const slugKey = `${pkg.manifest.name}:${node.slug}`;
+            byGlobalSlug.set(slugKey, node);
         }
-
-        for (const [fullName, node] of pkg.indexes.byFullName.entries()) {
-            byFullName.set(`${pkg.manifest.name}:${fullName}`, node);
-        }
-
-        for (const [slug, node] of pkg.indexes.bySlug.entries()) {
-            bySlug.set(`${pkg.manifest.name}:${slug}`, node);
-        }
-
-        for (const [kind, nodes] of pkg.indexes.byKind.entries()) {
-            const existing = byKind.get(kind) ?? [];
-            existing.push(...nodes);
-            byKind.set(kind, existing);
-        }
-
-        search.push(...pkg.indexes.search);
     }
 
-    return { byId, byFullName, bySlug, byKind, search };
+    return { byKey, byGlobalSlug };
 };
