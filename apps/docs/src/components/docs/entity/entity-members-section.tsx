@@ -43,7 +43,7 @@ function MemberList({
                     <li key={item.id}>
                         <Link
                             href={`#${prefix}-${item.id}`}
-                            className="group flex items-center justify-start gap-3 rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-4 py-3 text-sm font-semibold text-[var(--text)] shadow-soft transition hover:border-[color-mix(in_srgb,var(--accent-b)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent-b)_18%,var(--surface)_82%)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_75%,var(--border))] focus-visible:outline-offset-2"
+                            className="group flex items-center justify-start gap-3 rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-4 py-3 text-sm font-semibold text-[var(--text)] shadow-soft transition duration-0 hover:border-[color-mix(in_srgb,var(--accent-b)_38%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent-b)_18%,var(--surface)_82%)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_75%,var(--border))] focus-visible:outline-offset-2"
                         >
                             <span className="truncate transition group-hover:text-[color-mix(in_srgb,var(--text)_78%,var(--accent-b)_22%)]">
                                 {item.label}

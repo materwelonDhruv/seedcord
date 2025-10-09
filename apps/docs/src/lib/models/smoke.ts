@@ -279,6 +279,7 @@ const attemptCustomSearch = (query: string, packageName: string | undefined, eng
     console.log(
         `Modifiers: ${node?.signatures[0]?.comment?.modifierTags.join(', ') ?? node?.comment?.modifierTags.join(', ') ?? 'n/a'}`
     );
+    console.log(`Kind: ${formatKind(node?.kind ?? null)}`);
     console.dir(node, { depth: 5 });
     console.dir(results, { depth: undefined });
 };
