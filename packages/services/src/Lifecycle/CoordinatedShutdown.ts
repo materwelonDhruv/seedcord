@@ -30,7 +30,10 @@ const PHASE_ORDER: ShutdownPhase[] = [
     ShutdownPhase.FinalCleanup
 ];
 
-type CoordinatedShutdownEventKey = PhaseEvents<'shutdown', UnionToTuple<ShutdownPhase>>;
+/**
+ * Event keys for coordinated shutdown phases
+ */
+export type CoordinatedShutdownEventKey = PhaseEvents<'shutdown', UnionToTuple<ShutdownPhase>>;
 
 const LOG_FLUSH_DELAY_MS = 500;
 
@@ -124,7 +127,7 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
      * Tasks within each phase are executed in parallel for faster shutdown.
      * Process exits with the specified code when complete.
      *
-     * @param exitCode - Process exit code (default: 0)
+     * @param exitCode - Process exit code (default: `0`)
      * @returns Promise that resolves when shutdown is complete
      * @example
      * ```typescript

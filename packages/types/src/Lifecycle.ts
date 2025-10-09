@@ -5,8 +5,8 @@ export type LifecycleAction = 'start' | 'complete' | 'error';
 
 /**
  * Creates event names for lifecycle managers with phase numbers and actions
- * @param Prefix - The prefix string for lifecycle events
- * @param Phases - Array of phase numbers to generate events for
+ * @typeParam Prefix - The prefix string for lifecycle events
+ * @typeParam Phases - Array of phase numbers to generate events for
  */
 export type PhaseEvents<Prefix extends string, Phases extends number[]> =
     | `phase:${NumberRange<1, Phases['length']>}:${TypedExclude<LifecycleAction, 'error'>}`

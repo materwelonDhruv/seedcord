@@ -27,7 +27,12 @@ import { Envapt } from 'envapt';
 
 import type { ColorResolvable } from 'discord.js';
 
-const BuilderTypes = {
+/**
+ * Available Discord.js builder classes for use with BuilderComponent
+ *
+ * @internal
+ */
+export const BuilderTypes = {
     // Command Components
     command: SlashCommandBuilder,
     context_menu: ContextMenuCommandBuilder,
@@ -60,7 +65,12 @@ const BuilderTypes = {
     separator: SeparatorBuilder
 };
 
-const RowTypes: {
+/**
+ * Available Discord.js action row classes for use with RowComponent
+ *
+ * @internal
+ */
+export const RowTypes: {
     button: typeof ActionRowBuilder<ButtonBuilder>;
     menu_string: typeof ActionRowBuilder<StringSelectMenuBuilder>;
     menu_user: typeof ActionRowBuilder<UserSelectMenuBuilder>;
@@ -76,11 +86,25 @@ const RowTypes: {
     menu_role: ActionRowBuilder<RoleSelectMenuBuilder>
 };
 
-type BuilderType = keyof typeof BuilderTypes;
-type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
+/**
+ * Available Discord.js builder types for use with BuilderComponent
+ */
+export type BuilderType = keyof typeof BuilderTypes;
 
-type ActionRowComponentType = keyof typeof RowTypes;
-type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
+/**
+ * @internal
+ */
+export type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
+
+/**
+ * Available Discord.js action row types for use with RowComponent
+ */
+export type ActionRowComponentType = keyof typeof RowTypes;
+
+/**
+ * @internal
+ */
+export type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
 
 /**
  * Base class for Discord component wrappers

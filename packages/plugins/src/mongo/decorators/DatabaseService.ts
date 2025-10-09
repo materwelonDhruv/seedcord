@@ -10,6 +10,7 @@ export const ServiceMetadataKey = Symbol('db:serviceKey');
  * Associates a service class with a key for dependency injection.
  * The service becomes available via `core.db.services[key]`.
  *
+ * @typeParam TService - The service key type
  * @param key - Service key for registration and type-safe access
  * @decorator
  * @example

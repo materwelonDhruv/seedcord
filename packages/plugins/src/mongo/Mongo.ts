@@ -15,7 +15,7 @@ import type { Core } from 'seedcord';
 /**
  * Configuration options for MongoDB connection and service loading.
  */
-interface MongoOptions {
+export interface MongoOptions {
     /** Directory path containing database service classes */
     dir: string;
     /** MongoDB connection URI */

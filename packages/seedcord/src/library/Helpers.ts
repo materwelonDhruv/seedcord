@@ -10,7 +10,7 @@ import type { CustomErrorConstructor } from '../interfaces/Components';
  * Wraps an unknown error in a {@link CustomError} subclass. If the error class
  * is {@link DatabaseError}, a UUID is generated and passed to the constructor.
  *
- * @typeParam T - A constructor for a {@link CustomError} subclass
+ * @typeParam Ctor - A constructor for a {@link CustomError} subclass
  * @param error - The original error or value
  * @param message - Custom message to include
  * @param CustomError - Error class to instantiate and throw

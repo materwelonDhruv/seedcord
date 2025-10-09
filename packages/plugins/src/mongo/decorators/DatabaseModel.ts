@@ -11,6 +11,7 @@ export const ModelMetadataKey = Symbol('db:model');
  * for service registration. The model becomes available as `this.model` in the service.
  * Must be applied to a `public static schema` property in the service class.
  *
+ * @typeParam TService - The service key type
  * @param collection - Collection name for the Mongoose model
  * @decorator
  * @example

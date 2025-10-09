@@ -12,7 +12,7 @@ import type { ClientEvents } from 'discord.js';
  * Automatically handles errors in event handlers and sends error responses
  * if the event contains a Discord message object.
  *
- * @param log - Whether to log errors to console (default: false)
+ * @param log - Whether to log errors to console (default: `false`)
  * @decorator
  * @example
  * ```typescript

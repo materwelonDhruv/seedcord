@@ -4,8 +4,9 @@ import type { ClientOptions } from 'discord.js';
 
 /**
  * Djs Interactions handlers
+ *
  */
-interface InteractionsConfig {
+export interface InteractionsConfig {
     /**
      * Path to dir containing interaction handlers.
      */
@@ -16,7 +17,7 @@ interface InteractionsConfig {
 /**
  * Djs Events handlers
  */
-interface EventsConfig {
+export interface EventsConfig {
     /**
      * Path to dir containing event handlers.
      */
@@ -26,7 +27,7 @@ interface EventsConfig {
 /**
  * Djs SlashCommands and ContextMenuCommands
  */
-interface CommandsConfig {
+export interface CommandsConfig {
     /**
      * Path to dir containing commands and context menus to register.
      */
@@ -36,7 +37,7 @@ interface CommandsConfig {
 /**
  * Application side effects configuration
  */
-interface EffectsConfig {
+export interface EffectsConfig {
     /**
      * Path to dir of user defined side effects.
      */
@@ -46,7 +47,7 @@ interface EffectsConfig {
 /**
  * Discord bot configuration
  */
-interface BotConfig {
+export interface BotConfig {
     interactions: InteractionsConfig;
     events: EventsConfig;
     commands: CommandsConfig;
