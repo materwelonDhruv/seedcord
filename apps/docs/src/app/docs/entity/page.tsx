@@ -3,10 +3,8 @@ import { highlightToHtml } from '../../../lib/shiki';
 
 import type { ReactElement } from 'react';
 
-type SearchParamsInput =
-    | Record<string, string | string[] | undefined>
-    | Promise<Record<string, string | string[] | undefined>>
-    | undefined;
+type SearchParamsRecord = Record<string, string | string[] | undefined>;
+type SearchParamsInput = Promise<SearchParamsRecord>;
 
 interface EntityPageProps {
     searchParams?: SearchParamsInput;
@@ -21,7 +19,7 @@ function resolveParam(value: string | string[] | undefined): string | undefined 
 }
 
 export default async function EntityPage({ searchParams }: EntityPageProps): Promise<ReactElement> {
-    const resolvedParams = (await Promise.resolve(searchParams)) ?? {};
+    const resolvedParams: SearchParamsRecord = searchParams ? await searchParams : {};
 
     const symbolName = resolveParam(resolvedParams.symbol) ?? 'Client';
     const kind = resolveParam(resolvedParams.kind) ?? 'class';
