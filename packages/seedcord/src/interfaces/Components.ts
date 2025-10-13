@@ -170,6 +170,12 @@ abstract class BaseComponent<TComponent> {
 export abstract class BuilderComponent<BuilderKey extends BuilderType> extends BaseComponent<
     InstantiatedBuilder<BuilderKey>
 > {
+    /**
+     * Bot color for the component
+     * Uses the DEFAULT_BOT_COLOR environment variable or falls back to 'Default' set by Discord.js.
+     *
+     * Set DEFAULT_BOT_COLOR to a hex code in your `.env` file to customize.
+     */
     @Envapt<ColorResolvable>('DEFAULT_BOT_COLOR', { fallback: 'Default' })
     declare private readonly botColor: ColorResolvable;
 
