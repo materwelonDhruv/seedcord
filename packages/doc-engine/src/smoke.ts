@@ -316,8 +316,12 @@ const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
     { query: 'checkPermissions' },
     { query: 'canAddTask' },
     { query: 'logout' },
-    { query: 'isRunning' },
     { query: 'addTask' },
+
+    // Accessors
+    { query: 'isRunning' },
+    { query: 'custom error emit' },
+    { query: 'client' },
 
     // Interfaces
     { query: 'HandlerWithChecks' },
