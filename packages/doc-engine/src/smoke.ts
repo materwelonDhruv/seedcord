@@ -310,6 +310,7 @@ const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
     { query: 'PLUGIN_INIT_TIMEOUT_MS' },
     { query: 'botColor' },
     { query: 'tasksMap' },
+    { query: 'host' },
 
     // Methods
     { query: 'checkPermissions' },
