@@ -1,3 +1,5 @@
+import { ReflectionKind } from 'typedoc';
+
 import { buildCollection, type ResolveOptions } from './builders/collection-builder';
 
 import type { GlobalId } from './ids';
@@ -60,6 +62,8 @@ export class DocsEngine {
 
         const score = (entry: DocSearchEntry): number => {
             let value = 0;
+            const slugTokens = tokenizeSlug(entry.slug);
+
             for (const token of tokens) {
                 if (safeEquals(entry.name, token)) {
                     value += SCORE_NAME_EXACT;
@@ -88,6 +92,16 @@ export class DocsEngine {
                 if (safeEquals(entry.packageName, token) || safeEquals(entry.packageVersion, token)) {
                     value += SCORE_PACKAGE_MATCH;
                 }
+
+                if (slugTokens.has(token)) {
+                    value += SCORE_SLUG_EXACT;
+                } else if (hasSlugPrefix(slugTokens, token)) {
+                    value += SCORE_SLUG_PREFIX;
+                }
+            }
+
+            if (value > 0) {
+                value += getKindWeight(entry.kind);
             }
 
             return value;
@@ -158,11 +172,61 @@ const SCORE_TOKEN_PREFIX = 2;
 const SCORE_ALIAS_EXACT = 9;
 const SCORE_FILE_EXACT = 5;
 const SCORE_PACKAGE_MATCH = 3;
+const SCORE_SLUG_EXACT = 7;
+const SCORE_SLUG_PREFIX = 3;
+const KIND_SCORE_DEFAULT = 4;
+const KIND_SCORE_TABLE: Partial<Record<ReflectionKind, number>> = {
+    [ReflectionKind.Class]: 18,
+    [ReflectionKind.Interface]: 16,
+    [ReflectionKind.TypeAlias]: 15,
+    [ReflectionKind.Enum]: 14,
+    [ReflectionKind.Function]: 13,
+    [ReflectionKind.Constructor]: 12,
+    [ReflectionKind.Method]: 11,
+    [ReflectionKind.Accessor]: 10,
+    [ReflectionKind.Property]: 9,
+    [ReflectionKind.EnumMember]: 7,
+    [ReflectionKind.Variable]: 7,
+    [ReflectionKind.TypeParameter]: 6,
+    [ReflectionKind.Project]: 1,
+    [ReflectionKind.Module]: 6,
+    [ReflectionKind.Namespace]: 6,
+    [ReflectionKind.CallSignature]: 10,
+    [ReflectionKind.ConstructorSignature]: 10,
+    [ReflectionKind.IndexSignature]: 8,
+    [ReflectionKind.GetSignature]: 10,
+    [ReflectionKind.SetSignature]: 10
+};
 
 const collator = new Intl.Collator(undefined, { sensitivity: 'accent', usage: 'search' });
 
 const safeEquals = (value: string | undefined, token: string): boolean =>
     typeof value === 'string' && value.length > 0 && collator.compare(value.toLowerCase(), token) === 0;
+
+const tokenizeSlug = (slug: string): Set<string> => {
+    if (!slug) {
+        return new Set();
+    }
+
+    const parts = slug
+        .split(/[^a-zA-Z0-9]+/gu)
+        .filter(Boolean)
+        .map((part) => part.toLowerCase());
+
+    return new Set(parts);
+};
+
+const hasSlugPrefix = (tokens: Set<string>, candidate: string): boolean => {
+    for (const token of tokens) {
+        if (token.startsWith(candidate)) {
+            return true;
+        }
+    }
+
+    return false;
+};
+
+const getKindWeight = (kind: ReflectionKind): number => KIND_SCORE_TABLE[kind] ?? KIND_SCORE_DEFAULT;
 
 const aggregateSearchIndex = (collection: DocCollection): DocSearchEntry[] =>
     collection.packages.flatMap((pkg) => pkg.indexes.search);

@@ -37,6 +37,14 @@ export type CoordinatedShutdownEventKey = PhaseEvents<'shutdown', UnionToTuple<S
 
 const LOG_FLUSH_DELAY_MS = 500;
 
+/**
+ * CoordinatedShutdown manages graceful application shutdown by executing registered tasks across defined phases.
+ *
+ * It listens for termination signals (SIGINT, SIGTERM) and runs tasks in parallel within each phase.
+ * Tasks can be added or removed dynamically, and each task has an associated timeout.
+ *
+ * Enable or disable the shutdown mechanism via the SHUTDOWN_IS_ENABLED environment variable. It's disabled by default. I recommend enabling it in production environments.
+ */
 export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     @Envapt('SHUTDOWN_IS_ENABLED', { fallback: false })
     declare private readonly isShutdownEnabled: boolean;

@@ -271,8 +271,7 @@ const findWorkspaceRoot = (): string => {
 };
 
 const attemptCustomSearch = (query: string, packageName: string | undefined, engine: DocsEngine): void => {
-    // eslint-disable-next-line no-magic-numbers
-    const results = engine.search(query, packageName).slice(0, 3);
+    const results = engine.search(query, packageName).slice(0, 5);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const node = engine.getNodeBySlug(results[0]!.packageName, results[0]?.slug ?? '');
     // const node = engine.getNodeBySlug(packageName, 'bot/client');
@@ -311,7 +310,7 @@ const main = async (): Promise<void> => {
     logDivider();
 
     performance.mark('smoke-start');
-    attemptCustomSearch('atleastone', undefined, engine);
+    attemptCustomSearch('denomin', undefined, engine);
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 
