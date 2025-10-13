@@ -25,6 +25,51 @@ import { slugForNode } from '../slugger';
 
 import type { DocInheritance, DocNode } from '../types';
 
+const formatLiteralValue = (value: unknown): string | undefined => {
+    if (value === undefined) return undefined;
+    if (value === null) return 'null';
+
+    if (typeof value === 'string') {
+        return JSON.stringify(value);
+    }
+
+    if (typeof value === 'number') {
+        return Number.isFinite(value) ? String(value) : undefined;
+    }
+
+    if (typeof value === 'boolean') {
+        return value ? 'true' : 'false';
+    }
+
+    if (typeof value === 'bigint') {
+        return `${value.toString()}n`;
+    }
+
+    return undefined;
+};
+
+const extractEnumLiteralValue = (
+    reflection: DeclarationReflection,
+    mappedType: DocNode['type']
+): string | undefined => {
+    const literalFromReflection = (reflection.type as { type?: string; value?: unknown } | undefined) ?? null;
+    if (literalFromReflection && literalFromReflection.type === 'literal' && 'value' in literalFromReflection) {
+        const formatted = formatLiteralValue(literalFromReflection.value);
+        if (formatted !== undefined) {
+            return formatted;
+        }
+    }
+
+    if (mappedType && typeof mappedType === 'object' && (mappedType as { type?: string }).type === 'literal') {
+        const literal = mappedType as { value?: unknown };
+        if ('value' in literal) {
+            return formatLiteralValue(literal.value);
+        }
+    }
+
+    return undefined;
+};
+
 const buildPathSegments = (
     reflection: ProjectReflection | DeclarationReflection,
     _context: TransformContext,
@@ -159,6 +204,13 @@ export class NodeTransformer {
         const def = (reflection as unknown as { defaultValue?: string }).defaultValue;
         if (typeof def === 'string' && def.length > 0) {
             node.defaultValue = def;
+        }
+
+        if (node.defaultValue === undefined && reflection.kind === ReflectionKind.EnumMember) {
+            const literalValue = extractEnumLiteralValue(reflection, node.type);
+            if (literalValue !== undefined) {
+                node.defaultValue = literalValue;
+            }
         }
 
         const sourceUrl = primaryUrlFromSources(reflection.sources);
