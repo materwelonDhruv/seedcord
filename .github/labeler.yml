@@ -59,6 +59,12 @@ pkg:api-docs:
     - issues:
           - title: '/pkg:api-docs/i'
           - body: '/pkg:api-docs/i'
+pkg:doc-engine:
+    - changed-files:
+          - any-glob-to-any-file: 'packages/doc-engine/**'
+    - issues:
+          - title: '/pkg:doc-engine/i'
+          - body: '/pkg:doc-engine/i'
 area:docs:
     - changed-files:
           - any-glob-to-any-file: 'docs/**'

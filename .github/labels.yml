@@ -28,6 +28,9 @@
 - name: pkg:api-docs
   color: 85c1e9
   description: Changes related to API docs tooling
+- name: pkg:doc-engine
+  color: 9b59b6
+  description: Changes related to the documentation engine package
 - name: area:docs
   color: 28a745
   description: Documentation updates
