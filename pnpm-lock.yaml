@@ -218,6 +218,28 @@ importers:
                 specifier: ^5.0.9
                 version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
 
+    packages/doc-engine:
+        dependencies:
+            typedoc:
+                specifier: catalog:deps
+                version: 0.28.13(typescript@5.9.3)
+        devDependencies:
+            '@seedcord/eslint-config':
+                specifier: workspace:^
+                version: link:../eslint-config
+            '@seedcord/tsconfig':
+                specifier: workspace:^
+                version: link:../tsconfig
+            '@seedcord/tsup-config':
+                specifier: workspace:^
+                version: link:../tsup-config
+            typedoc-plugin-dt-links:
+                specifier: ^2.0.22
+                version: 2.0.22(typedoc@0.28.13(typescript@5.9.3))
+            typedoc-plugin-mdn-links:
+                specifier: ^5.0.9
+                version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
+
     packages/eslint-config:
         dependencies:
             '@eslint/eslintrc':

@@ -15,9 +15,11 @@ import {
 
 import { toGlobalId, type GlobalId } from '../ids';
 import { kindLabel } from '../kinds';
+import { formatRenderedSignature, renderSignatureView } from './signature-renderer';
 
 import type {
     DocComment,
+    DocCommentBlockTag,
     DocFlags,
     DocGroup,
     DocReference,
@@ -296,6 +298,41 @@ function sigFragment(signature: SignatureReflection): string {
     return `${name}-${(hash >>> 0).toString(HASH_BASE)}`;
 }
 
+const mapSignatureComments = (
+    context: TransformContext,
+    signature: SignatureReflection
+): {
+    comment: DocComment | null;
+    returnsComment: DocCommentBlockTag | null;
+    throws: DocCommentBlockTag[];
+} => {
+    const comment = mapComment(context, signature.comment);
+    const returnsTag = signature.comment?.getTag('@returns') ?? null;
+    const throwsTags = signature.comment?.getTags('@throws') ?? [];
+
+    return {
+        comment,
+        returnsComment: returnsTag ? context.commentTransformer.toBlockTag(returnsTag) : null,
+        throws: throwsTags.map((tag) => context.commentTransformer.toBlockTag(tag))
+    };
+};
+
+const registerSignatureFragment = (signature: SignatureReflection, registry?: Set<string>): string => {
+    const fragment = sigFragment(signature);
+    if (!registry) {
+        return fragment;
+    }
+
+    let attempt = 0;
+    let candidate = fragment;
+    while (registry.has(candidate)) {
+        attempt += 1;
+        candidate = `${fragment}-o${attempt}`;
+    }
+    registry.add(candidate);
+    return candidate;
+};
+
 export const mapSignature = (
     context: TransformContext,
     signature: SignatureReflection,
@@ -303,26 +340,9 @@ export const mapSignature = (
     index: number,
     fragmentRegistry?: Set<string>
 ): DocSignature => {
-    const comment = mapComment(context, signature.comment);
-    const returnsTag = signature.comment?.getTag('@returns') ?? null;
-    const throwsTags = signature.comment?.getTags('@throws') ?? [];
-
-    let fragment = sigFragment(signature);
-    if (fragmentRegistry) {
-        let attempt = 0;
-        let candidate = fragment;
-        while (fragmentRegistry.has(candidate)) {
-            attempt += 1;
-            candidate = `${fragment}-o${attempt}`;
-        }
-        fragment = candidate;
-        fragmentRegistry.add(fragment);
-    }
-
+    const { comment, returnsComment, throws } = mapSignatureComments(context, signature);
+    const fragment = registerSignatureFragment(signature, fragmentRegistry);
     const anchor = `${parent.slug}#${fragment}`;
-
-    const returnsComment = returnsTag ? context.commentTransformer.toBlockTag(returnsTag) : null;
-    const throws = throwsTags.map((tag) => context.commentTransformer.toBlockTag(tag));
 
     const docSignature: DocSignature = {
         name: signature.name && signature.name.length > 0 ? signature.name : parent.name,
@@ -355,6 +375,10 @@ export const mapSignature = (
         docSignature.id = signature.id;
     }
 
+    const renderedSignature = renderSignatureView(context, docSignature);
+    docSignature.render = renderedSignature;
+    docSignature.renderText = formatRenderedSignature(renderedSignature);
+
     return docSignature;
 };
 
@@ -362,9 +386,7 @@ const mapDocTypeArray = (types: readonly (SomeType | ReflectionType)[] | undefin
     const out: DocType[] = [];
     for (const type of types ?? []) {
         const mapped = mapType(type);
-        if (mapped) {
-            out.push(mapped);
-        }
+        if (mapped) out.push(mapped);
     }
     return out;
 };

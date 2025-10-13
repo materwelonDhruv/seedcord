@@ -1,4 +1,5 @@
-/* eslint-disable no-console */
+/* eslint-disable max-lines */
+/* eslint-disable max-statements */
 
 import { existsSync } from 'node:fs';
 import path from 'node:path';
@@ -10,7 +11,16 @@ import { resolveManifestPath } from './constants';
 import { DocsEngine } from './engine';
 import { ManifestReader } from './manifest-reader';
 
-import type { DocManifestPackage, DocNode, DocPackageModel, DocReference, DocSearchEntry } from './types';
+import type {
+    DocManifestPackage,
+    DocNode,
+    DocPackageModel,
+    DocReference,
+    DocSearchEntry,
+    InlineType,
+    RenderedSignature,
+    SigPart
+} from './types';
 
 const DIVIDER_WIDTH = 48;
 const HELP_TEXT = `Usage: tsx smoke.ts [generated-root]
@@ -242,8 +252,80 @@ const formatKind = (kind: ReflectionKind | null): string => {
     return typeof label === 'string' ? label : `#${kind}`;
 };
 
+const sigPartsToText = (parts: SigPart[]): string => {
+    let result = '';
+    for (const part of parts) {
+        if (part.kind === 'space') {
+            if (!result.endsWith(' ')) {
+                result += ' ';
+            }
+            continue;
+        }
+
+        result += part.text;
+    }
+
+    return result.trim();
+};
+
+const inlineTypeToText = (inline?: InlineType): string => (inline ? sigPartsToText(inline.parts) : '');
+const formatRenderedSignature = (render?: RenderedSignature): string | null => {
+    if (!render) {
+        return null;
+    }
+
+    const nameText = sigPartsToText(render.name);
+    const typeParams =
+        render.typeParams && render.typeParams.length > 0
+            ? `<${render.typeParams.map((param) => param.name).join(', ')}>`
+            : '';
+    const parameters = render.parameters
+        .map((param) => {
+            const optional = param.optional ? '?' : '';
+            const typeText = param.type ? `: ${inlineTypeToText(param.type)}` : '';
+            const defaultValue = param.defaultValue ? ` = ${param.defaultValue}` : '';
+            return `${param.name}${optional}${typeText}${defaultValue}`;
+        })
+        .join(', ');
+    const returnType = render.returnType ? `: ${inlineTypeToText(render.returnType)}` : '';
+
+    return `${nameText}${typeParams}(${parameters})${returnType}`.trim();
+};
+
+const logTopSearchResults = (entries: DocSearchEntry[]): void => {
+    entries.forEach((entry, index) => {
+        console.log(`  [${index + 1}] ${entry.packageName}/${entry.slug}`);
+        console.log(`      name: ${entry.qualifiedName}`);
+        if (entry.aliases?.length) {
+            console.log(`      aliases: ${entry.aliases.join(', ')}`);
+        }
+        console.log(`      tokens: ${entry.tokens.slice(0, KEY_SAMPLE_LIMIT).join(', ') || '<none>'}`);
+    });
+};
+
+const logRenderedSignatures = (node: DocNode): string[] => {
+    return node.signatures.map((signature, index) => {
+        const fallbackLabel = signature.render ? formatRenderedSignature(signature.render) : signature.name;
+        const renderText = signature.renderText ?? undefined;
+        const label = renderText ?? fallbackLabel;
+
+        console.log(`  [sig ${index + 1}] ${label}`);
+        console.log(
+            `      kind: ${formatKind(signature.kind)} | anchor: ${signature.anchor} | overload: ${signature.overloadIndex}`
+        );
+        if (signature.comment?.summary) {
+            console.log(`      summary: ${signature.comment.summary}`);
+        }
+        if (signature.render) {
+            console.log('      rendered parts:');
+            console.dir(signature.render, { depth: null });
+        }
+        return label ?? '';
+    });
+};
+
 const findWorkspaceRoot = (): string => {
-    let cursor = __dirname;
+    let cursor = import.meta.dirname;
     let lastPackageJsonDir: string | null = null;
 
     for (;;) {
@@ -271,16 +353,44 @@ const findWorkspaceRoot = (): string => {
 };
 
 const attemptCustomSearch = (query: string, packageName: string | undefined, engine: DocsEngine): void => {
-    const results = engine.search(query, packageName).slice(0, 5);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const node = engine.getNodeBySlug(results[0]!.packageName, results[0]?.slug ?? '');
-    // const node = engine.getNodeBySlug(packageName, 'bot/client');
-    console.log(
-        `Modifiers: ${node?.signatures[0]?.comment?.modifierTags.join(', ') ?? node?.comment?.modifierTags.join(', ') ?? 'n/a'}`
-    );
-    console.log(`Kind: ${formatKind(node?.kind ?? null)}`);
-    console.dir(node, { depth: 5 });
-    console.dir(results, { depth: undefined });
+    const results = engine.search(query, packageName);
+    if (results.length === 0) {
+        console.log(`Custom search: "${query}" returned no results.`);
+        return;
+    }
+
+    const topResults = results.slice(0, 5);
+    console.log(`\nCustom search for "${query}" (${packageName ?? 'all packages'}):`);
+    logTopSearchResults(topResults);
+
+    const target = results.find((entry) => entry.name === 'traverseDirectory') ?? results[0];
+    if (!target) {
+        console.log('Unable to select target result.');
+        return;
+    }
+    const node = engine.getNodeBySlug(target.packageName, target.slug);
+    if (!node) {
+        console.log('Unable to resolve node for selected result.');
+        return;
+    }
+
+    console.log(`\nResolved node: ${node.qualifiedName} (${formatKind(node.kind)})`);
+    if (node.signatures.length === 0) {
+        console.log('  No signatures present on node.');
+        return;
+    }
+
+    const expectedSignature =
+        'traverseDirectory(dir: string, callback: (fullPath: string, relativePath: string, imported: Record<string, unknown>) => Promise<void> | void, logger: Logger): Promise<void>';
+
+    const renderedSignatures = logRenderedSignatures(node);
+    const matchesExpected = renderedSignatures.includes(expectedSignature);
+    console.log('\nExpected signature:');
+    console.log(`  ${expectedSignature}`);
+    console.log(`Match found: ${matchesExpected}`);
+    if (!matchesExpected) {
+        console.log('  Rendered signatures did not match expected declaration.');
+    }
 };
 
 const main = async (): Promise<void> => {
@@ -310,7 +420,7 @@ const main = async (): Promise<void> => {
     logDivider();
 
     performance.mark('smoke-start');
-    attemptCustomSearch('denomin', undefined, engine);
+    attemptCustomSearch('register command', undefined, engine);
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 

@@ -1,6 +1,41 @@
 import type { GlobalId } from './ids';
 import type { JSONOutput, ProjectReflection, ReflectionKind, VarianceModifier } from 'typedoc';
 
+export type SigPart =
+    | { kind: 'text'; text: string }
+    | { kind: 'punct'; text: string }
+    | { kind: 'space' }
+    | { kind: 'ref'; text: string; ref: DocReference };
+
+export interface InlineType {
+    parts: SigPart[];
+}
+
+export interface RenderedSignature {
+    name: SigPart[];
+    typeParams?: {
+        name: string;
+        constraint?: InlineType;
+        default?: InlineType;
+    }[];
+    parameters: {
+        name: string;
+        optional: boolean;
+        type?: InlineType;
+        defaultValue?: string;
+    }[];
+    returnType?: InlineType;
+}
+
+export interface RenderedDeclarationHeader {
+    name: string;
+    typeParams?: {
+        name: string;
+        constraint?: InlineType;
+        default?: InlineType;
+    }[];
+}
+
 export interface DocManifestPackage {
     name: string;
     version: string;
@@ -112,6 +147,8 @@ export interface DocSignature {
     overwrites?: DocReference | null;
     inheritedFrom?: DocReference | null;
     implementationOf?: DocReference | null;
+    render?: RenderedSignature;
+    renderText?: string;
 }
 
 export interface DocGroup {
@@ -152,6 +189,7 @@ export interface DocNode {
     overwrites?: DocReference | null;
     inheritedFrom?: DocReference | null;
     implementationOf?: DocReference | null;
+    header?: RenderedDeclarationHeader;
 }
 
 export interface DocSearchEntry {
