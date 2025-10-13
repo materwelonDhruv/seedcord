@@ -99,6 +99,7 @@ export interface DocComment {
 
 export interface DocFlags {
     access: 'public' | 'protected' | 'private' | null;
+    accessor: 'getter' | 'setter' | 'getter-setter' | null;
     isStatic: boolean;
     isAbstract: boolean;
     isConst: boolean;
@@ -106,6 +107,10 @@ export interface DocFlags {
     isOptional: boolean;
     isDeprecated: boolean;
     isInherited: boolean;
+    isDecorator: boolean;
+    isInternal: boolean;
+    isExternal: boolean;
+    isOverwriting: boolean;
 }
 
 export interface DocSource {
@@ -124,6 +129,9 @@ export interface DocTypeParameter {
     default?: DocType | null;
     variance?: VarianceModifier;
     comment?: DocComment | null;
+    flags: {
+        isOptional: boolean;
+    };
 }
 
 export interface DocSignatureParameter {

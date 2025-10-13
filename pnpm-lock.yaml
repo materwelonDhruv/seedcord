@@ -134,9 +134,6 @@ importers:
             shiki:
                 specifier: ^3.13.0
                 version: 3.13.0
-            typedoc:
-                specifier: catalog:deps
-                version: 0.28.13(typescript@5.9.3)
             zustand:
                 specifier: ^5.0.8
                 version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
@@ -223,6 +220,12 @@ importers:
             typedoc:
                 specifier: catalog:deps
                 version: 0.28.13(typescript@5.9.3)
+            typedoc-plugin-dt-links:
+                specifier: ^2.0.22
+                version: 2.0.22(typedoc@0.28.13(typescript@5.9.3))
+            typedoc-plugin-mdn-links:
+                specifier: ^5.0.9
+                version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
         devDependencies:
             '@seedcord/eslint-config':
                 specifier: workspace:^
@@ -233,12 +236,6 @@ importers:
             '@seedcord/tsup-config':
                 specifier: workspace:^
                 version: link:../tsup-config
-            typedoc-plugin-dt-links:
-                specifier: ^2.0.22
-                version: 2.0.22(typedoc@0.28.13(typescript@5.9.3))
-            typedoc-plugin-mdn-links:
-                specifier: ^5.0.9
-                version: 5.0.9(typedoc@0.28.13(typescript@5.9.3))
 
     packages/eslint-config:
         dependencies:

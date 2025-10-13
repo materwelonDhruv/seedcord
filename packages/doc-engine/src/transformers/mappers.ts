@@ -1,26 +1,13 @@
-import {
-    Serializer,
-    type Comment,
-    type DeclarationReflection,
-    type ParameterReflection,
-    type Reflection,
-    type ReflectionGroup,
-    type ReflectionKind,
-    type ReflectionType,
-    type SignatureReflection,
-    type SomeType,
-    type SourceReference,
-    type TypeParameterReflection
-} from 'typedoc';
+import { Serializer } from 'typedoc';
 
 import { toGlobalId, type GlobalId } from '../ids';
 import { kindLabel } from '../kinds';
+import { mapFlags } from './flag-mapper';
 import { formatRenderedSignature, renderSignatureView } from './signature-renderer';
 
 import type {
     DocComment,
     DocCommentBlockTag,
-    DocFlags,
     DocGroup,
     DocReference,
     DocSignature,
@@ -31,6 +18,18 @@ import type {
     DocInheritance
 } from '../types';
 import type { TransformContext } from './transform-context';
+import type {
+    Comment,
+    DeclarationReflection,
+    ParameterReflection,
+    ReflectionGroup,
+    ReflectionKind,
+    ReflectionType,
+    SignatureReflection,
+    SomeType,
+    SourceReference,
+    TypeParameterReflection
+} from 'typedoc';
 
 const serializer = new Serializer();
 
@@ -121,22 +120,6 @@ export const mapType = (type: SomeType | ReflectionType | undefined): DocType | 
 export const mapComment = (context: TransformContext, comment?: Comment | null): DocComment | null =>
     context.commentTransformer.toDocComment(comment ?? undefined);
 
-export const mapFlags = (reflection: Reflection | ParameterReflection): DocFlags => {
-    const flags = reflection.flags;
-    const access = flags.isPrivate ? 'private' : flags.isProtected ? 'protected' : flags.isPublic ? 'public' : null;
-
-    return {
-        access,
-        isStatic: Boolean(flags.isStatic),
-        isAbstract: Boolean(flags.isAbstract),
-        isConst: Boolean((flags as { isConst?: boolean }).isConst),
-        isReadonly: Boolean(flags.isReadonly),
-        isOptional: Boolean(flags.isOptional),
-        isDeprecated: Boolean((flags as { isDeprecated?: boolean }).isDeprecated),
-        isInherited: Boolean((flags as { isInherited?: boolean }).isInherited)
-    };
-};
-
 export const mapSources = (sources: SourceReference[] | undefined): DocSource[] => {
     if (!Array.isArray(sources)) {
         return [];
@@ -193,9 +176,14 @@ export const mapTypeParameters = (
     if (!parameters) return [];
 
     return parameters.map((parameter) => {
+        const optionalFromDefault = parameter.default !== undefined;
+        const optionalFromFlags = Boolean((parameter.flags as { isOptional?: boolean }).isOptional);
         const out: DocTypeParameter = {
             id: parameter.id,
-            name: parameter.name
+            name: parameter.name,
+            flags: {
+                isOptional: optionalFromDefault || optionalFromFlags
+            }
         };
 
         const constraint = mapType(parameter.type);

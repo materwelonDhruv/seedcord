@@ -7,7 +7,6 @@ import {
 } from 'typedoc';
 
 import {
-    mapFlags,
     mapGroups,
     mapInheritance,
     mapReference,
@@ -22,6 +21,7 @@ import { registerNode, type TransformContext } from './transform-context';
 import { toGlobalId } from '../ids';
 import { kindLabel } from '../kinds';
 import { slugForNode } from '../slugger';
+import { mapFlags } from './flag-mapper';
 
 import type { DocInheritance, DocNode } from '../types';
 

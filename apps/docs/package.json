@@ -26,7 +26,6 @@
         "react": "^19.2.0",
         "react-dom": "^19.2.0",
         "shiki": "^3.13.0",
-        "typedoc": "catalog:deps",
         "zustand": "^5.0.8"
     },
     "devDependencies": {
