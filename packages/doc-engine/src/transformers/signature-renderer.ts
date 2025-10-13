@@ -1,8 +1,13 @@
+import { ReflectionKind } from 'typedoc';
+
 import { renderInlineType, textPart } from './type-renderer';
 
 import type {
+    DocFlags,
+    DocInheritance,
     DocSignature,
     DocSignatureParameter,
+    DocType,
     DocTypeParameter,
     InlineType,
     RenderedDeclarationHeader,
@@ -83,23 +88,136 @@ export const renderSignatureView = (ctx: TransformContext, signature: DocSignatu
     return view;
 };
 
+interface DeclarationHeaderOptions {
+    kind: ReflectionKind;
+    flags: DocFlags;
+    typeParams: DocTypeParameter[];
+    inheritance: DocInheritance;
+}
+
+const declarationKeywordForKind = (kind: ReflectionKind): string | null => {
+    switch (kind) {
+        case ReflectionKind.Class:
+            return 'class';
+        case ReflectionKind.Interface:
+            return 'interface';
+        case ReflectionKind.Enum:
+            return 'enum';
+        case ReflectionKind.TypeAlias:
+            return 'type';
+        case ReflectionKind.Function:
+            return 'function';
+        case ReflectionKind.Variable:
+            return 'var';
+        default:
+            return null;
+    }
+};
+
+const renderHeritage = (ctx: TransformContext, list?: DocType[]): InlineType[] | undefined => {
+    if (!list || list.length === 0) {
+        return undefined;
+    }
+
+    const rendered = list
+        .map((entry) => renderInlineType(ctx, entry))
+        .filter((entry): entry is InlineType => Boolean(entry));
+
+    return rendered.length > 0 ? rendered : undefined;
+};
+
+const applyModifiers = (flags: DocFlags): string[] => {
+    const modifiers: string[] = [];
+    if (flags.isAbstract) {
+        modifiers.push('abstract');
+    }
+    if (flags.access && flags.access !== 'public') {
+        modifiers.push(flags.access);
+    }
+
+    return modifiers;
+};
+
 export const renderDeclarationHeader = (
     ctx: TransformContext,
     name: string,
-    typeParams: DocTypeParameter[]
+    options: DeclarationHeaderOptions
 ): RenderedDeclarationHeader => {
-    const header: RenderedDeclarationHeader = { name };
+    const keyword = declarationKeywordForKind(options.kind);
+    const header: RenderedDeclarationHeader = {
+        name,
+        keyword,
+        modifiers: applyModifiers(options.flags)
+    };
 
-    if (typeParams.length > 0) {
-        header.typeParams = typeParams.map((param) => renderTypeParameter(ctx, param));
+    if (options.typeParams.length > 0) {
+        header.typeParams = options.typeParams.map((param) => renderTypeParameter(ctx, param));
+    }
+
+    const heritageExtends = renderHeritage(ctx, options.inheritance.extends);
+    const heritageImplements = renderHeritage(ctx, options.inheritance.implements);
+
+    if (heritageExtends || heritageImplements) {
+        header.heritage = {};
+        if (heritageExtends) {
+            header.heritage.extends = heritageExtends;
+        }
+        if (heritageImplements) {
+            header.heritage.implements = heritageImplements;
+        }
     }
 
     return header;
 };
 
+export const formatRenderedDeclarationHeader = (header: RenderedDeclarationHeader): string => {
+    const segments: string[] = [];
+    if (header.modifiers.length > 0) {
+        segments.push(header.modifiers.join(' '));
+    }
+
+    if (header.keyword) {
+        segments.push(header.keyword);
+    }
+
+    let declarationName = header.name;
+    if (header.typeParams && header.typeParams.length > 0) {
+        const renderedParams = header.typeParams
+            .map((param) => {
+                let label = param.name;
+                if (param.constraint) {
+                    label += ` extends ${inlineTypeToText(param.constraint)}`;
+                }
+                if (param.default) {
+                    label += ` = ${inlineTypeToText(param.default)}`;
+                }
+                return label;
+            })
+            .join(', ');
+        declarationName += `<${renderedParams}>`;
+    }
+
+    segments.push(declarationName);
+
+    if (header.heritage?.extends && header.heritage.extends.length > 0) {
+        const clause = header.heritage.extends.map((entry) => inlineTypeToText(entry)).join(', ');
+        segments.push(`extends ${clause}`);
+    }
+
+    if (header.heritage?.implements && header.heritage.implements.length > 0) {
+        const clause = header.heritage.implements.map((entry) => inlineTypeToText(entry)).join(', ');
+        segments.push(`implements ${clause}`);
+    }
+
+    return segments
+        .filter((segment) => segment.length > 0)
+        .join(' ')
+        .trim();
+};
+
 export { renderInlineType };
 
-const sigPartsToText = (parts: SigPart[]): string => {
+export const sigPartsToText = (parts: SigPart[]): string => {
     let result = '';
     for (const part of parts) {
         if (part.kind === 'space') {
@@ -115,7 +233,7 @@ const sigPartsToText = (parts: SigPart[]): string => {
     return result.trim();
 };
 
-const inlineTypeToText = (inline?: InlineType): string => (inline ? sigPartsToText(inline.parts) : '');
+export const inlineTypeToText = (inline?: InlineType): string => (inline ? sigPartsToText(inline.parts) : '');
 
 export const formatRenderedSignature = (render: RenderedSignature): string => {
     const nameText = sigPartsToText(render.name);

@@ -333,7 +333,7 @@ const attemptCustomSearch = (query: string, packageName: string | undefined, eng
     console.log(`\nCustom search for "${query}" (${packageName ?? 'all packages'}):`);
     logTopSearchResults(topResults);
 
-    const target = results.find((entry) => entry.name === 'traverseDirectory') ?? results[0];
+    const target = results.find((entry) => entry.name === query) ?? results[0];
     if (!target) {
         console.log('Unable to select target result.');
         return;
@@ -344,7 +344,12 @@ const attemptCustomSearch = (query: string, packageName: string | undefined, eng
         return;
     }
 
+    console.dir(node, { depth: 3 });
+
     console.log(`\nResolved node: ${node.qualifiedName} (${formatKind(node.kind)})`);
+    if (node.headerText) {
+        console.log(`  declaration: ${node.headerText}`);
+    }
     if (node.signatures.length === 0) {
         console.log('  No signatures present on node.');
         return;
@@ -383,7 +388,7 @@ const main = async (): Promise<void> => {
     logDivider();
 
     performance.mark('smoke-start');
-    attemptCustomSearch('phase', undefined, engine);
+    attemptCustomSearch('HanderWithChecks', undefined, engine);
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 

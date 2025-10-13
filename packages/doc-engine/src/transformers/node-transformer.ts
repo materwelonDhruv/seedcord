@@ -17,7 +17,7 @@ import {
     mapTypeParameters,
     primaryUrlFromSources
 } from './mappers';
-import { renderDeclarationHeader } from './signature-renderer';
+import { formatRenderedDeclarationHeader, renderDeclarationHeader } from './signature-renderer';
 import { registerNode, type TransformContext } from './transform-context';
 import { toGlobalId } from '../ids';
 import { kindLabel } from '../kinds';
@@ -142,9 +142,16 @@ export class NodeTransformer {
         }
 
         node.typeParameters = mapTypeParameters(this.context, reflection.typeParameters);
-        node.header = renderDeclarationHeader(this.context, node.name, node.typeParameters);
         node.sources = mapSources(reflection.sources);
-        node.inheritance = mapInheritance(reflection);
+        const inheritance = mapInheritance(reflection);
+        node.inheritance = inheritance;
+        node.header = renderDeclarationHeader(this.context, node.name, {
+            kind: node.kind,
+            flags: node.flags,
+            typeParams: node.typeParameters,
+            inheritance
+        });
+        node.headerText = formatRenderedDeclarationHeader(node.header);
         node.overwrites = mapReference(this.context, reflection.overwrites);
         node.inheritedFrom = mapReference(this.context, reflection.inheritedFrom);
         node.implementationOf = mapReference(this.context, reflection.implementationOf);

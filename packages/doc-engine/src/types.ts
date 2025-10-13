@@ -29,11 +29,17 @@ export interface RenderedSignature {
 
 export interface RenderedDeclarationHeader {
     name: string;
+    modifiers: string[];
+    keyword?: string | null;
     typeParams?: {
         name: string;
         constraint?: InlineType;
         default?: InlineType;
     }[];
+    heritage?: {
+        extends?: InlineType[];
+        implements?: InlineType[];
+    };
 }
 
 export interface DocManifestPackage {
@@ -190,6 +196,7 @@ export interface DocNode {
     inheritedFrom?: DocReference | null;
     implementationOf?: DocReference | null;
     header?: RenderedDeclarationHeader;
+    headerText?: string;
 }
 
 export interface DocSearchEntry {
