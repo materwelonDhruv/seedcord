@@ -7,7 +7,7 @@ import type { GlobalId } from '../ids';
 import type { DocCollection, DocManifest, DocManifestPackage, DocPackageModel } from '../types';
 
 export interface ResolveOptions {
-    workspaceRoot: string;
+    workspaceRoot?: string;
     generatedRoot?: string;
     manifestDir: string;
     manifestOutputDir: string;
@@ -22,49 +22,112 @@ const collectBaseCandidates = (options: ResolveOptions): string[] => {
 
     ordered.add(options.manifestDir);
 
-    const resolvedOutput = resolveOutputCandidate(options.workspaceRoot, options.manifestOutputDir);
-    if (resolvedOutput) {
-        ordered.add(resolvedOutput);
+    const manifestOutputBase = resolveManifestOutputBase(options);
+    if (manifestOutputBase) {
+        ordered.add(manifestOutputBase);
     }
 
-    ordered.add(options.workspaceRoot);
+    if (options.workspaceRoot) {
+        ordered.add(options.workspaceRoot);
+    }
 
     return Array.from(ordered);
 };
 
-const resolveOutputCandidate = (workspaceRoot: string, outputDir: string): string | null => {
-    const trimmed = outputDir.trim();
-    if (trimmed.length === 0) {
+const resolvePackageJsonPath = (
+    pkg: DocManifestPackage,
+    baseCandidates: string[],
+    options: ResolveOptions
+): string | null => {
+    const output = pkg.output?.trim();
+    if (!output) {
         return null;
     }
 
-    return path.resolve(workspaceRoot, trimmed);
-};
+    const candidates = collectOutputCandidates(output, baseCandidates, options);
 
-const resolvePackageJsonPath = (pkg: DocManifestPackage, baseCandidates: string[]): string | null => {
-    if (!pkg.output) {
-        return null;
-    }
-
-    for (const base of baseCandidates) {
-        const resolved = path.resolve(base, pkg.output);
-        if (existsSync(resolved)) {
-            return resolved;
+    for (const candidate of candidates) {
+        if (existsSync(candidate)) {
+            return candidate;
         }
 
-        const fallback = path.join(resolved, 'project.json');
+        const fallback = path.join(candidate, 'project.json');
         if (existsSync(fallback)) {
             return fallback;
         }
     }
 
-    const first = baseCandidates[0];
+    const [first] = candidates;
     if (!first) {
         return null;
     }
 
-    const defaultPath = path.resolve(first, pkg.output);
-    return defaultPath.endsWith('.json') ? defaultPath : path.join(defaultPath, 'project.json');
+    return first.endsWith('.json') ? first : path.join(first, 'project.json');
+};
+
+const collectOutputCandidates = (output: string, baseCandidates: string[], options: ResolveOptions): string[] => {
+    const ordered = new Set<string>();
+
+    const addCandidate = (value: string | null | undefined): void => {
+        if (!value) {
+            return;
+        }
+        ordered.add(value);
+    };
+
+    if (path.isAbsolute(output)) {
+        ordered.add(output);
+    }
+
+    addCandidate(options.workspaceRoot ? path.resolve(options.workspaceRoot, output) : null);
+    addCandidate(path.resolve(options.manifestDir, output));
+
+    if (options.generatedRoot) {
+        addCandidate(path.resolve(options.generatedRoot, output));
+    }
+
+    const relativeFromOutputDir = relativizeFromManifestOutput(output, options.manifestOutputDir);
+    if (relativeFromOutputDir) {
+        addCandidate(path.resolve(options.manifestDir, relativeFromOutputDir));
+        if (options.generatedRoot) {
+            addCandidate(path.resolve(options.generatedRoot, relativeFromOutputDir));
+        }
+    }
+
+    for (const base of baseCandidates) {
+        addCandidate(path.resolve(base, output));
+        addCandidate(path.resolve(base, path.basename(output)));
+    }
+
+    return Array.from(ordered);
+};
+
+const resolveManifestOutputBase = (options: ResolveOptions): string | null => {
+    const trimmed = options.manifestOutputDir.trim();
+    if (trimmed.length === 0) {
+        return null;
+    }
+
+    if (path.isAbsolute(trimmed)) {
+        return trimmed;
+    }
+
+    const base = options.workspaceRoot ?? options.manifestDir;
+    return path.resolve(base, trimmed);
+};
+
+const relativizeFromManifestOutput = (output: string, manifestOutputDir: string): string | null => {
+    const trimmedManifest = manifestOutputDir.trim();
+    if (trimmedManifest.length === 0) {
+        return null;
+    }
+
+    const relative = path.relative(trimmedManifest, output);
+    if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) {
+        return null;
+    }
+
+    return relative;
 };
 
 export const buildCollection = async (manifest: DocManifest, options: ResolveOptions): Promise<DocCollection> => {
@@ -72,7 +135,7 @@ export const buildCollection = async (manifest: DocManifest, options: ResolveOpt
     const packages: DocPackageModel[] = [];
 
     for (const pkg of manifest.packages) {
-        const projectPath = resolvePackageJsonPath(pkg, baseCandidates);
+        const projectPath = resolvePackageJsonPath(pkg, baseCandidates, options);
         if (!projectPath) {
             continue;
         }

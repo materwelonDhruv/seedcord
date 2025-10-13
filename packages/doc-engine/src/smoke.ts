@@ -1,15 +1,13 @@
 /* eslint-disable max-lines */
 /* eslint-disable max-statements */
 
-import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 
 import { ReflectionKind } from 'typedoc';
 
-import { resolveManifestPath } from './constants';
+import { resolveGeneratedDir } from './constants';
 import { DocsEngine } from './engine';
-import { ManifestReader } from './manifest-reader';
 
 import type {
     DocManifestPackage,
@@ -26,7 +24,7 @@ const DIVIDER_WIDTH = 48;
 const HELP_TEXT = `Usage: tsx smoke.ts [generated-root]
 
 - generated-root: optional absolute or relative path to the directory that contains the manifest.json file.
-  Defaults to the docs generated directory resolved by \`resolveManifestPath\`.
+    Defaults to the docs generated directory resolved by \`resolveGeneratedDir\`.
 `;
 
 const KEY_SAMPLE_LIMIT = 15;
@@ -324,34 +322,6 @@ const logRenderedSignatures = (node: DocNode): string[] => {
     });
 };
 
-const findWorkspaceRoot = (): string => {
-    let cursor = import.meta.dirname;
-    let lastPackageJsonDir: string | null = null;
-
-    for (;;) {
-        const workspaceMarker = path.join(cursor, 'pnpm-workspace.yaml');
-        if (existsSync(workspaceMarker)) {
-            return cursor;
-        }
-
-        const packageJsonPath = path.join(cursor, 'package.json');
-        if (existsSync(packageJsonPath)) {
-            lastPackageJsonDir = cursor;
-        }
-
-        const parent = path.dirname(cursor);
-        if (parent === cursor) {
-            if (lastPackageJsonDir) {
-                return lastPackageJsonDir;
-            }
-
-            throw new Error('Unable to locate workspace root from smoke.ts');
-        }
-
-        cursor = parent;
-    }
-};
-
 const attemptCustomSearch = (query: string, packageName: string | undefined, engine: DocsEngine): void => {
     const results = engine.search(query, packageName);
     if (results.length === 0) {
@@ -400,27 +370,20 @@ const main = async (): Promise<void> => {
         return;
     }
 
-    const generatedRoot = resolveGeneratedRoot(arg);
-    const manifestPath = resolveManifestPath(generatedRoot);
-    const manifestDir = path.dirname(manifestPath);
-    const manifestReader = new ManifestReader(generatedRoot ? { rootDir: generatedRoot } : {});
-    const manifest = await manifestReader.read();
+    const providedRoot = resolveGeneratedRoot(arg);
+    const generatedRoot = providedRoot ?? resolveGeneratedDir();
+    const engine = await DocsEngine.create({ generatedRoot });
+    const manifest = engine.getManifest();
 
-    console.log('Manifest loaded from:', manifest.outputDir.trim() || '<default>');
+    const outputDir = manifest.outputDir.trim();
+    console.log('Manifest loaded from:', outputDir.length > 0 ? outputDir : '<default>');
     printManifestSummary(manifest.packages);
-    const workspaceRoot = findWorkspaceRoot();
-    const engine = await DocsEngine.fromManifest(manifest, {
-        workspaceRoot,
-        manifestDir,
-        manifestOutputDir: manifest.outputDir,
-        ...(generatedRoot ? { generatedRoot } : {})
-    });
     logEngineSummary(engine);
 
     logDivider();
 
     performance.mark('smoke-start');
-    attemptCustomSearch('register command', undefined, engine);
+    attemptCustomSearch('phase', undefined, engine);
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 

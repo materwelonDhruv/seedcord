@@ -1,9 +1,21 @@
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+
 import { ReflectionKind } from 'typedoc';
 
 import { buildCollection, type ResolveOptions } from './builders/collection-builder';
+import { resolveManifestPath } from './constants';
+import { ManifestReader } from './manifest-reader';
 
 import type { GlobalId } from './ids';
 import type { DocCollection, DocManifest, DocNode, DocPackageModel, DocReference, DocSearchEntry } from './types';
+
+export interface DocsEngineOptions {
+    generatedRoot: string;
+    manifestPath?: string;
+    workspaceRoot?: string;
+    manifest?: DocManifest;
+}
 
 export class DocsEngine {
     private readonly searchIndex: DocSearchEntry[];
@@ -12,9 +24,32 @@ export class DocsEngine {
         this.searchIndex = aggregateSearchIndex(collection);
     }
 
+    static async create(options: DocsEngineOptions): Promise<DocsEngine> {
+        const generatedRoot = path.resolve(options.generatedRoot);
+        const manifestPath = resolveManifestPath(generatedRoot, options.manifestPath);
+        let manifest = options.manifest;
+        if (!manifest) {
+            const reader = new ManifestReader({ rootDir: generatedRoot, manifestPath });
+            manifest = await reader.read();
+        }
+        const workspaceRoot = resolveWorkspaceRoot(options.workspaceRoot, generatedRoot);
+        const manifestDir = path.dirname(manifestPath);
+
+        return DocsEngine.fromManifest(manifest, {
+            workspaceRoot,
+            manifestDir,
+            manifestOutputDir: manifest.outputDir,
+            generatedRoot
+        });
+    }
+
     static async fromManifest(manifest: DocManifest, resolve: ResolveOptions): Promise<DocsEngine> {
         const coll = await buildCollection(manifest, resolve);
         return new DocsEngine(coll);
+    }
+
+    getManifest(): DocManifest {
+        return this.collection.manifest;
     }
 
     listPackages(): string[] {
@@ -251,6 +286,39 @@ const orderedPackageCandidates = (
     }
 
     return Array.from(ordered);
+};
+
+const resolveWorkspaceRoot = (explicit: string | undefined, anchor: string): string => {
+    if (explicit) {
+        return path.resolve(explicit);
+    }
+
+    return findWorkspaceRoot(anchor);
+};
+
+const findWorkspaceRoot = (startDir: string): string => {
+    const origin = path.resolve(startDir);
+    let cursor = origin;
+    let lastPackageDir: string | null = null;
+
+    for (;;) {
+        const workspaceMarker = path.join(cursor, 'pnpm-workspace.yaml');
+        if (existsSync(workspaceMarker)) {
+            return cursor;
+        }
+
+        const packageJsonPath = path.join(cursor, 'package.json');
+        if (existsSync(packageJsonPath)) {
+            lastPackageDir = cursor;
+        }
+
+        const parent = path.dirname(cursor);
+        if (parent === cursor) {
+            return lastPackageDir ?? origin;
+        }
+
+        cursor = parent;
+    }
 };
 
 const resolveWithinPackage = (reference: DocReference, pkg: DocPackageModel): DocNode | null => {
