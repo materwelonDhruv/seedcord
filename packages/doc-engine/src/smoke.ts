@@ -305,6 +305,19 @@ const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
     { query: 'UnknownException' },
     { query: 'Mongo' },
 
+    // Properties
+    { query: 'db' },
+    { query: 'PLUGIN_INIT_TIMEOUT_MS' },
+    { query: 'botColor' },
+    { query: 'tasksMap' },
+
+    // Methods
+    { query: 'checkPermissions' },
+    { query: 'canAddTask' },
+    { query: 'logout' },
+    { query: 'isRunning' },
+    { query: 'addTask' },
+
     // Interfaces
     { query: 'HandlerWithChecks' },
     { query: 'BaseCore' },
@@ -332,6 +345,7 @@ const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
     { query: 'BuilderTypes' },
     { query: 'EffectMetadataKey' },
     { query: 'RowTypes' },
+    { query: 'PermissionNames' },
     { query: 'PRETTIER_CONFIG' }
 ];
 

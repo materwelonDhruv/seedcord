@@ -36,6 +36,7 @@ export interface RenderedDeclarationHeader {
         constraint?: InlineType;
         default?: InlineType;
     }[];
+    type?: InlineType;
     heritage?: {
         extends?: InlineType[];
         implements?: InlineType[];
@@ -100,6 +101,7 @@ export interface DocFlags {
     access: 'public' | 'protected' | 'private' | null;
     isStatic: boolean;
     isAbstract: boolean;
+    isConst: boolean;
     isReadonly: boolean;
     isOptional: boolean;
     isDeprecated: boolean;

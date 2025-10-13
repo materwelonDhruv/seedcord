@@ -93,9 +93,10 @@ interface DeclarationHeaderOptions {
     flags: DocFlags;
     typeParams: DocTypeParameter[];
     inheritance: DocInheritance;
+    valueType?: DocType | null | undefined;
 }
 
-const declarationKeywordForKind = (kind: ReflectionKind): string | null => {
+const declarationKeywordForKind = (kind: ReflectionKind, flags: DocFlags): string | null => {
     switch (kind) {
         case ReflectionKind.Class:
             return 'class';
@@ -108,6 +109,9 @@ const declarationKeywordForKind = (kind: ReflectionKind): string | null => {
         case ReflectionKind.Function:
             return 'function';
         case ReflectionKind.Variable:
+            if (flags.isConst) {
+                return 'const';
+            }
             return 'var';
         default:
             return null;
@@ -143,7 +147,7 @@ export const renderDeclarationHeader = (
     name: string,
     options: DeclarationHeaderOptions
 ): RenderedDeclarationHeader => {
-    const keyword = declarationKeywordForKind(options.kind);
+    const keyword = declarationKeywordForKind(options.kind, options.flags);
     const header: RenderedDeclarationHeader = {
         name,
         keyword,
@@ -164,6 +168,13 @@ export const renderDeclarationHeader = (
         }
         if (heritageImplements) {
             header.heritage.implements = heritageImplements;
+        }
+    }
+
+    if ((options.kind === ReflectionKind.Variable || options.kind === ReflectionKind.Property) && options.valueType) {
+        const renderedType = renderInlineType(ctx, options.valueType);
+        if (renderedType) {
+            header.type = renderedType;
         }
     }
 
@@ -195,6 +206,10 @@ export const formatRenderedDeclarationHeader = (header: RenderedDeclarationHeade
             })
             .join(', ');
         declarationName += `<${renderedParams}>`;
+    }
+
+    if (header.type) {
+        declarationName += `: ${inlineTypeToText(header.type)}`;
     }
 
     segments.push(declarationName);

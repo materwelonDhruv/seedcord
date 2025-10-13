@@ -1,4 +1,4 @@
-import { rm } from 'node:fs/promises';
+import { readFile, rm, writeFile } from 'node:fs/promises';
 
 import { Application, EntryPointStrategy, LogLevel } from 'typedoc';
 
@@ -10,6 +10,34 @@ import type { PackageDocResult } from './types';
 
 const EXTERNAL_PLUGINS = ['typedoc-plugin-mdn-links', 'typedoc-plugin-dt-links'];
 let externalPluginsLoaded = false;
+
+const addVersionToJson = async (outputPath: string, version: string): Promise<void> => {
+    const raw = await readFile(outputPath, 'utf8');
+    const parsed = JSON.parse(raw) as unknown;
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        return;
+    }
+
+    const data = parsed as Record<string, unknown>;
+    const entries = Object.entries(data).filter(([key]) => key !== 'version');
+    const ordered: [string, unknown][] = [];
+    let versionInserted = false;
+
+    for (const [key, value] of entries) {
+        ordered.push([key, value]);
+        if (key === 'name') {
+            ordered.push(['version', version]);
+            versionInserted = true;
+        }
+    }
+
+    if (!versionInserted) {
+        ordered.unshift(['version', version]);
+    }
+
+    const output = Object.fromEntries(ordered);
+    await writeFile(outputPath, JSON.stringify(output, null, 2), 'utf8');
+};
 
 /**
  * run typedoc for one package and collect the status, warnings, and output location
@@ -76,8 +104,8 @@ export async function extractPackageDocs(packageDir: string): Promise<PackageDoc
 
     let succeeded = false;
     if (project && errors.length === 0) {
-        // we only save the json if typedoc gave us a project and no hard errors
         await app.generateJson(project, outputPath);
+        await addVersionToJson(outputPath, manifest.version);
         succeeded = true;
     } else if (await pathExists(outputPath)) {
         // if something failed and we had stale output, clean it up so nobody trusts old data

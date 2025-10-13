@@ -129,6 +129,7 @@ export const mapFlags = (reflection: Reflection | ParameterReflection): DocFlags
         access,
         isStatic: Boolean(flags.isStatic),
         isAbstract: Boolean(flags.isAbstract),
+        isConst: Boolean((flags as { isConst?: boolean }).isConst),
         isReadonly: Boolean(flags.isReadonly),
         isOptional: Boolean(flags.isOptional),
         isDeprecated: Boolean((flags as { isDeprecated?: boolean }).isDeprecated),

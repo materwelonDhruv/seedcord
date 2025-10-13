@@ -194,7 +194,8 @@ export class NodeTransformer {
             kind: node.kind,
             flags: node.flags,
             typeParams: node.typeParameters,
-            inheritance
+            inheritance,
+            valueType: node.type ?? undefined
         });
         node.headerText = formatRenderedDeclarationHeader(node.header);
         node.overwrites = mapReference(this.context, reflection.overwrites);
