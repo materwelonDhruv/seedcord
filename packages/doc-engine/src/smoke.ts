@@ -1,24 +1,15 @@
-/* eslint-disable max-lines */
-/* eslint-disable max-statements */
-
+import fs from 'node:fs/promises';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
+import { fileURLToPath } from 'node:url';
+import { inspect } from 'node:util';
 
 import { ReflectionKind } from 'typedoc';
 
 import { resolveGeneratedDir } from './constants';
 import { DocsEngine } from './engine';
 
-import type {
-    DocManifestPackage,
-    DocNode,
-    DocPackageModel,
-    DocReference,
-    DocSearchEntry,
-    InlineType,
-    RenderedSignature,
-    SigPart
-} from './types';
+import type { DocManifestPackage, DocNode, DocPackageModel, DocReference, DocSearchEntry } from './types';
 
 const DIVIDER_WIDTH = 48;
 const HELP_TEXT = `Usage: tsx smoke.ts [generated-root]
@@ -29,6 +20,7 @@ const HELP_TEXT = `Usage: tsx smoke.ts [generated-root]
 
 const KEY_SAMPLE_LIMIT = 15;
 const SUMMARY_SNIPPET_LIMIT = 160;
+const SAMPLES_DIR = path.resolve(fileURLToPath(new URL('.', import.meta.url)), '../samples');
 
 const formatEntryPoints = (pkg: DocManifestPackage): string => {
     if (!Array.isArray(pkg.entryPoints) || pkg.entryPoints.length === 0) {
@@ -250,46 +242,6 @@ const formatKind = (kind: ReflectionKind | null): string => {
     return typeof label === 'string' ? label : `#${kind}`;
 };
 
-const sigPartsToText = (parts: SigPart[]): string => {
-    let result = '';
-    for (const part of parts) {
-        if (part.kind === 'space') {
-            if (!result.endsWith(' ')) {
-                result += ' ';
-            }
-            continue;
-        }
-
-        result += part.text;
-    }
-
-    return result.trim();
-};
-
-const inlineTypeToText = (inline?: InlineType): string => (inline ? sigPartsToText(inline.parts) : '');
-const formatRenderedSignature = (render?: RenderedSignature): string | null => {
-    if (!render) {
-        return null;
-    }
-
-    const nameText = sigPartsToText(render.name);
-    const typeParams =
-        render.typeParams && render.typeParams.length > 0
-            ? `<${render.typeParams.map((param) => param.name).join(', ')}>`
-            : '';
-    const parameters = render.parameters
-        .map((param) => {
-            const optional = param.optional ? '?' : '';
-            const typeText = param.type ? `: ${inlineTypeToText(param.type)}` : '';
-            const defaultValue = param.defaultValue ? ` = ${param.defaultValue}` : '';
-            return `${param.name}${optional}${typeText}${defaultValue}`;
-        })
-        .join(', ');
-    const returnType = render.returnType ? `: ${inlineTypeToText(render.returnType)}` : '';
-
-    return `${nameText}${typeParams}(${parameters})${returnType}`.trim();
-};
-
 const logTopSearchResults = (entries: DocSearchEntry[]): void => {
     entries.forEach((entry, index) => {
         console.log(`  [${index + 1}] ${entry.packageName}/${entry.slug}`);
@@ -301,72 +253,87 @@ const logTopSearchResults = (entries: DocSearchEntry[]): void => {
     });
 };
 
-const logRenderedSignatures = (node: DocNode): string[] => {
-    return node.signatures.map((signature, index) => {
-        const fallbackLabel = signature.render ? formatRenderedSignature(signature.render) : signature.name;
-        const renderText = signature.renderText ?? undefined;
-        const label = renderText ?? fallbackLabel;
+const sanitizeFileSegment = (segment: string): string =>
+    segment
+        .trim()
+        .replace(/[^a-z0-9]+/giu, '-')
+        .replace(/^-+|-+$/gu, '')
+        .toLowerCase();
 
-        console.log(`  [sig ${index + 1}] ${label}`);
-        console.log(
-            `      kind: ${formatKind(signature.kind)} | anchor: ${signature.anchor} | overload: ${signature.overloadIndex}`
-        );
-        if (signature.comment?.summary) {
-            console.log(`      summary: ${signature.comment.summary}`);
-        }
-        if (signature.render) {
-            console.log('      rendered parts:');
-            console.dir(signature.render, { depth: null });
-        }
-        return label ?? '';
-    });
-};
-
-const attemptCustomSearch = (query: string, packageName: string | undefined, engine: DocsEngine): void => {
+const attemptCustomSearch = async (
+    query: string,
+    packageName: string | undefined,
+    engine: DocsEngine
+): Promise<void> => {
     const results = engine.search(query, packageName);
     if (results.length === 0) {
         console.log(`Custom search: "${query}" returned no results.`);
         return;
     }
 
-    const topResults = results.slice(0, 5);
-    console.log(`\nCustom search for "${query}" (${packageName ?? 'all packages'}):`);
-    logTopSearchResults(topResults);
+    logTopSearchResults(results.slice(0, 5));
 
     const target = results.find((entry) => entry.name === query) ?? results[0];
     if (!target) {
         console.log('Unable to select target result.');
         return;
     }
+
     const node = engine.getNodeBySlug(target.packageName, target.slug);
     if (!node) {
         console.log('Unable to resolve node for selected result.');
         return;
     }
 
-    console.dir(node, { depth: 3 });
+    const kindLabel = node.kindLabel && node.kindLabel.length > 0 ? node.kindLabel : formatKind(node.kind);
+    const fileName = `${sanitizeFileSegment(kindLabel)}-${sanitizeFileSegment(query)}.txt`;
+    const filePath = path.join(SAMPLES_DIR, fileName);
+    const payload = inspect(node, { depth: 10, colors: false });
 
-    console.log(`\nResolved node: ${node.qualifiedName} (${formatKind(node.kind)})`);
-    if (node.headerText) {
-        console.log(`  declaration: ${node.headerText}`);
-    }
-    if (node.signatures.length === 0) {
-        console.log('  No signatures present on node.');
-        return;
-    }
-
-    const expectedSignature =
-        'traverseDirectory(dir: string, callback: (fullPath: string, relativePath: string, imported: Record<string, unknown>) => Promise<void> | void, logger: Logger): Promise<void>';
-
-    const renderedSignatures = logRenderedSignatures(node);
-    const matchesExpected = renderedSignatures.includes(expectedSignature);
-    console.log('\nExpected signature:');
-    console.log(`  ${expectedSignature}`);
-    console.log(`Match found: ${matchesExpected}`);
-    if (!matchesExpected) {
-        console.log('  Rendered signatures did not match expected declaration.');
-    }
+    await fs.writeFile(filePath, payload, 'utf8');
+    console.log(`Sample written for ${query} -> ${path.relative(process.cwd(), filePath)}`);
 };
+
+const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
+    // Classes
+    { query: 'BaseService' },
+    { query: 'Seedcord' },
+    { query: 'AutocompleteHandler' },
+    { query: 'BaseErrorEmbed' },
+    { query: 'BuilderComponent' },
+    { query: 'CoordinatedShutdown' },
+    { query: 'UnknownException' },
+    { query: 'Mongo' },
+
+    // Interfaces
+    { query: 'HandlerWithChecks' },
+    { query: 'BaseCore' },
+    { query: 'CooldownOptions' },
+
+    // Types
+    { query: 'AtleastOne' },
+    { query: 'TupleOf' },
+    { query: 'NumberRange' },
+    { query: 'TypedConstructor' },
+
+    // Enums
+    { query: 'StartupPhase' },
+    { query: 'ShutdownPhase' },
+    { query: 'SelectMenuType' },
+
+    // Functions
+    { query: 'prettify' },
+    { query: 'fyShuffle' },
+    { query: 'RegisterCommand' },
+    { query: 'SelectMenuRoute' },
+    { query: 'AutocompleteRoute' },
+
+    // Variables
+    { query: 'BuilderTypes' },
+    { query: 'EffectMetadataKey' },
+    { query: 'RowTypes' },
+    { query: 'PRETTIER_CONFIG' }
+];
 
 const main = async (): Promise<void> => {
     const arg = process.argv[2];
@@ -387,8 +354,13 @@ const main = async (): Promise<void> => {
 
     logDivider();
 
+    await fs.mkdir(SAMPLES_DIR, { recursive: true });
+
     performance.mark('smoke-start');
-    attemptCustomSearch('HanderWithChecks', undefined, engine);
+    for (const target of SEARCH_TARGETS) {
+        console.log(`\nCustom search for "${target.query}" (${target.packageName ?? 'all packages'}):`);
+        await attemptCustomSearch(target.query, target.packageName, engine);
+    }
     performance.mark('smoke-end');
     performance.measure('smoke', 'smoke-start', 'smoke-end');
 
