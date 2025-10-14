@@ -2,7 +2,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X } from 'lucide-react';
-import { cloneElement, isValidElement, useLayoutEffect, useRef, useState } from 'react';
+import { cloneElement, isValidElement, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import Button from '@components/ui/button';
 import { ScrollToTopButton } from '@components/ui/scroll-to-top-button';
@@ -17,6 +17,51 @@ interface ContainerProps {
     sidebar: ReactNode;
     children: ReactNode;
     className?: string;
+}
+
+const SIDEBAR_WIDTH = 320;
+
+function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): ReactElement {
+    return (
+        <div className="flex flex-col gap-3 px-4 pt-6 md:px-6 lg:hidden">
+            <div className="flex flex-wrap gap-2">
+                <Button
+                    variant="outline"
+                    className="flex-1 min-w-[150px] justify-center gap-2 bg-surface text-sm text-[var(--text)]"
+                    onClick={onOpen}
+                    aria-label="Open navigation menu"
+                >
+                    <Menu className="h-4 w-4" aria-hidden />
+                    Browse navigation
+                </Button>
+            </div>
+        </div>
+    );
+}
+
+function DesktopSidebarFrame({ sidebar }: { sidebar: ReactNode }): ReactElement {
+    return (
+        <aside
+            className="hidden lg:block lg:flex-shrink-0"
+            style={{
+                width: 'var(--sidebar-width)'
+            }}
+            aria-label="Documentation navigation"
+        >
+            <div
+                className="fixed left-0 box-border"
+                style={{
+                    width: 'var(--sidebar-width)',
+                    top: 'var(--nav-h)',
+                    height: 'calc(100dvh - var(--nav-h))'
+                }}
+            >
+                <div className="flex h-full flex-col overflow-hidden border-r border-border/60 bg-[color-mix(in_srgb,var(--surface)_90%,transparent)]">
+                    {sidebar}
+                </div>
+            </div>
+        </aside>
+    );
 }
 
 function MobilePanelDialog({
@@ -60,17 +105,19 @@ function MobilePanelDialog({
 export function Container({ sidebar, children, className }: ContainerProps): ReactNode {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [navigationOpen, setNavigationOpen] = useState(false);
-    const desktopSidebar: ReactNode = isValidElement(sidebar)
-        ? (() => {
-              const sidebarElement = sidebar as ReactElement<SidebarComponentProps>;
-              const mergedClassName = cn('flex h-full w-full flex-col', sidebarElement.props.className);
+    const desktopSidebar: ReactNode = useMemo(() => {
+        if (!isValidElement(sidebar)) {
+            return sidebar;
+        }
 
-              return cloneElement<SidebarComponentProps>(sidebarElement, {
-                  className: mergedClassName,
-                  variant: sidebarElement.props.variant ?? 'desktop'
-              });
-          })()
-        : sidebar;
+        const sidebarElement = sidebar as ReactElement<SidebarComponentProps>;
+        const mergedClassName = cn('flex h-full w-full flex-col', sidebarElement.props.className);
+
+        return cloneElement<SidebarComponentProps>(sidebarElement, {
+            className: mergedClassName,
+            variant: sidebarElement.props.variant ?? 'desktop'
+        });
+    }, [sidebar]);
 
     useLayoutEffect(() => {
         const updateNavigationHeight = (): void => {
@@ -92,52 +139,27 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
 
     const containerStyle: CSSProperties & {
         '--nav-h': string;
-        '--sb-pad': string;
+        '--sidebar-width': string;
     } = {
         '--nav-h': '64px',
-        '--sb-pad': '24px'
+        '--sidebar-width': `${SIDEBAR_WIDTH}px`
     };
 
     return (
-        <div
-            ref={containerRef}
-            style={containerStyle}
-            className={cn(
-                'mx-auto flex w-full max-w-7xl flex-1 flex-col gap-6 px-4 pb-16 pt-6 md:px-6 lg:gap-8 lg:pb-20 lg:pt-10',
-                className
-            )}
-        >
-            <div className="flex flex-col gap-3 lg:hidden">
-                <div className="flex flex-wrap gap-2">
-                    <Button
-                        variant="outline"
-                        className="flex-1 min-w-[150px] justify-center gap-2 bg-surface text-sm text-[var(--text)]"
-                        onClick={() => setNavigationOpen(true)}
-                        aria-label="Open navigation menu"
-                    >
-                        <Menu className="h-4 w-4" aria-hidden />
-                        Browse navigation
-                    </Button>
-                </div>
-            </div>
+        <div ref={containerRef} style={containerStyle} className={cn('flex w-full flex-1 flex-col gap-6', className)}>
+            <MobileNavigationToggle onOpen={() => setNavigationOpen(true)} />
 
             <MobilePanelDialog open={navigationOpen} onOpenChange={setNavigationOpen} title="Navigation">
                 <Sidebar variant="mobile" className="border-transparent bg-transparent p-0 shadow-none" />
             </MobilePanelDialog>
 
-            <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
-                <aside className="relative hidden lg:block">
-                    <div
-                        className="sticky"
-                        style={{
-                            top: 'calc(var(--nav-h) + var(--sb-pad))',
-                            height: 'calc(100dvh - var(--nav-h) - calc(var(--sb-pad) * 2))'
-                        }}
-                    >
-                        <div className="box-border flex h-full w-full flex-col">{desktopSidebar}</div>
+            <div className="flex w-full flex-1">
+                <DesktopSidebarFrame sidebar={desktopSidebar} />
+                <div className="flex min-h-0 flex-1 flex-col">
+                    <div className="mx-auto w-full max-w-none px-4 pb-16 pt-6 md:px-8 md:pt-8 lg:px-12 lg:pt-12">
+                        {children}
                     </div>
-                </aside>
-                <div className="min-w-0">{children}</div>
+                </div>
             </div>
 
             <ScrollToTopButton className="fixed bottom-10 right-6" />

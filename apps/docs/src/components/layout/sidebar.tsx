@@ -48,11 +48,9 @@ function getContainerStyles(variant: 'desktop' | 'mobile'): CSSProperties | unde
         };
     }
 
-    const viewportHeight = 'calc(100dvh - var(--nav-h, 64px) - calc(var(--sb-pad, 24px) * 2))';
-
     return {
-        height: viewportHeight,
-        maxHeight: viewportHeight
+        height: '100%',
+        maxHeight: '100%'
     };
 }
 
@@ -142,6 +140,7 @@ function useSidebarScrollGuards(): {
 export function Sidebar({ variant = 'desktop', className }: SidebarProps): ReactElement {
     const selection = useCatalogSelection();
     const containerStyles = getContainerStyles(variant);
+    const isDesktop = variant === 'desktop';
     const listStyles: CSSProperties | undefined =
         variant === 'desktop'
             ? {
@@ -159,7 +158,10 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
         return (
             <nav
                 aria-label="Library navigation"
-                className={cn('rounded-2xl border border-border bg-surface p-4 shadow-soft', className)}
+                className={cn(
+                    'flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-soft',
+                    className
+                )}
             >
                 <p className="text-sm text-subtle">No packages available.</p>
             </nav>
@@ -173,7 +175,10 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
         <nav
             aria-label="Library navigation"
             className={cn(
-                'flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-soft',
+                'flex h-full flex-col p-4',
+                isDesktop
+                    ? 'rounded-none border-0 bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] shadow-none'
+                    : 'rounded-2xl border border-border bg-surface shadow-soft',
                 className
             )}
             style={containerStyles}

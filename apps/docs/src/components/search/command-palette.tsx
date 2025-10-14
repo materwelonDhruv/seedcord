@@ -14,6 +14,7 @@ import {
     PackageSearch,
     Puzzle,
     Search,
+    Sigma,
     SquareDot,
     SquareStack,
     Variable,
@@ -45,7 +46,8 @@ type SearchResultKind =
     | 'method'
     | 'property'
     | 'variable'
-    | 'parameter';
+    | 'parameter'
+    | 'typeParameter';
 
 interface CommandAction {
     id: string;
@@ -77,7 +79,8 @@ const SEARCH_KIND_ICONS: Record<SearchResultKind, LucideIcon> = {
     method: FunctionSquare,
     property: SquareDot,
     variable: Variable,
-    parameter: Binary
+    parameter: Binary,
+    typeParameter: Sigma
 };
 
 const SEARCH_KIND_LABELS: Record<SearchResultKind, string> = {
@@ -92,7 +95,8 @@ const SEARCH_KIND_LABELS: Record<SearchResultKind, string> = {
     method: 'Method',
     property: 'Property',
     variable: 'Variable',
-    parameter: 'Parameter'
+    parameter: 'Parameter',
+    typeParameter: 'Type Parameter'
 };
 
 const SEARCH_KIND_ACCENTS: Record<SearchResultKind, string> = {
@@ -107,7 +111,8 @@ const SEARCH_KIND_ACCENTS: Record<SearchResultKind, string> = {
     method: 'text-[color-mix(in_srgb,var(--entity-function-color)_78%,var(--text))]',
     property: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
     variable: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
-    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_70%,var(--text))]'
+    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_70%,var(--text))]',
+    typeParameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_75%,var(--text))]'
 };
 
 const COMMAND_GROUPS: CommandGroupModel[] = [
@@ -192,6 +197,14 @@ const COMMAND_GROUPS: CommandGroupModel[] = [
                 href: '/docs/entity?pkg=@seedcord/core&symbol=DEFAULT_TIMEOUT',
                 kind: 'variable',
                 description: 'Default duration applied to async workflows.'
+            },
+            {
+                id: 'core::Client#use<TPlugin>',
+                label: 'TPlugin',
+                path: '/packages/core/classes/client#typeparam-TPlugin',
+                href: '/docs/entity?pkg=@seedcord/core&symbol=Client&typeparam=TPlugin',
+                kind: 'typeParameter',
+                description: 'Generic constraint used by Client.use() to scope plugin contracts.'
             }
         ]
     },

@@ -3,11 +3,13 @@
 import { create } from 'zustand';
 
 import { log } from '@lib/logger';
+import { formatMemberAccessLabel, type MemberAccessLevel } from '@lib/member-access';
 
 interface UIState {
     isCommandPaletteOpen: boolean;
     selectedPackage: string;
     selectedVersion: string;
+    memberAccessLevel: MemberAccessLevel;
 }
 
 interface UIActions {
@@ -15,17 +17,20 @@ interface UIActions {
     toggleCommandPalette: () => void;
     setSelectedPackage: (pkg: string) => void;
     setSelectedVersion: (version: string) => void;
+    setMemberAccessLevel: (level: MemberAccessLevel) => void;
 }
 
 export type UIStore = UIState & UIActions;
 
 const DEFAULT_PACKAGE = '@seedcord/core';
 const DEFAULT_VERSION = 'v0.2.5';
+const DEFAULT_ACCESS_LEVEL: MemberAccessLevel = 'protected';
 
 export const useUIStore = create<UIStore>((set) => ({
     isCommandPaletteOpen: false,
     selectedPackage: DEFAULT_PACKAGE,
     selectedVersion: DEFAULT_VERSION,
+    memberAccessLevel: DEFAULT_ACCESS_LEVEL,
     setCommandPaletteOpen: (open) => {
         log('Command palette visibility updated', { open });
         set({ isCommandPaletteOpen: open });
@@ -43,6 +48,10 @@ export const useUIStore = create<UIStore>((set) => ({
     setSelectedVersion: (version) => {
         log('Version filter changed', { version });
         set({ selectedVersion: version });
+    },
+    setMemberAccessLevel: (level) => {
+        log('Member access filter changed', { level: formatMemberAccessLabel(level) });
+        set({ memberAccessLevel: level });
     }
 }));
 
