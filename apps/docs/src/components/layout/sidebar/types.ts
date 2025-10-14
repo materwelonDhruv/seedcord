@@ -1,4 +1,4 @@
-import type { EntityTone } from '../../../lib/entity-metadata';
+import type { EntityTone } from '@lib/entity-metadata';
 
 export interface SidebarVariantData {
     title: string;

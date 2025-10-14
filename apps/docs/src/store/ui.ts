@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 
-import { log } from '../lib/logger';
+import { log } from '@lib/logger';
 
 interface UIState {
     isCommandPaletteOpen: boolean;

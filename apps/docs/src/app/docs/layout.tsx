@@ -1,5 +1,5 @@
-import Container from '../../components/layout/container';
-import Sidebar from '../../components/layout/sidebar';
+import Container from '@components/layout/container';
+import Sidebar from '@components/layout/sidebar';
 
 import type { ReactNode } from 'react';
 

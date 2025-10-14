@@ -1,5 +1,5 @@
-import EntityContent from '../../../components/docs/entity/entity-content';
-import { highlightToHtml } from '../../../lib/shiki';
+import EntityContent from '@components/docs/entity/entity-content';
+import { highlightToHtml } from '@lib/shiki';
 
 import type { ReactElement } from 'react';
 
