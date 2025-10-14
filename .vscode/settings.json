@@ -2,6 +2,7 @@
     // Editor Settings
     "editor.detectIndentation": false,
     "editor.trimAutoWhitespace": true,
+    "editor.tabSize": 4,
     "files.trimTrailingWhitespace": true,
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
