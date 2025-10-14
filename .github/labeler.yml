@@ -102,14 +102,6 @@ area:config:
     - issues:
           - title: '/config/i'
           - body: '/config/i'
-area:release:
-    - changed-files:
-          - any-glob-to-any-file: '.changeset/**'
-          - any-glob-to-any-file: '**/package.json'
-          - any-glob-to-any-file: pnpm-lock.yaml
-    - issues:
-          - title: '/release/i'
-          - body: '/release/i'
 area:assets:
     - changed-files:
           - any-glob-to-any-file: 'assets/**'

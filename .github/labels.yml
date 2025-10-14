@@ -43,9 +43,6 @@
 - name: area:config
   color: 6c757d
   description: Repository configuration updates
-- name: area:release
-  color: e83e8c
-  description: Release engineering changes
 - name: area:assets
   color: fd7e14
   description: Static asset updates
