@@ -110,9 +110,9 @@ importers:
             '@radix-ui/react-tooltip':
                 specifier: ^1.2.8
                 version: 1.2.8(@types/react-dom@19.2.1(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
-            '@seedcord/api-docs':
+            '@seedcord/docs-generator':
                 specifier: workspace:^
-                version: link:../../packages/api-docs
+                version: link:../../packages/docs-generator
             cmdk:
                 specifier: ^1.1.1
                 version: 1.1.1(@types/react-dom@19.2.1(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -193,7 +193,7 @@ importers:
                 specifier: ^5.9.3
                 version: 5.9.3
 
-    packages/api-docs:
+    packages/docs-engine:
         dependencies:
             typedoc:
                 specifier: catalog:deps
@@ -215,7 +215,7 @@ importers:
                 specifier: workspace:^
                 version: link:../tsup-config
 
-    packages/doc-engine:
+    packages/docs-generator:
         dependencies:
             typedoc:
                 specifier: catalog:deps
