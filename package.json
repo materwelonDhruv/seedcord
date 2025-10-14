@@ -34,7 +34,9 @@
         "local:test:seedcord": "cd packages/seedcord && vitest",
         "local:test:mock": "cd packages/mock && vitest",
         "bump:deps": "for dir in packages/*/; do echo \"Updating $dir...\"; (cd \"$dir\" && pnpm update --latest); done",
-        "docs:extract": "pnpm --filter @seedcord/api-docs run extract"
+        "docs:extract": "pnpm --filter @seedcord/docs-generator run smoke -o ./debugging/generated -p ./packages",
+        "docs:parse": "pnpm --filter @seedcord/docs-engine run smoke ./debugging/generated -o ./debugging/samples",
+        "docs:smoke": "pnpm docs:extract && pnpm docs:parse"
     },
     "keywords": [
         "discord",

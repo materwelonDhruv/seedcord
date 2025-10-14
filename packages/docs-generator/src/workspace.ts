@@ -1,9 +1,10 @@
 import { readFile, readdir } from 'node:fs/promises';
 import path from 'node:path';
 
-import { PACKAGES_DIR } from './paths';
+import { defaultPaths } from './paths';
 import { normalizeRelativePath, pathExists } from './utils';
 
+import type { ApiDocsPaths } from './paths';
 import type { PackageManifest } from './types';
 
 // most packages have a src/index.ts entry point unless they say otherwise
@@ -12,13 +13,13 @@ export const DEFAULT_ENTRY_POINTS = ['src/index.ts'];
 /**
  * find every package folder that actually has a package.json file
  */
-export async function discoverWorkspacePackages(): Promise<string[]> {
-    const entries = await readdir(PACKAGES_DIR, { withFileTypes: true });
+export async function discoverWorkspacePackages(paths: ApiDocsPaths = defaultPaths): Promise<string[]> {
+    const entries = await readdir(paths.packagesDir, { withFileTypes: true });
     const packageDirs: string[] = [];
 
     for (const entry of entries) {
         if (!entry.isDirectory()) continue;
-        const packageDir = path.join(PACKAGES_DIR, entry.name);
+        const packageDir = path.join(paths.packagesDir, entry.name);
         const packageJsonPath = path.join(packageDir, 'package.json');
 
         if (await pathExists(packageJsonPath)) packageDirs.push(packageDir);

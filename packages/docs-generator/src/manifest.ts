@@ -2,24 +2,25 @@ import { writeFile } from 'node:fs/promises';
 
 import { Application } from 'typedoc';
 
-import { MANIFEST_PATH, OUTPUT_DIR, toRepoRelative } from './paths';
+import { defaultPaths } from './paths';
 
+import type { ApiDocsPaths } from './paths';
 import type { PackageDocResult } from './types';
 
 /**
  * stash a summary json so we can peek at what happened without reading console spam
  */
-export async function writeManifest(results: PackageDocResult[]): Promise<void> {
+export async function writeManifest(results: PackageDocResult[], paths: ApiDocsPaths = defaultPaths): Promise<void> {
     const payload = {
         generatedAt: new Date().toISOString(),
         tool: 'typedoc',
         typedocVersion: Application.VERSION,
-        outputDir: toRepoRelative(OUTPUT_DIR),
+        outputDir: paths.toRepoRelative(paths.outputDir),
         packages: results.map((result) => ({
             name: result.name,
             version: result.version,
             entryPoints: result.entryPoints,
-            output: result.outputPath ? toRepoRelative(result.outputPath) : null,
+            output: result.outputPath ? paths.toRepoRelative(result.outputPath) : null,
             warningCount: result.warnings.length,
             errorCount: result.errors.length,
             warnings: result.warnings,
@@ -28,5 +29,5 @@ export async function writeManifest(results: PackageDocResult[]): Promise<void> 
         }))
     };
 
-    await writeFile(MANIFEST_PATH, JSON.stringify(payload, null, 2), 'utf8');
+    await writeFile(paths.manifestPath, JSON.stringify(payload, null, 2), 'utf8');
 }

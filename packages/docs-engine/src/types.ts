@@ -1,3 +1,4 @@
+import type { PackageDirectory } from './directory';
 import type { GlobalId } from './ids';
 import type { JSONOutput, ProjectReflection, ReflectionKind, VarianceModifier } from 'typedoc';
 
@@ -236,6 +237,7 @@ export interface DocPackageModel {
     root: DocNode;
     nodes: Map<number, DocNode>;
     indexes: DocIndexes;
+    directory: PackageDirectory;
 }
 
 export interface DocCollection {

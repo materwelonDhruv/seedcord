@@ -2,10 +2,11 @@ import { readFile, rm, writeFile } from 'node:fs/promises';
 
 import { Application, EntryPointStrategy, LogLevel } from 'typedoc';
 
-import { getOutputPathForPackage, toRepoRelative } from './paths';
+import { defaultPaths } from './paths';
 import { pathExists, stripAnsi } from './utils';
 import { readPackageManifest, resolveEntryPoints, resolveTsconfigPath } from './workspace';
 
+import type { ApiDocsPaths } from './paths';
 import type { PackageDocResult } from './types';
 
 const EXTERNAL_PLUGINS = ['typedoc-plugin-mdn-links', 'typedoc-plugin-dt-links'];
@@ -43,7 +44,10 @@ const addVersionToJson = async (outputPath: string, version: string): Promise<vo
  * run typedoc for one package and collect the status, warnings, and output location
  */
 // eslint-disable-next-line max-statements
-export async function extractPackageDocs(packageDir: string): Promise<PackageDocResult | null> {
+export async function extractPackageDocs(
+    packageDir: string,
+    paths: ApiDocsPaths = defaultPaths
+): Promise<PackageDocResult | null> {
     const manifest = await readPackageManifest(packageDir);
     if (manifest.private) return null;
 
@@ -55,7 +59,7 @@ export async function extractPackageDocs(packageDir: string): Promise<PackageDoc
 
     const tsconfigPath = resolveTsconfigPath(packageDir, manifest);
     if (!(await pathExists(tsconfigPath))) {
-        console.warn(`⚠️  Skipping ${manifest.name}: tsconfig not found at ${toRepoRelative(tsconfigPath)}`);
+        console.warn(`⚠️  Skipping ${manifest.name}: tsconfig not found at ${paths.toRepoRelative(tsconfigPath)}`);
         return null;
     }
 
@@ -100,7 +104,7 @@ export async function extractPackageDocs(packageDir: string): Promise<PackageDoc
     const unscopedName = manifest.name.includes('/')
         ? (manifest.name.split('/').pop() ?? manifest.name)
         : manifest.name;
-    const outputPath = getOutputPathForPackage(unscopedName);
+    const outputPath = paths.getOutputPathForPackage(unscopedName);
 
     let succeeded = false;
     if (project && errors.length === 0) {

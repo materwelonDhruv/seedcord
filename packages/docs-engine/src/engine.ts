@@ -7,6 +7,7 @@ import { buildCollection, type ResolveOptions } from './builders/collection-buil
 import { resolveManifestPath } from './constants';
 import { ManifestReader } from './manifest-reader';
 
+import type { DirectorySnapshot, PackageDirectory } from './directory';
 import type { GlobalId } from './ids';
 import type { DocCollection, DocManifest, DocNode, DocPackageModel, DocReference, DocSearchEntry } from './types';
 
@@ -19,9 +20,11 @@ export interface DocsEngineOptions {
 
 export class DocsEngine {
     private readonly searchIndex: DocSearchEntry[];
+    private readonly directories: Map<string, PackageDirectory>;
 
     private constructor(private readonly collection: DocCollection) {
         this.searchIndex = aggregateSearchIndex(collection);
+        this.directories = new Map(collection.packages.map((pkg) => [pkg.manifest.name, pkg.directory] as const));
     }
 
     static async create(options: DocsEngineOptions): Promise<DocsEngine> {
@@ -58,6 +61,15 @@ export class DocsEngine {
 
     getPackage(name: string): DocPackageModel | null {
         return this.collection.packages.find((pkg) => pkg.manifest.name === name) ?? null;
+    }
+
+    getPackageDirectory(name: string): PackageDirectory | null {
+        return this.directories.get(name) ?? null;
+    }
+
+    listPackageEntities(name: string): DirectorySnapshot | null {
+        const directory = this.getPackageDirectory(name);
+        return directory ? directory.snapshot() : null;
     }
 
     getNodeBySlug(pkgName: string, slug: string): DocNode | null {

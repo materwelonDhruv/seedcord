@@ -1,5 +1,6 @@
 import path from 'node:path';
 
+import { PackageDirectory } from '../directory';
 import { ProjectLoader } from '../project-loader';
 import { NodeTransformer } from '../transformers/node-transformer';
 import { createTransformContext } from '../transformers/transform-context';
@@ -275,12 +276,14 @@ export const buildPackage = async (pkg: DocManifestPackage, projectPath: string)
     const transformer = new NodeTransformer(context);
     const root = transformer.transform(project);
     const indexes = buildIndexes(root, pkg);
+    const directory = PackageDirectory.fromIndexes(indexes);
 
     return {
         manifest: pkg,
         project,
         root,
         nodes: context.nodes,
-        indexes
+        indexes,
+        directory
     };
 };

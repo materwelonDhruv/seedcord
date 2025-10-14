@@ -9,3 +9,5 @@
 - DO NOT edit AGENTS.md or TASKS.md unless explicitly told to do so.
 - The user has tsx installed globally. so you can simply cd into the correct directory and run `tsx file.ts`
 - Always follow DRY and SOLID principles.
+- Moving and renaming files should be done with the `mv` command to ensure proper git tracking. It's also better than creating a new file and replacing contents.
+- For files you plan to delete, simply comment out all the code in it, and update the file name using the `mv` command to append `.deprecated` to the file name. This way, git will track the change and you can always recover the file if needed.

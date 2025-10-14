@@ -1,5 +1,5 @@
 {
-    "name": "@seedcord/doc-engine",
+    "name": "@seedcord/docs-engine",
     "version": "0.1.0",
     "private": true,
     "description": "Documentation parser, renderer, and explorer for Seedcord",
@@ -7,7 +7,7 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/materwelondhruv/seedcord.git",
-        "directory": "packages/doc-engine"
+        "directory": "packages/docs-engine"
     },
     "types": "./dist/index.d.ts",
     "exports": {
@@ -21,13 +21,12 @@
     "scripts": {
         "build": "tsup",
         "clean": "rm -rf dist",
-        "extract": "tsx src/cli.ts",
+        "smoke": "tsx src/smoke.ts",
         "lint": "eslint 'src/**/*.ts' --cache",
         "lint:fix": "eslint 'src/**/*.ts' --cache --fix",
         "fmt": "prettier --write 'src/**/*.{ts,md,json}' --cache",
         "fmt:check": "prettier --check 'src/**/*.{ts,md,json}' --cache",
         "tc": "tsc --noEmit",
-        "smoke": "tsx src/smoke.ts",
         "test": "vitest run",
         "test:watch": "vitest dev",
         "coverage": "vitest run --coverage"

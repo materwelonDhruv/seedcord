@@ -25,7 +25,7 @@
 - name: pkg:tsup-config
   color: 196699
   description: Changes related to TSUP config package
-- name: pkg:api-docs
+- name: pkg:docs-generator
   color: 85c1e9
   description: Changes related to API docs tooling
 - name: pkg:doc-engine
