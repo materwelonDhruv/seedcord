@@ -18,7 +18,7 @@ import type { Core } from 'seedcord';
  * @example
  * ```typescript
  * \@DatabaseService('users')
- * export class Users extends BaseService<IUser> {
+ * export class Users extends MongoService<IUser> {
  *   \@DatabaseModel('users')
  *   public static schema = new mongoose.Schema<IUser>({
  *     username: { type: String, required: true, unique: true }
@@ -31,7 +31,7 @@ import type { Core } from 'seedcord';
  * }
  * ```
  */
-export abstract class BaseService<Doc extends IDocument = IDocument> {
+export abstract class MongoService<Doc extends IDocument = IDocument> {
     public readonly model: mongoose.Model<Doc>;
 
     public constructor(
@@ -52,5 +52,5 @@ export abstract class BaseService<Doc extends IDocument = IDocument> {
     }
 }
 
-/** Constructor type for BaseService classes */
-export type BaseServiceConstructor = TypedConstructor<typeof BaseService>;
+/** Constructor type for MongoService classes */
+export type MongoServiceConstructor = TypedConstructor<typeof MongoService>;

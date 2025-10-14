@@ -11,7 +11,7 @@ import { CustomError, throwCustomError, DatabaseError } from 'seedcord';
  * @decorator
  * @example
  * ```typescript
- * class UserService extends BaseService {
+ * class UserService extends MongoService<IUser> {
  *   \@DBCatchable('Failed to find user')
  *   async findById(id: string) {
  *     return this.model.findById(id);

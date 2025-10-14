@@ -17,7 +17,7 @@ export const ModelMetadataKey = Symbol('db:model');
  * @example
  * ```typescript
  * \@DatabaseService('users')
- * export class Users extends BaseService<IUser> {
+ * export class Users extends MongoService<IUser> {
  *   \@DatabaseModel('users')
  *   public static schema = new mongoose.Schema<IUser>({
  *     username: { type: String, required: true, unique: true }

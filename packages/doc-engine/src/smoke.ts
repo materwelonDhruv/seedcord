@@ -296,7 +296,7 @@ const attemptCustomSearch = async (
 
 const SEARCH_TARGETS: { query: string; packageName?: string }[] = [
     // Classes
-    { query: 'BaseService' },
+    { query: 'MongoService' },
     { query: 'Seedcord' },
     { query: 'AutocompleteHandler' },
     { query: 'BaseErrorEmbed' },

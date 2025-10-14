@@ -1,4 +1,4 @@
-import type { BaseService } from '../BaseService';
+import type { MongoService } from '../MongoService';
 import type { ServiceKeys } from '../types/Services';
 import type { ConstructorFunction } from '@seedcord/types';
 
@@ -16,13 +16,13 @@ export const ServiceMetadataKey = Symbol('db:serviceKey');
  * @example
  * ```typescript
  * \@DatabaseService('users')
- * export class Users<Doc extends IUser = IUser> extends BaseService<Doc> {
+ * export class Users<Doc extends IUser = IUser> extends MongoService<Doc> {
  *   // Some code
  * }
  * ```
  */
 export function DatabaseService<TService extends ServiceKeys>(key: TService) {
-    return <DatabaseCtor extends ConstructorFunction & { prototype: BaseService }>(ctor: DatabaseCtor): void => {
+    return <DatabaseCtor extends ConstructorFunction & { prototype: MongoService }>(ctor: DatabaseCtor): void => {
         Reflect.defineMetadata(ServiceMetadataKey, key, ctor);
     };
 }
