@@ -1,9 +1,9 @@
 'use client';
 
 import * as Tooltip from '@radix-ui/react-tooltip';
-import { Github } from 'lucide-react';
 import Link from 'next/link';
 
+import GithubIcon from '@components/ui/github';
 import Button from '@ui/button';
 import { Icon } from '@ui/icon';
 
@@ -54,7 +54,7 @@ export function Header(): ReactElement {
                                                 target="_blank"
                                                 rel="noreferrer"
                                             >
-                                                <Icon icon={Github} size={20} />
+                                                <Icon icon={GithubIcon} size={20} />
                                             </Link>
                                         </Button>
                                     </Tooltip.Trigger>

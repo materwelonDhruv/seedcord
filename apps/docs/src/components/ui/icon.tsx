@@ -2,18 +2,19 @@
 
 import { cn } from '@lib/utils';
 
-import type { LucideIcon } from 'lucide-react';
 import type { ReactElement } from 'react';
 
+type IconComponentType = React.ComponentType<Record<string, unknown>>;
+
 interface IconProps {
-    icon: LucideIcon;
+    icon: IconComponentType;
     size?: number;
     title?: string;
     className?: string;
 }
 
 export function Icon({ icon: iconComponent, size = 18, title, className }: IconProps): ReactElement {
-    const IconComponent = iconComponent;
+    const IconComponent: IconComponentType = iconComponent;
 
     if (title) {
         return (
