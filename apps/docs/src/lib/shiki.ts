@@ -7,6 +7,84 @@ const THEMES = {
 
 const COMMON_LANGS: BundledLanguage[] = ['ts', 'tsx', 'js', 'jsx', 'json'];
 
+interface LinkMarker {
+    open: string;
+    close: string;
+    url: string;
+}
+
+const LINK_OPEN_SENTINEL = '\uE000';
+const LINK_OPEN_BOUNDARY_SENTINEL = '\uE001';
+const LINK_CLOSE_SENTINEL = '\uE002';
+const LINK_CLOSE_BOUNDARY_SENTINEL = '\uE003';
+const TOKEN_BASE_CODE_POINT = 0xe100;
+const SENTINEL_MIN_CODE_POINT = 0xe000;
+const SENTINEL_MAX_CODE_POINT = 0xe1ff;
+const HEX_RADIX = 16;
+const DECIMAL_RADIX = 10;
+
+function normalizeLinkSentinels(html: string): string {
+    return html.replace(/&#(x?)([0-9a-f]+);/gi, (match, isHex: string, value: string) => {
+        const codePoint = Number.parseInt(value, isHex ? HEX_RADIX : DECIMAL_RADIX);
+
+        if (Number.isNaN(codePoint)) {
+            return match;
+        }
+
+        if (codePoint >= SENTINEL_MIN_CODE_POINT && codePoint <= SENTINEL_MAX_CODE_POINT) {
+            return String.fromCharCode(codePoint);
+        }
+
+        return match;
+    });
+}
+
+function escapeForRegex(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function preprocessMarkdownLinks(code: string): { code: string; markers: LinkMarker[] } {
+    const markers: LinkMarker[] = [];
+    const processed = code.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_match, label: string, url: string) => {
+        const index = markers.length;
+        const codePoint = TOKEN_BASE_CODE_POINT + index;
+
+        if (codePoint > SENTINEL_MAX_CODE_POINT) {
+            return _match;
+        }
+
+        const tokenChar = String.fromCharCode(codePoint);
+        const open = `${LINK_OPEN_SENTINEL}${tokenChar}${LINK_OPEN_BOUNDARY_SENTINEL}`;
+        const close = `${LINK_CLOSE_SENTINEL}${tokenChar}${LINK_CLOSE_BOUNDARY_SENTINEL}`;
+        const safeUrl = url.replace(/"/g, '%22');
+
+        markers.push({ open, close, url: safeUrl });
+
+        return `${open}${label}${close}`;
+    });
+
+    return { code: processed, markers };
+}
+
+function applyLinkMarkers(html: string, markers: readonly LinkMarker[]): string {
+    if (!markers.length) {
+        return html;
+    }
+
+    let result = normalizeLinkSentinels(html);
+    result = result.replace(/<span[^>]*>\s*([\uE000-\uE1FF])\s*<\/span>/g, '$1');
+
+    for (const marker of markers) {
+        const pattern = new RegExp(`${escapeForRegex(marker.open)}([\\s\\S]*?)${escapeForRegex(marker.close)}`, 'g');
+
+        result = result.replace(pattern, (_match, labelHtml: string) => {
+            return `<a href="${marker.url}" target="_blank" rel="noreferrer noopener">${labelHtml}</a>`;
+        });
+    }
+
+    return result;
+}
+
 async function ensureHighlighter(langs: BundledLanguage[]): Promise<Highlighter> {
     const uniqueLangs = Array.from(new Set<BundledLanguage>([...COMMON_LANGS, ...langs]));
 
@@ -31,11 +109,20 @@ export async function highlightToHtml(code: string, lang: BundledLanguage = 'ts'
     }
 
     try {
+        const { code: preparedCode, markers } = preprocessMarkdownLinks(code);
         const highlighter = await ensureHighlighter([lang]);
-        const darkHtml = decorateBlock(highlighter.codeToHtml(code, { lang, theme: THEMES.dark }), 'dark');
-        const lightHtml = decorateBlock(highlighter.codeToHtml(code, { lang, theme: THEMES.light }), 'light');
+        const darkHtmlRaw = decorateBlock(highlighter.codeToHtml(preparedCode, { lang, theme: THEMES.dark }), 'dark');
+        const lightHtmlRaw = decorateBlock(
+            highlighter.codeToHtml(preparedCode, { lang, theme: THEMES.light }),
+            'light'
+        );
 
-        return `<div class="shiki-theme-group">${darkHtml}${lightHtml}</div>`;
+        const processedDark = applyLinkMarkers(darkHtmlRaw, markers);
+        const processedLight = applyLinkMarkers(lightHtmlRaw, markers);
+
+        return `
+            <div class="shiki-theme-group">${processedDark}${processedLight}</div>
+        `;
     } catch {
         return null;
     }
@@ -47,12 +134,19 @@ export async function highlightInlineToHtml(code: string, lang: BundledLanguage 
     }
 
     try {
+        const { code: preparedCode, markers } = preprocessMarkdownLinks(code);
         const highlighter = await ensureHighlighter([lang]);
-        const darkHtml = highlighter.codeToHtml(code, { lang, theme: THEMES.dark });
-        const lightHtml = highlighter.codeToHtml(code, { lang, theme: THEMES.light });
+        const darkHtmlRaw = applyLinkMarkers(
+            highlighter.codeToHtml(preparedCode, { lang, theme: THEMES.dark }),
+            markers
+        );
+        const lightHtmlRaw = applyLinkMarkers(
+            highlighter.codeToHtml(preparedCode, { lang, theme: THEMES.light }),
+            markers
+        );
 
-        const darkCode = extractCode(darkHtml);
-        const lightCode = extractCode(lightHtml);
+        const darkCode = extractCode(darkHtmlRaw);
+        const lightCode = extractCode(lightHtmlRaw);
 
         if (!darkCode || !lightCode) {
             return null;

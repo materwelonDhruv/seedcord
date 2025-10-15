@@ -180,6 +180,31 @@
     display: inline;
 }
 
+/* Style links that are injected into highlighted code blocks */
+.shiki a,
+.shiki-inline a {
+    color: inherit;
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: currentColor;
+}
+
+.shiki a:focus,
+.shiki a:hover,
+.shiki-inline a:focus,
+.shiki-inline a:hover {
+    opacity: 0.95;
+}
+
+.shiki a *,
+.shiki-inline a * {
+    text-decoration-line: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 2px;
+    text-decoration-color: currentColor;
+}
+
 .shiki-theme-group .shiki-light,
 .shiki-inline-group .shiki-light {
     display: none;

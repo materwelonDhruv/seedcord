@@ -26,7 +26,7 @@ export default async function EntityPage({ searchParams }: EntityPageProps): Pro
     const kind = resolveParam(resolvedParams.kind) ?? 'class';
     const pkg = resolveParam(resolvedParams.pkg) ?? '@seedcord/core';
 
-    const signature = `class ${symbolName} extends SeedcordBase { /* TODO: insert generated signature and a bunch of random text to test if the content spills over for testing scrollbar */ }`;
+    const signature = `class ${symbolName} extends [SeedcordBase](https://github.com/materwelondhruv/seedcord/blob/main/packages/core/src/seedcord-base.ts) { /* TODO: insert generated signature and a bunch of random text to test if the content spills over for testing scrollbar. */ }`;
     // const signature = `class ${symbolName} extends SeedcordBase { /* TODO: insert generated signature */ }`;
     const signatureHtml = await highlightToHtml(signature, 'ts');
     const members = await buildPlaceholderMembers(symbolName);
