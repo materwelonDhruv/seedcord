@@ -1,3 +1,4 @@
+/* eslint-disable max-lines-per-function */
 import { highlightToHtml } from '@lib/shiki';
 
 import type { EntityMembersByKind } from '@components/docs/entity/member-types';
@@ -62,6 +63,18 @@ export async function buildPlaceholderMembers(symbolName: string): Promise<Entit
                 access: 'public',
                 tags: ['method'] as const,
                 sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L142`
+            },
+            {
+                id: 'destroy',
+                label: 'destroy',
+                description: 'Alias for Client#disconnect().',
+                signature: 'destroy(): Promise<void>',
+                signatureHtml: 'destroy(): Promise&lt;void&gt;',
+                documentation:
+                    'Provided as a more semantically meaningful way to indicate permanent shutdown of the client.',
+                access: 'public',
+                tags: ['method'] as const,
+                sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L178`
             }
         ],
         typeParameters: [

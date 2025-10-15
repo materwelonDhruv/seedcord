@@ -119,7 +119,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
                 {tags.length ? (
-                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-[0.28em] text-subtle">
+                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-[0.18em] text-subtle">
                         {tags.map((tag) => (
                             <li
                                 key={tag}
@@ -146,7 +146,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
                     </div>
                     <div className="ml-auto flex items-center gap-2">
                         {member.access ? (
-                            <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-subtle">
+                            <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-subtle">
                                 {formatMemberAccessLabel(member.access)}
                             </span>
                         ) : null}
@@ -205,20 +205,25 @@ function MemberCardBody({ member, fallbackDoc }: MemberCardBodyProps): ReactElem
 interface MemberCardProps {
     member: EntityMemberSummary;
     prefix: MemberPrefix;
-    isFirst: boolean;
+    isLast: boolean;
 }
 
-function MemberCard({ member, prefix, isFirst }: MemberCardProps): ReactElement {
+function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactElement {
     const tags = buildTagList(member);
     const anchorId = `${prefix}-${member.id}`;
     const fallbackDoc =
         member.documentation ??
         'Additional TypeDoc metadata will appear here once the symbol is sourced from generated documentation artifacts.';
+    const hasTags = tags.length > 0;
 
     return (
         <article
             id={anchorId}
-            className={cn('w-full min-w-0 max-w-full py-6 lg:scroll-mt-32', isFirst ? 'pt-0' : undefined)}
+            className={cn(
+                'w-full min-w-0 max-w-full lg:scroll-mt-32',
+                hasTags ? 'pt-3' : 'pt-3',
+                isLast ? 'pb-4' : 'pb-6'
+            )}
         >
             <MemberCardHeader member={member} anchorId={anchorId} tags={tags} />
             <MemberCardBody member={member} fallbackDoc={fallbackDoc} />
@@ -276,7 +281,7 @@ export function MemberDetailGroup({
                 )}
             >
                 {items.map((item, index) => (
-                    <MemberCard key={item.id} member={item} prefix={prefix} isFirst={index === 0} />
+                    <MemberCard key={item.id} member={item} prefix={prefix} isLast={index === items.length - 1} />
                 ))}
             </div>
         </section>
@@ -299,7 +304,7 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
 
     return (
         <section className="space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
-            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.32em] text-subtle">
+            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.18em] text-subtle">
                 {title}
             </h2>
             <ul className="space-y-2">
