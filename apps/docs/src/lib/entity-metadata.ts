@@ -160,6 +160,8 @@ const KIND_LOOKUP: Record<string, EntityTone> = {
     functions: 'function',
     method: 'function',
     methods: 'function',
+    parameter: 'type',
+    parameters: 'type',
     enum: 'enum',
     enums: 'enum',
     enumeration: 'enum',

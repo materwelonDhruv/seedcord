@@ -12,7 +12,8 @@ export type SearchResultKind =
     | 'method'
     | 'property'
     | 'variable'
-    | 'parameter';
+    | 'parameter'
+    | 'typeParameter';
 
 export interface CommandAction {
     id: string;

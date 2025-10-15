@@ -11,6 +11,47 @@ import { FOCUS_DELAY_MS } from './constants';
 
 import type { CommandAction } from './types';
 
+type ActionKind = CommandAction['kind'];
+
+const MEMBER_ANCHOR_PREFIX: Partial<Record<ActionKind, string>> = {
+    method: 'method',
+    property: 'property',
+    variable: 'property',
+    typeParameter: 'typeParameter'
+};
+
+function resolveMemberAnchor(kind: ActionKind, params: URLSearchParams): string | null {
+    const prefix = MEMBER_ANCHOR_PREFIX[kind];
+
+    if (prefix) {
+        const paramKey = prefix === 'typeParameter' ? 'typeparam' : 'member';
+        const id = params.get(paramKey);
+        return id ? `${prefix}-${id}` : null;
+    }
+
+    if (kind === 'parameter') {
+        const owningMember = params.get('member');
+        return owningMember ? `method-${owningMember}` : null;
+    }
+
+    return null;
+}
+
+function buildNavigationHref(action: CommandAction, origin: string): string {
+    try {
+        const targetUrl = new URL(action.href, origin);
+        const anchor = resolveMemberAnchor(action.kind, targetUrl.searchParams);
+
+        if (anchor) {
+            targetUrl.hash = anchor;
+        }
+
+        return `${targetUrl.pathname}${targetUrl.search}${targetUrl.hash}`;
+    } catch {
+        return action.href;
+    }
+}
+
 export interface CommandPaletteController {
     open: boolean;
     mounted: boolean;
@@ -67,6 +108,12 @@ export function useCommandPaletteController(): CommandPaletteController {
 
             if (action.isExternal) {
                 window.open(action.href, '_blank', 'noopener');
+                return;
+            }
+
+            if (typeof window !== 'undefined') {
+                const targetHref = buildNavigationHref(action, window.location.origin);
+                router.push(targetHref);
                 return;
             }
 

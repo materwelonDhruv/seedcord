@@ -4,8 +4,8 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
 
 import { CommandHeader } from './command-header';
-import { COMMAND_GROUPS } from './constants';
-import { CommandListSection } from './list-section';
+import { DEFAULT_COMMAND_ACTIONS } from './constants';
+import { CommandListItem } from './list-item';
 
 import type { CommandPaletteController } from './use-command-palette-controller';
 import type { ReactElement } from 'react';
@@ -26,7 +26,6 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
 
     const normalizedSearch = searchValue.trim();
     const canShowResults = normalizedSearch.length >= MIN_QUERY_LENGTH;
-    const resultsGroups = COMMAND_GROUPS.filter((group) => group.heading !== 'Packages');
 
     return (
         <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -37,10 +36,11 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                 />
                 <Dialog.Content
                     data-command-content
-                    className="fixed inset-0 flex items-start justify-center p-4 pt-[12vh] sm:pt-[10vh]"
+                    className="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 sm:px-6 sm:pt-24 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16"
+                    onInteractOutside={handleClose}
                 >
                     <Command
-                        className="max-h-[70vh] w-full max-w-2xl overflow-hidden rounded-3xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-[var(--text)] shadow-soft transition"
+                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-[var(--text)] shadow-soft transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >
@@ -54,14 +54,14 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                             onValueChange={handleValueChange}
                             searchValue={searchValue}
                         />
-                        <Command.List className="max-h-[60vh] overflow-y-auto overscroll-contain pb-3">
+                        <Command.List className="max-h-[calc(78vh-5.25rem)] overflow-y-auto overscroll-contain pb-3">
                             {canShowResults ? (
                                 <>
                                     <Command.Empty className="px-4 py-8 text-center text-sm text-subtle">
                                         No results found. Try refining your search.
                                     </Command.Empty>
-                                    {resultsGroups.map((group) => (
-                                        <CommandListSection key={group.heading} group={group} onSelect={handleSelect} />
+                                    {DEFAULT_COMMAND_ACTIONS.map((action) => (
+                                        <CommandListItem key={action.id} action={action} onSelect={handleSelect} />
                                     ))}
                                 </>
                             ) : (

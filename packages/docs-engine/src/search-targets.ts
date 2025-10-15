@@ -8,11 +8,14 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'MongoService' },
     { query: 'Seedcord' },
     { query: 'AutocompleteHandler' },
+    { query: 'HealthCheck' },
+    { query: 'BaseHandler' },
     { query: 'BaseErrorEmbed' },
     { query: 'BuilderComponent' },
     { query: 'CoordinatedShutdown' },
     { query: 'UnknownException' },
     { query: 'Mongo' },
+    { query: 'BaseComponent' },
 
     // Properties
     { query: 'db' },
@@ -20,6 +23,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'botColor' },
     { query: 'tasksMap' },
     { query: 'host' },
+    { query: 'server' },
 
     // Methods
     { query: 'checkPermissions' },
@@ -34,6 +38,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
 
     // Interfaces
     { query: 'HandlerWithChecks' },
+    { query: 'Handler' },
     { query: 'BaseCore' },
     { query: 'CooldownOptions' },
 

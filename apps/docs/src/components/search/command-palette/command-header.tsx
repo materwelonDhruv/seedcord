@@ -18,7 +18,7 @@ interface CommandHeaderProps {
 export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: CommandHeaderProps): ReactElement {
     return (
         <div className="border-b border-border px-4 py-3">
-            <div className="flex items-center gap-2 rounded-xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 transition focus-within:border-[color-mix(in_srgb,var(--accent-b)_35%,var(--border))] focus-within:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-b)_4%)]">
+            <div className="flex items-center gap-2 rounded-lg border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 transition focus-within:border-[color-mix(in_srgb,var(--accent-b)_35%,var(--border))] focus-within:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-b)_4%)]">
                 <Icon icon={Search} size={16} className="text-subtle" aria-hidden />
                 <Command.Input
                     ref={inputRef}
@@ -33,7 +33,7 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
                     size="icon"
                     onClick={onClose}
                     aria-label="Close command palette"
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-subtle transition hover:text-[var(--text)] sm:hidden"
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-subtle transition hover:text-[var(--text)] sm:hidden"
                 >
                     <Icon icon={X} size={16} aria-hidden />
                 </Button>

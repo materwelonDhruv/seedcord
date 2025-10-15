@@ -26,7 +26,7 @@ export async function CodeBlock({
     return (
         <figure
             className={cn(
-                'relative overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] shadow-soft',
+                'relative rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] shadow-soft',
                 className
             )}
         >
@@ -46,12 +46,12 @@ export async function CodeBlock({
                 {highlightedHtml ? (
                     <div
                         className={cn(
-                            'shiki-container overflow-auto px-4 py-4 text-sm leading-relaxed text-[var(--text)]'
+                            'shiki-container w-full max-w-full overflow-x-auto whitespace-pre px-4 py-4 text-sm leading-relaxed text-[var(--text)]'
                         )}
                         dangerouslySetInnerHTML={{ __html: highlightedHtml }}
                     />
                 ) : (
-                    <pre className="overflow-auto px-4 py-4 text-sm text-[var(--text)]">
+                    <pre className="w-full max-w-full overflow-x-auto whitespace-pre px-4 py-4 text-sm text-[var(--text)]">
                         <code>{code}</code>
                     </pre>
                 )}

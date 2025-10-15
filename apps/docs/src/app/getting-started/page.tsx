@@ -4,7 +4,7 @@ export const dynamic = 'force-static';
 
 export default function GettingStartedPage(): ReactElement {
     return (
-        <article className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-soft">
+        <article className="space-y-5 rounded-2xl border border-border bg-surface p-5 shadow-soft">
             <header className="space-y-2">
                 <h1 className="text-3xl font-semibold text-[var(--text)]">Getting started</h1>
                 <p className="text-sm text-subtle">

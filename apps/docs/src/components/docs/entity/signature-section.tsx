@@ -231,7 +231,7 @@ export function SignatureSection({
     }, []);
 
     return (
-        <section className="space-y-6 rounded-3xl border border-border bg-surface p-6 shadow-soft">
+        <section className="space-y-5 rounded-2xl border border-border bg-surface p-5 shadow-soft">
             <SignatureHeader
                 hasCopiedSignature={hasCopiedSignature}
                 onCopySignature={() => {

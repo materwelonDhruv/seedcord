@@ -4,11 +4,11 @@ import { useEffect } from 'react';
 
 import { log } from '@lib/logger';
 
-import { EntityFooter, EntityHeader } from './entity-header';
+import { EntityHeader } from './entity-header';
 import EntityMembersSection from './entity-members-section';
 import { useEntityTone } from './use-entity-tone';
 
-import type { EntityMembersByKind } from './member-types';
+import type { EntityMemberSummary, EntityMembersByKind } from './member-types';
 import type { ReactElement } from 'react';
 
 export interface EntityContentProps {
@@ -18,7 +18,7 @@ export interface EntityContentProps {
     signatureHtml: string | null;
     symbolName: string;
     sourceUrl?: string;
-    members: EntityMembersByKind;
+    members?: EntityMembersByKind | null;
 }
 
 export default function EntityContent({
@@ -31,13 +31,17 @@ export default function EntityContent({
     members
 }: EntityContentProps): ReactElement {
     const { tone, badgeLabel } = useEntityTone(kind, symbolName);
+    const properties = members?.properties ?? [];
+    const methods = members?.methods ?? [];
+    const typeParameters: readonly EntityMemberSummary[] = members?.typeParameters ?? [];
+    const showAccessControls = kind.toLowerCase() === 'class';
 
     useEffect(() => {
         log('Entity page mounted', { symbolName, kind, pkg, tone });
     }, [symbolName, kind, pkg, tone]);
 
     return (
-        <article className="space-y-8">
+        <article className="min-w-0 w-full space-y-6 lg:space-y-8">
             <EntityHeader
                 badgeLabel={badgeLabel}
                 pkg={pkg}
@@ -48,11 +52,11 @@ export default function EntityContent({
                 sourceUrl={sourceUrl ?? null}
             />
             <EntityMembersSection
-                properties={members.properties}
-                methods={members.methods}
-                typeParameters={members.typeParameters ?? []}
+                properties={properties}
+                methods={methods}
+                typeParameters={typeParameters}
+                showAccessControls={showAccessControls}
             />
-            <EntityFooter tone={tone} />
         </article>
     );
 }

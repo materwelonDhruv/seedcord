@@ -24,13 +24,13 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import { log } from '../../lib/logger';
-import { cn } from '../../lib/utils';
-import useUIStore from '../../store/ui';
-import Button from '../ui/button';
-import Icon from '../ui/icon';
+import Button from '@components/ui/button';
+import Icon from '@components/ui/icon';
+import { log } from '@lib/logger';
+import { cn } from '@lib/utils';
+import useUIStore from '@store/ui';
 
-import type { UIStore } from '../../store/ui';
+import type { UIStore } from '@store/ui';
 import type { LucideIcon } from 'lucide-react';
 import type { KeyboardEvent, ReactElement, RefObject } from 'react';
 
@@ -499,10 +499,10 @@ function CommandPaletteDialog({ controller }: { controller: CommandPaletteContro
                 />
                 <Dialog.Content
                     data-command-content
-                    className="fixed inset-0 flex items-start justify-center p-4 sm:pt-[10vh]"
+                    className="fixed inset-0 flex items-center justify-center px-4 py-8 sm:px-6 md:py-12 lg:py-16"
                 >
                     <Command
-                        className="max-h-[70vh] w-full max-w-2xl overflow-hidden rounded-3xl border border-border bg-[var(--bg)] text-[var(--text)] shadow-soft transition"
+                        className="max-h-[calc(100vh-6rem)] w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-[var(--bg)] text-[var(--text)] shadow-soft transition sm:max-w-2xl sm:rounded-3xl md:max-w-3xl md:-translate-y-8 lg:-translate-y-12"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >
@@ -516,7 +516,7 @@ function CommandPaletteDialog({ controller }: { controller: CommandPaletteContro
                             onValueChange={handleValueChange}
                             searchValue={searchValue}
                         />
-                        <Command.List className="max-h-[60vh] overflow-y-auto pb-3">
+                        <Command.List className="max-h-[calc(100vh-14rem)] overflow-y-auto pb-3">
                             <Command.Empty className="px-4 py-8 text-center text-sm text-subtle">
                                 No matches yet. Results will populate once the TypeDoc index is wired up.
                             </Command.Empty>

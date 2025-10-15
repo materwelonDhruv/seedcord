@@ -89,10 +89,10 @@
 .shiki {
     background-color: transparent !important;
     font-family: var(--font-geist-mono, 'JetBrains Mono', monospace);
-    font-size: 0.95rem;
-    line-height: 1.65;
+    font-size: 0.9rem;
+    line-height: 1.6;
     margin: 0;
-    padding: 1rem 1.25rem;
+    padding: 0.1rem 0.2rem;
 }
 
 .shiki code {

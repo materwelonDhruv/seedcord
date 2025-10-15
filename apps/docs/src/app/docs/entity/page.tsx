@@ -1,4 +1,5 @@
 import EntityContent from '@components/docs/entity/entity-content';
+import { buildPlaceholderMembers } from '@lib/placeholder-members';
 import { highlightToHtml } from '@lib/shiki';
 
 import type { ReactElement } from 'react';
@@ -25,8 +26,11 @@ export default async function EntityPage({ searchParams }: EntityPageProps): Pro
     const kind = resolveParam(resolvedParams.kind) ?? 'class';
     const pkg = resolveParam(resolvedParams.pkg) ?? '@seedcord/core';
 
+    // const signature = `class ${symbolName} extends SeedcordBase { /* TODO: insert generated signature and a bunch of random text to test if the content spills over for testing scrollbar */ }`;
     const signature = `class ${symbolName} extends SeedcordBase { /* TODO: insert generated signature */ }`;
     const signatureHtml = await highlightToHtml(signature, 'ts');
+    const members = await buildPlaceholderMembers(symbolName);
+    const sourceUrl = `https://github.com/materwelondhruv/seedcord/blob/main/packages/core/src/${symbolName.toLowerCase()}.ts`;
 
     return (
         <EntityContent
@@ -35,6 +39,8 @@ export default async function EntityPage({ searchParams }: EntityPageProps): Pro
             signature={signature}
             signatureHtml={signatureHtml}
             symbolName={symbolName}
+            members={members}
+            sourceUrl={sourceUrl}
         />
     );
 }

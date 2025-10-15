@@ -23,7 +23,7 @@ const SIDEBAR_WIDTH = 320;
 
 function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): ReactElement {
     return (
-        <div className="flex flex-col gap-3 px-4 pt-6 md:px-6 lg:hidden">
+        <div className="flex flex-col gap-3 px-3 pt-5 md:px-5 lg:hidden">
             <div className="flex flex-wrap gap-2">
                 <Button
                     variant="outline"
@@ -79,7 +79,7 @@ function MobilePanelDialog({
         <Dialog.Root open={open} onOpenChange={onOpenChange}>
             <Dialog.Portal>
                 <Dialog.Overlay className="fixed inset-0 z-50 bg-[color-mix(in_srgb,var(--bg)_72%,#0f172acc_28%)] backdrop-blur-sm data-[state=open]:animate-in data-[state=open]:fade-in data-[state=closed]:animate-out data-[state=closed]:fade-out" />
-                <Dialog.Content className="fixed inset-x-0 bottom-0 z-[60] origin-bottom rounded-t-3xl border border-border bg-[color-mix(in_srgb,var(--bg)_96%,#0f172a_4%)] p-4 shadow-soft data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom sm:inset-y-auto sm:bottom-6 sm:left-1/2 sm:max-h-[85vh] sm:w-[min(480px,92vw)] sm:-translate-x-1/2 sm:rounded-3xl">
+                <Dialog.Content className="fixed inset-x-0 bottom-0 z-[60] origin-bottom rounded-t-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_96%,#0f172a_4%)] p-4 shadow-soft data-[state=open]:animate-in data-[state=open]:slide-in-from-bottom data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom sm:inset-y-auto sm:bottom-6 sm:left-1/2 sm:max-h-[85vh] sm:w-[min(480px,92vw)] sm:-translate-x-1/2 sm:rounded-2xl">
                     <div className="mb-3 flex items-center justify-between">
                         <Dialog.Title className="text-sm font-semibold uppercase tracking-wide text-subtle">
                             {title}
@@ -146,7 +146,7 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
     };
 
     return (
-        <div ref={containerRef} style={containerStyle} className={cn('flex w-full flex-1 flex-col gap-6', className)}>
+        <div ref={containerRef} style={containerStyle} className={cn('flex w-full flex-1 flex-col gap-5', className)}>
             <MobileNavigationToggle onOpen={() => setNavigationOpen(true)} />
 
             <MobilePanelDialog open={navigationOpen} onOpenChange={setNavigationOpen} title="Navigation">
@@ -156,7 +156,7 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
             <div className="flex w-full flex-1">
                 <DesktopSidebarFrame sidebar={desktopSidebar} />
                 <div className="flex min-h-0 flex-1 flex-col">
-                    <div className="mx-auto w-full max-w-none px-4 pb-16 pt-6 md:px-8 md:pt-8 lg:px-12 lg:pt-12">
+                    <div className="mx-auto w-full max-w-none px-3 pb-12 pt-6 md:px-7 md:pt-8 lg:px-10 lg:pt-10">
                         {children}
                     </div>
                 </div>

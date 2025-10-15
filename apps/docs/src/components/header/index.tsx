@@ -7,9 +7,9 @@ import Link from 'next/link';
 import Button from '@components/ui/button';
 import { Icon } from '@components/ui/icon';
 
-import MemberAccessControls from './member-access-controls';
 import { HeaderSearchControls } from './search-controls';
 import SeedcordMark from './seedcord-mark';
+import { HeaderSettingsPopover } from './settings-popover';
 
 import type { ReactElement } from 'react';
 
@@ -36,10 +36,10 @@ export function Header(): ReactElement {
                         </nav>
                     </div>
                     <div className="flex items-center gap-3">
-                        <MemberAccessControls />
                         <Tooltip.Provider>
                             <div className="flex items-center gap-2">
                                 <HeaderSearchControls />
+                                <HeaderSettingsPopover />
                                 <Tooltip.Root>
                                     <Tooltip.Trigger asChild>
                                         <Button
@@ -70,7 +70,6 @@ export function Header(): ReactElement {
                         </Tooltip.Provider>
                     </div>
                 </div>
-                <MemberAccessControls variant="mobile" />
             </div>
         </header>
     );

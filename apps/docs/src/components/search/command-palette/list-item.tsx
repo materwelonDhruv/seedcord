@@ -3,12 +3,64 @@
 import { Command } from 'cmdk';
 
 import { Icon } from '@components/ui/icon';
+import { ENTITY_TONE_STYLES, type EntityTone } from '@lib/entity-metadata';
 import { cn } from '@lib/utils';
 
-import { SEARCH_KIND_ACCENTS, SEARCH_KIND_ICONS } from './constants';
+import { SEARCH_KIND_ICONS } from './constants';
 
-import type { CommandAction } from './types';
+import type { CommandAction, SearchResultKind } from './types';
 import type { ReactElement } from 'react';
+
+type EntityResultKind =
+    | 'class'
+    | 'interface'
+    | 'type'
+    | 'enum'
+    | 'function'
+    | 'method'
+    | 'property'
+    | 'variable'
+    | 'parameter'
+    | 'typeParameter';
+
+type NonEntityResultKind = Extract<SearchResultKind, 'package' | 'page' | 'resource'>;
+
+const ENTITY_KIND_TO_TONE: Record<EntityResultKind, EntityTone> = {
+    class: 'class',
+    interface: 'interface',
+    type: 'type',
+    enum: 'enum',
+    function: 'function',
+    method: 'function',
+    property: 'variable',
+    variable: 'variable',
+    parameter: 'type',
+    typeParameter: 'type'
+};
+
+const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
+    package: [
+        'border-[color-mix(in_srgb,var(--accent-b)_38%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--accent-b)_16%,var(--surface)_84%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--accent-b)_12%)]'
+    ].join(' '),
+    page: [
+        'border-[color-mix(in_srgb,var(--accent-a)_34%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--accent-a)_14%,var(--surface)_86%)]',
+        'text-[color-mix(in_srgb,var(--text)_90%,var(--accent-a)_10%)]'
+    ].join(' '),
+    resource: [
+        'border-[color-mix(in_srgb,#8b90a7_46%,var(--border))]',
+        'bg-[color-mix(in_srgb,#8b90a7_18%,var(--surface)_82%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,#8b90a7_12%)]'
+    ].join(' ')
+};
+
+const BASE_ICON_CLASSES = [
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150',
+    'group-hover/item:shadow-[0_0_0_1px_color-mix(in_srgb,currentColor_30%,transparent)]',
+    'group-data-[selected=true]/item:shadow-[0_0_0_1px_color-mix(in_srgb,currentColor_42%,transparent)]'
+].join(' ');
 
 interface CommandListItemProps {
     action: CommandAction;
@@ -17,7 +69,13 @@ interface CommandListItemProps {
 
 export function CommandListItem({ action, onSelect }: CommandListItemProps): ReactElement {
     const ItemIcon = SEARCH_KIND_ICONS[action.kind];
-    const accentClass = SEARCH_KIND_ACCENTS[action.kind];
+    const isEntityResult = Object.prototype.hasOwnProperty.call(ENTITY_KIND_TO_TONE, action.kind);
+    const tone = isEntityResult ? ENTITY_KIND_TO_TONE[action.kind as EntityResultKind] : undefined;
+    const toneStyles = tone ? ENTITY_TONE_STYLES[tone] : undefined;
+    const iconClasses = cn(
+        BASE_ICON_CLASSES,
+        toneStyles ? toneStyles.badge : NON_ENTITY_BADGES[action.kind as NonEntityResultKind]
+    );
 
     return (
         <Command.Item
@@ -26,21 +84,14 @@ export function CommandListItem({ action, onSelect }: CommandListItemProps): Rea
             data-command-id={action.id}
             title={action.path}
             className={cn(
-                'group/item flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-[var(--text)] outline-none transition',
+                'group/item mt-1 flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-[var(--text)] outline-none transition first:mt-0',
                 'hover:border-[color-mix(in_srgb,var(--accent-b)_24%,transparent)] hover:bg-[color-mix(in_srgb,var(--accent-b)_10%,transparent)]',
                 'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--accent-b)_28%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_srgb,var(--bg)_96%,transparent)]',
                 'data-[selected=true]:border-[color-mix(in_srgb,var(--accent-b)_38%,transparent)] data-[selected=true]:bg-[color-mix(in_srgb,var(--accent-b)_16%,transparent)] data-[selected=true]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent-b)_22%,transparent)]'
             )}
             aria-label={action.label}
         >
-            <span
-                className={cn(
-                    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/70 bg-[color-mix(in_srgb,var(--surface)_90%,transparent)] text-[var(--text)] transition',
-                    'group-hover/item:border-[color-mix(in_srgb,var(--accent-b)_35%,var(--border))] group-hover/item:bg-[color-mix(in_srgb,var(--accent-b)_14%,var(--surface)_86%)]',
-                    'group-data-[selected=true]/item:border-[color-mix(in_srgb,var(--accent-b)_40%,var(--border))] group-data-[selected=true]/item:bg-[color-mix(in_srgb,var(--accent-b)_18%,var(--surface)_82%)]',
-                    accentClass
-                )}
-            >
+            <span className={iconClasses}>
                 <Icon icon={ItemIcon} size={18} aria-hidden />
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-1">

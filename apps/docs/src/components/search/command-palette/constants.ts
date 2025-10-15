@@ -8,12 +8,13 @@ import {
     ListTree,
     PackageSearch,
     Puzzle,
+    Sigma,
     SquareDot,
     SquareStack,
     Variable
 } from 'lucide-react';
 
-import type { CommandGroupModel, SearchResultKind } from './types';
+import type { CommandAction, CommandGroupModel, SearchResultKind } from './types';
 import type { LucideIcon } from 'lucide-react';
 
 export const FOCUS_DELAY_MS = 10;
@@ -30,7 +31,8 @@ export const SEARCH_KIND_ICONS: Record<SearchResultKind, LucideIcon> = {
     method: FunctionSquare,
     property: SquareDot,
     variable: Variable,
-    parameter: Binary
+    parameter: Binary,
+    typeParameter: Sigma
 };
 
 export const SEARCH_KIND_LABELS: Record<SearchResultKind, string> = {
@@ -45,7 +47,8 @@ export const SEARCH_KIND_LABELS: Record<SearchResultKind, string> = {
     method: 'Method',
     property: 'Property',
     variable: 'Variable',
-    parameter: 'Parameter'
+    parameter: 'Parameter',
+    typeParameter: 'Type parameter'
 };
 
 export const SEARCH_KIND_ACCENTS: Record<SearchResultKind, string> = {
@@ -60,7 +63,8 @@ export const SEARCH_KIND_ACCENTS: Record<SearchResultKind, string> = {
     method: 'text-[color-mix(in_srgb,var(--entity-function-color)_55%,var(--text))]',
     property: 'text-[color-mix(in_srgb,var(--entity-variable-color)_55%,var(--text))]',
     variable: 'text-[color-mix(in_srgb,var(--entity-variable-color)_55%,var(--text))]',
-    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_48%,var(--text))]'
+    parameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_48%,var(--text))]',
+    typeParameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_48%,var(--text))]'
 };
 
 export const COMMAND_GROUPS: CommandGroupModel[] = [
@@ -175,6 +179,14 @@ export const COMMAND_GROUPS: CommandGroupModel[] = [
                 href: '/docs/entity?pkg=@seedcord/core&symbol=Client&member=connect&param=timeout&kind=parameter',
                 kind: 'parameter',
                 description: 'Timeout (ms) applied to the connect handshake.'
+            },
+            {
+                id: 'core::Client#typeparam-TEvents',
+                label: 'Client<TEvents>',
+                path: '/packages/core/classes/client#typeparam-TEvents',
+                href: '/docs/entity?pkg=@seedcord/core&symbol=Client&typeparam=events&kind=typeParameter',
+                kind: 'typeParameter',
+                description: 'Generic constraint exposed by Client for typed event payloads.'
             }
         ]
     },
@@ -225,3 +237,5 @@ export const COMMAND_GROUPS: CommandGroupModel[] = [
         ]
     }
 ];
+
+export const DEFAULT_COMMAND_ACTIONS: CommandAction[] = COMMAND_GROUPS.flatMap((group) => group.actions);
