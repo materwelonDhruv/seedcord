@@ -4,9 +4,9 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Menu, X } from 'lucide-react';
 import { cloneElement, isValidElement, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
-import Button from '@components/ui/button';
-import { ScrollToTopButton } from '@components/ui/scroll-to-top-button';
 import { cn } from '@lib/utils';
+import Button from '@ui/button';
+import { ScrollToTopButton } from '@ui/scroll-to-top-button';
 
 import Sidebar from './sidebar';
 

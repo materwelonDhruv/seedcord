@@ -4,9 +4,9 @@ import { Check, ChevronDown, Code, Hash, Sigma, SquareDot, Workflow } from 'luci
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 
-import { Icon } from '@components/ui/icon';
 import { formatMemberAccessLabel } from '@lib/member-access';
 import { cn } from '@lib/utils';
+import { Icon } from '@ui/icon';
 
 import type { EntityMemberSummary } from './member-types';
 import type { LucideIcon } from 'lucide-react';

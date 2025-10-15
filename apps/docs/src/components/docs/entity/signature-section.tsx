@@ -3,11 +3,11 @@
 import { ClipboardCheck, ClipboardCopy } from 'lucide-react';
 import { useCallback, useMemo, useState } from 'react';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
 import { formatEntityKindLabel, ENTITY_TONE_STYLES, resolveEntityTone } from '@lib/entity-metadata';
 import { log } from '@lib/logger';
 import { cn } from '@lib/utils';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import type { EntityTone } from '@lib/entity-metadata';
 import type { ReactElement } from 'react';

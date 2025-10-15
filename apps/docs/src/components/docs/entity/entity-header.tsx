@@ -1,9 +1,9 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
 import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@lib/entity-metadata';
 import { cn } from '@lib/utils';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import type { EntityTone } from '@lib/entity-metadata';
 import type { ReactElement } from 'react';

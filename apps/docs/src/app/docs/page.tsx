@@ -1,8 +1,8 @@
 import Link from 'next/link';
 
 import InstallCommandTabs from '@components/docs/install-command-tabs';
-import { CodeBlock } from '@components/ui/code-block';
 import { highlightToHtml } from '@lib/shiki';
+import { CodeBlock } from '@ui/code-block';
 
 import type { ReactElement } from 'react';
 

@@ -4,10 +4,10 @@ import { Command, MonitorSmartphone, MoonStar, Search, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
 import { log } from '@lib/logger';
 import { useUIStore } from '@store/ui';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import type { ReactElement } from 'react';
 

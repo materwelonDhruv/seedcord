@@ -1,9 +1,9 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-import Icon from '@components/ui/icon';
 import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@lib/entity-metadata';
 import { cn } from '@lib/utils';
+import Icon from '@ui/icon';
 
 import { SidebarItem } from './sidebar-item';
 

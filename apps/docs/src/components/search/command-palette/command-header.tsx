@@ -3,8 +3,8 @@
 import { Command } from 'cmdk';
 import { Search, X } from 'lucide-react';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import type { ReactElement, RefObject } from 'react';
 

@@ -3,8 +3,8 @@
 import * as Popover from '@radix-ui/react-popover';
 import { Info } from 'lucide-react';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import type { ReactElement } from 'react';
 

@@ -5,10 +5,10 @@ import { useCallback, useEffect, useMemo, type ReactElement } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
 import MemberAccessControls from '@components/header/member-access-controls';
-import { Icon } from '@components/ui/icon';
 import { formatMemberAccessLabel, MEMBER_ACCESS_RANK, type MemberAccessLevel } from '@lib/member-access';
 import { cn } from '@lib/utils';
 import { useUIStore, type UIStore } from '@store/ui';
+import { Icon } from '@ui/icon';
 
 import { MemberDetailGroup, MemberList } from './entity-member-components';
 

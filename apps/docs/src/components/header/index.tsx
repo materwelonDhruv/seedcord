@@ -4,8 +4,8 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { Github } from 'lucide-react';
 import Link from 'next/link';
 
-import Button from '@components/ui/button';
-import { Icon } from '@components/ui/icon';
+import Button from '@ui/button';
+import { Icon } from '@ui/icon';
 
 import { HeaderSearchControls } from './search-controls';
 import SeedcordMark from './seedcord-mark';

@@ -2,9 +2,9 @@
 
 import { Command } from 'cmdk';
 
-import { Icon } from '@components/ui/icon';
 import { ENTITY_TONE_STYLES, type EntityTone } from '@lib/entity-metadata';
 import { cn } from '@lib/utils';
+import { Icon } from '@ui/icon';
 
 import { SEARCH_KIND_ICONS } from './constants';
 
