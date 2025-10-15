@@ -6,6 +6,9 @@ import { MissingPermissions, HasDangerousPermissions } from '../../errors/Roles'
 import type { Nullable, TypedExclude } from '@seedcord/types';
 import type { Client, TextChannel, PermissionsBitField } from 'discord.js';
 
+/**
+ * Map of permission bits to their prettified human-readable names.
+ */
 export const PermissionNames = new Map<bigint, string>(
     Object.entries(PermissionFlagsBits).map(([key, bit]) => [bit, prettify(key)])
 );
