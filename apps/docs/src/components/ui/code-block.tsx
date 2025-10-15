@@ -22,6 +22,7 @@ export async function CodeBlock({
     label
 }: CodeBlockProps): Promise<ReactElement> {
     const highlightedHtml = await highlightToHtml(code, lang);
+    const codeContainerClass = 'code-scroll-area px-4 py-4 text-sm leading-relaxed text-[var(--text)]';
 
     return (
         <figure
@@ -44,16 +45,15 @@ export async function CodeBlock({
                     />
                 ) : null}
                 {highlightedHtml ? (
-                    <div
-                        className={cn(
-                            'shiki-container w-full max-w-full overflow-x-auto whitespace-pre px-4 py-4 text-sm leading-relaxed text-[var(--text)]'
-                        )}
-                        dangerouslySetInnerHTML={{ __html: highlightedHtml }}
-                    />
+                    <div className={cn(codeContainerClass)}>
+                        <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
+                    </div>
                 ) : (
-                    <pre className="w-full max-w-full overflow-x-auto whitespace-pre px-4 py-4 text-sm text-[var(--text)]">
-                        <code>{code}</code>
-                    </pre>
+                    <div className={cn(codeContainerClass)}>
+                        <pre className="code-scroll-content whitespace-pre leading-relaxed">
+                            <code>{code}</code>
+                        </pre>
+                    </div>
                 )}
             </div>
         </figure>

@@ -31,6 +31,8 @@ export function InstallCommandTabs({ commands }: InstallCommandTabsProps): React
         return null;
     }
 
+    const codeContainerClass = 'code-scroll-area px-4 py-4 text-sm leading-relaxed text-[var(--text)]';
+
     return (
         <div className="space-y-3">
             <div className="flex flex-wrap gap-2">
@@ -57,14 +59,15 @@ export function InstallCommandTabs({ commands }: InstallCommandTabsProps): React
                     className="absolute right-3 top-3 z-10"
                 />
                 {activeCommand.html ? (
-                    <div
-                        className="shiki-container overflow-auto px-4 py-4 text-sm leading-relaxed text-[var(--text)]"
-                        dangerouslySetInnerHTML={{ __html: activeCommand.html }}
-                    />
+                    <div className={codeContainerClass}>
+                        <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: activeCommand.html }} />
+                    </div>
                 ) : (
-                    <pre className="overflow-auto px-4 py-4 text-sm text-[var(--text)]">
-                        <code>{activeCommand.code}</code>
-                    </pre>
+                    <div className={codeContainerClass}>
+                        <pre className="code-scroll-content whitespace-pre">
+                            <code>{activeCommand.code}</code>
+                        </pre>
+                    </div>
                 )}
             </div>
         </div>

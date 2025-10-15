@@ -26,15 +26,19 @@ function SignatureBlock({
     signatureHtml: string | null;
 }): ReactElement {
     const containerClassName =
-        'overflow-x-auto rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-sm text-[var(--text)] shadow-soft md:px-3 md:py-2.5';
+        'code-scroll-area rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-sm text-[var(--text)] shadow-soft md:px-3 md:py-2.5';
 
     if (signatureHtml) {
-        return <div className={containerClassName} dangerouslySetInnerHTML={{ __html: signatureHtml }} />;
+        return (
+            <div className={containerClassName}>
+                <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signatureHtml }} />
+            </div>
+        );
     }
 
     return (
         <div className={containerClassName}>
-            <pre className="whitespace-pre-wrap text-sm text-[var(--text)]">
+            <pre className="code-scroll-content whitespace-pre-wrap text-sm text-[var(--text)]">
                 <code>{signature}</code>
             </pre>
         </div>
@@ -54,7 +58,7 @@ export function EntityHeader({
     const ToneIcon = ENTITY_KIND_ICONS[tone];
 
     return (
-        <header className="space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+        <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
             <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <span

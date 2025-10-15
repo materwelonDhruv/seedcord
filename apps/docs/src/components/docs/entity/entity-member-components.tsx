@@ -130,7 +130,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
                         ))}
                     </ul>
                 ) : null}
-                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
                     <div className="group/name relative flex min-w-0 flex-1 items-center">
                         <CopyAnchorButton
                             anchorId={anchorId}
@@ -177,17 +177,21 @@ interface MemberCardBodyProps {
 }
 
 function MemberCardBody({ member, fallbackDoc }: MemberCardBodyProps): ReactElement {
+    const signatureContainerClass =
+        'code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
+
     return (
-        <div className="mt-4 space-y-3 text-sm text-subtle">
+        <div className="mt-4 min-w-0 space-y-3 text-sm text-subtle">
             {member.signatureHtml ? (
-                <div
-                    className="shiki-container w-full max-w-full overflow-x-auto rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5"
-                    dangerouslySetInnerHTML={{ __html: member.signatureHtml }}
-                />
+                <div className={signatureContainerClass}>
+                    <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: member.signatureHtml }} />
+                </div>
             ) : member.signature ? (
-                <pre className="w-full max-w-full overflow-x-auto rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3">
-                    <code>{member.signature}</code>
-                </pre>
+                <div className={signatureContainerClass}>
+                    <pre className="code-scroll-content whitespace-pre text-sm text-[var(--text)]">
+                        <code>{member.signature}</code>
+                    </pre>
+                </div>
             ) : null}
             <div className="space-y-2 leading-relaxed">
                 <p>{fallbackDoc}</p>
@@ -247,7 +251,7 @@ export function MemberDetailGroup({
     const [expanded, setExpanded] = useState(true);
 
     return (
-        <section className="space-y-4" data-member-group={prefix}>
+        <section className="min-w-0 space-y-4" data-member-group={prefix}>
             <header>
                 <button
                     type="button"
@@ -277,7 +281,7 @@ export function MemberDetailGroup({
                 id={panelId}
                 className={cn(
                     'divide-y divide-border/70 border-t border-border/70',
-                    expanded ? 'flex flex-col' : 'hidden'
+                    expanded ? 'flex min-w-0 flex-col' : 'hidden'
                 )}
             >
                 {items.map((item, index) => (
@@ -303,20 +307,20 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
     const accentClass = MEMBER_ACCENTS[prefix];
 
     return (
-        <section className="space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
+        <section className="min-w-0 space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
             <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">
                 {title}
             </h2>
             <ul className="space-y-2">
                 {items.map((item) => (
-                    <li key={item.id}>
+                    <li key={item.id} className="min-w-0">
                         <Link
                             href={`#${prefix}-${item.id}`}
                             onClick={() => {
                                 onNavigate(`${prefix}-${item.id}`);
                             }}
                             className={cn(
-                                'group flex items-center justify-between rounded-lg border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3.5 py-2 text-sm text-[var(--text)] transition',
+                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3.5 py-2 text-sm text-[var(--text)] transition',
                                 'hover:border-[color-mix(in_srgb,var(--accent-b)_34%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent-b)_12%,var(--surface)_88%)]'
                             )}
                         >

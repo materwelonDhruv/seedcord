@@ -86,6 +86,40 @@
     box-shadow: 0 10px 30px rgba(7, 9, 23, 0.08);
 }
 
+.code-scroll-area {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.code-scroll-content {
+    display: inline-block;
+    min-width: 100%;
+}
+
+.code-scroll-area pre {
+    width: max-content;
+    min-width: 100%;
+}
+
+.code-scroll-area .shiki-theme-group {
+    display: inline-flex;
+    width: max-content;
+}
+
+.code-scroll-area .shiki {
+    display: inline-block;
+    width: max-content !important;
+}
+
+.code-scroll-area .shiki code {
+    width: max-content;
+}
+
 .shiki {
     background-color: transparent !important;
     font-family: var(--font-geist-mono, 'JetBrains Mono', monospace);

@@ -99,7 +99,7 @@ export default function EntityMembersSection({
     const quickPanelGridColumns = quickPanelColumns.length === 2 ? 'lg:grid-cols-2' : undefined;
 
     return (
-        <section className="space-y-8">
+        <section className="min-w-0 space-y-8">
             {showAccessControls ? (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="space-y-0.5">
@@ -114,7 +114,7 @@ export default function EntityMembersSection({
             {quickPanelColumns.length ? (
                 <details
                     open
-                    className="group rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
+                    className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
                 >
                     <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-[var(--text)]">
                         <span className="text-lg font-semibold">Member overview</span>
@@ -132,12 +132,12 @@ export default function EntityMembersSection({
                             </span>{' '}
                             visibility and higher.
                         </p>
-                        <div className={cn('grid gap-3', quickPanelGridColumns)}>{quickPanelColumns}</div>
+                        <div className={cn('grid min-w-0 gap-3', quickPanelGridColumns)}>{quickPanelColumns}</div>
                     </div>
                 </details>
             ) : null}
 
-            <div className="space-y-8">
+            <div className="min-w-0 space-y-8">
                 <MemberDetailGroup items={typeParameters} prefix="typeParameter" />
                 <MemberDetailGroup items={filteredProperties} prefix="property" />
                 <MemberDetailGroup items={filteredMethods} prefix="method" />
