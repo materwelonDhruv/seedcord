@@ -8,11 +8,12 @@ const SOURCE_ROOT = 'https://github.com/materwelondhruv/seedcord/blob/main/packa
 export async function buildPlaceholderMembers(symbolName: string): Promise<EntityMembersByKind> {
     const anchor = symbolName.toLowerCase();
 
-    const [optionsHtml, statusHtml, connectHtml, disconnectHtml, typeParamHtml] = await Promise.all([
+    const [optionsHtml, statusHtml, connectHtml, disconnectHtml, destroyHtml, typeParamHtml] = await Promise.all([
         highlightToHtml('readonly options: ClientOptions', 'ts'),
         highlightToHtml('status: ClientStatus', 'ts'),
         highlightToHtml('async connect(options?: ConnectOptions): Promise<void>', 'ts'),
         highlightToHtml('disconnect(reason?: string): Promise<void>', 'ts'),
+        highlightToHtml('destroy(): Promise<void>', 'ts'),
         highlightToHtml('<TEvents extends Record<string, unknown> = Record<string, unknown>>', 'ts')
     ]);
 
@@ -50,7 +51,7 @@ export async function buildPlaceholderMembers(symbolName: string): Promise<Entit
                 signatureHtml: connectHtml,
                 documentation: 'Either resumes a previous session or performs a clean login.',
                 access: 'public',
-                tags: ['method', 'async'] as const,
+                tags: ['async'] as const,
                 sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L104`
             },
             {
@@ -61,7 +62,7 @@ export async function buildPlaceholderMembers(symbolName: string): Promise<Entit
                 signatureHtml: disconnectHtml,
                 documentation: 'Ensures coordinated cleanup across plugins and services.',
                 access: 'public',
-                tags: ['method'] as const,
+                tags: [] as const,
                 sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L142`
             },
             {
@@ -69,11 +70,11 @@ export async function buildPlaceholderMembers(symbolName: string): Promise<Entit
                 label: 'destroy',
                 description: 'Alias for Client#disconnect().',
                 signature: 'destroy(): Promise<void>',
-                signatureHtml: 'destroy(): Promise&lt;void&gt;',
+                signatureHtml: destroyHtml,
                 documentation:
                     'Provided as a more semantically meaningful way to indicate permanent shutdown of the client.',
                 access: 'public',
-                tags: ['method'] as const,
+                tags: [] as const,
                 sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L178`
             }
         ],
@@ -85,7 +86,7 @@ export async function buildPlaceholderMembers(symbolName: string): Promise<Entit
                 signature: '<TEvents extends Record<string, unknown> = Record<string, unknown>>',
                 signatureHtml: typeParamHtml,
                 documentation: 'Override this generic to unlock typed events when building plugins.',
-                tags: ['type'] as const,
+                tags: [] as const,
                 sourceUrl: `${SOURCE_ROOT}/${anchor}.ts#L24`
             }
         ]

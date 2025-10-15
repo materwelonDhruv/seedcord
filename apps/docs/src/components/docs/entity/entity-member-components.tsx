@@ -119,7 +119,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
                 {tags.length ? (
-                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-[0.18em] text-subtle">
+                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-[0.1em] text-subtle">
                         {tags.map((tag) => (
                             <li
                                 key={tag}
@@ -146,7 +146,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
                     </div>
                     <div className="ml-auto flex items-center gap-2">
                         {member.access ? (
-                            <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.18em] text-subtle">
+                            <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-subtle">
                                 {formatMemberAccessLabel(member.access)}
                             </span>
                         ) : null}
@@ -221,7 +221,7 @@ function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactElement {
             id={anchorId}
             className={cn(
                 'w-full min-w-0 max-w-full lg:scroll-mt-32',
-                hasTags ? 'pt-3' : 'pt-3',
+                hasTags ? 'pt-4' : 'pt-3',
                 isLast ? 'pb-4' : 'pb-6'
             )}
         >
@@ -304,7 +304,7 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
 
     return (
         <section className="space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
-            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.18em] text-subtle">
+            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">
                 {title}
             </h2>
             <ul className="space-y-2">

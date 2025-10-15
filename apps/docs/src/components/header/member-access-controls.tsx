@@ -30,7 +30,7 @@ export function MemberAccessControls({
     return (
         <div className={cn(containerClasses, className)}>
             {showLegend ? (
-                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-subtle">Access</span>
+                <span className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">Access</span>
             ) : null}
             <div
                 role="radiogroup"
