@@ -13,3 +13,4 @@
 - For files you plan to delete, simply comment out all the code in it, and update the file name using the `mv` command to append `.deprecated` to the file name. This way, git will track the change and you can always recover the file if needed.
 - If files are large and cause a lint error because of that, consider breaking them down into smaller, more manageable files.
 - Use ts paths if available instead of relative paths. (Check tsconfig.json)
+- Import order eslint warnings and indentation and spacing eslint warnings can be fixed by running `pnpm lint:fix` after all changes are made.

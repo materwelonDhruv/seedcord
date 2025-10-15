@@ -2,6 +2,7 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
+import { useRef } from 'react';
 
 import { CommandHeader } from './command-header';
 import { DEFAULT_COMMAND_ACTIONS } from './constants';
@@ -24,6 +25,8 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
         inputRef
     } = controller;
 
+    const commandRef = useRef<HTMLDivElement | null>(null);
+
     const normalizedSearch = searchValue.trim();
     const canShowResults = normalizedSearch.length >= MIN_QUERY_LENGTH;
 
@@ -38,8 +41,16 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                     data-command-content
                     className="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 sm:px-6 sm:pt-24 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16"
                     onInteractOutside={handleClose}
+                    onPointerDown={(event) => {
+                        const target = event.target as Node | null;
+                        if (!commandRef.current || !target) return;
+                        if (!commandRef.current.contains(target)) {
+                            handleClose();
+                        }
+                    }}
                 >
                     <Command
+                        ref={commandRef}
                         className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-[var(--text)] shadow-soft transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
