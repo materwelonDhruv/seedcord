@@ -94,7 +94,7 @@ function CopyAnchorButton({
             type="button"
             onClick={handleCopyLink}
             className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-md border border-transparent bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle transition duration-150 hover:bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_55%,var(--text))]',
+                'flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-subtle transition duration-150 hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_55%,var(--text))]',
                 copied ? 'text-[color-mix(in_srgb,var(--accent-b)_68%,var(--text))]' : undefined,
                 className
             )}
@@ -131,11 +131,14 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
                     </ul>
                 ) : null}
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <div className="group/name relative flex min-w-0 flex-1 items-center pl-8">
+                    <div className="group/name relative flex min-w-0 flex-1 items-center">
                         <CopyAnchorButton
                             anchorId={anchorId}
                             label={member.label}
-                            className="absolute left-0 top-1/2 -translate-y-1/2 opacity-0 transition-opacity group-hover/name:opacity-100 group-focus-within/name:opacity-100 group-active/name:opacity-100"
+                            className={
+                                'absolute -left-8 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center opacity-0 transition-opacity ' +
+                                'group-hover/name:opacity-100 group-focus-within/name:opacity-100 group-active/name:opacity-100 text-subtle hover:text-[var(--text)]'
+                            }
                         />
                         <h3 className="truncate text-base font-semibold text-[var(--text)] sm:text-lg">
                             {member.label}
