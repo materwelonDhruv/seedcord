@@ -28,12 +28,29 @@ export * from './bot/errors/User';
 // Bot Injectors Exports
 export * from './bot/injectors/EmojiInjector';
 
-// Bot Utilities Exports
-export * from './bot/utilities/ChannelsUtils';
-export * from './bot/utilities/ErrorHandlingUtils';
-export * from './bot/utilities/MessageUtils';
-export * from './bot/utilities/RoleUtils';
-export * from './bot/utilities/UserUtils';
+// Bot Utilities Channels Exports
+export * from './bot/utilities/channels/fetchText';
+export * from './bot/utilities/channels/sendInText';
+
+// Bot Utilities Errors Exports
+export * from './bot/utilities/errors/extractErrorResponse';
+
+// Bot Utilities Messages Exports
+export * from './bot/utilities/messages/attemptSendDM';
+
+// Bot Utilities Permissions Exports
+export * from './bot/utilities/roles/checkBotPermissions';
+export * from './bot/utilities/roles/checkPermissions';
+export * from './bot/utilities/roles/fetchRole';
+export * from './bot/utilities/roles/getBotRole';
+export * from './bot/utilities/roles/hasPermsToAssign';
+
+// Bot Utilities Users Exports
+export * from './bot/utilities/users/fetchGuildMember';
+export * from './bot/utilities/users/fetchManyGuildMembers';
+export * from './bot/utilities/users/fetchManyUsers';
+export * from './bot/utilities/users/fetchUser';
+export * from './bot/utilities/users/updateMemberRoles';
 
 // Bot Default Exports
 export * from './bot/defaults/UnhandledEvent';

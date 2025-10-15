@@ -47,6 +47,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'TupleOf' },
     { query: 'NumberRange' },
     { query: 'TypedConstructor' },
+    { query: 'BotPermissionScopeGroups' },
 
     // Enums
     { query: 'StartupPhase' },
@@ -59,11 +60,13 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'RegisterCommand' },
     { query: 'SelectMenuRoute' },
     { query: 'AutocompleteRoute' },
+    { query: 'checkPermissions' },
 
     // Variables
     { query: 'BuilderTypes' },
     { query: 'EffectMetadataKey' },
     { query: 'RowTypes' },
     { query: 'PermissionNames' },
+    { query: 'PERM_GROUPS' },
     { query: 'PRETTIER_CONFIG' }
 ];

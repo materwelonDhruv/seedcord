@@ -1,7 +1,7 @@
 /* decorators/EventCatchable.ts */
 import { Message } from 'discord.js';
 
-import { ErrorHandlingUtils } from '../utilities/ErrorHandlingUtils';
+import { extractErrorResponse } from '../utilities/errors/extractErrorResponse';
 
 import type { EventHandler } from '../../interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
@@ -47,12 +47,7 @@ export function EventCatchable(log?: boolean) {
                 const eventArgs = Array.isArray(this.getEvent()) ? (this.getEvent() as unknown[]) : [this.getEvent()];
                 const msg = eventArgs.find((x): x is Message => x instanceof Message);
 
-                const { response } = ErrorHandlingUtils.extractErrorResponse(
-                    err,
-                    this.core,
-                    msg?.guild ?? null,
-                    msg?.author ?? null
-                );
+                const { response } = extractErrorResponse(err, this.core, msg?.guild ?? null, msg?.author ?? null);
 
                 if (!msg) return;
 
