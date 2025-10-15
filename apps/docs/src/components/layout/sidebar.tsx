@@ -64,7 +64,6 @@ function useSidebarScrollGuards(): {
     const lastTouchYRef = useRef<number | null>(null);
 
     const handleWheel = useCallback((event: WheelEvent<HTMLDivElement>) => {
-        event.preventDefault();
         event.stopPropagation();
 
         const viewport = event.currentTarget;
@@ -93,7 +92,6 @@ function useSidebarScrollGuards(): {
     }, []);
 
     const handleTouchMove = useCallback((event: TouchEvent<HTMLDivElement>) => {
-        event.preventDefault();
         event.stopPropagation();
 
         const viewport = event.currentTarget;
