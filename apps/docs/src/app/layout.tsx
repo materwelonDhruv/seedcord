@@ -7,6 +7,7 @@ import Header from '../components/header/header';
 import HotkeyProvider from '../components/providers/hotkey-provider';
 import ThemeProvider from '../components/providers/theme-provider';
 import CommandPalette from '../components/search/command-palette/';
+import ScrollbarVisibility from '../components/ui/scrollbar-visibility';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
@@ -89,6 +90,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
                             Skip to content
                         </a>
                         <div className="flex min-h-screen flex-col">
+                            <ScrollbarVisibility />
                             <Header />
                             <div className="flex-1">{children}</div>
                         </div>
