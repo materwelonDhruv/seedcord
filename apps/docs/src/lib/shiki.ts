@@ -1,8 +1,12 @@
 import { getSingletonHighlighter, type BundledLanguage, type BundledTheme, type Highlighter } from 'shiki';
 
 const THEMES = {
-    dark: 'github-dark-default',
-    light: 'github-light-default'
+    dark: 'catppuccin-macchiato',
+    light: 'catppuccin-latte'
+    // dark: 'gruvbox-dark-medium',
+    // light: 'gruvbox-light-medium'
+    // dark: 'rose-pine',
+    // light: 'rose-pine-dawn'
 } as const satisfies Record<'dark' | 'light', BundledTheme>;
 
 const COMMON_LANGS: BundledLanguage[] = ['ts', 'tsx', 'js', 'jsx', 'json'];
