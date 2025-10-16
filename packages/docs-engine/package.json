@@ -39,6 +39,7 @@
         "LICENSE"
     ],
     "dependencies": {
+        "prettier": "catalog:deps",
         "typedoc": "catalog:deps",
         "typedoc-plugin-dt-links": "^2.0.22",
         "typedoc-plugin-mdn-links": "^5.0.9"
