@@ -38,6 +38,7 @@ export interface RenderedDeclarationHeader {
         default?: InlineType;
     }[];
     type?: InlineType;
+    value?: InlineType;
     heritage?: {
         extends?: InlineType[];
         implements?: InlineType[];

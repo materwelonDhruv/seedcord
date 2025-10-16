@@ -178,6 +178,13 @@ export const renderDeclarationHeader = (
         }
     }
 
+    if (options.kind === ReflectionKind.TypeAlias && options.valueType) {
+        const renderedValue = renderInlineType(ctx, options.valueType);
+        if (renderedValue) {
+            header.value = renderedValue;
+        }
+    }
+
     return header;
 };
 
@@ -210,6 +217,10 @@ export const formatRenderedDeclarationHeader = (header: RenderedDeclarationHeade
 
     if (header.type) {
         declarationName += `: ${inlineTypeToText(header.type)}`;
+    }
+
+    if (header.value) {
+        declarationName += ` = ${inlineTypeToText(header.value)}`;
     }
 
     segments.push(declarationName);
