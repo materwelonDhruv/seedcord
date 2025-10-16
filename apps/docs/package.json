@@ -28,12 +28,12 @@
         "react-dom": "^19.2.0",
         "shiki": "^3.13.0",
         "zustand": "^5.0.8",
-        "prettier": "catalog:deps"
+        "prettier": "catalog:deps",
+        "@seedcord/eslint-config": "workspace:^"
     },
     "devDependencies": {
         "@eslint/eslintrc": "^3.3.1",
         "@next/eslint-plugin-next": "^15.5.4",
-        "@seedcord/eslint-config": "workspace:^",
         "@seedcord/tsconfig": "workspace:^",
         "@types/node": "^24.6.2",
         "@types/react": "^19.2.0",
