@@ -75,14 +75,6 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                     </ul>
                 </div>
             ) : null}
-            {signature.returnType ? (
-                <div className="space-y-1 text-sm text-subtle">
-                    <h4 className="text-sm font-semibold text-[var(--text)]">Returns</h4>
-                    <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]">
-                        {signature.returnType}
-                    </code>
-                </div>
-            ) : null}
         </article>
     );
 }

@@ -119,23 +119,28 @@ interface PackageOverride {
 
 const PACKAGE_OVERRIDES: Record<string, PackageOverride> = {
     seedcord: {
-        displayName: '@seedcord/core',
-        aliases: ['@seedcord/core', 'core']
+        displayName: 'seedcord',
+        aliases: ['@seedcord', 'core']
     },
     '@seedcord/plugins': {
-        aliases: ['plugins']
+        displayName: 'plugins',
+        aliases: ['@seedcord/plugins']
     },
     '@seedcord/services': {
-        aliases: ['services']
+        displayName: 'services',
+        aliases: ['@seedcord/services']
     },
     '@seedcord/types': {
-        aliases: ['types']
+        displayName: 'types',
+        aliases: ['@seedcord/types']
     },
     '@seedcord/utils': {
-        aliases: ['utils']
+        displayName: 'utils',
+        aliases: ['@seedcord/utils']
     },
     '@seedcord/eslint-config': {
-        aliases: ['eslint', 'eslint-config']
+        displayName: 'eslint-config',
+        aliases: ['eslint', '@seedcord/eslint-config']
     }
 };
 
