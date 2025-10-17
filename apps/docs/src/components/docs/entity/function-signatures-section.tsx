@@ -88,7 +88,7 @@ export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSect
         <section className="space-y-4">
             <header className="space-y-1">
                 <h2 className="text-xl font-semibold text-[color-mix(in_srgb,var(--entity-function-color)_72%,var(--text))]">
-                    Function signatures
+                    {signatures.length === 1 ? 'Function Signature' : 'Function Signatures'}
                 </h2>
             </header>
             <div className={cn('grid gap-4', signatures.length > 1 ? 'lg:grid-cols-2' : undefined)}>
