@@ -18,6 +18,7 @@ import type { SearchResultKind, CommandGroupModel, CommandAction } from './types
 import type { LucideIcon } from 'lucide-react';
 
 export const FOCUS_DELAY_MS = 10;
+export const MIN_SEARCH_QUERY_LENGTH = 3;
 
 export const SEARCH_KIND_ICONS: Record<SearchResultKind, LucideIcon> = {
     package: PackageSearch,

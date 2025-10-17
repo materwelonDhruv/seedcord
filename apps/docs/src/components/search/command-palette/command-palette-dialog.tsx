@@ -2,16 +2,76 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
-import { useRef } from 'react';
+import { Fragment, useMemo, useRef } from 'react';
 
 import { CommandHeader } from './command-header';
-import { DEFAULT_COMMAND_ACTIONS } from './constants';
+import { DEFAULT_COMMAND_ACTIONS, MIN_SEARCH_QUERY_LENGTH } from './constants';
 import { CommandListItem } from './list-item';
+import { useCommandPaletteSearch } from './use-command-palette-search';
 
+import type { CommandAction } from './types';
 import type { CommandPaletteController } from './use-command-palette-controller';
 import type { ReactElement } from 'react';
 
-const MIN_QUERY_LENGTH = 3;
+interface CommandListContentProps {
+    showInitialHint: boolean;
+    isSearching: boolean;
+    errorMessage?: string;
+    results: CommandAction[];
+    onSelect: (action: CommandAction) => void;
+}
+
+function CommandListContent({
+    showInitialHint,
+    isSearching,
+    errorMessage,
+    results,
+    onSelect
+}: CommandListContentProps): ReactElement {
+    if (showInitialHint) {
+        return (
+            <div className="px-4 py-12 text-center text-sm text-subtle">
+                Type at least {MIN_SEARCH_QUERY_LENGTH} characters to explore the documentation index.
+            </div>
+        );
+    }
+
+    const hasResults = results.length > 0;
+    const shouldShowFallback = !isSearching && !errorMessage && !hasResults;
+
+    return (
+        <Fragment>
+            {isSearching ? (
+                <div className="px-2 py-6 text-center text-sm text-subtle">Searching documentation…</div>
+            ) : null}
+            {errorMessage ? (
+                <div className="mx-2 rounded-xl border border-[color-mix(in_srgb,var(--accent-b)_32%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_10%,var(--surface)_90%)] px-3 py-2 text-sm text-[color-mix(in_srgb,var(--text)_85%,var(--accent-b)_15%)]">
+                    {errorMessage}
+                </div>
+            ) : null}
+            {shouldShowFallback ? (
+                <div className="px-3 py-8 text-center text-sm text-subtle">
+                    No results found. Try refining your search.
+                </div>
+            ) : null}
+            {!isSearching && !errorMessage && hasResults
+                ? results.map((action) => <CommandListItem key={action.id} action={action} onSelect={onSelect} />)
+                : null}
+            {DEFAULT_COMMAND_ACTIONS.length ? (
+                <Fragment>
+                    <div className="pt-3">
+                        <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-subtle">
+                            Quick links
+                        </p>
+                    </div>
+                    {DEFAULT_COMMAND_ACTIONS.map((action) => (
+                        <CommandListItem key={action.id} action={action} onSelect={onSelect} />
+                    ))}
+                </Fragment>
+            ) : null}
+        </Fragment>
+    );
+}
 
 export function CommandPaletteDialog({ controller }: { controller: CommandPaletteController }): ReactElement {
     const {
@@ -27,8 +87,23 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
 
     const commandRef = useRef<HTMLDivElement | null>(null);
 
-    const normalizedSearch = searchValue.trim();
-    const canShowResults = normalizedSearch.length >= MIN_QUERY_LENGTH;
+    const normalizedSearch = useMemo(() => searchValue.trim(), [searchValue]);
+    const searchState = useCommandPaletteSearch({ query: normalizedSearch, open });
+    const canShowResults = normalizedSearch.length >= MIN_SEARCH_QUERY_LENGTH;
+    const isSearching = searchState.status === 'loading';
+    const hasError = searchState.status === 'error';
+    const showInitialHint = !canShowResults;
+    const resolvedError = hasError ? (searchState.error ?? 'Search failed. Please try again.') : undefined;
+    const listProps: CommandListContentProps = {
+        showInitialHint,
+        isSearching,
+        results: searchState.results,
+        onSelect: handleSelect
+    };
+
+    if (resolvedError) {
+        listProps.errorMessage = resolvedError;
+    }
 
     return (
         <Dialog.Root open={open} onOpenChange={handleOpenChange}>
@@ -65,21 +140,8 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                             onValueChange={handleValueChange}
                             searchValue={searchValue}
                         />
-                        <Command.List className="max-h-[calc(78vh-5.25rem)] overflow-y-auto overscroll-contain pb-3">
-                            {canShowResults ? (
-                                <>
-                                    <Command.Empty className="px-4 py-8 text-center text-sm text-subtle">
-                                        No results found. Try refining your search.
-                                    </Command.Empty>
-                                    {DEFAULT_COMMAND_ACTIONS.map((action) => (
-                                        <CommandListItem key={action.id} action={action} onSelect={handleSelect} />
-                                    ))}
-                                </>
-                            ) : (
-                                <div className="px-4 py-12 text-center text-sm text-subtle">
-                                    Type at least {MIN_QUERY_LENGTH} characters to explore the documentation index.
-                                </div>
-                            )}
+                        <Command.List className="max-h-[calc(78vh-5.25rem)] overflow-y-auto overscroll-contain px-2 pb-3">
+                            <CommandListContent {...listProps} />
                         </Command.List>
                     </Command>
                 </Dialog.Content>
