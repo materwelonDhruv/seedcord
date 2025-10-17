@@ -1,10 +1,11 @@
 import { cache } from 'react';
 
+import type { EntityTone } from '@/lib/EntityMetadata';
+
 import { getDocsEngine } from './engine';
 import { DEFAULT_MANIFEST_PACKAGE, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
 
-import type { EntityTone } from '@lib/entity-metadata';
 import type { DirectoryEntity } from '@seedcord/docs-engine';
 
 export interface NavigationEntityItem {

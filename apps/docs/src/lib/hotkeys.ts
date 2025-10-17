@@ -1,3 +1,5 @@
+'use client';
+
 import { log } from './logger';
 
 type Unregister = () => void;

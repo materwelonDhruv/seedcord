@@ -3,11 +3,11 @@ import Script from 'next/script';
 
 import './globals.css';
 
-import Header from '../components/header/header';
-import HotkeyProvider from '../components/providers/hotkey-provider';
-import ThemeProvider from '../components/providers/theme-provider';
-import CommandPalette from '../components/search/command-palette/';
-import ScrollbarVisibility from '../components/ui/scrollbar-visibility';
+import Header from '../components/header';
+import HotkeyProvider from '../components/providers/HotkeyProvider';
+import ThemeProvider from '../components/providers/ThemeProvider';
+import CommandPalette from '../components/search/command-palette';
+import ScrollbarVisibility from '../components/ui/ScrollbarVisibility';
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';

@@ -1,5 +1,6 @@
-import Container from '@components/layout/container';
-import Sidebar from '@components/layout/sidebar';
+import Sidebar from '@/components/layout/sidebar/Sidebar';
+import Container from '@/components/layout/sidebar/utils/container/container';
+
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
 
 import type { DocsCatalog, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/catalog';

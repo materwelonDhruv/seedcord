@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import EntityContent from '@components/docs/entity/entity-content';
+import EntityContent from '@/components/docs/entity/EntityContent';
+import { ENTITY_TONE_STYLES } from '@/lib/EntityMetadata';
+
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
 import { loadEntityModel } from '@lib/docs/entity-loader';
 import { parseEntityPathSegments } from '@lib/docs/routes';
-import { ENTITY_TONE_STYLES } from '@lib/entity-metadata';
 
 import type { NavigationCategory, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/catalog';
 import type { ReactElement } from 'react';

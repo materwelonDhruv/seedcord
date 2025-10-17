@@ -1,4 +1,5 @@
-import InstallCommandTabs from '@components/docs/install-command-tabs';
+import InstallCommandTabs from '@/components/docs/InstallCommandTabs';
+
 import { highlightToHtml } from '@lib/shiki';
 
 import type { ReactElement } from 'react';
