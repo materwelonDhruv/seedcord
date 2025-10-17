@@ -19,7 +19,7 @@ export interface EntityMemberSummary {
     sharedDocumentation: CommentParagraph[];
     sharedExamples: CommentExample[];
     signatures: MemberSignatureDetail[];
-    inheritedFrom?: string;
+    inheritedFrom?: string | { name: string; href?: string };
     tags?: readonly string[];
     access?: MemberAccessLevel;
     sourceUrl?: string;

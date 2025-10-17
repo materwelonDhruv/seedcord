@@ -106,6 +106,8 @@ export const rawExternalLinks = {
 
     // External Libraries
     'discord.js': 'https://discord.js.org/docs',
+    '@discordjs/builders': 'https://discord.js.org/docs',
+    '@discordjs/collection': 'https://discord.js.org/docs',
     mongoose: 'https://mongoosejs.com/docs/guide.html',
     prettier: 'https://prettier.io/docs/api',
     'prettier.io': 'https://prettier.io/docs/api'

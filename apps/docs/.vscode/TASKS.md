@@ -34,11 +34,11 @@ information, useful for container orchestration and monitoring.
 
 [x] 13. For functions, this placeholder text “Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.“ should be the function’s tsdoc. And make sure to not duplicate it below.
 
-[ ] 14. For methods in classes and interfaces, can you suffix their names with a `()` so it’s clear that it’s a method pls
+[x] 14. For methods in classes and interfaces, can you suffix their names with a `()` so it’s clear that it’s a method pls
 
 [x] 15. For function parameters, if their types have a link, it doesn’t render. Look example. Pls fix.
 
-[ ] 16. The “Inherited from:” should also correctly hyperlink
+[x] 16. The “Inherited from:” should also correctly hyperlink
 
 [ ] 17. Make sure to correctly parse and display the comments for @typeParam and @param. It's currently broken for type params. Can you please check the places we're trying to read those comments and find any bugs?
 
@@ -73,3 +73,7 @@ information, useful for container orchestration and monitoring.
 [ ] 28. function param and typeparam tsdocs broken (Checkable)
 
 [ ] 29. prettier api in the map: [https://prettier.io/docs/api](https://prettier.io/docs/options) so we can link it
+
+[ ] 30. - when underlining for hyperlinking in shiki codeblock, if smth that’s hyperlink is preceded by a `[` for example `[number]`, the left `[` also gets underlined.
+
+[ ] 31. In the search, the icon for methods should what we are using for methods. Right now it uses the icon for functions.

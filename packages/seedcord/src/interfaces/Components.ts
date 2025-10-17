@@ -112,8 +112,10 @@ export type InstantiatedActionRow<RowKey extends ActionRowComponentType> = Insta
  * Provides common functionality for building Discord components with proper typing.
  *
  * @typeParam TComponent - The Discord.js component type being wrapped
+ *
+ * @internal
  */
-abstract class BaseComponent<TComponent> {
+export abstract class BaseComponent<TComponent> {
     private readonly _component: TComponent;
 
     // eslint-disable-next-line @typescript-eslint/naming-convention

@@ -63,7 +63,12 @@ export interface WithChecks {
  */
 export interface HandlerWithChecks extends WithChecks, Handler {}
 
-abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handler {
+/**
+ * Base class for all handlers. Not meant to be used directly.
+ *
+ * @internal
+ */
+export abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handler {
     protected checkable = false;
     protected break = false;
     protected errored = false;
@@ -129,7 +134,7 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handle
  * Base class for Discord interaction handlers
  *
  * Extend this class to handle slash commands, buttons, modals, and select menus.
- * Use decorators like \@SlashRoute, \@ButtonRoute, etc. to define routing.
+ * Use decorators like `\@SlashRoute`, `\@ButtonRoute`, etc. to define routing.
  *
  * @typeParam Repliable - The interaction type this handler processes
  */
@@ -166,7 +171,7 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
  * The focused option is automatically available via the `focused` property.
  */
 export abstract class AutocompleteHandler extends BaseHandler<AutocompleteInteraction> implements Handler {
-    /** The currently focused autocomplete option (Based on what you set in \@AutocompleteRoute) */
+    /** The currently focused autocomplete option (Based on what you set in `\@AutocompleteRoute`) */
     protected readonly focused: AutocompleteFocusedOption;
     constructor(event: AutocompleteInteraction, core: Core, args?: string[]) {
         super(event, core, args);
@@ -178,7 +183,7 @@ export abstract class AutocompleteHandler extends BaseHandler<AutocompleteIntera
  * Base class for Discord client event handlers
  *
  * Extend this class to handle Discord events like messageCreate, guildMemberAdd, etc.
- * Use the \@EventRegisterable decorator to specify which event to listen for.
+ * Use the `\@EventRegisterable` decorator to specify which event to listen for.
  *
  * @typeParam Repliable - The Discord event type this handler processes
  */

@@ -43,7 +43,15 @@ export function MemberCardBody({ member }: { member: EntityMemberSummary }): Rea
             {member.inheritedFrom ? (
                 <p className="flex flex-wrap items-baseline gap-2 text-subtle">
                     <span className="font-semibold text-[var(--text)]">Inherited from:</span>
-                    <span>{member.inheritedFrom}</span>
+                    {typeof member.inheritedFrom === 'string' ? (
+                        <span>{member.inheritedFrom}</span>
+                    ) : member.inheritedFrom.href ? (
+                        <a href={member.inheritedFrom.href} className="link underline">
+                            {member.inheritedFrom.name}
+                        </a>
+                    ) : (
+                        <span>{member.inheritedFrom.name}</span>
+                    )}
                 </p>
             ) : null}
         </div>

@@ -1,5 +1,6 @@
 import { createPlainParagraph, formatCommentRich } from './commentFormatting';
 import { formatDeclarationHeader, formatSignature, highlightCode, renderInlineType } from './formatting';
+import { resolveReferenceHref } from './resolveReferenceHref';
 
 import type { CommentParagraph, CommentExample, FormatContext, CodeRepresentation, FormattedComment } from './types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
@@ -252,7 +253,13 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
     const accessorType = normalizeAccessor(node.flags.accessor);
     if (accessorType) summary.accessorType = accessorType;
     if (node.sourceUrl) summary.sourceUrl = node.sourceUrl;
-    if (node.inheritedFrom?.name) summary.inheritedFrom = node.inheritedFrom.name;
+    if (node.inheritedFrom?.name) {
+        const href = resolveReferenceHref(node.inheritedFrom, {
+            engine: context.engine,
+            currentPackage: context.manifestPackage
+        });
+        summary.inheritedFrom = href ? { name: node.inheritedFrom.name, href } : node.inheritedFrom.name;
+    }
 
     return summary;
 }
