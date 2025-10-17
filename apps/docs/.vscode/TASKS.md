@@ -11,9 +11,9 @@ Because right now, for example for the interface Core, the example is right abov
 
 [x] 6. Also for the functions page, the params are fine, but why are the tsdocs for the params missing?
 
-[ ] 7. In the enum member page, you've overengineered the look. It doesn't need code blocks in the members. Simply show the Member name and then an equals sign and then the value. And ofc any documentation if it has. Also, same issue like the function pages. The jump to source should be the same as how it is for classes
+[x] 7. In the enum member page, you've overengineered the look. It doesn't need code blocks in the members. Simply show the Member name and then an equals sign and then the value. And ofc any documentation if it has. Also, same issue like the function pages. The jump to source should be the same as how it is for classes
 
-[ ] 8. Type Alias pages don't need a second Type declaration section. The main signature code block already has it all. It only needs the Type parameters section. Which it already has.
+[x] 8. Type Alias pages don't need a second Type declaration section. The main signature code block already has it all. It only needs the Type parameters section. Which it already has.
 
 [ ] 9. Member overview does not need to have a section for Constructors (reminds me, make sure constructors handle overloads if they have any as well). They only need props and methods. And make sure 2 columns. First is props and 2nd is methods.
 
@@ -44,7 +44,9 @@ information, useful for container orchestration and monitoring.
 
 [ ] 18. Interfaces do not need the “Showing members with” sentence in Member overview
 
-[ ] 19. In the engine output, you’ll see smth called flags.
+[ ] 19. get rid of the public private protected tags. show them in the signature instead. same for functions. Same for static. And for readonly. And for abstract. And for async (isAsync flag exists).
+
+[ ] 20. In the engine output, you’ll see smth called flags.
 
 - If something is abstract, reflect that in the signature instead of as a tag
 - If something’s accessor is “getter”, show get in the signature. Tag “Accessor”
@@ -54,6 +56,20 @@ information, useful for container orchestration and monitoring.
 - If anything is deprecated, it should be clearly identifiable as deprecated (with whatever deprecation text it includes) So if it’s a method, it’ll be in the method’s card. If it’s the class itself, it’ll be in the class signature card at the top
 - If something has isOverwriting true, it should have a tag saying “Overrides” and ofc, the “Inherited from:”. This is for both methods AND properties.
 
-[ ] 20. Check why EffectsEmitter’s type param extends is expanded. It should use the actual type it’s extending correctly. Check out the seedcord.json. You can see that it has it correctly. It’s also correct in the .txt files in samples.
+[ ] 21. Check why EffectsEmitter’s type param extends is expanded. It should use the actual type it’s extending correctly. Check out the seedcord.json. You can see that it has it correctly. It’s also correct in the .txt files in samples.
 
-[ ] 21. Why are param’s not showing their tsdoc? like in Healthcheck. Check the actual Healthcheck file. This issue is with params everywhere.
+[ ] 22. Why are param’s not showing their tsdoc? like in Healthcheck. Check the actual Healthcheck file. This issue is with params everywhere.
+
+[ ] 23. latest package version should show latest and not the package version exactly. like latest • version
+
+[ ] 24. reloading should remember scroll and collapsed categories in the sidebar
+
+[ ] 25. way to copy function page link. hashtag on hover in function hero card on the right of the name
+
+[ ] 26. de-dupe search entries
+
+[ ] 27. missing space between examples (example emojis)
+
+[ ] 28. function param and typeparam tsdocs broken (Checkable)
+
+[ ] 29. prettier api in the map: [https://prettier.io/docs/api](https://prettier.io/docs/options) so we can link it

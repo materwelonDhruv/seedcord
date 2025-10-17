@@ -1,4 +1,4 @@
-import { CodePanel } from '@ui/CodePanel';
+// CodePanel intentionally not used for Type Alias pages to avoid duplicate declarations
 
 import { MemberDetailGroup } from '../../member/MemberDetailGroup';
 
@@ -8,11 +8,6 @@ import type { ReactElement } from 'react';
 export function renderType(model: TypeModel): ReactElement {
     return (
         <div className="space-y-6">
-            <CodePanel
-                representation={model.declaration}
-                title="Type declaration"
-                description="The rendered declaration mirrors the output from the docs-engine debugging artifacts."
-            />
             {model.typeParameters.length ? (
                 <MemberDetailGroup items={model.typeParameters} prefix="typeParameter" />
             ) : null}
