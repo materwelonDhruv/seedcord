@@ -70,15 +70,17 @@ export function EntityHeader({
 }: EntityHeaderProps): ReactElement {
     const toneStyles = ENTITY_TONE_STYLES[tone];
     const ToneIcon = ENTITY_KIND_ICONS[tone];
-    const summaryNodes = buildSummaryNodes(
-        summary,
-        'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
-    );
-
     const fn = functionSignatures ?? [];
     const ids = fn.map((s) => ({ id: s.id, anchor: (s as unknown as { anchor?: string }).anchor }));
     const [activeId] = useActiveSignatureList(ids as { id: string; anchor?: string }[]);
     const active = fn.find((s) => s.id === activeId) ?? fn[0];
+
+    // Prefer the active signature's summary (if present) for the header lead.
+    const headerSummary = active?.summary.length ? active.summary : summary;
+    const summaryNodes = buildSummaryNodes(
+        headerSummary,
+        'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
+    );
 
     return (
         <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">

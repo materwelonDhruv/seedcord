@@ -5,11 +5,11 @@ Because right now, for example for the interface Core, the example is right abov
 
 [x] 3. In the sidebar, when I change package, it doesn’t refresh the items. I still see the items from the previous package. The selection doesn’t change either.
 
-[ ] 4. We need a custom 404 page
+[x] 4. We need a custom 404 page
 
-[ ] 5. For functions pages, the function signatures section title does not need the signature in the card’s heading. Only in the code block. Also, the jump to source button should be EXACTLY like how it is for classes. Why the inconsistency?
+[x] 5. For functions pages, there are a few issues. 1. The the hero card at the top should have the selected signature's tsdoc summary in it. Right now it's nowhere. 2. The formatting for the parameter and typeparam cards are not the same as how classes do it. Please make them the same. Classes does it correctly by using the right highlighting and other styles.
 
-[ ] 6. Also for the functions page, the params are fine, but why are the tsdocs for the params missing?
+[x] 6. Also for the functions page, the params are fine, but why are the tsdocs for the params missing?
 
 [ ] 7. In the enum member page, you've overengineered the look. It doesn't need code blocks in the members. Simply show the Member name and then an equals sign and then the value. And ofc any documentation if it has. Also, same issue like the function pages. The jump to source should be the same as how it is for classes
 

@@ -2,7 +2,13 @@
 
 import { useMemo } from 'react';
 
-import type { FunctionEntityModel, FunctionSignatureModel } from '@/lib/docs/types';
+import type {
+    FunctionEntityModel,
+    FunctionSignatureModel,
+    FunctionTypeParameterModel,
+    FunctionSignatureParameterModel,
+    CodeRepresentation
+} from '@/lib/docs/types';
 
 import { MemberDetailGroup } from '../member/MemberDetailGroup';
 import { useActiveSignatureList } from '../utils/useActiveSignatureList';
@@ -10,15 +16,7 @@ import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 import type { EntityMemberSummary } from '../types';
 import type { ReactElement } from 'react';
 
-function buildTypeParamMember(
-    tp: {
-        name: string;
-        constraint?: string | undefined;
-        default?: string | undefined;
-        description?: string | undefined;
-    },
-    index: number
-): EntityMemberSummary {
+function buildTypeParamMember(tp: FunctionTypeParameterModel, index: number): EntityMemberSummary {
     const id = `typeparam-${tp.name}-${index}`;
     const codeText = [
         tp.name,
@@ -27,10 +25,41 @@ function buildTypeParamMember(
     ]
         .filter(Boolean)
         .join(' ');
+    const codeRepresentation: CodeRepresentation = tp.code ?? { text: codeText, html: null };
 
     return {
         id,
         label: tp.name,
+        description: tp.description ? { plain: tp.description, html: tp.description } : { plain: '', html: '' },
+        // Put any description only on the signature to avoid duplication in sharedDocumentation
+        sharedDocumentation: [],
+        sharedExamples: [],
+        signatures: [
+            {
+                id: `${id}-sig`,
+                anchor: `${id}-sig`,
+                code: { text: codeRepresentation.text, html: codeRepresentation.html ?? null },
+                documentation: tp.description ? [{ plain: tp.description, html: tp.description }] : [],
+                examples: []
+            }
+        ]
+    } as unknown as EntityMemberSummary;
+}
+
+function buildParamMember(p: FunctionSignatureParameterModel, index: number): EntityMemberSummary {
+    const id = `param-${p.name}-${index}`;
+    const label = p.name + (p.optional ? '?' : '');
+
+    const defaultTextParts: string[] = [];
+    if (p.type) defaultTextParts.push(`${label}: ${p.type}`);
+    else defaultTextParts.push(label);
+    if (p.defaultValue !== undefined) defaultTextParts.push(`= ${p.defaultValue}`);
+
+    const codeRep: CodeRepresentation = p.display ?? { text: defaultTextParts.join(' '), html: null };
+
+    return {
+        id,
+        label,
         description: { plain: '', html: '' },
         sharedDocumentation: [],
         sharedExamples: [],
@@ -38,43 +67,8 @@ function buildTypeParamMember(
             {
                 id: `${id}-sig`,
                 anchor: `${id}-sig`,
-                code: { text: codeText, html: null },
-                documentation: [],
-                examples: []
-            }
-        ]
-    } as unknown as EntityMemberSummary;
-}
-
-function buildParamMember(
-    p: {
-        name: string;
-        optional?: boolean | undefined;
-        type?: string | undefined;
-        defaultValue?: string | undefined;
-        documentation?: { plain: string; html: string }[] | undefined;
-    },
-    index: number
-): EntityMemberSummary {
-    const id = `param-${p.name}-${index}`;
-    const label = p.name + (p.optional ? '?' : '');
-    const sigParts: string[] = [];
-    if (p.type) sigParts.push(`${label}: ${p.type}`);
-    else sigParts.push(label);
-    if (p.defaultValue) sigParts.push(`= ${p.defaultValue}`);
-
-    return {
-        id,
-        label,
-        description: { plain: '', html: '' },
-        sharedDocumentation: p.documentation ?? [],
-        sharedExamples: [],
-        signatures: [
-            {
-                id: `${id}-sig`,
-                anchor: `${id}-sig`,
-                code: { text: sigParts.join(' '), html: null },
-                documentation: [],
+                code: codeRep,
+                documentation: p.documentation,
                 examples: []
             }
         ],
@@ -94,33 +88,10 @@ export default function FunctionBody({ model }: { model: FunctionEntityModel }):
         [signatures, activeSignatureId]
     ) as FunctionSignatureModel;
 
-    const rawTypeParams =
-        (activeSignature as unknown as { typeParameters?: { name: string; constraint?: string; default?: string }[] })
-            .typeParameters ?? [];
-    const typeParameterItems: EntityMemberSummary[] = rawTypeParams.map((tp, idx) =>
-        buildTypeParamMember(
-            {
-                name: tp.name,
-                constraint: tp.constraint ?? undefined,
-                default: tp.default ?? undefined,
-                description: undefined
-            },
-            idx
-        )
-    );
+    const rawTypeParams = activeSignature.typeParameters ?? [];
+    const typeParameterItems: EntityMemberSummary[] = rawTypeParams.map((tp, idx) => buildTypeParamMember(tp, idx));
 
-    const parameterItems: EntityMemberSummary[] = activeSignature.parameters.map((p, idx) =>
-        buildParamMember(
-            {
-                name: p.name,
-                optional: p.optional,
-                type: p.type ?? undefined,
-                defaultValue: p.defaultValue ?? undefined,
-                documentation: p.documentation
-            },
-            idx
-        )
-    );
+    const parameterItems: EntityMemberSummary[] = activeSignature.parameters.map((p, idx) => buildParamMember(p, idx));
 
     return (
         <section className="space-y-6">

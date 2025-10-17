@@ -43,7 +43,16 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     {renderParameterBadge(parameter)}
-                                    {parameter.type ? (
+                                    {parameter.display?.html ? (
+                                        <div
+                                            className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]"
+                                            dangerouslySetInnerHTML={{ __html: parameter.display.html }}
+                                        />
+                                    ) : parameter.display?.text ? (
+                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]">
+                                            {parameter.display.text}
+                                        </code>
+                                    ) : parameter.type ? (
                                         <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]">
                                             {parameter.type}
                                         </code>
@@ -53,6 +62,11 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                                     <p className="mt-2 text-xs text-subtle">
                                         Default value: <span className="font-mono">{parameter.defaultValue}</span>
                                     </p>
+                                ) : null}
+                                {parameter.documentation.length ? (
+                                    <div className="mt-2 text-sm text-subtle">
+                                        <CommentParagraphs paragraphs={parameter.documentation} />
+                                    </div>
                                 ) : null}
                             </li>
                         ))}
