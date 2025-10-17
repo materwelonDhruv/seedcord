@@ -1,12 +1,13 @@
 import { Code } from 'lucide-react';
 
+import type { FunctionSignatureModel } from '@/lib/docs/types';
+
 import Icon from '@ui/Icon';
 
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
 import { renderParameterBadge } from '../utils/renderers/renderParameterBadge';
 
-import type { FunctionSignatureModel } from '@lib/docs/entities';
 import type { ReactElement } from 'react';
 
 export function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {

@@ -1,4 +1,5 @@
-import type { CommentParagraph } from '@lib/docs/comment-format';
+import type { CommentParagraph } from '@/lib/docs/types';
+
 import type { ReactElement } from 'react';
 
 export const renderParagraphNode = (paragraph: CommentParagraph, key: string): ReactElement =>

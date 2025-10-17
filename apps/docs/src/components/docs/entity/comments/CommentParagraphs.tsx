@@ -1,6 +1,7 @@
+import type { CommentParagraph } from '@/lib/docs/types';
+
 import { cn } from '@lib/utils';
 
-import type { CommentParagraph } from '@lib/docs/comment-format';
 import type { ReactElement } from 'react';
 
 interface CommentParagraphsProps {

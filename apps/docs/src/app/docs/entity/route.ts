@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from 'next/server';
 
-import { loadEntityModel } from '@lib/docs/entity-loader';
+import { loadEntityModel } from '@/lib/docs/loadEntityModel';
+
 import { buildEntityHref } from '@lib/docs/routes';
 
 const HTTP_TEMPORARY_REDIRECT = 307;

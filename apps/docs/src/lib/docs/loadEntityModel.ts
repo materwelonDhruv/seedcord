@@ -1,37 +1,22 @@
 import { kindName, type DocNode, type DocPackageModel, type DocsEngine } from '@seedcord/docs-engine';
 
-import { resolveEntityTone } from '@lib/EntityMetadata';
+import { resolveEntityTone } from '@/lib/entityMetadata';
 
+import { buildEntityModel } from './buildEntityModel';
 import { getDocsEngine } from './engine';
-import { buildEntityModel, type EntityKind, type EntityModel } from './entities';
 import { resolveManifestPackageName } from './packages';
 
-export interface EntityQueryParams {
-    pkg?: string;
-    manifestPackage?: string;
-    slug?: string;
-    symbol?: string;
-    qualifiedName?: string;
-    kind?: string;
-}
+import type { InternalEntityLookupParams, EntityQueryParams, EntityKind, EntityModel } from './types';
 
-interface InternalEntityLookupParams {
-    manifestPackage: string;
-    slug?: string;
-    symbol?: string;
-    qualifiedName?: string;
-    kind: EntityKind | null;
-}
+export const DEFAULT_PACKAGE = 'seedcord';
 
-const DEFAULT_PACKAGE = 'seedcord';
-
-const normalizeKind = (kind: string | undefined): EntityKind | null => {
+function normalizeKind(kind: string | undefined): EntityKind | null {
     if (!kind) {
         return null;
     }
 
     return resolveEntityTone(kind);
-};
+}
 
 function matchesKind(node: DocNode, kind: EntityKind | null): boolean {
     if (!kind) {

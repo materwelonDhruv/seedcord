@@ -1,17 +1,11 @@
-import { resolveEntityTone, type EntityTone } from '@lib/EntityMetadata';
+import { resolveEntityTone, type EntityTone } from '@/lib/entityMetadata';
 
 import { formatDisplayPackageName } from './packages';
 
+import type { BuildEntityHrefOptions } from './types';
 import type { Route } from 'next';
 
-interface BuildEntityHrefOptions {
-    manifestPackage: string;
-    slug: string;
-    version?: string | null;
-    tone?: string | null;
-}
-
-const ENTITY_SEGMENT_MAP: Record<EntityTone, string> = {
+export const ENTITY_SEGMENT_MAP: Record<EntityTone, string> = {
     class: 'classes',
     interface: 'interfaces',
     enum: 'enums',
@@ -20,7 +14,7 @@ const ENTITY_SEGMENT_MAP: Record<EntityTone, string> = {
     variable: 'variables'
 };
 
-const DEFAULT_VERSION_SEGMENT = 'latest';
+export const DEFAULT_VERSION_SEGMENT = 'latest';
 
 const encodeSegment = (segment: string): string => encodeURIComponent(segment);
 

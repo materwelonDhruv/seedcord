@@ -1,47 +1,30 @@
 import { highlightInlineToHtml } from '@lib/shiki';
 
-import { highlightCode, type CodeRepresentation, type FormatContext } from './formatting';
-import { resolveReferenceHref } from './references';
+import { highlightCode } from './formatting';
+import { resolveReferenceHref } from './resolveReferenceHref';
 
 import type { DocsEngine } from './engine';
+import type {
+    CommentParagraph,
+    InlineTagPart,
+    FormatContext,
+    CommentDisplayPart,
+    TextPart,
+    CodePart,
+    CommentExample,
+    FormattedComment,
+    ParagraphAccumulator
+} from './types';
 import type { DocComment, DocCommentExample, DocNode, DocReference } from '@seedcord/docs-engine';
 
-type CommentDisplayPart = NonNullable<DocComment['summaryParts']>[number];
+export const DOUBLE_NEWLINE = /\n{2,}/;
+export const HTML_ESCAPE_PATTERN = /[&<>"']/g;
+export const ATTRIBUTE_ESCAPE_PATTERN = /[&<>"']/g;
+export const INLINE_CODE_TRIM = /^`+|`+$/g;
+export const DEFAULT_INLINE_LANG = 'ts';
+export const INTERNAL_DOC_PATH = /^\/?docs\//;
 
-type InlineTagPart = CommentDisplayPart & {
-    kind: 'inline-tag';
-    tag?: string;
-    text?: string;
-    target?: unknown;
-    url?: string;
-};
-
-type CodePart = CommentDisplayPart & { kind: 'code'; text?: string };
-type TextPart = CommentDisplayPart & { kind: 'text'; text?: string };
-
-export interface CommentParagraph {
-    plain: string;
-    html: string;
-}
-
-export interface CommentExample {
-    caption?: string;
-    code: CodeRepresentation;
-}
-
-export interface FormattedComment {
-    paragraphs: CommentParagraph[];
-    examples: CommentExample[];
-}
-
-const DOUBLE_NEWLINE = /\n{2,}/;
-const HTML_ESCAPE_PATTERN = /[&<>"']/g;
-const ATTRIBUTE_ESCAPE_PATTERN = /[&<>"']/g;
-const INLINE_CODE_TRIM = /^`+|`+$/g;
-const DEFAULT_INLINE_LANG = 'ts';
-const INTERNAL_DOC_PATH = /^\/?docs\//;
-
-const HTML_ESCAPE_MAP: Record<string, string> = {
+export const HTML_ESCAPE_MAP: Record<string, string> = {
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
@@ -55,12 +38,6 @@ function escapeHtml(value: string): string {
 
 function escapeAttribute(value: string): string {
     return value.replace(ATTRIBUTE_ESCAPE_PATTERN, (char) => HTML_ESCAPE_MAP[char] ?? char);
-}
-
-interface ParagraphAccumulator {
-    append(plain: string, html: string): void;
-    breakParagraph(): void;
-    toParagraphs(): CommentParagraph[];
 }
 
 function createParagraphAccumulator(): ParagraphAccumulator {
@@ -130,7 +107,7 @@ function sanitizeInternalHref(href: string): string {
     return href;
 }
 
-const listPackageCandidates = (engine: DocsEngine, currentPackage: string): string[] => {
+function listPackageCandidates(engine: DocsEngine, currentPackage: string): string[] {
     const ordered = new Set<string>();
 
     if (currentPackage) {
@@ -142,9 +119,9 @@ const listPackageCandidates = (engine: DocsEngine, currentPackage: string): stri
     }
 
     return Array.from(ordered);
-};
+}
 
-const resolveNodeById = (engine: DocsEngine, id: number, currentPackage: string): DocNode | null => {
+function resolveNodeById(engine: DocsEngine, id: number, currentPackage: string): DocNode | null {
     for (const pkgName of listPackageCandidates(engine, currentPackage)) {
         const pkg = engine.getPackage(pkgName);
         const node = pkg?.nodes.get(id);
@@ -154,7 +131,7 @@ const resolveNodeById = (engine: DocsEngine, id: number, currentPackage: string)
     }
 
     return null;
-};
+}
 
 function resolveInlineHref(part: InlineTagPart, context: FormatContext): string | null {
     if (typeof part.target === 'number') {

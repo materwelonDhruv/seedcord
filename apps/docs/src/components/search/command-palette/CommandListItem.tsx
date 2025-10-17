@@ -2,7 +2,8 @@
 
 import { Command } from 'cmdk';
 
-import { ENTITY_TONE_STYLES, type EntityTone } from '@lib/EntityMetadata';
+import { ENTITY_TONE_STYLES, type EntityTone } from '@/lib/entityMetadata';
+
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/Icon';
 

@@ -1,8 +1,7 @@
 import { cache } from 'react';
 
+import type { ExternalDocumentationMap } from './types';
 import type { DocsEngine } from '@seedcord/docs-engine';
-
-type ExternalDocumentationMap = ReadonlyMap<string, string>;
 
 const rawExternalLinks = {
     // Built-in types

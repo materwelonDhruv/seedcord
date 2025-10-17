@@ -1,6 +1,7 @@
+import { cn } from '@lib/utils';
+
 import { MemberCardBody } from './MemberCardBody';
 import { MemberCardHeader } from './MemberCardHeader';
-import { cn } from '../../../../lib/utils';
 import { buildTagList } from '../utils/buildTagList';
 
 import type { EntityMemberSummary, MemberPrefix } from '../types';

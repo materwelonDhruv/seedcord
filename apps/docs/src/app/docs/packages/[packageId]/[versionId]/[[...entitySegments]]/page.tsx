@@ -1,13 +1,14 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { loadEntityModel } from '@/lib/docs/loadEntityModel';
+import { ENTITY_TONE_STYLES } from '@/lib/entityMetadata';
+
 import EntityContent from '@components/docs/entity/EntityContent';
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
-import { loadEntityModel } from '@lib/docs/entity-loader';
 import { parseEntityPathSegments } from '@lib/docs/routes';
-import { ENTITY_TONE_STYLES } from '@lib/EntityMetadata';
 
-import type { NavigationCategory, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/catalog';
+import type { NavigationCategory, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 export const dynamic = 'force-dynamic';

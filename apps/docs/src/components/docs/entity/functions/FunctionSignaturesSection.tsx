@@ -1,8 +1,9 @@
+import type { FunctionSignatureModel } from '@/lib/docs/types';
+
 import { cn } from '@lib/utils';
 
 import { SignatureCard } from '../signatures/SignatureCard';
 
-import type { FunctionSignatureModel } from '@lib/docs/entities';
 import type { ReactElement } from 'react';
 
 interface FunctionSignaturesSectionProps {

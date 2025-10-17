@@ -1,115 +1,43 @@
-import { kindName, type DocNode, type DocSignature } from '@seedcord/docs-engine';
+import { kindName } from '@seedcord/docs-engine';
 
-import { resolveEntityTone, type EntityTone } from '@lib/EntityMetadata';
+import { resolveEntityTone } from '@/lib/entityMetadata';
 
-import { formatCommentRich, type CommentExample, type CommentParagraph } from './comment-format';
-import {
-    createFormatContext,
-    formatSignature,
-    highlightCode,
-    renderInlineType,
-    type CodeRepresentation,
-    type FormatContext
-} from './formatting';
+import { formatCommentRich } from './commentFormatting';
+import { createFormatContext, formatSignature, highlightCode, renderInlineType } from './formatting';
 import {
     buildMemberSummary,
     buildTypeParameterSummaries,
     ensureSignatureAnchor,
     ensureSlug,
     resolveHeaderSignature
-} from './member-builders';
+} from './memberBuilders';
 import { formatDisplayPackageName } from './packages';
 
-import type { DocsEngine } from './engine';
-import type { EntityMemberSummary } from '@components/docs/entity/types';
+import type {
+    BaseEntityModel,
+    ClassLikeEntityModel,
+    CodeRepresentation,
+    CommentExample,
+    CommentParagraph,
+    EntityKind,
+    EntityModel,
+    EnumEntityModel,
+    EnumMemberModel,
+    FormatContext,
+    FunctionEntityModel,
+    FunctionSignatureModel,
+    FunctionSignatureParameterModel,
+    TypeEntityModel,
+    VariableEntityModel
+} from './types';
+import type { DocNode, DocSignature, DocsEngine } from '@seedcord/docs-engine';
 
-export type EntityKind = EntityTone;
+export const PROPERTY_KINDS = new Set(['kind_property', 'kind_accessor']);
+export const METHOD_KINDS = new Set(['kind_method']);
+export const CONSTRUCTOR_KIND = 'kind_constructor';
+export const ENUM_MEMBER_KIND = 'kind_enum_member';
 
-interface BaseEntityModel {
-    kind: EntityKind;
-    name: string;
-    slug: string;
-    qualifiedName: string;
-    manifestPackage: string;
-    displayPackage: string;
-    version?: string;
-    summary: CommentParagraph[];
-    summaryExamples: CommentExample[];
-    signature: CodeRepresentation;
-    sourceUrl?: string;
-    isDeprecated: boolean;
-}
-
-export interface ClassLikeEntityModel extends BaseEntityModel {
-    typeParameters: EntityMemberSummary[];
-    properties: EntityMemberSummary[];
-    methods: EntityMemberSummary[];
-    constructors: EntityMemberSummary[];
-}
-
-export interface EnumMemberModel {
-    id: string;
-    label: string;
-    value?: string;
-    summary: CommentParagraph[];
-    signature: CodeRepresentation;
-    sourceUrl?: string;
-}
-
-export interface EnumEntityModel extends BaseEntityModel {
-    kind: 'enum';
-    members: EnumMemberModel[];
-}
-
-export interface TypeEntityModel extends BaseEntityModel {
-    kind: 'type';
-    declaration: CodeRepresentation;
-    typeParameters: EntityMemberSummary[];
-}
-
-export interface FunctionSignatureParameterModel {
-    name: string;
-    optional: boolean;
-    type?: string;
-    defaultValue?: string;
-    documentation: CommentParagraph[];
-}
-
-export interface FunctionSignatureModel {
-    id: string;
-    code: CodeRepresentation;
-    overloadIndex: number;
-    parameters: FunctionSignatureParameterModel[];
-    returnType?: string;
-    summary: CommentParagraph[];
-    examples: CommentExample[];
-    sourceUrl?: string;
-}
-
-export interface FunctionEntityModel extends BaseEntityModel {
-    kind: 'function';
-    signatures: FunctionSignatureModel[];
-}
-
-export interface VariableEntityModel extends BaseEntityModel {
-    kind: 'variable';
-    declaration: CodeRepresentation;
-}
-
-export type EntityModel =
-    | (ClassLikeEntityModel & { kind: 'class' })
-    | (ClassLikeEntityModel & { kind: 'interface' })
-    | EnumEntityModel
-    | TypeEntityModel
-    | FunctionEntityModel
-    | VariableEntityModel;
-
-const PROPERTY_KINDS = new Set(['kind_property', 'kind_accessor']);
-const METHOD_KINDS = new Set(['kind_method']);
-const CONSTRUCTOR_KIND = 'kind_constructor';
-const ENUM_MEMBER_KIND = 'kind_enum_member';
-
-const createBaseEntityModel = ({
+function createBaseEntityModel({
     node,
     kind,
     manifestPackage,
@@ -125,7 +53,7 @@ const createBaseEntityModel = ({
     summary: CommentParagraph[];
     summaryExamples: CommentExample[];
     signature: CodeRepresentation;
-}): BaseEntityModel => {
+}): BaseEntityModel {
     const base: BaseEntityModel = {
         kind,
         name: node.name,
@@ -143,9 +71,9 @@ const createBaseEntityModel = ({
     if (node.sourceUrl) base.sourceUrl = node.sourceUrl;
 
     return base;
-};
+}
 
-const buildEnumMember = async (node: DocNode, context: FormatContext): Promise<EnumMemberModel> => {
+async function buildEnumMember(node: DocNode, context: FormatContext): Promise<EnumMemberModel> {
     const code = await highlightCode(node.headerText ?? node.name);
     const comment = await formatCommentRich(node.comment, context);
     const member: EnumMemberModel = {
@@ -164,12 +92,12 @@ const buildEnumMember = async (node: DocNode, context: FormatContext): Promise<E
     }
 
     return member;
-};
+}
 
-const buildFunctionSignature = async (
+async function buildFunctionSignature(
     signature: DocSignature,
     context: FormatContext
-): Promise<FunctionSignatureModel> => {
+): Promise<FunctionSignatureModel> {
     const rendered = signature.render;
     const code = rendered ? await formatSignature(rendered, context) : await highlightCode(signature.name);
     const parameters = await Promise.all(
@@ -218,13 +146,13 @@ const buildFunctionSignature = async (
     }
 
     return model;
-};
+}
 
-const buildClassLikeEntity = async <Kind extends 'class' | 'interface'>(
+async function buildClassLikeEntity<Kind extends 'class' | 'interface'>(
     base: BaseEntityModel & { kind: Kind },
     node: DocNode,
     context: FormatContext
-): Promise<ClassLikeEntityModel & { kind: Kind }> => {
+): Promise<ClassLikeEntityModel & { kind: Kind }> {
     const properties = await Promise.all(
         node.children
             .filter((child) => PROPERTY_KINDS.has(child.kindLabel))
@@ -252,13 +180,13 @@ const buildClassLikeEntity = async <Kind extends 'class' | 'interface'>(
         properties,
         methods
     };
-};
+}
 
-const buildEnumEntity = async (
+async function buildEnumEntity(
     base: BaseEntityModel & { kind: 'enum' },
     node: DocNode,
     context: FormatContext
-): Promise<EnumEntityModel> => {
+): Promise<EnumEntityModel> {
     const members = await Promise.all(
         node.children
             .filter((child) => child.kindLabel === ENUM_MEMBER_KIND)
@@ -269,13 +197,13 @@ const buildEnumEntity = async (
         ...base,
         members
     };
-};
+}
 
-const buildTypeEntity = async (
+async function buildTypeEntity(
     base: BaseEntityModel & { kind: 'type' },
     node: DocNode,
     context: FormatContext
-): Promise<TypeEntityModel> => {
+): Promise<TypeEntityModel> {
     const typeParameters = await buildTypeParameterSummaries(node.header, context);
 
     return {
@@ -283,20 +211,20 @@ const buildTypeEntity = async (
         declaration: base.signature,
         typeParameters
     };
-};
+}
 
-const buildFunctionEntity = async (
+async function buildFunctionEntity(
     base: BaseEntityModel & { kind: 'function' },
     node: DocNode,
     context: FormatContext
-): Promise<FunctionEntityModel> => {
+): Promise<FunctionEntityModel> {
     const signatures = await Promise.all(node.signatures.map((sig) => buildFunctionSignature(sig, context)));
 
     return {
         ...base,
         signatures
     };
-};
+}
 
 const buildVariableEntity = (base: BaseEntityModel & { kind: 'variable' }): VariableEntityModel => ({
     ...base,

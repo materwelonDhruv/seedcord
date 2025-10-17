@@ -1,6 +1,6 @@
 import { cn } from '@lib/utils';
 
-import type { CodeRepresentation } from '@lib/docs/formatting';
+import type { CodeRepresentation } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 interface CodePanelProps {

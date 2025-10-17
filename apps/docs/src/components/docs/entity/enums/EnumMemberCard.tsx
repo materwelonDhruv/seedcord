@@ -4,7 +4,7 @@ import Icon from '@ui/Icon';
 
 import { CommentParagraphs } from '../comments/CommentParagraphs';
 
-import type { EnumMemberModel } from '../../../../lib/docs/entities';
+import type { EnumMemberModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 export function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactElement {

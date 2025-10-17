@@ -1,51 +1,21 @@
 import { cache } from 'react';
 
+import type { EntityTone } from '@/lib/entityMetadata';
+
 import { getDocsEngine } from './engine';
 import { DEFAULT_MANIFEST_PACKAGE, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
 
-import type { EntityTone } from '@lib/EntityMetadata';
-import type { DirectoryEntity } from '@seedcord/docs-engine';
+import type {
+    NavigationEntityItem,
+    NavigationCategory,
+    PackageCatalogEntry,
+    PackageVersionCatalog,
+    DocsCatalog,
+    CategoryConfig
+} from './types';
 
-export interface NavigationEntityItem {
-    id: string;
-    label: string;
-    href: string;
-}
-
-export interface NavigationCategory {
-    id: DirectoryEntity;
-    title: string;
-    tone: EntityTone;
-    items: readonly NavigationEntityItem[];
-}
-
-export interface PackageVersionCatalog {
-    id: string;
-    label: string;
-    summary: string;
-    manifestVersion: string;
-    basePath: string;
-    categories: readonly NavigationCategory[];
-}
-
-export interface PackageCatalogEntry {
-    id: string;
-    manifestName: string;
-    label: string;
-    description: string;
-    versions: readonly PackageVersionCatalog[];
-}
-
-export type DocsCatalog = readonly PackageCatalogEntry[];
-
-interface CategoryConfig {
-    readonly entity: DirectoryEntity;
-    readonly title: string;
-    readonly tone: EntityTone;
-}
-
-const CATEGORY_CONFIG: readonly CategoryConfig[] = [
+export const CATEGORY_CONFIG: readonly CategoryConfig[] = [
     { entity: 'classes', title: 'Classes', tone: 'class' },
     { entity: 'interfaces', title: 'Interfaces', tone: 'interface' },
     { entity: 'functions', title: 'Functions', tone: 'function' },

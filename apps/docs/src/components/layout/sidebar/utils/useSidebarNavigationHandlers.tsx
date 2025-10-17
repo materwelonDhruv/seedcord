@@ -4,7 +4,7 @@ import { useCallback } from 'react';
 
 import { buildVersionPath } from './buildVersionPath';
 
-import type { PackageCatalogEntry, PackageVersionCatalog } from '../../../../lib/docs/catalog';
+import type { PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';
 
 export const useSidebarNavigationHandlers = (
     catalog: readonly PackageCatalogEntry[],

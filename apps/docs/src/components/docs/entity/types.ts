@@ -1,6 +1,4 @@
-import type { CommentExample, CommentParagraph } from '@lib/docs/comment-format';
-import type { EntityModel } from '@lib/docs/entities';
-import type { CodeRepresentation } from '@lib/docs/formatting';
+import type { CodeRepresentation, CommentParagraph, CommentExample, EntityModel } from '@lib/docs/types';
 import type { MemberAccessLevel } from '@lib/memberAccess';
 
 export type MemberAccessorType = 'getter' | 'setter' | 'accessor';

@@ -2,6 +2,8 @@
 
 import { useEffect, type ReactElement } from 'react';
 
+import type { EntityModel } from '@/lib/docs/types';
+
 import { log } from '@lib/logger';
 
 import { CommentExamples } from './comments/CommentExamples';
@@ -9,8 +11,6 @@ import { MEMBERS_PLACEHOLDER } from './constants';
 import { EntityHeader } from './EntityHeader';
 import { renderEntityBody } from './utils/renderers/renderEntityBody';
 import { useEntityTone } from './utils/useEntityTone';
-
-import type { EntityModel } from '@lib/docs/entities';
 
 export interface EntityContentProps {
     model: EntityModel;

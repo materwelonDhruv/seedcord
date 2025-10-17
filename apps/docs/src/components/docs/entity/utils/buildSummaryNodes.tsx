@@ -1,6 +1,7 @@
+import type { CommentParagraph } from '@/lib/docs/types';
+
 import { renderParagraphNode } from './renderers/renderParagraphNode';
 
-import type { CommentParagraph } from '@lib/docs/comment-format';
 import type { ReactElement } from 'react';
 
 export const buildSummaryNodes = (paragraphs: readonly CommentParagraph[], fallback: string): ReactElement[] => {

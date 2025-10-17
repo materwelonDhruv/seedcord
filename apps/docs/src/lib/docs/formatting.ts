@@ -1,8 +1,9 @@
 import { highlightToHtml } from '@lib/shiki';
 
-import { resolveReferenceHref } from './references';
+import { resolveReferenceHref } from './resolveReferenceHref';
 
 import type { DocsEngine } from './engine';
+import type { FormatContext, CodeRepresentation } from './types';
 import type {
     DocComment,
     InlineType,
@@ -11,17 +12,7 @@ import type {
     SigPart
 } from '@seedcord/docs-engine';
 
-export interface FormatContext {
-    engine: DocsEngine;
-    manifestPackage: string;
-}
-
-export interface CodeRepresentation {
-    text: string;
-    html: string | null;
-}
-
-const SPACE = ' ';
+export const SPACE = ' ';
 
 export const createFormatContext = (engine: DocsEngine, manifestPackage: string): FormatContext => ({
     engine,

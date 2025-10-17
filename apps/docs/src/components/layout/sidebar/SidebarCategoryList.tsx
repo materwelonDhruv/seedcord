@@ -3,7 +3,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@lib/EntityMetadata';
+import { ENTITY_TONE_STYLES, ENTITY_KIND_ICONS } from '@lib/entityMetadata';
 import { cn } from '@lib/utils';
 import Icon from '@ui/Icon';
 
