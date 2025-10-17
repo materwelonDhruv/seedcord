@@ -18,12 +18,14 @@ export interface EntityMembersSectionProps {
     properties: readonly EntityMemberSummary[];
     methods: readonly EntityMemberSummary[];
     typeParameters?: readonly EntityMemberSummary[];
+    constructors?: readonly EntityMemberSummary[];
     showAccessControls?: boolean;
 }
 
 export default function EntityMembersSection({
     properties,
     methods,
+    constructors = [],
     typeParameters = [],
     showAccessControls = false
 }: EntityMembersSectionProps): ReactElement {
@@ -37,6 +39,10 @@ export default function EntityMembersSection({
     const filteredMethods = useMemo(
         () => methods.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
         [methods, memberAccessLevel]
+    );
+    const filteredConstructors = useMemo(
+        () => constructors.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
+        [constructors, memberAccessLevel]
     );
     const quickPanelColumns: ReactElement[] = [
         <MemberList key="properties" items={filteredProperties} prefix="property" onNavigate={openMemberSection} />,
@@ -56,6 +62,7 @@ export default function EntityMembersSection({
                     <MemberAccessControls orientation="horizontal" showLegend={false} className="flex-shrink-0" />
                 </div>
             ) : null}
+            <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
             {renderMemberOverview(quickPanelColumns, memberAccessLevel)}
 
             <div className="min-w-0 space-y-8">
