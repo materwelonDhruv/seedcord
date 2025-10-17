@@ -1,5 +1,6 @@
 import { highlightToHtml } from '@lib/shiki';
 
+import { resolveExternalPackageUrl } from './packages';
 import { resolveReferenceHref } from './resolveReferenceHref';
 
 import type { DocsEngine } from './engine';
@@ -35,12 +36,27 @@ function renderSigParts(parts: SigPart[], context: FormatContext): string {
                 break;
             case 'ref': {
                 const href = resolveReferenceHref(part.ref, resolveOptions(context));
-                result += href ? `[${part.text}](${href})` : part.text;
+                if (href) {
+                    result += `[${part.text}](${href})`;
+                } else {
+                    const external = resolveExternalPackageUrl(part.text);
+                    if (external) {
+                        result += `[${part.text}](${external})`;
+                    } else {
+                        result += part.text;
+                    }
+                }
                 break;
             }
-            default:
-                result += part.text;
+            default: {
+                const external = resolveExternalPackageUrl(part.text);
+                if (external) {
+                    result += `[${part.text}](${external})`;
+                } else {
+                    result += part.text;
+                }
                 break;
+            }
         }
     }
 
