@@ -64,9 +64,15 @@ function createParagraphAccumulator(): ParagraphAccumulator {
     return {
         append(plain, html) {
             if (plain) {
+                if (plainBuffer && !/\s$/.test(plainBuffer) && !/^\s/.test(plain)) {
+                    plainBuffer += ' ';
+                }
                 plainBuffer += plain;
             }
             if (html) {
+                if (htmlBuffer && !/\s$/.test(htmlBuffer) && !/^\s/.test(html)) {
+                    htmlBuffer += ' ';
+                }
                 htmlBuffer += html;
             }
         },
@@ -85,8 +91,8 @@ function convertSingleNewlines(segment: string): { plain: string; html: string }
         return { plain: '', html: '' };
     }
 
-    const plain = segment.replace(/\n/g, ' ');
-    const html = escapeHtml(segment).replace(/\n/g, '<br />');
+    const plain = segment.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
+    const html = escapeHtml(segment).replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
 
     return { plain, html };
 }
