@@ -14,7 +14,7 @@ interface DocsLayoutParams {
 
 interface DocsLayoutProps {
     children: ReactNode;
-    params: DocsLayoutParams | Promise<DocsLayoutParams>;
+    params: Promise<DocsLayoutParams>;
 }
 
 const decodeParam = (value?: string): string | undefined => {
