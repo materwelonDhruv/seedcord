@@ -1,18 +1,9 @@
-import { resolveEntityTone, type EntityTone } from '@/lib/entityMetadata';
+import { resolveEntityTone, toneToDirectory, type EntityTone } from '@/lib/entityMetadata';
 
 import { formatDisplayPackageName } from './packages';
 
 import type { BuildEntityHrefOptions } from './types';
 import type { Route } from 'next';
-
-export const ENTITY_SEGMENT_MAP: Record<EntityTone, string> = {
-    class: 'classes',
-    interface: 'interfaces',
-    enum: 'enums',
-    type: 'types',
-    function: 'functions',
-    variable: 'variables'
-};
 
 export const DEFAULT_VERSION_SEGMENT = 'latest';
 
@@ -25,7 +16,7 @@ export const buildEntityHref = ({ manifestPackage, slug, version, tone }: BuildE
     const segments: string[] = ['', 'docs', 'packages', packageSegment, versionSegment];
 
     if (resolvedTone) {
-        segments.push(ENTITY_SEGMENT_MAP[resolvedTone]);
+        segments.push(toneToDirectory(resolvedTone));
     }
 
     segments.push(encodeSegment(slug));
@@ -75,4 +66,4 @@ export const parseEntityPathSegments = (segments?: string[] | null): ParsedEntit
     } satisfies ParsedEntityPath;
 };
 
-export const getEntityRouteSegment = (tone: EntityTone): string => ENTITY_SEGMENT_MAP[tone];
+export const getEntityRouteSegment = (tone: EntityTone): string => toneToDirectory(tone);

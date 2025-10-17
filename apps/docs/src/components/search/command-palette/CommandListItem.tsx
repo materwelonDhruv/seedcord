@@ -2,7 +2,7 @@
 
 import { Command } from 'cmdk';
 
-import { ENTITY_TONE_STYLES, type EntityTone } from '@/lib/entityMetadata';
+import { getToneConfig, resolveEntityTone } from '@/lib/entityMetadata';
 
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/Icon';
@@ -11,8 +11,6 @@ import { SEARCH_KIND_ICONS } from './constants';
 
 import type { CommandAction, SearchResultKind } from './types';
 import type { ReactElement } from 'react';
-
-type EntityResultKind = 'class' | 'interface' | 'type' | 'enum' | 'function' | 'variable';
 
 type NonEntityResultKind = Extract<
     SearchResultKind,
@@ -27,14 +25,7 @@ type NonEntityResultKind = Extract<
     | 'enumMember'
 >;
 
-const ENTITY_KIND_TO_TONE: Record<EntityResultKind, EntityTone> = {
-    class: 'class',
-    interface: 'interface',
-    type: 'type',
-    enum: 'enum',
-    function: 'function',
-    variable: 'variable'
-};
+const ENTITY_RESULT_KINDS = new Set<SearchResultKind>(['class', 'interface', 'type', 'enum', 'function', 'variable']);
 
 const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
     package: [
@@ -97,9 +88,9 @@ interface CommandListItemProps {
 
 export function CommandListItem({ action, onSelect }: CommandListItemProps): ReactElement {
     const ItemIcon = SEARCH_KIND_ICONS[action.kind];
-    const isEntityResult = Object.prototype.hasOwnProperty.call(ENTITY_KIND_TO_TONE, action.kind);
-    const tone = isEntityResult ? ENTITY_KIND_TO_TONE[action.kind as EntityResultKind] : undefined;
-    const toneStyles = tone ? ENTITY_TONE_STYLES[tone] : undefined;
+    const isEntityResult = ENTITY_RESULT_KINDS.has(action.kind);
+    const tone = isEntityResult ? resolveEntityTone(action.kind) : undefined;
+    const toneStyles = tone ? getToneConfig(tone).styles : undefined;
     const keywords = [action.path, action.id];
     if (action.description) {
         keywords.push(action.description);

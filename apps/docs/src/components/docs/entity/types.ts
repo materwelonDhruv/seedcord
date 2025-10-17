@@ -1,18 +1,14 @@
-import type { CodeRepresentation, CommentParagraph, CommentExample, EntityModel } from '@lib/docs/types';
+import type { CommentParagraph, CommentExample, EntityModel, WithCode, WithDocs, WithSourceUrl } from '@lib/docs/types';
 import type { MemberAccessLevel } from '@lib/memberAccess';
 
 export type MemberAccessorType = 'getter' | 'setter' | 'accessor';
 
-export interface MemberSignatureDetail {
+export interface MemberSignatureDetail extends WithCode, WithDocs<'documentation', 'examples'>, WithSourceUrl {
     id: string;
     anchor: string;
-    code: CodeRepresentation;
-    documentation: CommentParagraph[];
-    examples: CommentExample[];
-    sourceUrl?: string;
 }
 
-export interface EntityMemberSummary {
+export interface EntityMemberSummary extends WithSourceUrl {
     id: string;
     label: string;
     description?: CommentParagraph;
@@ -22,7 +18,6 @@ export interface EntityMemberSummary {
     inheritedFrom?: string | { name: string; href?: string };
     tags?: readonly string[];
     access?: MemberAccessLevel;
-    sourceUrl?: string;
     accessorType?: MemberAccessorType;
 }
 

@@ -381,3 +381,7 @@ export function createPlainParagraph(text: string): CommentParagraph {
     const normalized = text.trim();
     return { plain: normalized, html: escapeHtml(normalized) } satisfies CommentParagraph;
 }
+
+export const cloneCommentParagraphs = (
+    paragraphs: readonly CommentParagraph[] | null | undefined
+): CommentParagraph[] => (paragraphs?.length ? [...paragraphs] : []);

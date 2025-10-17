@@ -3,7 +3,7 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Link from 'next/link';
 
-import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@/lib/entityMetadata';
+import { getToneConfig } from '@/lib/entityMetadata';
 
 import { log } from '@lib/logger';
 import { cn } from '@lib/utils';
@@ -12,8 +12,9 @@ import type { SidebarItemProps } from './types';
 import type { ReactElement } from 'react';
 
 export function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactElement {
-    const ItemIcon = ENTITY_KIND_ICONS[tone];
-    const toneStyles = ENTITY_TONE_STYLES[tone];
+    const toneConfig = getToneConfig(tone);
+    const ItemIcon = toneConfig.icon;
+    const toneStyles = toneConfig.styles;
     const { label, href } = item;
 
     return (

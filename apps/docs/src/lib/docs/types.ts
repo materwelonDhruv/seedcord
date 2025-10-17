@@ -40,6 +40,21 @@ export interface FormattedComment {
     paragraphs: CommentParagraph[];
     examples: CommentExample[];
 }
+
+export interface WithSourceUrl {
+    sourceUrl?: string;
+}
+
+export type WithCode<Key extends string = 'code'> = Readonly<Record<Key, CodeRepresentation>>;
+
+export type WithSummary<Key extends string = 'summary'> = Readonly<Record<Key, readonly CommentParagraph[]>>;
+
+export type WithExamples<Key extends string = 'examples'> = Readonly<Record<Key, readonly CommentExample[]>>;
+
+export type WithDocs<
+    SummaryKey extends string = 'summary',
+    ExamplesKey extends string = 'examples'
+> = WithSummary<SummaryKey> & WithExamples<ExamplesKey>;
 export interface NavigationEntityItem {
     id: string;
     label: string;
@@ -80,7 +95,7 @@ export interface CategoryConfig {
 
 export type EntityKind = EntityTone;
 
-export interface BaseEntityModel {
+export interface BaseEntityModel extends WithCode<'signature'>, WithDocs<'summary', 'summaryExamples'>, WithSourceUrl {
     kind: EntityKind;
     name: string;
     slug: string;
@@ -88,10 +103,6 @@ export interface BaseEntityModel {
     manifestPackage: string;
     displayPackage: string;
     version?: string;
-    summary: CommentParagraph[];
-    summaryExamples: CommentExample[];
-    signature: CodeRepresentation;
-    sourceUrl?: string;
     isDeprecated: boolean;
 }
 
@@ -102,13 +113,10 @@ export interface ClassLikeEntityModel extends BaseEntityModel {
     constructors: EntityMemberSummary[];
 }
 
-export interface EnumMemberModel {
+export interface EnumMemberModel extends WithCode<'signature'>, WithSummary<'summary'>, WithSourceUrl {
     id: string;
     label: string;
     value?: string;
-    summary: CommentParagraph[];
-    signature: CodeRepresentation;
-    sourceUrl?: string;
 }
 
 export interface EnumEntityModel extends BaseEntityModel {
@@ -139,16 +147,12 @@ export interface FunctionTypeParameterModel {
     code?: CodeRepresentation | undefined;
 }
 
-export interface FunctionSignatureModel {
+export interface FunctionSignatureModel extends WithCode, WithDocs, WithSourceUrl {
     id: string;
-    code: CodeRepresentation;
     overloadIndex: number;
     parameters: FunctionSignatureParameterModel[];
     typeParameters?: FunctionTypeParameterModel[];
     returnType?: string;
-    summary: CommentParagraph[];
-    examples: CommentExample[];
-    sourceUrl?: string;
 }
 
 export interface FunctionEntityModel extends BaseEntityModel {

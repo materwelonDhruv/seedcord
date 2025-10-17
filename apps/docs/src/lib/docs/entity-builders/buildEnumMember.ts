@@ -1,4 +1,4 @@
-import { formatCommentRich } from '../commentFormatting';
+import { cloneCommentParagraphs, formatCommentRich } from '../commentFormatting';
 import { highlightCode } from '../formatting';
 import { ensureSlug } from '../memberBuilders';
 
@@ -11,7 +11,7 @@ export async function buildEnumMember(node: DocNode, context: FormatContext): Pr
     const member: EnumMemberModel = {
         id: ensureSlug(node),
         label: node.name,
-        summary: comment.paragraphs,
+        summary: cloneCommentParagraphs(comment.paragraphs),
         signature: code
     };
 

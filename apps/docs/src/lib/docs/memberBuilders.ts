@@ -1,4 +1,4 @@
-import { createPlainParagraph, formatCommentRich } from './commentFormatting';
+import { cloneCommentParagraphs, createPlainParagraph, formatCommentRich } from './commentFormatting';
 import { formatDeclarationHeader, formatSignature, highlightCode, renderInlineType } from './formatting';
 import { resolveReferenceHref } from './resolveReferenceHref';
 
@@ -7,8 +7,6 @@ import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type { DocNode, DocSignature, RenderedDeclarationHeader } from '@seedcord/docs-engine';
 
 export const FALLBACK_DESCRIPTION = 'Documentation will be sourced from TypeDoc soon.';
-
-const cloneParagraphs = (paragraphs: CommentParagraph[]): CommentParagraph[] => paragraphs.slice();
 
 const cloneExamples = (examples: CommentExample[]): CommentExample[] => examples.slice();
 
@@ -87,12 +85,15 @@ function selectDescription(
     return { description: createPlainParagraph(FALLBACK_DESCRIPTION), signatureIndex: null };
 }
 
-function stripDuplicateDescription(paragraphs: CommentParagraph[], description: CommentParagraph): CommentParagraph[] {
+function stripDuplicateDescription(
+    paragraphs: readonly CommentParagraph[],
+    description: CommentParagraph
+): CommentParagraph[] {
     if (paragraphs.length && paragraphs[0] === description) {
         return paragraphs.slice(1);
     }
 
-    return cloneParagraphs(paragraphs);
+    return cloneCommentParagraphs(paragraphs);
 }
 
 function deriveSharedDocumentation(
@@ -101,7 +102,7 @@ function deriveSharedDocumentation(
     descriptionSignatureIndex: number | null
 ): CommentParagraph[] {
     if (descriptionSignatureIndex !== null) {
-        return cloneParagraphs(nodeComment.paragraphs);
+        return cloneCommentParagraphs(nodeComment.paragraphs);
     }
 
     return stripDuplicateDescription(nodeComment.paragraphs, description);
@@ -150,7 +151,11 @@ async function buildSignatureDetails({
                 : await highlightCode(signature.name);
 
             const comment = signatureComments[index];
-            const documentation = cloneParagraphs(comment?.paragraphs ?? []);
+            let documentation = cloneCommentParagraphs(comment?.paragraphs);
+            if (descriptionSignatureIndex === index) {
+                documentation = stripDuplicateDescription(documentation, description);
+            }
+
             const examples = cloneExamples(comment?.examples ?? []);
 
             const detail: EntityMemberSummary['signatures'][number] = {
@@ -160,10 +165,6 @@ async function buildSignatureDetails({
                 documentation,
                 examples
             };
-
-            if (descriptionSignatureIndex === index) {
-                detail.documentation = stripDuplicateDescription(detail.documentation, description);
-            }
 
             const signatureSourceUrl = signature.sourceUrl ?? node.sourceUrl;
             if (signatureSourceUrl) {

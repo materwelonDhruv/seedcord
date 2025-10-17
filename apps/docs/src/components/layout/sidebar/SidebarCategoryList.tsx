@@ -3,7 +3,7 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-import { ENTITY_TONE_STYLES, ENTITY_KIND_ICONS } from '@lib/entityMetadata';
+import { getToneConfig } from '@lib/entityMetadata';
 import { cn } from '@lib/utils';
 import Icon from '@ui/Icon';
 
@@ -27,8 +27,9 @@ function SidebarCategory({
     onToggle,
     activeHref
 }: SidebarCategoryProps): ReactElement {
-    const toneStyles = ENTITY_TONE_STYLES[category.tone];
-    const ToneIcon = ENTITY_KIND_ICONS[category.tone];
+    const toneConfig = getToneConfig(category.tone);
+    const toneStyles = toneConfig.styles;
+    const ToneIcon = toneConfig.icon;
 
     return (
         <div className="space-y-3">

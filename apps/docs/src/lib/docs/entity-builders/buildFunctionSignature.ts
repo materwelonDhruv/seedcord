@@ -1,4 +1,4 @@
-import { formatCommentRich } from '../commentFormatting';
+import { cloneCommentParagraphs, formatCommentRich } from '../commentFormatting';
 import { formatSignature, highlightCode, renderInlineType } from '../formatting';
 import { ensureSignatureAnchor } from '../memberBuilders';
 import { buildFunctionParameters } from './buildFunctionParameters';
@@ -26,7 +26,7 @@ export async function buildFunctionSignature(
         overloadIndex: signature.overloadIndex,
         parameters,
         typeParameters,
-        summary: comment.paragraphs,
+        summary: cloneCommentParagraphs(comment.paragraphs),
         examples: comment.examples.slice()
     };
 

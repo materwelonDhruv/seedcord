@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 import { loadEntityModel } from '@/lib/docs/loadEntityModel';
-import { ENTITY_TONE_STYLES } from '@/lib/entityMetadata';
+import { getToneConfig } from '@/lib/entityMetadata';
 
 import EntityContent from '@components/docs/entity/EntityContent';
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
@@ -46,7 +46,7 @@ const getCatalogContext = async (
 };
 
 const renderCategory = (category: NavigationCategory): ReactElement => {
-    const toneStyles = ENTITY_TONE_STYLES[category.tone];
+    const toneStyles = getToneConfig(category.tone).styles;
 
     return (
         <div key={category.id} className="space-y-3">
