@@ -128,6 +128,15 @@ export interface FunctionSignatureParameterModel {
     type?: string;
     defaultValue?: string;
     documentation: CommentParagraph[];
+    display?: CodeRepresentation;
+}
+
+export interface FunctionTypeParameterModel {
+    name: string;
+    constraint?: string | undefined;
+    default?: string | undefined;
+    description?: string | undefined;
+    code?: CodeRepresentation | undefined;
 }
 
 export interface FunctionSignatureModel {
@@ -135,6 +144,7 @@ export interface FunctionSignatureModel {
     code: CodeRepresentation;
     overloadIndex: number;
     parameters: FunctionSignatureParameterModel[];
+    typeParameters?: FunctionTypeParameterModel[];
     returnType?: string;
     summary: CommentParagraph[];
     examples: CommentExample[];
