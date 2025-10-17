@@ -16,6 +16,14 @@ import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ReactElement, ReactNode } from 'react';
 
+function getHeaderExamples(
+    active: FunctionSignatureModel | undefined,
+    summaryExamples: readonly CommentExample[] | undefined
+): readonly CommentExample[] {
+    if (active?.examples.length) return active.examples;
+    return summaryExamples ?? [];
+}
+
 interface EntityHeaderProps {
     badgeLabel: string;
     pkg: string;
@@ -78,6 +86,7 @@ export function EntityHeader({
 
     // Prefer the active signature's summary (if present) for the header lead.
     const headerSummary = active?.summary.length ? active.summary : summary;
+    const headerExamples = getHeaderExamples(active, summaryExamples);
     const summaryNodes = buildSummaryNodes(
         headerSummary,
         'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
@@ -123,9 +132,9 @@ export function EntityHeader({
                 </div>
             ) : null}
 
-            {summaryExamples.length ? (
+            {headerExamples.length ? (
                 <div className="mt-3">
-                    <CommentExamples examples={summaryExamples} />
+                    <CommentExamples examples={headerExamples} />
                 </div>
             ) : null}
         </header>

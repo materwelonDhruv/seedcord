@@ -35,7 +35,6 @@ export const HTML_ESCAPE_MAP: Record<string, string> = {
 function escapeHtml(value: string): string {
     return value.replace(HTML_ESCAPE_PATTERN, (char) => HTML_ESCAPE_MAP[char] ?? char);
 }
-
 function escapeAttribute(value: string): string {
     return value.replace(ATTRIBUTE_ESCAPE_PATTERN, (char) => HTML_ESCAPE_MAP[char] ?? char);
 }
@@ -60,7 +59,6 @@ function createParagraphAccumulator(): ParagraphAccumulator {
         plainBuffer = '';
         htmlBuffer = '';
     };
-
     return {
         append(plain, html) {
             if (plain) {
@@ -85,22 +83,17 @@ function createParagraphAccumulator(): ParagraphAccumulator {
         }
     } satisfies ParagraphAccumulator;
 }
-
 function convertSingleNewlines(segment: string): { plain: string; html: string } {
     if (!segment) {
         return { plain: '', html: '' };
     }
-
     const plain = segment.replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
     const html = escapeHtml(segment).replace(/\n+/g, ' ').replace(/\s+/g, ' ').trim();
-
     return { plain, html };
 }
-
 function normalizeInlineCode(value: string): string {
     return value.replace(INLINE_CODE_TRIM, '').trim();
 }
-
 function sanitizeInternalHref(href: string): string {
     try {
         if (INTERNAL_DOC_PATH.test(href)) {
@@ -109,7 +102,6 @@ function sanitizeInternalHref(href: string): string {
     } catch {
         return href;
     }
-
     return href;
 }
 
@@ -318,28 +310,47 @@ function extractExample(example: DocCommentExample): { code: string; language: s
     };
 }
 
-async function renderExamples(comment: DocComment): Promise<CommentExample[]> {
-    if (!Array.isArray(comment.examples) || comment.examples.length === 0) {
-        return [];
+// eslint-disable-next-line complexity
+function collectExamplesFromBlockTags(comment: DocComment): DocCommentExample[] | undefined {
+    if (!Array.isArray(comment.blockTags) || comment.blockTags.length === 0) return undefined;
+
+    const collected: DocCommentExample[] = [];
+    for (const tag of comment.blockTags) {
+        if (tag.tag !== '@example') continue;
+
+        const text = typeof tag.text === 'string' && tag.text.length ? tag.text : undefined;
+
+        let contentText: string | undefined;
+        if (Array.isArray(tag.content) && tag.content.length) {
+            const first = tag.content[0] as { text?: string } | undefined;
+            if (first && typeof first.text === 'string' && first.text.length) contentText = first.text;
+        }
+
+        const value = text ?? contentText;
+        if (typeof value === 'string' && value.length) {
+            collected.push({ content: value });
+        }
     }
 
-    const examples: CommentExample[] = [];
+    return collected.length ? collected : undefined;
+}
 
-    for (const example of comment.examples) {
+async function renderExamples(comment: DocComment): Promise<CommentExample[]> {
+    const sourceExamples: DocCommentExample[] | undefined =
+        Array.isArray(comment.examples) && comment.examples.length
+            ? comment.examples
+            : collectExamplesFromBlockTags(comment);
+
+    if (!Array.isArray(sourceExamples) || sourceExamples.length === 0) return [];
+
+    const examples: CommentExample[] = [];
+    for (const example of sourceExamples) {
         const { code, language } = extractExample(example);
-        if (!code) {
-            continue;
-        }
+        if (!code) continue;
 
         const representation = await highlightCode(code, language);
-        const entry: CommentExample = {
-            code: representation
-        };
-
-        if (example.caption) {
-            entry.caption = example.caption;
-        }
-
+        const entry: CommentExample = { code: representation };
+        if (example.caption) entry.caption = example.caption;
         examples.push(entry);
     }
 

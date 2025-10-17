@@ -66,6 +66,7 @@ export interface BotConfig {
      *
      * @example
      * ```ts
+     * // This map's values...
      * const Emojis = {
      *   ThumbsUp: 'thumbsup',
      *   ThumbsDown: 'thumbsdown',
@@ -74,10 +75,9 @@ export interface BotConfig {
      * };
      * ```
      *
-     * will turn into
-     *
      * @example
      * ```ts
+     * // ...turn into these Discord emojis
      * const Emojis = {
      *   ThumbsUp: '<:thumbsup:1872389747982323423>',
      *   ThumbsDown: '<:thumbsdown:1872389747982323424>',

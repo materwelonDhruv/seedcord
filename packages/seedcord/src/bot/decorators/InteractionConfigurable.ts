@@ -51,12 +51,18 @@ export const InteractionMetadataKey = Symbol('interaction:metadata');
  * class PingCommand extends InteractionHandler {
  *   // handles /ping command
  * }
+ * ```
  *
+ * @example
+ * ```
  * \@SlashRoute(['ban', 'kick'])
  * class ModerationHandler extends InteractionHandler {
  *   // handles /ban and /kick commands
  * }
+ * ```
  *
+ * @example
+ * ```
  * \@SlashRoute('admin/user/promote')
  * class PromoteHandler extends InteractionHandler {
  *   // handles /admin user promote subcommand
