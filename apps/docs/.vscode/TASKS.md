@@ -1,6 +1,6 @@
-[ ] 1. overloads should be radio buttons as Overload 1 Overload 2 and so on for FUNCTIONS as well. Not just in classes.
+[x] 1. overloads should be radio buttons as Overload 1 Overload 2 and so on for FUNCTIONS as well. Not just in classes.
 
-[ ] 2. For rendered examples please make sure that 1. Please correctly place examples in pages. If they are for a method, they should be in the method’s card at the end and collapsable. If they are at the class level, they should be in the main class card, at the end, and collapsable. And so on, so forth. 2. They are clearly labelled “Examples”
+[x] 2. For rendered examples please make sure that 1. Please correctly place examples in pages. If they are for a method, they should be in the method’s card at the end and collapsable. If they are at the class level, they should be in the main class card, at the end, and collapsable. And so on, so forth. 2. They are clearly labelled “Examples”
 Because right now, for example for the interface Core, the example is right above the main signature at the bottom of the page. Not supposed to be like that.
 
 [ ] 3. In the sidebar, when I change package, it doesn’t refresh the items. I still see the items from the previous package. The selection doesn’t change either.

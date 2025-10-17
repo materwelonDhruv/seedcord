@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import type { CommentParagraph, CodeRepresentation } from '@/lib/docs/types';
+import type { CommentParagraph, CodeRepresentation, CommentExample } from '@/lib/docs/types';
 import type { EntityTone } from '@/lib/entityMetadata';
 import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@/lib/entityMetadata';
 
@@ -8,6 +8,7 @@ import { cn } from '@lib/utils';
 import Button from '@ui/Button';
 import { Icon } from '@ui/Icon';
 
+import { CommentExamples } from './comments/CommentExamples';
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
 
@@ -20,6 +21,7 @@ interface EntityHeaderProps {
     tone: EntityTone;
     signature: CodeRepresentation;
     summary: readonly CommentParagraph[];
+    summaryExamples?: readonly CommentExample[];
     sourceUrl?: string | null;
     version?: string;
     isDeprecated?: boolean;
@@ -34,7 +36,8 @@ export function EntityHeader({
     tone,
     sourceUrl,
     version,
-    isDeprecated = false
+    isDeprecated = false,
+    summaryExamples = []
 }: EntityHeaderProps): ReactElement {
     const toneStyles = ENTITY_TONE_STYLES[tone];
     const ToneIcon = ENTITY_KIND_ICONS[tone];
@@ -90,6 +93,11 @@ export function EntityHeader({
                 </div>
             </div>
             <SignatureBlock signature={signature} />
+            {summaryExamples.length ? (
+                <div className="mt-3">
+                    <CommentExamples examples={summaryExamples} />
+                </div>
+            ) : null}
         </header>
     );
 }

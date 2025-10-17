@@ -33,7 +33,6 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                 </div>
             ) : null}
             <CommentParagraphs paragraphs={signature.summary} />
-            {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
             {signature.parameters.length ? (
                 <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-[var(--text)]">Parameters</h4>
@@ -61,6 +60,7 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                     </ul>
                 </div>
             ) : null}
+            {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
         </article>
     );
 }

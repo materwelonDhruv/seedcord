@@ -31,7 +31,6 @@ export function MemberCardBody({ member }: { member: EntityMemberSummary }): Rea
                 onChange={setActiveSignatureId}
             />
             {hasSharedDocumentation ? <CommentParagraphs paragraphs={member.sharedDocumentation} /> : null}
-            {hasSharedExamples ? <CommentExamples examples={member.sharedExamples} /> : null}
             {member.signatures.map((signature, index) => (
                 <SignaturePanel
                     key={signature.id}
@@ -39,6 +38,7 @@ export function MemberCardBody({ member }: { member: EntityMemberSummary }): Rea
                     isActive={signature.id === activeSignatureId || (!activeSignatureId && index === 0)}
                 />
             ))}
+            {hasSharedExamples ? <CommentExamples examples={member.sharedExamples} /> : null}
             {showFallback ? <p>{FALLBACK_TEXT}</p> : null}
             {member.inheritedFrom ? (
                 <p className="flex flex-wrap items-baseline gap-2 text-subtle">

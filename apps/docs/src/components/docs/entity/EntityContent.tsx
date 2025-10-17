@@ -6,7 +6,6 @@ import type { EntityModel } from '@/lib/docs/types';
 
 import { log } from '@lib/logger';
 
-import { CommentExamples } from './comments/CommentExamples';
 import { MEMBERS_PLACEHOLDER } from './constants';
 import { EntityHeader } from './EntityHeader';
 import { renderEntityBody } from './utils/renderers/renderEntityBody';
@@ -37,6 +36,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 pkg={model.displayPackage}
                 signature={model.signature}
                 summary={model.summary}
+                summaryExamples={model.summaryExamples}
                 symbolName={model.name}
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}
@@ -44,14 +44,6 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 isDeprecated={model.isDeprecated}
             />
             {body ?? MEMBERS_PLACEHOLDER}
-            {model.summaryExamples.length ? (
-                <section className="space-y-3">
-                    <h2 className="text-lg font-semibold text-[color-mix(in_srgb,var(--entity-function-color)_65%,var(--text))]">
-                        Examples
-                    </h2>
-                    <CommentExamples examples={model.summaryExamples} />
-                </section>
-            ) : null}
         </article>
     );
 }
