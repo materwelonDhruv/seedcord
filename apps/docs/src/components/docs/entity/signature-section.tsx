@@ -90,7 +90,7 @@ function SignatureCopyButton({
             variant="outline"
             size="sm"
             onClick={() => void onClick()}
-            className="min-w-[140px] justify-between"
+            className="min-w-0 justify-between"
             aria-label={ariaLabel}
         >
             <span>{copied ? 'Copied!' : defaultLabel}</span>
