@@ -1,5 +1,6 @@
 packages:
     - packages/*
+    - apps/*
 
 catalogs:
     deps:
@@ -8,6 +9,15 @@ catalogs:
         envapt: 4.0.0
         mongoose: 8.19.1
         reflect-metadata: 0.2.2
+        typedoc: 0.28.13
+        prettier: 3.6.2
     peer:
         eslint: 9.37.0
         typescript: 5.9.3
+
+onlyBuiltDependencies:
+    - '@swc/core'
+    - '@tailwindcss/oxide'
+    - esbuild
+    - sharp
+    - unrs-resolver

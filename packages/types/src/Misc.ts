@@ -125,3 +125,10 @@ export type Tail<TArgs extends unknown[]> = TArgs extends [unknown, ...infer R] 
 export type UnionToTuple<UnionType, TupleArray extends unknown[] = []> = [UnionType] extends [never]
     ? TupleArray
     : UnionToTuple<Exclude<UnionType, LastOf<UnionType>>, [LastOf<UnionType>, ...TupleArray]>;
+
+/**
+ * Builds a record type whose properties are all readonly.
+ * @typeParam KeyType - Keys for the resulting record.
+ * @typeParam ValueType - Value for every key in the record.
+ */
+export type ReadonlyRecord<KeyType extends PropertyKey, ValueType> = Readonly<Record<KeyType, ValueType>>;

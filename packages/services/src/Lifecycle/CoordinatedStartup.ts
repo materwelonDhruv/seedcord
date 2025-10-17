@@ -37,7 +37,10 @@ const PHASE_ORDER: StartupPhase[] = [
     StartupPhase.Ready
 ];
 
-type CoordinatedStartupEventKey = PhaseEvents<'startup', UnionToTuple<StartupPhase>>;
+/**
+ * Event keys for coordinated startup phases
+ */
+export type CoordinatedStartupEventKey = PhaseEvents<'startup', UnionToTuple<StartupPhase>>;
 
 /**
  * Manages bot startup lifecycle with ordered phases

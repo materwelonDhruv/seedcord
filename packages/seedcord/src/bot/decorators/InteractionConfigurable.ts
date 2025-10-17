@@ -1,5 +1,10 @@
 import type { ConstructorFunction } from '@seedcord/types';
 
+/**
+ * Enum defining interaction route types for decorators
+ *
+ * @internal
+ */
 export enum InteractionRoutes {
     Slash = 'interaction:slash',
     Button = 'interaction:button',
@@ -14,6 +19,9 @@ export enum InteractionRoutes {
     Autocomplete = 'interaction:autocomplete'
 }
 
+/**
+ * Types of select menus supported for routing
+ */
 export enum SelectMenuType {
     String = 'string',
     User = 'user',
@@ -22,6 +30,11 @@ export enum SelectMenuType {
     Mentionable = 'mentionable'
 }
 
+/**
+ * Metadata key used to mark classes as interaction handlers
+ *
+ * @internal
+ */
 export const InteractionMetadataKey = Symbol('interaction:metadata');
 
 /**
@@ -38,12 +51,18 @@ export const InteractionMetadataKey = Symbol('interaction:metadata');
  * class PingCommand extends InteractionHandler {
  *   // handles /ping command
  * }
+ * ```
  *
+ * @example
+ * ```
  * \@SlashRoute(['ban', 'kick'])
  * class ModerationHandler extends InteractionHandler {
  *   // handles /ban and /kick commands
  * }
+ * ```
  *
+ * @example
+ * ```
  * \@SlashRoute('admin/user/promote')
  * class PromoteHandler extends InteractionHandler {
  *   // handles /admin user promote subcommand

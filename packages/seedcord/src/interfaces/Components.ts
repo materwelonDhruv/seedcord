@@ -27,7 +27,12 @@ import { Envapt } from 'envapt';
 
 import type { ColorResolvable } from 'discord.js';
 
-const BuilderTypes = {
+/**
+ * Available Discord.js builder classes for use with BuilderComponent
+ *
+ * @internal
+ */
+export const BuilderTypes = {
     // Command Components
     command: SlashCommandBuilder,
     context_menu: ContextMenuCommandBuilder,
@@ -60,7 +65,12 @@ const BuilderTypes = {
     separator: SeparatorBuilder
 };
 
-const RowTypes: {
+/**
+ * Available Discord.js action row classes for use with RowComponent
+ *
+ * @internal
+ */
+export const RowTypes: {
     button: typeof ActionRowBuilder<ButtonBuilder>;
     menu_string: typeof ActionRowBuilder<StringSelectMenuBuilder>;
     menu_user: typeof ActionRowBuilder<UserSelectMenuBuilder>;
@@ -76,11 +86,25 @@ const RowTypes: {
     menu_role: ActionRowBuilder<RoleSelectMenuBuilder>
 };
 
-type BuilderType = keyof typeof BuilderTypes;
-type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
+/**
+ * Available Discord.js builder types for use with BuilderComponent
+ */
+export type BuilderType = keyof typeof BuilderTypes;
 
-type ActionRowComponentType = keyof typeof RowTypes;
-type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
+/**
+ * @internal
+ */
+export type InstantiatedBuilder<BuilderKey extends BuilderType> = InstanceType<(typeof BuilderTypes)[BuilderKey]>;
+
+/**
+ * Available Discord.js action row types for use with RowComponent
+ */
+export type ActionRowComponentType = keyof typeof RowTypes;
+
+/**
+ * @internal
+ */
+export type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType<(typeof RowTypes)[RowKey]>;
 
 /**
  * Base class for Discord component wrappers
@@ -88,8 +112,10 @@ type InstantiatedActionRow<RowKey extends ActionRowComponentType> = InstanceType
  * Provides common functionality for building Discord components with proper typing.
  *
  * @typeParam TComponent - The Discord.js component type being wrapped
+ *
+ * @internal
  */
-abstract class BaseComponent<TComponent> {
+export abstract class BaseComponent<TComponent> {
     private readonly _component: TComponent;
 
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -146,6 +172,12 @@ abstract class BaseComponent<TComponent> {
 export abstract class BuilderComponent<BuilderKey extends BuilderType> extends BaseComponent<
     InstantiatedBuilder<BuilderKey>
 > {
+    /**
+     * Bot color for the component
+     * Uses the DEFAULT_BOT_COLOR environment variable or falls back to 'Default' set by Discord.js.
+     *
+     * Set DEFAULT_BOT_COLOR to a hex code in your `.env` file to customize.
+     */
     @Envapt<ColorResolvable>('DEFAULT_BOT_COLOR', { fallback: 'Default' })
     declare private readonly botColor: ColorResolvable;
 

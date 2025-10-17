@@ -6,6 +6,13 @@ import { RegisterEffect } from '../decorators/RegisterEffect';
 import { WebhookLog } from '../interfaces/abstracts/WebhookLog';
 import { AllEffects } from '../types/Effects';
 
+/**
+ * Default effect to log unhandled exceptions via webhook
+ *
+ * Developers need to set the UNKNOWN_EXCEPTION_WEBHOOK_URL environment variable in their .env file otherwise this effect will throw an error during initialization.
+ *
+ * @throws Error if UNKNOWN_EXCEPTION_WEBHOOK_URL is not set or is invalid
+ */
 @RegisterEffect('unknownException')
 export class UnknownException extends WebhookLog<'unknownException'> {
     @Envapt('UNKNOWN_EXCEPTION_WEBHOOK_URL', {
