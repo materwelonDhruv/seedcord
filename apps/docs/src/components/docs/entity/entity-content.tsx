@@ -5,6 +5,7 @@ import { Fragment, useEffect, type ReactElement } from 'react';
 import { log } from '@lib/logger';
 
 import { CodePanel } from './code-panel';
+import { CommentExamples } from './comment-examples';
 import { EntityHeader } from './entity-header';
 import { MemberDetailGroup } from './entity-member-components';
 import EntityMembersSection from './entity-members-section';
@@ -28,7 +29,11 @@ type VariableModel = Extract<EntityModel, { kind: 'variable' }>;
 
 function renderClassLike(model: ClassLikeModel): ReactElement {
     const showAccessControls = model.kind === 'class';
-    const hasMembers = model.properties.length > 0 || model.methods.length > 0 || model.typeParameters.length > 0;
+    const hasMembers =
+        model.properties.length > 0 ||
+        model.methods.length > 0 ||
+        model.constructors.length > 0 ||
+        model.typeParameters.length > 0;
 
     return (
         <Fragment>
@@ -36,6 +41,7 @@ function renderClassLike(model: ClassLikeModel): ReactElement {
                 <EntityMembersSection
                     properties={model.properties}
                     methods={model.methods}
+                    constructors={model.constructors}
                     typeParameters={model.typeParameters}
                     showAccessControls={showAccessControls}
                 />
@@ -122,7 +128,6 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 pkg={model.displayPackage}
                 signature={model.signature}
                 summary={model.summary}
-                summaryExamples={model.summaryExamples}
                 symbolName={model.name}
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}
@@ -130,6 +135,14 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 isDeprecated={model.isDeprecated}
             />
             {body ?? MEMBERS_PLACEHOLDER}
+            {model.summaryExamples.length ? (
+                <section className="space-y-3">
+                    <h2 className="text-lg font-semibold text-[color-mix(in_srgb,var(--entity-function-color)_65%,var(--text))]">
+                        Examples
+                    </h2>
+                    <CommentExamples examples={model.summaryExamples} />
+                </section>
+            ) : null}
         </article>
     );
 }

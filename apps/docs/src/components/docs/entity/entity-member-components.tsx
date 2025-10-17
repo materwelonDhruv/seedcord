@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, ChevronDown, Code, Hash, Sigma, SquareDot, Workflow } from 'lucide-react';
+import { Check, ChevronDown, Code, Hammer, Hash, Sigma, SquareDot, Workflow } from 'lucide-react';
 import Link from 'next/link';
 import { useCallback, useEffect, useRef, useState, type ReactElement } from 'react';
 
@@ -14,25 +14,28 @@ import { MemberCardBody } from './member-card-body';
 import type { EntityMemberSummary } from './member-types';
 import type { LucideIcon } from 'lucide-react';
 
-export type MemberPrefix = 'property' | 'method' | 'typeParameter';
+export type MemberPrefix = 'property' | 'method' | 'constructor' | 'typeParameter';
 
 const COPY_FEEDBACK_DURATION_MS = 1600;
 
 const MEMBER_ACCENTS: Record<MemberPrefix, string> = {
     property: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
     method: 'text-[color-mix(in_srgb,var(--entity-function-color)_72%,var(--text))]',
+    constructor: 'text-[color-mix(in_srgb,var(--entity-function-color)_78%,var(--text))]',
     typeParameter: 'text-[color-mix(in_srgb,var(--entity-type-color)_75%,var(--text))]'
 };
 
 const MEMBER_HEADER_ICONS: Record<MemberPrefix, LucideIcon> = {
     property: SquareDot,
     method: Workflow,
+    constructor: Hammer,
     typeParameter: Sigma
 };
 
 const MEMBER_TITLES: Record<MemberPrefix, string> = {
     property: 'Properties',
     method: 'Methods',
+    constructor: 'Constructors',
     typeParameter: 'Type parameters'
 };
 

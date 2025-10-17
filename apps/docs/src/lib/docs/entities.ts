@@ -44,6 +44,7 @@ export interface ClassLikeEntityModel extends BaseEntityModel {
     typeParameters: EntityMemberSummary[];
     properties: EntityMemberSummary[];
     methods: EntityMemberSummary[];
+    constructors: EntityMemberSummary[];
 }
 
 export interface EnumMemberModel {
@@ -66,15 +67,19 @@ export interface TypeEntityModel extends BaseEntityModel {
     typeParameters: EntityMemberSummary[];
 }
 
+export interface FunctionSignatureParameterModel {
+    name: string;
+    optional: boolean;
+    type?: string;
+    defaultValue?: string;
+    documentation: CommentParagraph[];
+}
+
 export interface FunctionSignatureModel {
     id: string;
     code: CodeRepresentation;
-    parameters: {
-        name: string;
-        optional: boolean;
-        type?: string;
-        defaultValue?: string;
-    }[];
+    overloadIndex: number;
+    parameters: FunctionSignatureParameterModel[];
     returnType?: string;
     summary: CommentParagraph[];
     examples: CommentExample[];
@@ -100,7 +105,8 @@ export type EntityModel =
     | VariableEntityModel;
 
 const PROPERTY_KINDS = new Set(['kind_property', 'kind_accessor']);
-const METHOD_KINDS = new Set(['kind_method', 'kind_constructor']);
+const METHOD_KINDS = new Set(['kind_method']);
+const CONSTRUCTOR_KIND = 'kind_constructor';
 const ENUM_MEMBER_KIND = 'kind_enum_member';
 
 const createBaseEntityModel = ({
@@ -166,28 +172,38 @@ const buildFunctionSignature = async (
 ): Promise<FunctionSignatureModel> => {
     const rendered = signature.render;
     const code = rendered ? await formatSignature(rendered, context) : await highlightCode(signature.name);
-    const parameters = (rendered?.parameters ?? []).map((param) => {
-        const parameter: FunctionSignatureModel['parameters'][number] = {
-            name: param.name,
-            optional: param.optional
-        };
+    const parameters = await Promise.all(
+        signature.parameters.map(async (param, index) => {
+            const renderedParam = rendered?.parameters ? rendered.parameters[index] : undefined;
+            const parameter: FunctionSignatureParameterModel = {
+                name: param.name,
+                optional: param.flags.isOptional,
+                documentation: []
+            };
 
-        if (param.type) {
-            parameter.type = renderInlineType(param.type, context);
-        }
+            if (renderedParam?.type) {
+                parameter.type = renderInlineType(renderedParam.type, context);
+            }
 
-        if (param.defaultValue !== undefined) {
-            parameter.defaultValue = param.defaultValue;
-        }
+            if (renderedParam?.defaultValue !== undefined) {
+                parameter.defaultValue = renderedParam.defaultValue;
+            } else if (param.defaultValue !== undefined) {
+                parameter.defaultValue = param.defaultValue;
+            }
 
-        return parameter;
-    });
+            const formatted = await formatCommentRich(param.comment, context);
+            parameter.documentation = formatted.paragraphs;
+
+            return parameter;
+        })
+    );
 
     const comment = await formatCommentRich(signature.comment, context);
 
     const model: FunctionSignatureModel = {
         id: ensureSignatureAnchor(signature),
         code,
+        overloadIndex: signature.overloadIndex,
         parameters,
         summary: comment.paragraphs,
         examples: comment.examples.slice()
@@ -215,6 +231,12 @@ const buildClassLikeEntity = async <Kind extends 'class' | 'interface'>(
             .map((child) => buildMemberSummary(child, context))
     );
 
+    const constructors = await Promise.all(
+        node.children
+            .filter((child) => child.kindLabel === CONSTRUCTOR_KIND)
+            .map((child) => buildMemberSummary(child, context))
+    );
+
     const methods = await Promise.all(
         node.children
             .filter((child) => METHOD_KINDS.has(child.kindLabel))
@@ -226,6 +248,7 @@ const buildClassLikeEntity = async <Kind extends 'class' | 'interface'>(
     return {
         ...base,
         typeParameters,
+        constructors,
         properties,
         methods
     };

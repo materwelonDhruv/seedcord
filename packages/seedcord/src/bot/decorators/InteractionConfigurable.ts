@@ -21,8 +21,6 @@ export enum InteractionRoutes {
 
 /**
  * Types of select menus supported for routing
- *
- * @internal
  */
 export enum SelectMenuType {
     String = 'string',

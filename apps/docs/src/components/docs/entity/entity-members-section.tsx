@@ -17,6 +17,7 @@ import type { EntityMemberSummary } from './member-types';
 interface EntityMembersSectionProps {
     properties: readonly EntityMemberSummary[];
     methods: readonly EntityMemberSummary[];
+    constructors: readonly EntityMemberSummary[];
     typeParameters?: readonly EntityMemberSummary[];
     showAccessControls?: boolean;
 }
@@ -64,9 +65,40 @@ function useMemberNavigation(): (anchorId: string) => void {
     return openMemberSection;
 }
 
+function renderMemberOverview(columns: ReactElement[], memberAccessLevel: MemberAccessLevel): ReactElement | null {
+    if (!columns.length) {
+        return null;
+    }
+
+    const quickPanelGridColumns = columns.length === 2 ? 'lg:grid-cols-2' : undefined;
+
+    return (
+        <details
+            open
+            className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
+        >
+            <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-[var(--text)]">
+                <span className="text-lg font-semibold">Member overview</span>
+                <Icon icon={ChevronDown} size={18} className="text-subtle transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="mt-3 space-y-4">
+                <p className="text-xs text-subtle">
+                    Showing members with{' '}
+                    <span className="font-semibold text-[var(--text)]">
+                        {formatMemberAccessLabel(memberAccessLevel)}
+                    </span>{' '}
+                    visibility and higher.
+                </p>
+                <div className={cn('grid min-w-0 gap-3', quickPanelGridColumns)}>{columns}</div>
+            </div>
+        </details>
+    );
+}
+
 export default function EntityMembersSection({
     properties,
     methods,
+    constructors,
     typeParameters = [],
     showAccessControls = false
 }: EntityMembersSectionProps): ReactElement {
@@ -81,9 +113,23 @@ export default function EntityMembersSection({
         () => methods.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
         [methods, memberAccessLevel]
     );
+    const filteredConstructors = useMemo(
+        () => constructors.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
+        [constructors, memberAccessLevel]
+    );
 
     const quickPanelColumns: ReactElement[] = [];
 
+    if (filteredConstructors.length) {
+        quickPanelColumns.push(
+            <MemberList
+                key="constructors"
+                items={filteredConstructors}
+                prefix="constructor"
+                onNavigate={openMemberSection}
+            />
+        );
+    }
     if (filteredProperties.length) {
         quickPanelColumns.push(
             <MemberList key="properties" items={filteredProperties} prefix="property" onNavigate={openMemberSection} />
@@ -95,8 +141,6 @@ export default function EntityMembersSection({
             <MemberList key="methods" items={filteredMethods} prefix="method" onNavigate={openMemberSection} />
         );
     }
-
-    const quickPanelGridColumns = quickPanelColumns.length === 2 ? 'lg:grid-cols-2' : undefined;
 
     return (
         <section className="min-w-0 space-y-8">
@@ -111,31 +155,10 @@ export default function EntityMembersSection({
                     <MemberAccessControls orientation="horizontal" showLegend={false} className="flex-shrink-0" />
                 </div>
             ) : null}
-            {quickPanelColumns.length ? (
-                <details
-                    open
-                    className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
-                >
-                    <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-[var(--text)]">
-                        <span className="text-lg font-semibold">Member overview</span>
-                        <Icon
-                            icon={ChevronDown}
-                            size={18}
-                            className="text-subtle transition-transform group-open:rotate-180"
-                        />
-                    </summary>
-                    <div className="mt-3 space-y-4">
-                        <p className="text-xs text-subtle">
-                            Showing members with{' '}
-                            <span className="font-semibold text-[var(--text)]">
-                                {formatMemberAccessLabel(memberAccessLevel)}
-                            </span>{' '}
-                            visibility and higher.
-                        </p>
-                        <div className={cn('grid min-w-0 gap-3', quickPanelGridColumns)}>{quickPanelColumns}</div>
-                    </div>
-                </details>
+            {filteredConstructors.length ? (
+                <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
             ) : null}
+            {renderMemberOverview(quickPanelColumns, memberAccessLevel)}
 
             <div className="min-w-0 space-y-8">
                 <MemberDetailGroup items={typeParameters} prefix="typeParameter" />

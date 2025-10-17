@@ -144,7 +144,14 @@ const PACKAGE_OVERRIDES: Record<string, PackageOverride> = {
     }
 };
 
-const DEFAULT_MANIFEST_PACKAGE = 'seedcord';
+export const DEFAULT_MANIFEST_PACKAGE = 'seedcord';
+
+const sortPackages = (packages: readonly string[]): string[] =>
+    packages.slice().sort((a, b) => {
+        if (a === DEFAULT_MANIFEST_PACKAGE) return -1;
+        if (b === DEFAULT_MANIFEST_PACKAGE) return 1;
+        return a.localeCompare(b, undefined, { sensitivity: 'base' });
+    });
 
 const normalizeKey = (value: string): string => value.trim().toLowerCase();
 
@@ -230,5 +237,6 @@ export function resolveManifestPackageName(engine: DocsEngine, requested?: strin
 }
 
 export function listDisplayPackages(engine: DocsEngine): string[] {
-    return engine.listPackages().map((pkg) => formatDisplayPackageName(pkg));
+    const ordered = sortPackages(engine.listPackages());
+    return ordered.map((pkg) => formatDisplayPackageName(pkg));
 }

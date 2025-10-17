@@ -1,7 +1,7 @@
 import { cache } from 'react';
 
 import { getDocsEngine } from './engine';
-import { formatDisplayPackageName } from './packages';
+import { DEFAULT_MANIFEST_PACKAGE, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
 
 import type { EntityTone } from '@lib/entity-metadata';
@@ -130,11 +130,18 @@ const buildPackageEntry = (
     } satisfies PackageCatalogEntry;
 };
 
+const sortCatalogEntries = (entries: PackageCatalogEntry[]): PackageCatalogEntry[] =>
+    entries.sort((a, b) => {
+        if (a.manifestName === DEFAULT_MANIFEST_PACKAGE) return -1;
+        if (b.manifestName === DEFAULT_MANIFEST_PACKAGE) return 1;
+        return a.label.localeCompare(b.label, undefined, { sensitivity: 'base' });
+    });
+
 export const loadDocsCatalog = cache(async (): Promise<DocsCatalog> => {
     const engine = await getDocsEngine();
     const packages = engine.listPackages();
 
-    return packages
+    const entries = packages
         .map((manifestPackage) => {
             const pkg = engine.getPackage(manifestPackage);
             if (!pkg) {
@@ -146,8 +153,9 @@ export const loadDocsCatalog = cache(async (): Promise<DocsCatalog> => {
 
             return buildPackageEntry(manifestPackage, version, directory);
         })
-        .filter((entry): entry is PackageCatalogEntry => entry !== null)
-        .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
+        .filter((entry): entry is PackageCatalogEntry => entry !== null);
+
+    return sortCatalogEntries(entries);
 });
 
 export const findCatalogEntry = (catalog: DocsCatalog, packageId: string): PackageCatalogEntry | undefined =>

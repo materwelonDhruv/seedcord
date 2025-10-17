@@ -30,5 +30,6 @@ export interface EntityMemberSummary {
 export interface EntityMembersByKind {
     properties: readonly EntityMemberSummary[];
     methods: readonly EntityMemberSummary[];
+    constructors: readonly EntityMemberSummary[];
     typeParameters?: readonly EntityMemberSummary[];
 }

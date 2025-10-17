@@ -5,9 +5,7 @@ import { cn } from '@lib/utils';
 import Button from '@ui/button';
 import { Icon } from '@ui/icon';
 
-import { CommentExamples } from './comment-examples';
-
-import type { CommentExample, CommentParagraph } from '@lib/docs/comment-format';
+import type { CommentParagraph } from '@lib/docs/comment-format';
 import type { CodeRepresentation } from '@lib/docs/formatting';
 import type { EntityTone } from '@lib/entity-metadata';
 import type { ReactElement } from 'react';
@@ -19,7 +17,6 @@ interface EntityHeaderProps {
     tone: EntityTone;
     signature: CodeRepresentation;
     summary: readonly CommentParagraph[];
-    summaryExamples?: readonly CommentExample[];
     sourceUrl?: string | null;
     version?: string;
     isDeprecated?: boolean;
@@ -79,7 +76,6 @@ export function EntityHeader({
     pkg,
     signature,
     summary,
-    summaryExamples,
     symbolName,
     tone,
     sourceUrl,
@@ -122,12 +118,7 @@ export function EntityHeader({
                 <div className="flex items-start gap-3 sm:gap-4">
                     <div className="min-w-0 flex-1 space-y-2.5">
                         <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
-                        <div className="space-y-2 text-sm leading-relaxed text-subtle">
-                            {summaryNodes}
-                            {summaryExamples?.length ? (
-                                <CommentExamples examples={summaryExamples} className="pt-1" />
-                            ) : null}
-                        </div>
+                        <div className="space-y-2 text-sm leading-relaxed text-subtle">{summaryNodes}</div>
                     </div>
                     {sourceUrl ? (
                         <Button
