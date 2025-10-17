@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 import { cn } from '@lib/utils';
 
@@ -31,16 +31,33 @@ export function Sidebar({
     const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
 
     const restSegments = useMemo(() => resolveRestSegments(pathname), [pathname]);
+    const [localPackageId, setLocalPackageId] = useState<string>(activePackageId);
+    const [localVersionId, setLocalVersionId] = useState<string>(activeVersionId);
+
+    useEffect(() => setLocalPackageId(activePackageId), [activePackageId]);
+    useEffect(() => setLocalVersionId(activeVersionId), [activeVersionId]);
+
     const { activePackage, activeVersion, packageOptions, versionOptions } = useSidebarSelection(
         catalog,
-        activePackageId,
-        activeVersionId
+        localPackageId,
+        localVersionId
     );
+
     const { handlePackageChange, handleVersionChange } = useSidebarNavigationHandlers(
         catalog,
         versionOptions,
         restSegments
     );
+
+    const onPackageChange = (value: string): void => {
+        setLocalPackageId(value);
+        handlePackageChange(value);
+    };
+
+    const onVersionChange = (value: string): void => {
+        setLocalVersionId(value);
+        handleVersionChange(value);
+    };
 
     if (!activePackage || !activeVersion) {
         return className ? <SidebarEmptyState className={className} /> : <SidebarEmptyState />;
@@ -63,8 +80,8 @@ export function Sidebar({
                     versionOptions={versionOptions}
                     activePackage={activePackage}
                     activeVersion={activeVersion}
-                    onPackageChange={handlePackageChange}
-                    onVersionChange={handleVersionChange}
+                    onPackageChange={onPackageChange}
+                    onVersionChange={onVersionChange}
                 />
             </div>
             <div
