@@ -66,7 +66,7 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
                         >
                             <span>{item.label}</span>
                             <span
-                                className={`${toneStyles.badge} inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-full border text-xs font-semibold`}
+                                className={`${toneStyles.badge} inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-full border text-xs font-semibold px-2 py-1`}
                             >
                                 {category.tone}
                             </span>
@@ -92,7 +92,6 @@ function PackageVersionOverview({
                 <h1 className="text-3xl font-semibold text-[var(--text)] sm:text-4xl">
                     {entry.label} · {version.label}
                 </h1>
-                <p className="max-w-3xl text-sm text-subtle">{version.summary}</p>
             </header>
             <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
                 {version.categories.length ? (

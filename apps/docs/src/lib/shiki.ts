@@ -77,6 +77,9 @@ function preprocessMarkdownLinks(code: string): { code: string; markers: LinkMar
     return { code: processed, markers };
 }
 
+// NEW: only external (http/https) links get target+rel
+const isExternalUrl = (url: string): boolean => /^https?:\/\//i.test(url);
+
 function applyLinkMarkers(html: string, markers: readonly LinkMarker[]): string {
     if (!markers.length) {
         return html;
@@ -89,7 +92,8 @@ function applyLinkMarkers(html: string, markers: readonly LinkMarker[]): string 
         const pattern = new RegExp(`${escapeForRegex(marker.open)}([\\s\\S]*?)${escapeForRegex(marker.close)}`, 'g');
 
         result = result.replace(pattern, (_match, labelHtml: string) => {
-            return `<a href="${marker.url}" target="_blank" rel="noreferrer noopener">${labelHtml}</a>`;
+            const attrs = isExternalUrl(marker.url) ? ' target="_blank" rel="noreferrer noopener"' : '';
+            return `<a href="${marker.url}"${attrs}>${labelHtml}</a>`;
         });
     }
 
