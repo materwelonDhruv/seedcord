@@ -1,5 +1,3 @@
-// CodePanel intentionally not used for Type Alias pages to avoid duplicate declarations
-
 import { MemberDetailGroup } from '../../member/MemberDetailGroup';
 
 import type { TypeModel } from '../../types';
