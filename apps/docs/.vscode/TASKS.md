@@ -30,17 +30,17 @@ information, useful for container orchestration and monitoring.
 
 [x] 11. In the sidebar, if the name of something is too long, it squishes the icon and isn’t centered anymore. Instead, let’s truncate and use `…` And then, use our tooltip component so people can hover to see the full name.
 
-[ ] 12. Please check #packages.ts. You can see we have rawExternal links. I don’t understand why they aren’t being hyperlinked across the project. Like, literally nowhere. I see that we have key.toLowerCase. Is that doing something to the keys? Why? the Keys are case sensitive.
+[x] 12. Please check #packages.ts. You can see we have rawExternal links. I don’t understand why they aren’t being hyperlinked across the project. Like, literally nowhere. I see that we have key.toLowerCase. Is that doing something to the keys? Why? the Keys are case sensitive.
 
-[ ] 13. For functions, this placeholder text “Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.“ should be the function’s tsdoc. And make sure to not duplicate it below.
+[x] 13. For functions, this placeholder text “Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.“ should be the function’s tsdoc. And make sure to not duplicate it below.
 
 [ ] 14. For methods in classes and interfaces, can you suffix their names with a `()` so it’s clear that it’s a method pls
 
-[ ] 15. For function parameters, if their types have a link, it doesn’t render. Look example. Pls fix.
+[x] 15. For function parameters, if their types have a link, it doesn’t render. Look example. Pls fix.
 
 [ ] 16. The “Inherited from:” should also correctly hyperlink
 
-[ ] 17. Make sure to correctly parse and display the comments for @typeParam and @param. If you check the debugging/samples files, you’ll see this is easily there. And you can check the types in packages/docs-engine
+[ ] 17. Make sure to correctly parse and display the comments for @typeParam and @param. It's currently broken for type params. Can you please check the places we're trying to read those comments and find any bugs?
 
 [ ] 18. Interfaces do not need the “Showing members with” sentence in Member overview
 

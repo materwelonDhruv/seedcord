@@ -97,6 +97,9 @@ export const rawExternalLinks = {
     Capitalize: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#capitalizestringtype',
     Uncapitalize: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#uncapitalizestringtype',
 
+    // Undocumented Typescript Types to close-enough links
+    TypedPropertyDescriptor: 'https://www.typescriptlang.org/docs/handbook/decorators.html#parameter-decorators',
+
     // Node.js APIs (@types/node)
     Dirent: 'https://nodejs.org/api/fs.html#class-fsdirent',
     EventEmitter: 'https://nodejs.org/api/events.html#class-eventemitter',
