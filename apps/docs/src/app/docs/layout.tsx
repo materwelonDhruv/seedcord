@@ -1,5 +1,5 @@
 import Sidebar from '@/components/layout/sidebar/Sidebar';
-import Container from '@/components/layout/sidebar/utils/container/container';
+import Container from '@/components/layout/sidebar/utils/container/Container';
 
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
 
