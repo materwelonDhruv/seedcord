@@ -17,7 +17,9 @@ const MEMBER_ANCHOR_PREFIX: Partial<Record<ActionKind, string>> = {
     method: 'method',
     property: 'property',
     variable: 'property',
-    typeParameter: 'typeParameter'
+    typeParameter: 'typeParameter',
+    constructor: 'constructor',
+    enumMember: 'enum-member'
 };
 
 function resolveMemberAnchor(kind: ActionKind, params: URLSearchParams): string | null {

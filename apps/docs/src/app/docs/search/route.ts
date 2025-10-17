@@ -1,9 +1,9 @@
-import { kindName, type DocSearchEntry } from '@seedcord/docs-engine';
+import { kindName, type DocSearchEntry, type DocNode } from '@seedcord/docs-engine';
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { getDocsEngine } from '@lib/docs/engine';
 import { resolveManifestPackageName } from '@lib/docs/packages';
-import { buildPackageBasePath } from '@lib/docs/routes';
+import { buildEntityHref, buildPackageBasePath } from '@lib/docs/routes';
 
 const MAX_RESULTS = 24;
 const MIN_QUERY_LENGTH = 3;
@@ -15,10 +15,12 @@ type SearchResultKind =
     | 'enum'
     | 'function'
     | 'variable'
+    | 'constructor'
     | 'method'
     | 'property'
     | 'parameter'
     | 'typeParameter'
+    | 'enumMember'
     | 'page';
 
 interface CommandActionPayload {
@@ -38,14 +40,14 @@ const KIND_TO_RESULT = new Map<string, SearchResultKind>([
     ['class', 'class'],
     ['interface', 'interface'],
     ['enum', 'enum'],
-    ['enumMember', 'enum'],
+    ['enumMember', 'enumMember'],
     ['typeAlias', 'type'],
     ['typeParameter', 'typeParameter'],
     ['function', 'function'],
     ['method', 'method'],
-    ['constructor', 'method'],
+    ['constructor', 'constructor'],
     ['callSignature', 'function'],
-    ['constructorSignature', 'method'],
+    ['constructorSignature', 'constructor'],
     ['getSignature', 'property'],
     ['setSignature', 'property'],
     ['accessor', 'property'],
@@ -81,27 +83,140 @@ const buildBreadcrumb = (entry: DocSearchEntry): string => {
     return parts.filter(Boolean).join(' · ');
 };
 
-const mapSearchEntry = (entry: DocSearchEntry): CommandActionPayload | null => {
-    if (!entry.slug) {
+const ENTITY_RESULT_KINDS = new Set<SearchResultKind>(['class', 'interface', 'enum', 'type', 'function', 'variable']);
+
+const MEMBER_ANCHOR_PREFIX: Partial<Record<SearchResultKind, string>> = {
+    method: 'method',
+    property: 'property',
+    constructor: 'constructor',
+    typeParameter: 'typeParameter',
+    enumMember: 'enum-member'
+};
+
+const getParentSlug = (slug: string): string | null => {
+    const segments = slug.split('/');
+    if (segments.length <= 1) {
         return null;
     }
+    return segments.slice(0, -1).join('/');
+};
 
-    const basePath = buildPackageBasePath(entry.packageName, entry.packageVersion ?? null);
-    const slugSegment = encodeSlug(entry.slug);
-    const href = `${basePath}/${slugSegment}`;
+const findEntityNode = (engine: Awaited<ReturnType<typeof getDocsEngine>>, entry: DocSearchEntry): DocNode | null => {
+    const segments = entry.slug.split('/');
 
+    for (let index = segments.length; index > 0; index -= 1) {
+        const candidateSlug = segments.slice(0, index).join('/');
+        const candidate = engine.getNodeByGlobalSlug(entry.packageName, candidateSlug);
+        if (!candidate) {
+            continue;
+        }
+
+        const normalizedKind = kindName(candidate.kind).toLowerCase();
+        if (ENTITY_RESULT_KINDS.has(normalizedKind as SearchResultKind)) {
+            return candidate;
+        }
+    }
+
+    return null;
+};
+
+const buildEntityUrl = (node: DocNode, fallbackVersion: string | null): string =>
+    buildEntityHref({
+        manifestPackage: node.packageName,
+        slug: node.slug,
+        version: node.packageVersion ?? fallbackVersion,
+        tone: kindName(node.kind)
+    });
+
+const createBasePayload = (entry: DocSearchEntry, kind: SearchResultKind): CommandActionPayload => {
     const payload: CommandActionPayload = {
         id: `${entry.packageName}:${entry.slug}:${entry.kind}`,
         label: entry.name,
         path: buildBreadcrumb(entry),
-        href,
-        kind: getResultKind(entry.kind)
+        href: '',
+        kind
     } satisfies CommandActionPayload;
 
     if (entry.summary) {
         payload.description = entry.summary;
     }
 
+    return payload;
+};
+
+const buildPageHref = (entry: DocSearchEntry, version: string | null): string => {
+    const basePath = buildPackageBasePath(entry.packageName, version);
+    return `${basePath}/${encodeSlug(entry.slug)}`;
+};
+
+const buildParameterHref = (
+    engine: Awaited<ReturnType<typeof getDocsEngine>>,
+    entry: DocSearchEntry,
+    entityHref: string
+): string => {
+    const parentSlug = getParentSlug(entry.slug);
+    if (!parentSlug) {
+        return entityHref;
+    }
+
+    const parentNode = engine.getNodeByGlobalSlug(entry.packageName, parentSlug);
+    const parentKind = parentNode ? kindName(parentNode.kind).toLowerCase() : '';
+    const prefix = parentKind === 'constructor' ? 'constructor' : 'method';
+
+    return `${entityHref}#${prefix}-${parentSlug}`;
+};
+
+const buildMemberHref = (
+    engine: Awaited<ReturnType<typeof getDocsEngine>>,
+    entry: DocSearchEntry,
+    resultKind: SearchResultKind,
+    entityNode: DocNode,
+    version: string | null
+): string => {
+    const entityHref = buildEntityUrl(entityNode, version);
+
+    if (resultKind === 'parameter') {
+        return buildParameterHref(engine, entry, entityHref);
+    }
+
+    const anchorPrefix = MEMBER_ANCHOR_PREFIX[resultKind];
+    return anchorPrefix ? `${entityHref}#${anchorPrefix}-${entry.slug}` : entityHref;
+};
+
+const mapSearchEntry = (
+    engine: Awaited<ReturnType<typeof getDocsEngine>>,
+    entry: DocSearchEntry
+): CommandActionPayload | null => {
+    if (!entry.slug) {
+        return null;
+    }
+
+    const version = entry.packageVersion ?? null;
+    const resultKind = getResultKind(entry.kind);
+    const payload = createBasePayload(entry, resultKind);
+
+    if (ENTITY_RESULT_KINDS.has(resultKind)) {
+        payload.href = buildEntityHref({
+            manifestPackage: entry.packageName,
+            slug: entry.slug,
+            version,
+            tone: resultKind
+        });
+        return payload;
+    }
+
+    if (resultKind === 'page') {
+        payload.href = buildPageHref(entry, version);
+        return payload;
+    }
+
+    const entityNode = findEntityNode(engine, entry);
+    if (!entityNode) {
+        payload.href = buildPageHref(entry, version);
+        return payload;
+    }
+
+    payload.href = buildMemberHref(engine, entry, resultKind, entityNode, version);
     return payload;
 };
 
@@ -119,7 +234,9 @@ export async function GET(request: NextRequest): Promise<NextResponse<SearchResp
     const manifestPackage = pkgParam ? resolveManifestPackageName(engine, pkgParam) : undefined;
     const results = engine.search(query, manifestPackage).slice(0, MAX_RESULTS);
 
-    const payload = results.map(mapSearchEntry).filter((entry): entry is CommandActionPayload => entry !== null);
+    const payload = results
+        .map((entry) => mapSearchEntry(engine, entry))
+        .filter((entry): entry is CommandActionPayload => entry !== null);
 
     return NextResponse.json({ results: payload });
 }

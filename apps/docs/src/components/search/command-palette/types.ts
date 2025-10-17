@@ -1,5 +1,3 @@
-import type { LucideIcon } from 'lucide-react';
-
 export type SearchResultKind =
     | 'package'
     | 'page'
@@ -9,11 +7,13 @@ export type SearchResultKind =
     | 'type'
     | 'enum'
     | 'function'
+    | 'constructor'
     | 'method'
     | 'property'
     | 'variable'
     | 'parameter'
-    | 'typeParameter';
+    | 'typeParameter'
+    | 'enumMember';
 
 export interface CommandAction {
     id: string;
@@ -23,10 +23,4 @@ export interface CommandAction {
     kind: SearchResultKind;
     description?: string;
     isExternal?: boolean;
-}
-
-export interface CommandGroupModel {
-    heading: string;
-    actions: CommandAction[];
-    icon: LucideIcon;
 }

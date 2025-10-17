@@ -11,19 +11,20 @@ import { SEARCH_KIND_ICONS } from './constants';
 import type { CommandAction, SearchResultKind } from './types';
 import type { ReactElement } from 'react';
 
-type EntityResultKind =
-    | 'class'
-    | 'interface'
-    | 'type'
-    | 'enum'
-    | 'function'
+type EntityResultKind = 'class' | 'interface' | 'type' | 'enum' | 'function' | 'variable';
+
+type NonEntityResultKind = Extract<
+    SearchResultKind,
+    | 'package'
+    | 'page'
+    | 'resource'
+    | 'constructor'
     | 'method'
     | 'property'
-    | 'variable'
     | 'parameter'
-    | 'typeParameter';
-
-type NonEntityResultKind = Extract<SearchResultKind, 'package' | 'page' | 'resource'>;
+    | 'typeParameter'
+    | 'enumMember'
+>;
 
 const ENTITY_KIND_TO_TONE: Record<EntityResultKind, EntityTone> = {
     class: 'class',
@@ -31,11 +32,7 @@ const ENTITY_KIND_TO_TONE: Record<EntityResultKind, EntityTone> = {
     type: 'type',
     enum: 'enum',
     function: 'function',
-    method: 'function',
-    property: 'variable',
-    variable: 'variable',
-    parameter: 'type',
-    typeParameter: 'type'
+    variable: 'variable'
 };
 
 const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
@@ -53,6 +50,36 @@ const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
         'border-[color-mix(in_srgb,#8b90a7_46%,var(--border))]',
         'bg-[color-mix(in_srgb,#8b90a7_18%,var(--surface)_82%)]',
         'text-[color-mix(in_srgb,var(--text)_88%,#8b90a7_12%)]'
+    ].join(' '),
+    constructor: [
+        'border-[color-mix(in_srgb,var(--entity-function-color)_34%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-function-color)_12%,var(--surface)_88%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-function-color)_12%)]'
+    ].join(' '),
+    method: [
+        'border-[color-mix(in_srgb,var(--entity-function-color)_34%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-function-color)_12%,var(--surface)_88%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-function-color)_12%)]'
+    ].join(' '),
+    property: [
+        'border-[color-mix(in_srgb,var(--entity-variable-color)_38%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-variable-color)_15%,var(--surface)_85%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-variable-color)_12%)]'
+    ].join(' '),
+    parameter: [
+        'border-[color-mix(in_srgb,var(--entity-type-color)_32%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-type-color)_12%,var(--surface)_88%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-type-color)_12%)]'
+    ].join(' '),
+    typeParameter: [
+        'border-[color-mix(in_srgb,var(--entity-type-color)_32%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-type-color)_12%,var(--surface)_88%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-type-color)_12%)]'
+    ].join(' '),
+    enumMember: [
+        'border-[color-mix(in_srgb,var(--entity-enum-color)_34%,var(--border))]',
+        'bg-[color-mix(in_srgb,var(--entity-enum-color)_14%,var(--surface)_86%)]',
+        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-enum-color)_12%)]'
     ].join(' ')
 };
 
@@ -72,6 +99,10 @@ export function CommandListItem({ action, onSelect }: CommandListItemProps): Rea
     const isEntityResult = Object.prototype.hasOwnProperty.call(ENTITY_KIND_TO_TONE, action.kind);
     const tone = isEntityResult ? ENTITY_KIND_TO_TONE[action.kind as EntityResultKind] : undefined;
     const toneStyles = tone ? ENTITY_TONE_STYLES[tone] : undefined;
+    const keywords = [action.path, action.id];
+    if (action.description) {
+        keywords.push(action.description);
+    }
     const iconClasses = cn(
         BASE_ICON_CLASSES,
         toneStyles ? toneStyles.badge : NON_ENTITY_BADGES[action.kind as NonEntityResultKind]
@@ -79,7 +110,7 @@ export function CommandListItem({ action, onSelect }: CommandListItemProps): Rea
 
     return (
         <Command.Item
-            value={`${action.label} ${action.path} ${action.id} ${action.description ?? ''}`}
+            value={`${action.label} ${action.id}`}
             onSelect={() => onSelect(action)}
             data-command-id={action.id}
             title={action.path}
@@ -90,6 +121,7 @@ export function CommandListItem({ action, onSelect }: CommandListItemProps): Rea
                 'data-[selected=true]:border-[color-mix(in_srgb,var(--accent-b)_38%,transparent)] data-[selected=true]:bg-[color-mix(in_srgb,var(--accent-b)_16%,transparent)] data-[selected=true]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent-b)_22%,transparent)]'
             )}
             aria-label={action.label}
+            keywords={keywords}
         >
             <span className={iconClasses}>
                 <Icon icon={ItemIcon} size={18} aria-hidden />

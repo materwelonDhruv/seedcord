@@ -1,7 +1,6 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { MIN_SEARCH_QUERY_LENGTH } from './constants';
 
@@ -27,35 +26,9 @@ interface SearchResponse {
     results?: CommandAction[];
 }
 
-const extractPackageSegment = (pathname: string): string | undefined => {
-    const segments = pathname.split('/').filter(Boolean);
-    const docsIndex = segments.indexOf('docs');
-    if (docsIndex === -1) {
-        return undefined;
-    }
-
-    const packagesIndex = segments.indexOf('packages', docsIndex + 1);
-    if (packagesIndex === -1) {
-        return undefined;
-    }
-
-    const packageSegment = segments[packagesIndex + 1];
-    if (!packageSegment) {
-        return undefined;
-    }
-
-    try {
-        return decodeURIComponent(packageSegment);
-    } catch {
-        return packageSegment;
-    }
-};
-
 const createDefaultState = (): SearchState => ({ results: [], status: 'idle' });
 
 export function useCommandPaletteSearch({ query, open }: UseCommandPaletteSearchOptions): SearchState {
-    const pathname = usePathname();
-    const packageHint = useMemo(() => extractPackageSegment(pathname), [pathname]);
     const [state, setState] = useState<SearchState>(createDefaultState);
 
     useEffect(() => {
@@ -72,9 +45,6 @@ export function useCommandPaletteSearch({ query, open }: UseCommandPaletteSearch
             setState({ results: [], status: 'loading' });
 
             const params = new URLSearchParams({ q: trimmed });
-            if (packageHint) {
-                params.set('pkg', packageHint);
-            }
 
             fetch(`${SEARCH_ENDPOINT}?${params.toString()}`, { signal: controller.signal })
                 .then((response) => {
@@ -110,7 +80,7 @@ export function useCommandPaletteSearch({ query, open }: UseCommandPaletteSearch
             controller.abort();
             window.clearTimeout(timeout);
         };
-    }, [open, packageHint, query]);
+    }, [open, query]);
 
     return state;
 }

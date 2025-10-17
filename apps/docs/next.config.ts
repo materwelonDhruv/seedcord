@@ -7,9 +7,7 @@ interface MutableWebpackConfig {
 }
 
 const nextConfig: NextConfig = {
-    experimental: {
-        serverComponentsExternalPackages: ['@seedcord/docs-engine', 'typedoc']
-    },
+    serverExternalPackages: ['@seedcord/docs-engine', 'typedoc'],
     webpack: <ConfigType extends MutableWebpackConfig>(
         config: ConfigType,
         { isServer }: { isServer: boolean }

@@ -2,10 +2,10 @@
 
 import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
-import { Fragment, useMemo, useRef } from 'react';
+import { useMemo, useRef } from 'react';
 
 import { CommandHeader } from './command-header';
-import { DEFAULT_COMMAND_ACTIONS, MIN_SEARCH_QUERY_LENGTH } from './constants';
+import { MIN_SEARCH_QUERY_LENGTH } from './constants';
 import { CommandListItem } from './list-item';
 import { useCommandPaletteSearch } from './use-command-palette-search';
 
@@ -28,48 +28,42 @@ function CommandListContent({
     results,
     onSelect
 }: CommandListContentProps): ReactElement {
+    const hasResults = results.length > 0;
+    const shouldShowItems = !showInitialHint && !isSearching && !errorMessage && hasResults;
+    const shouldShowFallback = !showInitialHint && !isSearching && !errorMessage && !hasResults;
+
+    let emptyContent: ReactElement | null = null;
+
     if (showInitialHint) {
-        return (
+        emptyContent = (
             <div className="px-4 py-12 text-center text-sm text-subtle">
                 Type at least {MIN_SEARCH_QUERY_LENGTH} characters to explore the documentation index.
             </div>
         );
+    } else if (errorMessage) {
+        emptyContent = (
+            <div className="mx-2 rounded-xl border border-[color-mix(in_srgb,var(--accent-b)_32%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_10%,var(--surface)_90%)] px-3 py-2 text-sm text-[color-mix(in_srgb,var(--text)_85%,var(--accent-b)_15%)]">
+                {errorMessage}
+            </div>
+        );
+    } else if (shouldShowFallback) {
+        emptyContent = (
+            <div className="px-3 py-8 text-center text-sm text-subtle">No results found. Try refining your search.</div>
+        );
     }
 
-    const hasResults = results.length > 0;
-    const shouldShowFallback = !isSearching && !errorMessage && !hasResults;
-
     return (
-        <Fragment>
+        <>
+            {emptyContent ? <Command.Empty>{emptyContent}</Command.Empty> : null}
             {isSearching ? (
-                <div className="px-2 py-6 text-center text-sm text-subtle">Searching documentation…</div>
+                <Command.Loading>
+                    <div className="px-2 py-6 text-center text-sm text-subtle">Searching documentation…</div>
+                </Command.Loading>
             ) : null}
-            {errorMessage ? (
-                <div className="mx-2 rounded-xl border border-[color-mix(in_srgb,var(--accent-b)_32%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_10%,var(--surface)_90%)] px-3 py-2 text-sm text-[color-mix(in_srgb,var(--text)_85%,var(--accent-b)_15%)]">
-                    {errorMessage}
-                </div>
-            ) : null}
-            {shouldShowFallback ? (
-                <div className="px-3 py-8 text-center text-sm text-subtle">
-                    No results found. Try refining your search.
-                </div>
-            ) : null}
-            {!isSearching && !errorMessage && hasResults
+            {shouldShowItems
                 ? results.map((action) => <CommandListItem key={action.id} action={action} onSelect={onSelect} />)
                 : null}
-            {DEFAULT_COMMAND_ACTIONS.length ? (
-                <Fragment>
-                    <div className="pt-3">
-                        <p className="px-3 pb-2 text-xs font-semibold uppercase tracking-[0.18em] text-subtle">
-                            Quick links
-                        </p>
-                    </div>
-                    {DEFAULT_COMMAND_ACTIONS.map((action) => (
-                        <CommandListItem key={action.id} action={action} onSelect={onSelect} />
-                    ))}
-                </Fragment>
-            ) : null}
-        </Fragment>
+        </>
     );
 }
 

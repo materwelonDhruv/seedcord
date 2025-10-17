@@ -2,8 +2,13 @@ import { Command } from 'cmdk';
 
 import { CommandListItem } from './list-item';
 
-import type { CommandAction, CommandGroupModel } from './types';
+import type { CommandAction } from './types';
 import type { ReactElement } from 'react';
+
+interface CommandGroupModel {
+    heading: string;
+    actions: CommandAction[];
+}
 
 interface CommandListSectionProps {
     group: CommandGroupModel;
