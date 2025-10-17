@@ -17,7 +17,6 @@ import type { EntityMemberSummary } from './types';
 export interface EntityMembersSectionProps {
     properties: readonly EntityMemberSummary[];
     methods: readonly EntityMemberSummary[];
-    constructors: readonly EntityMemberSummary[];
     typeParameters?: readonly EntityMemberSummary[];
     showAccessControls?: boolean;
 }
@@ -25,7 +24,6 @@ export interface EntityMembersSectionProps {
 export default function EntityMembersSection({
     properties,
     methods,
-    constructors,
     typeParameters = [],
     showAccessControls = false
 }: EntityMembersSectionProps): ReactElement {
@@ -40,34 +38,10 @@ export default function EntityMembersSection({
         () => methods.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
         [methods, memberAccessLevel]
     );
-    const filteredConstructors = useMemo(
-        () => constructors.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
-        [constructors, memberAccessLevel]
-    );
-
-    const quickPanelColumns: ReactElement[] = [];
-
-    if (filteredConstructors.length) {
-        quickPanelColumns.push(
-            <MemberList
-                key="constructors"
-                items={filteredConstructors}
-                prefix="constructor"
-                onNavigate={openMemberSection}
-            />
-        );
-    }
-    if (filteredProperties.length) {
-        quickPanelColumns.push(
-            <MemberList key="properties" items={filteredProperties} prefix="property" onNavigate={openMemberSection} />
-        );
-    }
-
-    if (filteredMethods.length) {
-        quickPanelColumns.push(
-            <MemberList key="methods" items={filteredMethods} prefix="method" onNavigate={openMemberSection} />
-        );
-    }
+    const quickPanelColumns: ReactElement[] = [
+        <MemberList key="properties" items={filteredProperties} prefix="property" onNavigate={openMemberSection} />,
+        <MemberList key="methods" items={filteredMethods} prefix="method" onNavigate={openMemberSection} />
+    ];
 
     return (
         <section className="min-w-0 space-y-8">
@@ -81,9 +55,6 @@ export default function EntityMembersSection({
                     </div>
                     <MemberAccessControls orientation="horizontal" showLegend={false} className="flex-shrink-0" />
                 </div>
-            ) : null}
-            {filteredConstructors.length ? (
-                <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
             ) : null}
             {renderMemberOverview(quickPanelColumns, memberAccessLevel)}
 

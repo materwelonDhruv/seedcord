@@ -15,9 +15,9 @@ Because right now, for example for the interface Core, the example is right abov
 
 [x] 8. Type Alias pages don't need a second Type declaration section. The main signature code block already has it all. It only needs the Type parameters section. Which it already has.
 
-[ ] 9. Member overview does not need to have a section for Constructors (reminds me, make sure constructors handle overloads if they have any as well). They only need props and methods. And make sure 2 columns. First is props and 2nd is methods.
+[x] 9. Member overview does not need to have a section for Constructors (reminds me, make sure constructors handle overloads if they have any as well). They only need props and methods. And make sure 2 columns. First is props and 2nd is methods.
 
-[ ] 10. When rendering comments, please smartly decide when they need to be in different lines. Because look at this for example
+[x] 10. When rendering comments, please smartly decide when they need to be in different lines. Because look at this for example
 
 ```ts
 HTTP health check service for monitoring bot status.
