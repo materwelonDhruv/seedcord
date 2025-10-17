@@ -1,6 +1,7 @@
 import Link from 'next/link';
 
 import InstallCommandTabs from '@components/docs/install-command-tabs';
+import { loadDocsCatalog } from '@lib/docs/catalog';
 import { highlightToHtml } from '@lib/shiki';
 import { CodeBlock } from '@ui/code-block';
 
@@ -50,6 +51,10 @@ export default async function DocsIndexPage(): Promise<ReactElement> {
             html: await highlightToHtml(command.code, 'bash')
         }))
     );
+    const catalog = await loadDocsCatalog();
+    const primaryPackage = catalog[0] ?? null;
+    const primaryVersion = primaryPackage?.versions[0] ?? null;
+    const primaryRoute = primaryVersion?.basePath ?? '/docs';
 
     return (
         <section className="space-y-12">
@@ -91,7 +96,7 @@ export default async function DocsIndexPage(): Promise<ReactElement> {
                 <div className="flex flex-col gap-2 text-xs text-subtle md:flex-row md:items-center md:justify-between">
                     <p>Replace the placeholders with your Discord token and workspace modules when you go live.</p>
                     <Link
-                        href="/docs/entity?pkg=@seedcord/core&symbol=Client&kind=class"
+                        href={primaryRoute}
                         className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent-a)] focus-visible:outline-2 focus-visible:outline-[var(--accent-a)] focus-visible:outline-offset-2"
                     >
                         Explore the Client API<span aria-hidden>→</span>

@@ -1,18 +1,20 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback, useMemo, useRef } from 'react';
 
 import { cn } from '@lib/utils';
 
 import { SidebarCategoryList } from './sidebar/sidebar-category-list';
 import { SidebarHeader } from './sidebar/sidebar-header';
-import { useCatalogSelection } from './sidebar/use-catalog-selection';
 
-import type { SidebarProps } from './sidebar/types';
+import type { SidebarProps, SidebarVariant } from './sidebar/types';
+import type { PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/catalog';
 import type { CSSProperties, ReactElement, TouchEvent, UIEvent, WheelEvent } from 'react';
 
 const MOBILE_MAX_HEIGHT = 'min(70vh, 520px)';
 const LINE_SCROLL_PIXELS = 16;
+const ENTITY_SEGMENT_START_INDEX = 4;
 
 function applyScrollDelta(viewport: HTMLDivElement, deltaY: number): void {
     const { scrollHeight, clientHeight, scrollTop } = viewport;
@@ -41,17 +43,32 @@ function normalizeWheelDelta(event: WheelEvent<HTMLDivElement>, viewport: HTMLDi
     return event.deltaY;
 }
 
-function getContainerStyles(variant: 'desktop' | 'mobile'): CSSProperties | undefined {
+function getContainerStyles(variant: SidebarVariant | undefined): CSSProperties | undefined {
     if (variant === 'mobile') {
         return {
             maxHeight: MOBILE_MAX_HEIGHT
-        };
+        } satisfies CSSProperties;
     }
 
     return {
         height: '100%',
         maxHeight: '100%'
-    };
+    } satisfies CSSProperties;
+}
+
+function getListStyles(variant: SidebarVariant | undefined): CSSProperties | undefined {
+    if (variant === 'desktop') {
+        return {
+            height: '100%',
+            maxHeight: '100%',
+            WebkitOverflowScrolling: 'touch'
+        } satisfies CSSProperties;
+    }
+
+    return {
+        maxHeight: MOBILE_MAX_HEIGHT,
+        WebkitOverflowScrolling: 'touch'
+    } satisfies CSSProperties;
 }
 
 function useSidebarScrollGuards(): {
@@ -135,60 +152,167 @@ function useSidebarScrollGuards(): {
     };
 }
 
-export function Sidebar({ variant = 'desktop', className }: SidebarProps): ReactElement {
-    const selection = useCatalogSelection();
-    const containerStyles = getContainerStyles(variant);
-    const isDesktop = variant === 'desktop';
-    const listStyles: CSSProperties | undefined =
-        variant === 'desktop'
-            ? {
-                  height: '100%',
-                  maxHeight: '100%',
-                  WebkitOverflowScrolling: 'touch'
-              }
-            : {
-                  maxHeight: MOBILE_MAX_HEIGHT,
-                  WebkitOverflowScrolling: 'touch'
-              };
-    const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
+const resolveRestSegments = (pathname: string): string[] => {
+    const segments = pathname.split('/').filter(Boolean);
 
-    if (!selection) {
-        return (
-            <nav
-                aria-label="Library navigation"
-                className={cn(
-                    'flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-soft',
-                    className
-                )}
-            >
-                <p className="text-sm text-subtle">No packages available.</p>
-            </nav>
-        );
+    if (segments.length < ENTITY_SEGMENT_START_INDEX) {
+        return [];
     }
 
-    const { packageOptions, versionOptions, activePackage, activeVersion, onPackageChange, onVersionChange } =
-        selection;
+    return segments.slice(ENTITY_SEGMENT_START_INDEX);
+};
 
+const buildVersionPath = (version: PackageVersionCatalog, restSegments: readonly string[]): string => {
+    if (!restSegments.length) {
+        return version.basePath;
+    }
+
+    return `${version.basePath}/${restSegments.join('/')}`;
+};
+
+const useSidebarSelection = (
+    catalog: readonly PackageCatalogEntry[],
+    activePackageId: string,
+    activeVersionId: string
+): {
+    activePackage: PackageCatalogEntry | null;
+    activeVersion: PackageVersionCatalog | null;
+    packageOptions: readonly PackageCatalogEntry[];
+    versionOptions: readonly PackageVersionCatalog[];
+} => {
+    const activePackage = useMemo(() => {
+        if (!catalog.length) {
+            return null;
+        }
+
+        return catalog.find((entry) => entry.id === activePackageId) ?? catalog[0] ?? null;
+    }, [catalog, activePackageId]);
+
+    const activeVersion = useMemo(() => {
+        if (!activePackage) {
+            return null;
+        }
+
+        return (
+            activePackage.versions.find((version) => version.id === activeVersionId) ??
+            activePackage.versions[0] ??
+            null
+        );
+    }, [activePackage, activeVersionId]);
+
+    return {
+        activePackage,
+        activeVersion,
+        packageOptions: catalog,
+        versionOptions: activePackage?.versions ?? []
+    };
+};
+
+const useSidebarNavigationHandlers = (
+    catalog: readonly PackageCatalogEntry[],
+    versionOptions: readonly PackageVersionCatalog[],
+    restSegments: readonly string[]
+): {
+    handlePackageChange: (value: string) => void;
+    handleVersionChange: (value: string) => void;
+} => {
+    const router = useRouter();
+    const handlePackageChange = useCallback(
+        (value: string) => {
+            const targetPackage = catalog.find((entry) => entry.id === value);
+            if (!targetPackage) {
+                return;
+            }
+
+            const targetVersion = targetPackage.versions[0];
+            if (!targetVersion) {
+                return;
+            }
+
+            router.push(targetVersion.basePath);
+        },
+        [catalog, router]
+    );
+
+    const handleVersionChange = useCallback(
+        (value: string) => {
+            const targetVersion = versionOptions.find((version) => version.id === value) ?? versionOptions[0];
+            if (!targetVersion) {
+                return;
+            }
+
+            router.push(buildVersionPath(targetVersion, restSegments));
+        },
+        [restSegments, router, versionOptions]
+    );
+
+    return {
+        handlePackageChange,
+        handleVersionChange
+    };
+};
+
+function SidebarEmptyState({ className }: { className?: string }): ReactElement {
     return (
         <nav
             aria-label="Library navigation"
             className={cn(
-                'flex h-full flex-col p-4',
-                isDesktop
-                    ? 'rounded-none border-0 bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] shadow-none'
-                    : 'rounded-2xl border border-border bg-surface shadow-soft',
+                'flex h-full flex-col rounded-2xl border border-border bg-surface p-4 shadow-soft',
                 className
             )}
-            style={containerStyles}
         >
+            <p className="text-sm text-subtle">No packages available.</p>
+        </nav>
+    );
+}
+
+export function Sidebar({
+    catalog,
+    activePackageId,
+    activeVersionId,
+    variant = 'desktop',
+    className
+}: SidebarProps): ReactElement {
+    const pathname = usePathname();
+    const containerStyles = getContainerStyles(variant);
+    const listStyles = getListStyles(variant);
+    const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
+
+    const restSegments = useMemo(() => resolveRestSegments(pathname), [pathname]);
+    const { activePackage, activeVersion, packageOptions, versionOptions } = useSidebarSelection(
+        catalog,
+        activePackageId,
+        activeVersionId
+    );
+    const { handlePackageChange, handleVersionChange } = useSidebarNavigationHandlers(
+        catalog,
+        versionOptions,
+        restSegments
+    );
+
+    if (!activePackage || !activeVersion) {
+        return className ? <SidebarEmptyState className={className} /> : <SidebarEmptyState />;
+    }
+
+    const isDesktop = variant === 'desktop';
+    const navClassName = cn(
+        'flex h-full flex-col p-4',
+        isDesktop
+            ? 'rounded-none border-0 bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] shadow-none'
+            : 'rounded-2xl border border-border bg-surface shadow-soft',
+        className
+    );
+
+    return (
+        <nav aria-label="Library navigation" className={navClassName} style={containerStyles}>
             <div className="shrink-0 space-y-3">
                 <SidebarHeader
                     packageOptions={packageOptions}
                     versionOptions={versionOptions}
                     activePackage={activePackage}
                     activeVersion={activeVersion}
-                    onPackageChange={onPackageChange}
-                    onVersionChange={onVersionChange}
+                    onPackageChange={handlePackageChange}
+                    onVersionChange={handleVersionChange}
                 />
             </div>
             <div
@@ -201,9 +325,10 @@ export function Sidebar({ variant = 'desktop', className }: SidebarProps): React
                 onTouchEnd={handleTouchEnd}
                 onTouchCancel={handleTouchEnd}
             >
-                <SidebarCategoryList categories={activeVersion.categories} />
+                <SidebarCategoryList categories={activeVersion.categories} activeHref={pathname} />
             </div>
         </nav>
     );
 }
+
 export default Sidebar;

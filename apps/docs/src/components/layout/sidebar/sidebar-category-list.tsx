@@ -7,14 +7,10 @@ import Icon from '@ui/icon';
 
 import { SidebarItem } from './sidebar-item';
 
-import type { SidebarVariantData } from './types';
+import type { SidebarCategoryListProps } from './types';
 import type { ReactElement } from 'react';
 
-interface SidebarCategoryListProps {
-    categories: readonly SidebarVariantData[];
-}
-
-export function SidebarCategoryList({ categories }: SidebarCategoryListProps): ReactElement {
+export function SidebarCategoryList({ categories, activeHref }: SidebarCategoryListProps): ReactElement {
     const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 
     const toggleCategory = (key: string): void => {
@@ -33,6 +29,7 @@ export function SidebarCategoryList({ categories }: SidebarCategoryListProps): R
                     category={category}
                     isCollapsed={collapsedCategories[`${category.title}-${category.tone}`] ?? false}
                     onToggle={toggleCategory}
+                    activeHref={activeHref}
                 />
             ))}
         </div>
@@ -40,13 +37,20 @@ export function SidebarCategoryList({ categories }: SidebarCategoryListProps): R
 }
 
 interface SidebarCategoryProps {
-    category: SidebarVariantData;
+    category: SidebarCategoryListProps['categories'][number];
     categoryKey: string;
     isCollapsed: boolean;
     onToggle: (key: string) => void;
+    activeHref: string;
 }
 
-function SidebarCategory({ category, categoryKey, isCollapsed, onToggle }: SidebarCategoryProps): ReactElement {
+function SidebarCategory({
+    category,
+    categoryKey,
+    isCollapsed,
+    onToggle,
+    activeHref
+}: SidebarCategoryProps): ReactElement {
     const toneStyles = ENTITY_TONE_STYLES[category.tone];
     const ToneIcon = ENTITY_KIND_ICONS[category.tone];
 
@@ -73,7 +77,12 @@ function SidebarCategory({ category, categoryKey, isCollapsed, onToggle }: Sideb
             </button>
             <div className={cn('flex flex-col gap-1', isCollapsed && 'hidden')}>
                 {category.items.map((item) => (
-                    <SidebarItem key={`${category.title}-${item}`} label={item} tone={category.tone} />
+                    <SidebarItem
+                        key={`${category.title}-${item.href}`}
+                        item={item}
+                        tone={category.tone}
+                        isActive={item.href === activeHref}
+                    />
                 ))}
             </div>
         </div>

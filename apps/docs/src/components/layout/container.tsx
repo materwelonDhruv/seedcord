@@ -8,8 +8,6 @@ import { cn } from '@lib/utils';
 import Button from '@ui/button';
 import { ScrollToTopButton } from '@ui/scroll-to-top-button';
 
-import Sidebar from './sidebar';
-
 import type { SidebarProps as SidebarComponentProps } from './sidebar/types';
 import type { CSSProperties, ReactElement, ReactNode } from 'react';
 
@@ -105,19 +103,27 @@ function MobilePanelDialog({
 export function Container({ sidebar, children, className }: ContainerProps): ReactNode {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [navigationOpen, setNavigationOpen] = useState(false);
-    const desktopSidebar: ReactNode = useMemo(() => {
+    const sidebarVariants = useMemo<{ desktop: ReactNode; mobile: ReactNode }>(() => {
         if (!isValidElement(sidebar)) {
-            return sidebar;
+            return { desktop: sidebar, mobile: sidebar };
         }
 
         const sidebarElement = sidebar as ReactElement<SidebarComponentProps>;
         const mergedClassName = cn('flex h-full w-full flex-col', sidebarElement.props.className);
 
-        return cloneElement<SidebarComponentProps>(sidebarElement, {
+        const desktop = cloneElement<SidebarComponentProps>(sidebarElement, {
             className: mergedClassName,
             variant: sidebarElement.props.variant ?? 'desktop'
         });
+
+        const mobile = cloneElement<SidebarComponentProps>(sidebarElement, {
+            className: cn(mergedClassName, 'border-transparent bg-transparent p-0 shadow-none'),
+            variant: 'mobile'
+        });
+
+        return { desktop, mobile };
     }, [sidebar]);
+    const { desktop: desktopSidebar, mobile: mobileSidebar } = sidebarVariants;
 
     useLayoutEffect(() => {
         const updateNavigationHeight = (): void => {
@@ -150,7 +156,7 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
             <MobileNavigationToggle onOpen={() => setNavigationOpen(true)} />
 
             <MobilePanelDialog open={navigationOpen} onOpenChange={setNavigationOpen} title="Navigation">
-                <Sidebar variant="mobile" className="border-transparent bg-transparent p-0 shadow-none" />
+                {mobileSidebar}
             </MobilePanelDialog>
 
             <div className="flex w-full flex-1 min-w-0">

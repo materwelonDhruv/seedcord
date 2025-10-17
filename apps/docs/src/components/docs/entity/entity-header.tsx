@@ -5,6 +5,7 @@ import { cn } from '@lib/utils';
 import Button from '@ui/button';
 import { Icon } from '@ui/icon';
 
+import type { CodeRepresentation } from '@lib/docs/formatting';
 import type { EntityTone } from '@lib/entity-metadata';
 import type { ReactElement } from 'react';
 
@@ -13,25 +14,21 @@ interface EntityHeaderProps {
     pkg: string;
     symbolName: string;
     tone: EntityTone;
-    signature: string;
-    signatureHtml: string | null;
+    signature: CodeRepresentation;
+    summary: readonly string[];
     sourceUrl?: string | null;
+    version?: string;
+    isDeprecated?: boolean;
 }
 
-function SignatureBlock({
-    signature,
-    signatureHtml
-}: {
-    signature: string;
-    signatureHtml: string | null;
-}): ReactElement {
+function SignatureBlock({ signature }: { signature: CodeRepresentation }): ReactElement {
     const containerClassName =
         'code-scroll-area rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-sm text-[var(--text)] shadow-soft md:px-3 md:py-2.5';
 
-    if (signatureHtml) {
+    if (signature.html) {
         return (
             <div className={containerClassName}>
-                <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signatureHtml }} />
+                <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.html }} />
             </div>
         );
     }
@@ -39,7 +36,7 @@ function SignatureBlock({
     return (
         <div className={containerClassName}>
             <pre className="code-scroll-content whitespace-pre-wrap text-sm text-[var(--text)]">
-                <code>{signature}</code>
+                <code>{signature.text}</code>
             </pre>
         </div>
     );
@@ -49,13 +46,19 @@ export function EntityHeader({
     badgeLabel,
     pkg,
     signature,
-    signatureHtml,
+    summary,
     symbolName,
     tone,
-    sourceUrl
+    sourceUrl,
+    version,
+    isDeprecated = false
 }: EntityHeaderProps): ReactElement {
     const toneStyles = ENTITY_TONE_STYLES[tone];
     const ToneIcon = ENTITY_KIND_ICONS[tone];
+    const [leadSummary, ...restSummary] = summary;
+    const description =
+        leadSummary ??
+        'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.';
 
     return (
         <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
@@ -73,14 +76,26 @@ export function EntityHeader({
                     <span className="inline-flex items-center gap-2 rounded-full border border-border bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-subtle">
                         {pkg}
                     </span>
+                    {version ? (
+                        <span className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-subtle">
+                            v{version}
+                        </span>
+                    ) : null}
+                    {isDeprecated ? (
+                        <span className="inline-flex items-center gap-2 rounded-full border border-[color-mix(in_srgb,var(--entity-variable-color)_48%,transparent)] bg-[color-mix(in_srgb,var(--entity-variable-color)_12%,transparent)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[color-mix(in_srgb,var(--entity-variable-color)_72%,var(--text))]">
+                            Deprecated
+                        </span>
+                    ) : null}
                 </div>
                 <div className="flex items-start gap-3 sm:gap-4">
                     <div className="min-w-0 flex-1 space-y-2.5">
                         <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
-                        <p className="text-sm leading-relaxed text-subtle">
-                            Rich TypeDoc summaries are on the roadmap. Until then, review the exported signature below
-                            and use the command palette to deep-dive into related members and packages.
-                        </p>
+                        <div className="space-y-2 text-sm leading-relaxed text-subtle">
+                            <p>{description}</p>
+                            {restSummary.map((paragraph, index) => (
+                                <p key={index}>{paragraph}</p>
+                            ))}
+                        </div>
                     </div>
                     {sourceUrl ? (
                         <Button
@@ -97,7 +112,7 @@ export function EntityHeader({
                     ) : null}
                 </div>
             </div>
-            <SignatureBlock signature={signature} signatureHtml={signatureHtml} />
+            <SignatureBlock signature={signature} />
         </header>
     );
 }

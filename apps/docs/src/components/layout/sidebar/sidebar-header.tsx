@@ -1,13 +1,13 @@
 import { SidebarSelect } from './sidebar-select';
 
-import type { PackageCatalogEntry, PackageVersion } from './types';
+import type { SidebarHeaderPackageOption, SidebarHeaderVersionOption } from './types';
 import type { ReactElement } from 'react';
 
 interface SidebarHeaderProps {
-    packageOptions: readonly PackageCatalogEntry[];
-    versionOptions: readonly PackageVersion[];
-    activePackage: PackageCatalogEntry;
-    activeVersion: PackageVersion;
+    packageOptions: readonly SidebarHeaderPackageOption[];
+    versionOptions: readonly SidebarHeaderVersionOption[];
+    activePackage: SidebarHeaderPackageOption;
+    activeVersion: SidebarHeaderVersionOption;
     onPackageChange: (value: string) => void;
     onVersionChange: (value: string) => void;
 }

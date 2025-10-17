@@ -1,9 +1,11 @@
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 const GENERATED_RELATIVE_PATH = '../../../packages/docs-generator/generated';
+const MODULE_DIR = path.dirname(fileURLToPath(import.meta.url));
 
 export const MANIFEST_FILENAME = 'manifest.json';
-export const DEFAULT_GENERATED_DIR = path.resolve(import.meta.dirname, GENERATED_RELATIVE_PATH);
+export const DEFAULT_GENERATED_DIR = path.resolve(MODULE_DIR, GENERATED_RELATIVE_PATH);
 
 const INIT_CWD = process.env.INIT_CWD ? path.resolve(process.env.INIT_CWD) : undefined;
 
