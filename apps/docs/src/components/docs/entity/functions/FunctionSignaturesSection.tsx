@@ -1,8 +1,8 @@
 import type { FunctionSignatureModel } from '@/lib/docs/types';
 
-import { cn } from '@lib/utils';
-
 import { SignatureCard } from '../signatures/SignatureCard';
+import SignatureSelector from '../signatures/SignatureSelector';
+import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 
 import type { ReactElement } from 'react';
 
@@ -11,9 +11,15 @@ interface FunctionSignaturesSectionProps {
 }
 
 export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSectionProps): ReactElement | null {
-    if (!signatures.length) {
-        return null;
-    }
+    if (!signatures.length) return null;
+
+    const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as { anchor?: string }).anchor }));
+    const [activeSignatureId, setActiveSignatureId] = useActiveSignatureList(
+        mapped as { id: string; anchor?: string }[]
+    );
+
+    const activeSignature = (signatures.find((s) => s.id === activeSignatureId) ??
+        signatures[0]) as FunctionSignatureModel;
 
     return (
         <section className="space-y-4">
@@ -22,10 +28,16 @@ export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSect
                     {signatures.length === 1 ? 'Function Signature' : 'Function Signatures'}
                 </h2>
             </header>
-            <div className={cn('grid gap-4', signatures.length > 1 ? 'lg:grid-cols-2' : undefined)}>
-                {signatures.map((signature) => (
-                    <SignatureCard key={signature.id} signature={signature} />
-                ))}
+
+            <SignatureSelector
+                signatures={signatures}
+                activeSignatureId={activeSignatureId}
+                onChange={setActiveSignatureId}
+                legend={signatures.length === 1 ? 'Signature' : 'Overloads'}
+            />
+
+            <div>
+                <SignatureCard key={activeSignature.id} signature={activeSignature} />
             </div>
         </section>
     );
