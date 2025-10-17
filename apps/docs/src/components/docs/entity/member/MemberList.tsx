@@ -41,7 +41,9 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
                                 'hover:border-[color-mix(in_srgb,var(--accent-b)_34%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent-b)_12%,var(--surface)_88%)]'
                             )}
                         >
-                            <span className={cn('truncate font-medium', accentClass)}>{item.label}</span>
+                            <span className={cn('truncate font-medium', accentClass)}>
+                                {prefix === 'method' ? `${item.label}()` : item.label}
+                            </span>
                         </Link>
                     </li>
                 ))}

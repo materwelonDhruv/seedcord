@@ -108,8 +108,8 @@ abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements Handle
     /**
      * Gets arguments parsed from interaction customId
      *
-     * Arguments are extracted from customId using ":" and "-" separators.
-     * For customId "accept:user123-guild456", returns ["user123", "guild456"]
+     * Arguments are extracted from customId using `:` and `-` separators.
+     * For customId `accept:user123-guild456`, returns `["user123", "guild456"]`
      */
     protected getArgs(): string[] {
         return this.args;

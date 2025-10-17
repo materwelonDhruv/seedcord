@@ -1,5 +1,3 @@
-import { log } from 'console';
-
 import { cache } from 'react';
 
 import { rawExternalLinks } from './rawExternalLinks';
@@ -91,9 +89,6 @@ export function resolveExternalPackageUrl(packageName?: string | null): string |
         .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
         .trim();
     if (stripped) candidates.add(sanitizeExternalKey(stripped));
-
-    const keys = [...candidates];
-    log('Resolving external URL for package:', packageName, 'candidates:', keys);
 
     for (const key of candidates) {
         const url = EXTERNAL_DOCUMENTATION_LINKS.get(key);

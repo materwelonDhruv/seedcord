@@ -13,9 +13,10 @@ export interface MemberCardHeaderProps {
     member: EntityMemberSummary;
     anchorId: string;
     tags: string[];
+    prefix?: 'property' | 'method' | 'constructor' | 'typeParameter';
 }
 
-export function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): ReactElement {
+export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderProps): ReactElement {
     return (
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
@@ -42,7 +43,7 @@ export function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderPro
                             }
                         />
                         <h3 className="truncate text-base font-semibold text-[var(--text)] sm:text-lg">
-                            {member.label}
+                            {prefix === 'method' ? `${member.label}()` : member.label}
                         </h3>
                     </div>
                     <div className="ml-auto flex items-center gap-2">

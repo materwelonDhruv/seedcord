@@ -26,7 +26,7 @@ export function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactEl
                 isLast ? 'pb-4' : 'pb-6'
             )}
         >
-            <MemberCardHeader member={member} anchorId={anchorId} tags={tags} />
+            <MemberCardHeader member={member} anchorId={anchorId} tags={tags} prefix={prefix} />
             <MemberCardBody member={member} />
         </article>
     );
