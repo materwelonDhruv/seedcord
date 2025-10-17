@@ -1,7 +1,6 @@
 import { kindName, type DocNode, type DocSignature } from '@seedcord/docs-engine';
 
-import type { EntityMemberSummary } from '@/components/docs/entity/types';
-import { resolveEntityTone, type EntityTone } from '@/lib/EntityMetadata';
+import { resolveEntityTone, type EntityTone } from '@lib/EntityMetadata';
 
 import { formatCommentRich, type CommentExample, type CommentParagraph } from './comment-format';
 import {
@@ -22,6 +21,7 @@ import {
 import { formatDisplayPackageName } from './packages';
 
 import type { DocsEngine } from './engine';
+import type { EntityMemberSummary } from '@components/docs/entity/types';
 
 export type EntityKind = EntityTone;
 

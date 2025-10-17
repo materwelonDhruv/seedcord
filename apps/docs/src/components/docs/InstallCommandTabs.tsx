@@ -2,9 +2,8 @@
 
 import { useMemo, useState } from 'react';
 
-import CopyButton from '@/components/ui/CopyButton';
-
 import { cn } from '@lib/utils';
+import CopyButton from '@ui/CopyButton';
 
 import type { ReactElement } from 'react';
 

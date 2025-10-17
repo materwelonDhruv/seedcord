@@ -1,17 +1,16 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import Button from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
-import type { EntityTone } from '@/lib/EntityMetadata';
-import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@/lib/EntityMetadata';
-
+import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@lib/EntityMetadata';
 import { cn } from '@lib/utils';
+import Button from '@ui/Button';
+import { Icon } from '@ui/Icon';
 
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
 
 import type { CommentParagraph } from '@lib/docs/comment-format';
 import type { CodeRepresentation } from '@lib/docs/formatting';
+import type { EntityTone } from '@lib/EntityMetadata';
 import type { ReactElement } from 'react';
 
 interface EntityHeaderProps {

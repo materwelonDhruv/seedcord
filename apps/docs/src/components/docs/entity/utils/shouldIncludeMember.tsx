@@ -1,4 +1,4 @@
-import { type MemberAccessLevel, MEMBER_ACCESS_RANK } from '@/lib/memberAccess';
+import { type MemberAccessLevel, MEMBER_ACCESS_RANK } from '@lib/memberAccess';
 
 import type { EntityMemberSummary } from '../types';
 

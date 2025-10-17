@@ -1,5 +1,3 @@
-import type { EntityTone } from '@/lib/EntityMetadata';
-
 import type {
     DocsCatalog,
     NavigationCategory,
@@ -7,6 +5,7 @@ import type {
     PackageCatalogEntry,
     PackageVersionCatalog
 } from '@lib/docs/catalog';
+import type { EntityTone } from '@lib/EntityMetadata';
 
 export type SidebarVariant = 'desktop' | 'mobile';
 

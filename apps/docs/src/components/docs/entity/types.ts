@@ -1,8 +1,7 @@
-import type { MemberAccessLevel } from '@/lib/memberAccess';
-
 import type { CommentExample, CommentParagraph } from '@lib/docs/comment-format';
 import type { EntityModel } from '@lib/docs/entities';
 import type { CodeRepresentation } from '@lib/docs/formatting';
+import type { MemberAccessLevel } from '@lib/memberAccess';
 
 export type MemberAccessorType = 'getter' | 'setter' | 'accessor';
 

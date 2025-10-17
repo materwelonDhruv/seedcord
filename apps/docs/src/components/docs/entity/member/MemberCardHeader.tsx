@@ -1,9 +1,8 @@
 import { Code } from 'lucide-react';
 
-import { Icon } from '@/components/ui/Icon';
-import { formatMemberAccessLabel } from '@/lib/memberAccess';
-
+import { formatMemberAccessLabel } from '@lib/memberAccess';
 import { CopyAnchorButton } from '@ui/CopyAnchorButton';
+import { Icon } from '@ui/Icon';
 
 import { CommentParagraphs } from '../comments/CommentParagraphs';
 

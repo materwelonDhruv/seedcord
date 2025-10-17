@@ -2,8 +2,7 @@
 
 import { useShallow } from 'zustand/react/shallow';
 
-import { MEMBER_ACCESS_LEVELS, formatMemberAccessLabel } from '@/lib/memberAccess';
-
+import { MEMBER_ACCESS_LEVELS, formatMemberAccessLabel } from '@lib/memberAccess';
 import { cn } from '@lib/utils';
 import { useUIStore, type UIStore } from '@store/ui';
 

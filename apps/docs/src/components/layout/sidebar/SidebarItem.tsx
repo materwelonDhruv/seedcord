@@ -2,8 +2,7 @@
 
 import Link from 'next/link';
 
-import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@/lib/EntityMetadata';
-
+import { ENTITY_KIND_ICONS, ENTITY_TONE_STYLES } from '@lib/EntityMetadata';
 import { log } from '@lib/logger';
 import { cn } from '@lib/utils';
 

@@ -3,8 +3,7 @@
 import { useMemo, type ReactElement } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
-import MemberAccessControls from '@/components/docs/entity/member/MemberAccessControls';
-
+import MemberAccessControls from '@components/docs/entity/member/MemberAccessControls';
 import { useUIStore, type UIStore } from '@store/ui';
 
 import { MemberDetailGroup } from './member/MemberDetailGroup';

@@ -1,11 +1,10 @@
 import { ChevronDown } from 'lucide-react';
 
-import type { MemberAccessLevel } from '@/lib/memberAccess';
-import { formatMemberAccessLabel } from '@/lib/memberAccess';
-
+import { formatMemberAccessLabel } from '@lib/memberAccess';
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/Icon';
 
+import type { MemberAccessLevel } from '@lib/memberAccess';
 import type { ReactElement } from 'react';
 
 export function renderMemberOverview(

@@ -1,5 +1,3 @@
-import type { EntityMemberSummary } from '@/components/docs/entity/types';
-
 import {
     createPlainParagraph,
     formatCommentRich,
@@ -16,6 +14,7 @@ import {
     type FormatContext
 } from './formatting';
 
+import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type { DocNode, DocSignature, RenderedDeclarationHeader } from '@seedcord/docs-engine';
 
 const FALLBACK_DESCRIPTION = 'Documentation will be sourced from TypeDoc soon.';
