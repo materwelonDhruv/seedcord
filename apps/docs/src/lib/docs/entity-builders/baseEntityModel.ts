@@ -16,8 +16,8 @@ export function createBaseEntityModel({
     kind: EntityKind;
     manifestPackage: string;
     displayPackage: string;
-    summary: CommentParagraph[];
-    summaryExamples: CommentExample[];
+    summary: readonly CommentParagraph[];
+    summaryExamples: readonly CommentExample[];
     signature: CodeRepresentation;
 }): BaseEntityModel {
     const base: BaseEntityModel = {

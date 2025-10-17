@@ -8,7 +8,8 @@ import type { DocNode, DocSignature, RenderedDeclarationHeader } from '@seedcord
 
 export const FALLBACK_DESCRIPTION = 'Documentation will be sourced from TypeDoc soon.';
 
-const cloneExamples = (examples: CommentExample[]): CommentExample[] => examples.slice();
+const cloneExamples = (examples: readonly CommentExample[] | null | undefined): CommentExample[] =>
+    examples?.length ? [...examples] : [];
 
 export const ensureSlug = (node: DocNode): string =>
     typeof node.slug === 'string' && node.slug.length > 0 ? node.slug : String(node.id);

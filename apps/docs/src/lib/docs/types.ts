@@ -1,7 +1,14 @@
 import type { EntityTone } from '../entityMetadata';
 import type { DocsEngine } from './engine';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
-import type { DirectoryEntity, DocComment } from '@seedcord/docs-engine';
+import type {
+    DirectoryEntity,
+    DocComment,
+    DocNode,
+    DocSignatureParameter,
+    RenderedSignature
+} from '@seedcord/docs-engine';
+import type { ReadonlyRecord } from '@seedcord/types';
 
 export interface FormatContext {
     engine: DocsEngine;
@@ -36,20 +43,15 @@ export interface CommentExample {
     code: CodeRepresentation;
 }
 
-export interface FormattedComment {
-    paragraphs: CommentParagraph[];
-    examples: CommentExample[];
-}
+export interface FormattedComment extends WithDocs<'paragraphs', 'examples'> {}
 
-export interface WithSourceUrl {
-    sourceUrl?: string;
-}
+export type WithSourceUrl = Pick<DocNode, 'sourceUrl'>;
 
-export type WithCode<Key extends string = 'code'> = Readonly<Record<Key, CodeRepresentation>>;
+export type WithCode<Key extends string = 'code'> = ReadonlyRecord<Key, CodeRepresentation>;
 
-export type WithSummary<Key extends string = 'summary'> = Readonly<Record<Key, readonly CommentParagraph[]>>;
+export type WithSummary<Key extends string = 'summary'> = ReadonlyRecord<Key, readonly CommentParagraph[]>;
 
-export type WithExamples<Key extends string = 'examples'> = Readonly<Record<Key, readonly CommentExample[]>>;
+export type WithExamples<Key extends string = 'examples'> = ReadonlyRecord<Key, readonly CommentExample[]>;
 
 export type WithDocs<
     SummaryKey extends string = 'summary',
@@ -116,7 +118,7 @@ export interface ClassLikeEntityModel extends BaseEntityModel {
 export interface EnumMemberModel extends WithCode<'signature'>, WithSummary<'summary'>, WithSourceUrl {
     id: string;
     label: string;
-    value?: string;
+    value?: DocNode['defaultValue'];
 }
 
 export interface EnumEntityModel extends BaseEntityModel {
@@ -131,16 +133,18 @@ export interface TypeEntityModel extends BaseEntityModel {
 }
 
 export interface FunctionSignatureParameterModel {
-    name: string;
+    name: DocSignatureParameter['name'];
     optional: boolean;
     type?: string;
-    defaultValue?: string;
-    documentation: CommentParagraph[];
+    defaultValue?: DocSignatureParameter['defaultValue'];
+    documentation: readonly CommentParagraph[];
     display?: CodeRepresentation;
 }
 
+type RenderedTypeParameter = NonNullable<RenderedSignature['typeParams']>[number];
+
 export interface FunctionTypeParameterModel {
-    name: string;
+    name: RenderedTypeParameter['name'];
     constraint?: string | undefined;
     default?: string | undefined;
     description?: string | undefined;
