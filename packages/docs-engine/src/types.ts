@@ -107,6 +107,7 @@ export interface DocFlags {
     isConst: boolean;
     isReadonly: boolean;
     isOptional: boolean;
+    isAsync: boolean;
     isDeprecated: boolean;
     isInherited: boolean;
     isDecorator: boolean;
