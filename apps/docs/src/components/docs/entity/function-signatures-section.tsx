@@ -3,6 +3,9 @@ import { Code } from 'lucide-react';
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/icon';
 
+import { CommentExamples } from './comment-examples';
+import { CommentParagraphs } from './comment-paragraphs';
+
 import type { FunctionSignatureModel } from '@lib/docs/entities';
 import type { ReactElement } from 'react';
 
@@ -22,8 +25,6 @@ function renderParameterBadge(parameter: FunctionSignatureModel['parameters'][nu
 }
 
 function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
-    const paragraphs = signature.summary.filter(Boolean);
-
     return (
         <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
             <header className="flex flex-wrap items-center justify-between gap-3">
@@ -45,13 +46,8 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 </div>
             ) : null}
-            {paragraphs.length ? (
-                <div className="space-y-2 text-sm leading-relaxed text-subtle">
-                    {paragraphs.map((text) => (
-                        <p key={text}>{text}</p>
-                    ))}
-                </div>
-            ) : null}
+            <CommentParagraphs paragraphs={signature.summary} />
+            {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
             {signature.parameters.length ? (
                 <div className="space-y-2">
                     <h4 className="text-sm font-semibold text-[var(--text)]">Parameters</h4>
@@ -102,10 +98,6 @@ export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSect
                 <h2 className="text-xl font-semibold text-[color-mix(in_srgb,var(--entity-function-color)_72%,var(--text))]">
                     Function signatures
                 </h2>
-                <p className="text-sm text-subtle">
-                    Every overload originates from the debugging manifest. Parameter hints and return types stay true to
-                    the generated source artifacts.
-                </p>
             </header>
             <div className={cn('grid gap-4', signatures.length > 1 ? 'lg:grid-cols-2' : undefined)}>
                 {signatures.map((signature) => (

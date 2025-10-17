@@ -8,6 +8,9 @@ import { formatMemberAccessLabel } from '@lib/member-access';
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/icon';
 
+import { CommentParagraphs } from './comment-paragraphs';
+import { MemberCardBody } from './member-card-body';
+
 import type { EntityMemberSummary } from './member-types';
 import type { LucideIcon } from 'lucide-react';
 
@@ -164,42 +167,7 @@ function MemberCardHeader({ member, anchorId, tags }: MemberCardHeaderProps): Re
                     </div>
                 </div>
                 {member.description ? (
-                    <p className="text-sm leading-relaxed text-subtle">{member.description}</p>
-                ) : null}
-            </div>
-        </div>
-    );
-}
-
-interface MemberCardBodyProps {
-    member: EntityMemberSummary;
-    fallbackDoc: string;
-}
-
-function MemberCardBody({ member, fallbackDoc }: MemberCardBodyProps): ReactElement {
-    const signatureContainerClass =
-        'code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
-
-    return (
-        <div className="mt-4 min-w-0 space-y-3 text-sm text-subtle">
-            {member.signatureHtml ? (
-                <div className={signatureContainerClass}>
-                    <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: member.signatureHtml }} />
-                </div>
-            ) : member.signature ? (
-                <div className={signatureContainerClass}>
-                    <pre className="code-scroll-content whitespace-pre text-sm text-[var(--text)]">
-                        <code>{member.signature}</code>
-                    </pre>
-                </div>
-            ) : null}
-            <div className="space-y-2 leading-relaxed">
-                <p>{fallbackDoc}</p>
-                {member.inheritedFrom ? (
-                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                        <span className="font-semibold text-[var(--text)]">Inherited from:</span>
-                        <span>{member.inheritedFrom}</span>
-                    </p>
+                    <CommentParagraphs paragraphs={[member.description]} className="space-y-0" />
                 ) : null}
             </div>
         </div>
@@ -215,9 +183,6 @@ interface MemberCardProps {
 function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactElement {
     const tags = buildTagList(member);
     const anchorId = `${prefix}-${member.id}`;
-    const fallbackDoc =
-        member.documentation ??
-        'Additional TypeDoc metadata will appear here once the symbol is sourced from generated documentation artifacts.';
     const hasTags = tags.length > 0;
 
     return (
@@ -230,7 +195,7 @@ function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactElement {
             )}
         >
             <MemberCardHeader member={member} anchorId={anchorId} tags={tags} />
-            <MemberCardBody member={member} fallbackDoc={fallbackDoc} />
+            <MemberCardBody member={member} />
         </article>
     );
 }

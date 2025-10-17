@@ -122,6 +122,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 pkg={model.displayPackage}
                 signature={model.signature}
                 summary={model.summary}
+                summaryExamples={model.summaryExamples}
                 symbolName={model.name}
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}

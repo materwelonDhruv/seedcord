@@ -1,17 +1,23 @@
-import { kindName, type DocNode, type DocSignature, type RenderedDeclarationHeader } from '@seedcord/docs-engine';
+import { kindName, type DocNode, type DocSignature } from '@seedcord/docs-engine';
 
 import { resolveEntityTone, type EntityTone } from '@lib/entity-metadata';
 
+import { formatCommentRich, type CommentExample, type CommentParagraph } from './comment-format';
 import {
     createFormatContext,
-    formatComment,
-    formatDeclarationHeader,
     formatSignature,
     highlightCode,
     renderInlineType,
     type CodeRepresentation,
     type FormatContext
 } from './formatting';
+import {
+    buildMemberSummary,
+    buildTypeParameterSummaries,
+    ensureSignatureAnchor,
+    ensureSlug,
+    resolveHeaderSignature
+} from './member-builders';
 import { formatDisplayPackageName } from './packages';
 
 import type { DocsEngine } from './engine';
@@ -27,7 +33,8 @@ interface BaseEntityModel {
     manifestPackage: string;
     displayPackage: string;
     version?: string;
-    summary: string[];
+    summary: CommentParagraph[];
+    summaryExamples: CommentExample[];
     signature: CodeRepresentation;
     sourceUrl?: string;
     isDeprecated: boolean;
@@ -43,7 +50,7 @@ export interface EnumMemberModel {
     id: string;
     label: string;
     value?: string;
-    summary: string[];
+    summary: CommentParagraph[];
     signature: CodeRepresentation;
     sourceUrl?: string;
 }
@@ -69,7 +76,8 @@ export interface FunctionSignatureModel {
         defaultValue?: string;
     }[];
     returnType?: string;
-    summary: string[];
+    summary: CommentParagraph[];
+    examples: CommentExample[];
     sourceUrl?: string;
 }
 
@@ -95,36 +103,21 @@ const PROPERTY_KINDS = new Set(['kind_property', 'kind_accessor']);
 const METHOD_KINDS = new Set(['kind_method', 'kind_constructor']);
 const ENUM_MEMBER_KIND = 'kind_enum_member';
 
-const FALLBACK_DESCRIPTION = 'Documentation will be sourced from TypeDoc soon.';
-
-const ensureSlug = (node: DocNode): string =>
-    typeof node.slug === 'string' && node.slug.length > 0 ? node.slug : String(node.id);
-
-const ensureSignatureAnchor = (signature: DocSignature): string =>
-    typeof signature.anchor === 'string' && signature.anchor.length > 0
-        ? signature.anchor
-        : `${signature.name}-${signature.overloadIndex}`;
-
-const resolveHeaderSignature = async (node: DocNode, context: FormatContext): Promise<CodeRepresentation> => {
-    if (node.header) return formatDeclarationHeader(node.header, context);
-    const rendered = node.signatures[0]?.render;
-    if (rendered) return formatSignature(rendered, context);
-    return highlightCode(node.headerText ?? node.name);
-};
-
 const createBaseEntityModel = ({
     node,
     kind,
     manifestPackage,
     displayPackage,
     summary,
+    summaryExamples,
     signature
 }: {
     node: DocNode;
     kind: EntityKind;
     manifestPackage: string;
     displayPackage: string;
-    summary: string[];
+    summary: CommentParagraph[];
+    summaryExamples: CommentExample[];
     signature: CodeRepresentation;
 }): BaseEntityModel => {
     const base: BaseEntityModel = {
@@ -135,6 +128,7 @@ const createBaseEntityModel = ({
         manifestPackage,
         displayPackage,
         summary,
+        summaryExamples,
         signature,
         isDeprecated: node.flags.isDeprecated
     };
@@ -145,82 +139,13 @@ const createBaseEntityModel = ({
     return base;
 };
 
-const normalizeAccessor = (accessor?: string | null): EntityMemberSummary['accessorType'] => {
-    if (!accessor) {
-        return undefined;
-    }
-    if (accessor === 'getter' || accessor === 'setter') {
-        return accessor;
-    }
-    return 'accessor';
-};
-
-const collectMemberTags = (node: DocNode): string[] => {
-    const tags = new Set<string>();
-    const { flags } = node;
-    if (flags.isStatic) tags.add('static');
-    if (flags.isReadonly) tags.add('readonly');
-    if (flags.isAbstract) tags.add('abstract');
-    if (flags.isOptional) tags.add('optional');
-    if (flags.isDeprecated) tags.add('deprecated');
-    return Array.from(tags);
-};
-
-const buildTypeParameterSummaries = async (
-    header: RenderedDeclarationHeader | undefined,
-    context: FormatContext
-): Promise<EntityMemberSummary[]> => {
-    const params = header?.typeParams ?? [];
-    if (!params.length) return [];
-    return Promise.all(
-        params.map(async (param) => {
-            const segments: string[] = [param.name];
-            if (param.constraint) segments.push(`extends ${renderInlineType(param.constraint, context)}`);
-            if (param.default) segments.push(`= ${renderInlineType(param.default, context)}`);
-            const code = await highlightCode(segments.join(' '));
-            return {
-                id: `type-${param.name}`,
-                label: param.name,
-                description: 'Type parameter.',
-                signature: code.text,
-                signatureHtml: code.html
-            } satisfies EntityMemberSummary;
-        })
-    );
-};
-
-const buildMemberSummary = async (node: DocNode, context: FormatContext): Promise<EntityMemberSummary> => {
-    const signature = await resolveHeaderSignature(node, context);
-    const primarySummary = formatComment(node.comment);
-    const signatureComment = node.signatures[0]?.comment;
-    const signatureSummary = signatureComment ? formatComment(signatureComment) : [];
-    const description = signatureSummary[0] ?? primarySummary[0] ?? FALLBACK_DESCRIPTION;
-    const remainingSignature = description === signatureSummary[0] ? signatureSummary.slice(1) : signatureSummary;
-    const remainingPrimary = description === primarySummary[0] ? primarySummary.slice(1) : primarySummary;
-    const documentationParts = [...remainingSignature, ...remainingPrimary];
-    const summary: EntityMemberSummary = {
-        id: ensureSlug(node),
-        label: node.name,
-        description,
-        signature: signature.text,
-        signatureHtml: signature.html
-    };
-    if (documentationParts.length) summary.documentation = documentationParts.join('\n\n');
-    const tags = collectMemberTags(node);
-    if (tags.length) summary.tags = tags;
-    if (node.flags.access) summary.access = node.flags.access;
-    const accessorType = normalizeAccessor(node.flags.accessor);
-    if (accessorType) summary.accessorType = accessorType;
-    if (node.sourceUrl) summary.sourceUrl = node.sourceUrl;
-    return summary;
-};
-
-const buildEnumMember = async (node: DocNode): Promise<EnumMemberModel> => {
+const buildEnumMember = async (node: DocNode, context: FormatContext): Promise<EnumMemberModel> => {
     const code = await highlightCode(node.headerText ?? node.name);
+    const comment = await formatCommentRich(node.comment, context);
     const member: EnumMemberModel = {
         id: ensureSlug(node),
         label: node.name,
-        summary: formatComment(node.comment),
+        summary: comment.paragraphs,
         signature: code
     };
 
@@ -258,11 +183,14 @@ const buildFunctionSignature = async (
         return parameter;
     });
 
+    const comment = await formatCommentRich(signature.comment, context);
+
     const model: FunctionSignatureModel = {
         id: ensureSignatureAnchor(signature),
         code,
         parameters,
-        summary: formatComment(signature.comment)
+        summary: comment.paragraphs,
+        examples: comment.examples.slice()
     };
 
     if (rendered?.returnType) {
@@ -303,9 +231,15 @@ const buildClassLikeEntity = async <Kind extends 'class' | 'interface'>(
     };
 };
 
-const buildEnumEntity = async (base: BaseEntityModel & { kind: 'enum' }, node: DocNode): Promise<EnumEntityModel> => {
+const buildEnumEntity = async (
+    base: BaseEntityModel & { kind: 'enum' },
+    node: DocNode,
+    context: FormatContext
+): Promise<EnumEntityModel> => {
     const members = await Promise.all(
-        node.children.filter((child) => child.kindLabel === ENUM_MEMBER_KIND).map((child) => buildEnumMember(child))
+        node.children
+            .filter((child) => child.kindLabel === ENUM_MEMBER_KIND)
+            .map((child) => buildEnumMember(child, context))
     );
 
     return {
@@ -351,7 +285,7 @@ const resolveEntityKind = (node: DocNode): EntityKind => resolveEntityTone(kindN
 export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promise<EntityModel> {
     const manifestPackage = node.packageName;
     const context = createFormatContext(engine, manifestPackage);
-    const summary = formatComment(node.comment);
+    const formattedSummary = await formatCommentRich(node.comment, context);
     const signature = await resolveHeaderSignature(node, context);
     const kind = resolveEntityKind(node);
 
@@ -360,7 +294,8 @@ export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promi
         kind,
         manifestPackage,
         displayPackage: formatDisplayPackageName(manifestPackage),
-        summary,
+        summary: formattedSummary.paragraphs,
+        summaryExamples: formattedSummary.examples,
         signature
     });
 
@@ -370,7 +305,7 @@ export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promi
         case 'interface':
             return buildClassLikeEntity({ ...base, kind: 'interface' }, node, context);
         case 'enum':
-            return buildEnumEntity({ ...base, kind: 'enum' }, node);
+            return buildEnumEntity({ ...base, kind: 'enum' }, node, context);
         case 'type':
             return buildTypeEntity({ ...base, kind: 'type' }, node, context);
         case 'function':

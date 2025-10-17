@@ -5,6 +5,9 @@ import { cn } from '@lib/utils';
 import Button from '@ui/button';
 import { Icon } from '@ui/icon';
 
+import { CommentExamples } from './comment-examples';
+
+import type { CommentExample, CommentParagraph } from '@lib/docs/comment-format';
 import type { CodeRepresentation } from '@lib/docs/formatting';
 import type { EntityTone } from '@lib/entity-metadata';
 import type { ReactElement } from 'react';
@@ -15,11 +18,40 @@ interface EntityHeaderProps {
     symbolName: string;
     tone: EntityTone;
     signature: CodeRepresentation;
-    summary: readonly string[];
+    summary: readonly CommentParagraph[];
+    summaryExamples?: readonly CommentExample[];
     sourceUrl?: string | null;
     version?: string;
     isDeprecated?: boolean;
 }
+
+const renderParagraphNode = (paragraph: CommentParagraph, key: string): ReactElement =>
+    paragraph.html ? (
+        <p key={key} dangerouslySetInnerHTML={{ __html: paragraph.html }} />
+    ) : (
+        <p key={key}>{paragraph.plain}</p>
+    );
+
+const buildSummaryNodes = (paragraphs: readonly CommentParagraph[], fallback: string): ReactElement[] => {
+    const entries = paragraphs.filter((paragraph) => paragraph.html || paragraph.plain);
+    const [lead, ...rest] = entries;
+
+    const content: ReactElement[] = [];
+
+    if (lead) {
+        content.push(renderParagraphNode(lead, lead.html || lead.plain || 'summary-lead'));
+    } else {
+        content.push(
+            renderParagraphNode({ plain: fallback, html: fallback } satisfies CommentParagraph, 'summary-fallback')
+        );
+    }
+
+    rest.forEach((paragraph, index) => {
+        content.push(renderParagraphNode(paragraph, paragraph.html || paragraph.plain || `summary-${index}`));
+    });
+
+    return content;
+};
 
 function SignatureBlock({ signature }: { signature: CodeRepresentation }): ReactElement {
     const containerClassName =
@@ -47,6 +79,7 @@ export function EntityHeader({
     pkg,
     signature,
     summary,
+    summaryExamples,
     symbolName,
     tone,
     sourceUrl,
@@ -55,10 +88,9 @@ export function EntityHeader({
 }: EntityHeaderProps): ReactElement {
     const toneStyles = ENTITY_TONE_STYLES[tone];
     const ToneIcon = ENTITY_KIND_ICONS[tone];
-    const [leadSummary, ...restSummary] = summary;
-    const description =
-        leadSummary ??
+    const fallbackDescription =
         'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.';
+    const summaryNodes = buildSummaryNodes(summary, fallbackDescription);
 
     return (
         <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
@@ -91,10 +123,10 @@ export function EntityHeader({
                     <div className="min-w-0 flex-1 space-y-2.5">
                         <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
                         <div className="space-y-2 text-sm leading-relaxed text-subtle">
-                            <p>{description}</p>
-                            {restSummary.map((paragraph, index) => (
-                                <p key={index}>{paragraph}</p>
-                            ))}
+                            {summaryNodes}
+                            {summaryExamples?.length ? (
+                                <CommentExamples examples={summaryExamples} className="pt-1" />
+                            ) : null}
                         </div>
                     </div>
                     {sourceUrl ? (

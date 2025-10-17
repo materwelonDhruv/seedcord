@@ -181,9 +181,11 @@ export function formatComment(comment: DocComment | null | undefined): string[] 
         .filter(Boolean);
 }
 
-export async function highlightCode(code: string): Promise<CodeRepresentation> {
+export async function highlightCode(code: string, lang = 'ts'): Promise<CodeRepresentation> {
+    const language = (lang || 'ts') as Parameters<typeof highlightToHtml>[1];
+
     return {
         text: code,
-        html: await highlightToHtml(code)
+        html: await highlightToHtml(code, language)
     };
 }

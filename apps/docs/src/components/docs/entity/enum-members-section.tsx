@@ -3,6 +3,8 @@ import { Code } from 'lucide-react';
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/icon';
 
+import { CommentParagraphs } from './comment-paragraphs';
+
 import type { EnumMemberModel } from '@lib/docs/entities';
 import type { ReactElement } from 'react';
 
@@ -54,15 +56,7 @@ function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactElement {
                     </pre>
                 </div>
             ) : null}
-            {hasSummary ? (
-                <div className="space-y-2 text-sm leading-relaxed text-subtle">
-                    {member.summary.map((paragraph) => (
-                        <p key={paragraph} className="min-w-0">
-                            {paragraph}
-                        </p>
-                    ))}
-                </div>
-            ) : null}
+            {hasSummary ? <CommentParagraphs paragraphs={member.summary} /> : null}
         </article>
     );
 }
@@ -76,11 +70,8 @@ export function EnumMembersSection({ members }: EnumMembersSectionProps): ReactE
         <section className="space-y-4">
             <header className="space-y-1">
                 <h2 className="text-xl font-semibold text-[color-mix(in_srgb,var(--entity-enum-color)_72%,var(--text))]">
-                    Enumeration members
+                    Members
                 </h2>
-                <p className="text-sm text-subtle">
-                    Each constant is generated from the TypeDoc manifest. Values mirror the runtime implementation.
-                </p>
             </header>
             <div className={cn('grid gap-4', members.length > 1 ? 'lg:grid-cols-2' : undefined)}>
                 {members.map((member) => (

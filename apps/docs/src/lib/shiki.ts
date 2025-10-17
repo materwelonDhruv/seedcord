@@ -47,25 +47,32 @@ function escapeForRegex(value: string): string {
     return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
+function escapeHtmlAttr(value: string): string {
+    return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function preprocessMarkdownLinks(code: string): { code: string; markers: LinkMarker[] } {
     const markers: LinkMarker[] = [];
-    const processed = code.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, (_match, label: string, url: string) => {
-        const index = markers.length;
-        const codePoint = TOKEN_BASE_CODE_POINT + index;
+    const processed = code.replace(
+        /\[([^\]]+)\]\(((?:https?:\/\/|\/|#)[^)\s]+)\)/g,
+        (_match, label: string, url: string) => {
+            const index = markers.length;
+            const codePoint = TOKEN_BASE_CODE_POINT + index;
 
-        if (codePoint > SENTINEL_MAX_CODE_POINT) {
-            return _match;
+            if (codePoint > SENTINEL_MAX_CODE_POINT) {
+                return _match;
+            }
+
+            const tokenChar = String.fromCharCode(codePoint);
+            const open = `${LINK_OPEN_SENTINEL}${tokenChar}${LINK_OPEN_BOUNDARY_SENTINEL}`;
+            const close = `${LINK_CLOSE_SENTINEL}${tokenChar}${LINK_CLOSE_BOUNDARY_SENTINEL}`;
+            const safeUrl = escapeHtmlAttr(url);
+
+            markers.push({ open, close, url: safeUrl });
+
+            return `${open}${label}${close}`;
         }
-
-        const tokenChar = String.fromCharCode(codePoint);
-        const open = `${LINK_OPEN_SENTINEL}${tokenChar}${LINK_OPEN_BOUNDARY_SENTINEL}`;
-        const close = `${LINK_CLOSE_SENTINEL}${tokenChar}${LINK_CLOSE_BOUNDARY_SENTINEL}`;
-        const safeUrl = url.replace(/"/g, '%22');
-
-        markers.push({ open, close, url: safeUrl });
-
-        return `${open}${label}${close}`;
-    });
+    );
 
     return { code: processed, markers };
 }
