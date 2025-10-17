@@ -26,5 +26,30 @@ export function useActiveSignatureList(
         if (matching) setActiveSignatureId(matching.id);
     }, [signatures]);
 
-    return [activeSignatureId, setActiveSignatureId] as const;
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const onHashChange = (): void => {
+            const hash = window.location.hash.slice(1);
+            if (!hash) return;
+            const matching = signatures.find((s) => s.id === hash || s.anchor === hash);
+            if (matching) setActiveSignatureId(matching.id);
+        };
+
+        window.addEventListener('hashchange', onHashChange);
+        return () => window.removeEventListener('hashchange', onHashChange);
+    }, [signatures]);
+
+    const setActive = (id: string): void => {
+        setActiveSignatureId(id);
+        if (typeof window !== 'undefined') {
+            try {
+                window.location.hash = id;
+            } catch {
+                // ignore
+            }
+        }
+    };
+
+    return [activeSignatureId, setActive] as const;
 }

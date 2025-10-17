@@ -1,8 +1,6 @@
-import { Code } from 'lucide-react';
-
 import type { FunctionSignatureModel } from '@/lib/docs/types';
 
-import Icon from '@ui/Icon';
+import Button from '@ui/Button';
 
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
@@ -14,24 +12,25 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
     return (
         <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
             <header className="flex flex-wrap items-center justify-between gap-3">
-                <h3 className="text-base font-semibold text-[var(--text)]">{signature.code.text}</h3>
                 {signature.sourceUrl ? (
-                    <a
-                        href={signature.sourceUrl}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-border/60 text-subtle transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
-                        aria-label="Open signature source in a new tab"
-                    >
-                        <Icon icon={Code} size={16} />
-                    </a>
+                    <Button
+                        asChild
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-[var(--text)]"
+                        aria-label="Open source in a new tab"
+                    ></Button>
                 ) : null}
             </header>
             {signature.code.html ? (
                 <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-[var(--text)] sm:text-sm">
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 </div>
-            ) : null}
+            ) : (
+                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-[var(--text)] sm:text-sm">
+                    <pre className="code-scroll-content whitespace-pre-wrap">{signature.code.text}</pre>
+                </div>
+            )}
             <CommentParagraphs paragraphs={signature.summary} />
             {signature.parameters.length ? (
                 <div className="space-y-2">

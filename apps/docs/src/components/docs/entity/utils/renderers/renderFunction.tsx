@@ -1,8 +1,8 @@
-import { FunctionSignaturesSection } from '../../functions/FunctionSignaturesSection';
+import FunctionBody from '../../functions/FunctionBody';
 
 import type { FunctionModel } from '../../types';
 import type { ReactElement } from 'react';
 
-export function renderFunction(model: FunctionModel): ReactElement {
-    return <FunctionSignaturesSection signatures={model.signatures} />;
+export function renderFunction(model: FunctionModel): ReactElement | null {
+    return <FunctionBody model={model} />;
 }

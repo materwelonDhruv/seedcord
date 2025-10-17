@@ -2,7 +2,7 @@
 
 import { useEffect, type ReactElement } from 'react';
 
-import type { EntityModel } from '@/lib/docs/types';
+import type { EntityModel, FunctionEntityModel } from '@/lib/docs/types';
 
 import { log } from '@lib/logger';
 
@@ -28,6 +28,10 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
     }, [model.name, model.kind, model.displayPackage, tone]);
 
     const body = renderEntityBody(model);
+    let functionSignatures: FunctionEntityModel['signatures'] | undefined = undefined;
+    if (model.kind === 'function') {
+        functionSignatures = model.signatures;
+    }
 
     return (
         <article className="min-w-0 w-full space-y-6 lg:space-y-8">
@@ -42,6 +46,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 sourceUrl={model.sourceUrl ?? null}
                 {...(model.version ? { version: model.version } : {})}
                 isDeprecated={model.isDeprecated}
+                {...(functionSignatures ? { functionSignatures } : {})}
             />
             {body ?? MEMBERS_PLACEHOLDER}
         </article>
