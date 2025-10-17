@@ -28,7 +28,7 @@ information, useful for container orchestration and monitoring.
 
 "status" and "information" don’t need a line break between them.
 
-[ ] 11. In the sidebar, if the name of something is too long, it squishes the icon and isn’t centered anymore. Instead, let’s truncate and use `…` And then, use our tooltip component so people can hover to see the full name.
+[x] 11. In the sidebar, if the name of something is too long, it squishes the icon and isn’t centered anymore. Instead, let’s truncate and use `…` And then, use our tooltip component so people can hover to see the full name.
 
 [ ] 12. Please check #packages.ts. You can see we have rawExternal links. I don’t understand why they aren’t being hyperlinked across the project. Like, literally nowhere. I see that we have key.toLowerCase. Is that doing something to the keys? Why? the Keys are case sensitive.
 
