@@ -8,6 +8,6 @@ export async function buildTypeEntity(
     node: DocNode,
     context: FormatContext
 ): Promise<TypeEntityModel> {
-    const typeParameters = await buildTypeParameterSummaries(node.header, context);
+    const typeParameters = await buildTypeParameterSummaries(node.header, context, node.typeParameters);
     return { ...base, declaration: base.signature, typeParameters };
 }

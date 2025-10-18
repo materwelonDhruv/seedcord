@@ -31,7 +31,7 @@ export async function buildClassLikeEntity<Kind extends 'class' | 'interface'>(
             .map((child) => buildMemberSummary(child, context))
     );
 
-    const typeParameters = await buildTypeParameterSummaries(node.header, context);
+    const typeParameters = await buildTypeParameterSummaries(node.header, context, node.typeParameters);
 
     return {
         ...base,

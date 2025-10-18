@@ -14,6 +14,7 @@ import { MemberDetailGroup } from '../member/MemberDetailGroup';
 import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 
 import type { EntityMemberSummary } from '../types';
+import type { ActiveSignatureListProps } from '../utils/useActiveSignatureList';
 import type { ReactElement } from 'react';
 
 function buildTypeParamMember(tp: FunctionTypeParameterModel, index: number): EntityMemberSummary {
@@ -79,8 +80,8 @@ export default function FunctionBody({ model }: { model: FunctionEntityModel }):
     const signatures = model.signatures;
     if (!signatures.length) return null;
 
-    const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as { anchor?: string }).anchor }));
-    const [activeSignatureId] = useActiveSignatureList(mapped as { id: string; anchor?: string }[]);
+    const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
+    const [activeSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
 
     const activeSignature = useMemo(
         () => signatures.find((s) => s.id === activeSignatureId) ?? signatures[0],

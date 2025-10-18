@@ -5,14 +5,12 @@ import { resolveReferenceHref } from './resolveReferenceHref';
 
 import type { DocsEngine } from './engine';
 import type {
-    CommentParagraph,
-    InlineTagPart,
-    FormatContext,
     CommentDisplayPart,
-    TextPart,
-    CodePart,
     CommentExample,
+    CommentParagraph,
+    FormatContext,
     FormattedComment,
+    InlineTagPart,
     ParagraphAccumulator
 } from './types';
 import type { DocComment, DocCommentExample, DocNode, DocReference } from '@seedcord/docs-engine';
@@ -215,8 +213,7 @@ async function appendPart(
 ): Promise<void> {
     switch (part.kind) {
         case 'text': {
-            const textPart = part as TextPart;
-            const text = typeof textPart.text === 'string' ? textPart.text : '';
+            const text = typeof part.text === 'string' ? part.text : '';
             if (!text) return;
             const segments = text.split(DOUBLE_NEWLINE);
 
@@ -230,8 +227,7 @@ async function appendPart(
             return;
         }
         case 'code': {
-            const codePart = part as CodePart;
-            const raw = normalizeInlineCode(typeof codePart.text === 'string' ? codePart.text : '');
+            const raw = normalizeInlineCode(typeof part.text === 'string' ? part.text : '');
             if (!raw) return;
 
             const highlighted =
@@ -240,12 +236,12 @@ async function appendPart(
             return;
         }
         case 'inline-tag': {
-            const rendered = renderInlineTag(part as InlineTagPart, context);
+            const rendered = renderInlineTag(part, context);
             accumulator.append(rendered.plain, rendered.html);
             return;
         }
         default: {
-            const fallback = (part as { text?: string }).text ?? '';
+            const fallback = part.text;
             if (!fallback) return;
             const segments = fallback.split(DOUBLE_NEWLINE);
             segments.forEach((segment, index) => {

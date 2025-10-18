@@ -99,9 +99,8 @@ export async function formatDeclarationHeader(
         nameSegment += `: ${renderInlineType(header.type, context)}`;
     }
 
-    const headerWithValue = header as RenderedDeclarationHeader & { value?: InlineType };
-    if (headerWithValue.value) {
-        nameSegment += ` = ${renderInlineType(headerWithValue.value, context)}`;
+    if (header.value) {
+        nameSegment += ` = ${renderInlineType(header.value, context)}`;
     }
 
     segments.push(nameSegment);

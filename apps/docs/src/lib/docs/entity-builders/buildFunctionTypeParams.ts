@@ -1,11 +1,9 @@
 import { formatCommentRich } from '../commentFormatting';
 import { highlightCode, renderInlineType } from '../formatting';
+import { isInlineType } from './buildFunctionParameters';
 
 import type { FunctionTypeParameterModel, FormatContext } from '../types';
-import type { InlineType, RenderedSignature, DocSignature } from '@seedcord/docs-engine';
-
-const isInlineType = (v: unknown): v is InlineType =>
-    !!v && typeof v === 'object' && Array.isArray((v as { parts?: unknown }).parts);
+import type { RenderedSignature, DocSignature } from '@seedcord/docs-engine';
 
 export async function buildFunctionTypeParams(
     signature: DocSignature | undefined,

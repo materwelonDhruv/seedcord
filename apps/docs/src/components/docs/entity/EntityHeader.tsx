@@ -14,6 +14,7 @@ import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
+import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
 import type { ReactElement, ReactNode } from 'react';
 
 function getHeaderExamples(
@@ -80,8 +81,8 @@ export function EntityHeader({
     const toneStyles = toneConfig.styles;
     const ToneIcon = toneConfig.icon;
     const fn = functionSignatures ?? [];
-    const ids = fn.map((s) => ({ id: s.id, anchor: (s as unknown as { anchor?: string }).anchor }));
-    const [activeId] = useActiveSignatureList(ids as { id: string; anchor?: string }[]);
+    const ids = fn.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
+    const [activeId] = useActiveSignatureList(ids as ActiveSignatureListProps[]);
     const active = fn.find((s) => s.id === activeId) ?? fn[0];
 
     // Prefer the active signature's summary (if present) for the header lead.

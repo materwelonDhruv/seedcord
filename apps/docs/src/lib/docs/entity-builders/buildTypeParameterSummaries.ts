@@ -1,13 +1,14 @@
-import { createPlainParagraph } from '../commentFormatting';
+import { createPlainParagraph, formatCommentRich } from '../commentFormatting';
 import { renderInlineType, highlightCode } from '../formatting';
 
 import type { FormatContext, CommentParagraph, CommentExample } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
-import type { RenderedDeclarationHeader } from '@seedcord/docs-engine';
+import type { RenderedDeclarationHeader, DocTypeParameter } from '@seedcord/docs-engine';
 
 export async function buildTypeParameterSummaries(
     header: RenderedDeclarationHeader | undefined,
-    context: FormatContext
+    context: FormatContext,
+    docTypeParams?: DocTypeParameter[]
 ): Promise<EntityMemberSummary[]> {
     const params = header?.typeParams ?? [];
     if (!params.length) {
@@ -30,10 +31,25 @@ export async function buildTypeParameterSummaries(
             const documentation: CommentParagraph[] = [];
             const examples: CommentExample[] = [];
 
+            const docParam = docTypeParams ? docTypeParams.find((d) => d.name === param.name) : undefined;
+            let description: CommentParagraph = createPlainParagraph('Type parameter.');
+            if (docParam?.comment) {
+                const formatted = await formatCommentRich(docParam.comment, context);
+                if (formatted.paragraphs.length) {
+                    description = formatted.paragraphs[0] ?? createPlainParagraph('');
+                    if (formatted.paragraphs.length > 1) {
+                        documentation.push(...formatted.paragraphs.slice(1));
+                    }
+                }
+                if (formatted.examples.length) {
+                    examples.push(...formatted.examples);
+                }
+            }
+
             return {
                 id: `type-${param.name}`,
                 label: param.name,
-                description: createPlainParagraph('Type parameter.'),
+                description,
                 sharedDocumentation: documentation,
                 sharedExamples: examples,
                 signatures: [

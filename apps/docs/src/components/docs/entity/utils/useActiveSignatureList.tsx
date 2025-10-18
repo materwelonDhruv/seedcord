@@ -2,8 +2,13 @@
 
 import { useState, useEffect } from 'react';
 
+export interface ActiveSignatureListProps {
+    id: string;
+    anchor?: string;
+}
+
 export function useActiveSignatureList(
-    signatures: { id: string; anchor?: string }[]
+    signatures: ActiveSignatureListProps[]
 ): readonly [string, (id: string) => void] {
     const [activeSignatureId, setActiveSignatureId] = useState(() => signatures[0]?.id ?? '');
 

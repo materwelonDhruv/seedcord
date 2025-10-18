@@ -5,7 +5,7 @@ import { highlightCode, renderInlineType } from '../formatting';
 import type { FunctionSignatureParameterModel, FormatContext } from '../types';
 import type { DocSignature, InlineType, RenderedSignature } from '@seedcord/docs-engine';
 
-const isInlineType = (v: unknown): v is InlineType =>
+export const isInlineType = (v: unknown): v is InlineType =>
     !!v && typeof v === 'object' && Array.isArray((v as { parts?: unknown }).parts);
 
 const paramTypeString = (renderedType: unknown, context: FormatContext): string | undefined =>

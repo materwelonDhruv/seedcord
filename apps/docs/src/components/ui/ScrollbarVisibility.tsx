@@ -60,14 +60,13 @@ export default function ScrollbarVisibility(): null {
         }
 
         function detach(el: Element): void {
-            const node = el as HTMLElement;
-            const h = handlerMap.get(node);
+            const h = handlerMap.get(el);
             if (!h) return;
-            node.removeEventListener('pointerenter', h.onPointerEnter);
-            node.removeEventListener('pointerleave', h.onPointerLeave);
-            node.removeEventListener('scroll', h.onScroll);
-            node.removeEventListener('touchstart', h.onTouchStart);
-            handlerMap.delete(node);
+            el.removeEventListener('pointerenter', h.onPointerEnter);
+            el.removeEventListener('pointerleave', h.onPointerLeave);
+            el.removeEventListener('scroll', h.onScroll);
+            el.removeEventListener('touchstart', h.onTouchStart);
+            handlerMap.delete(el);
         }
 
         const observer = new MutationObserver(() => {

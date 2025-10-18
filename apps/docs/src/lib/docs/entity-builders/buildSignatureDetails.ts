@@ -1,10 +1,10 @@
-import { cloneCommentParagraphs } from '../commentFormatting';
+import { cloneCommentParagraphs, formatCommentRich } from '../commentFormatting';
 import { formatSignature, highlightCode } from '../formatting';
 import { ensureSlug, stripDuplicateDescription, cloneExamples, ensureSignatureAnchor } from './utils';
 
 import type { CodeRepresentation, CommentExample, CommentParagraph, FormatContext, FormattedComment } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
-import type { DocNode } from '@seedcord/docs-engine';
+import type { DocSignature, DocNode } from '@seedcord/docs-engine';
 
 interface SignatureDetailsOptions {
     node: DocNode;
@@ -87,6 +87,10 @@ export async function buildSignatureDetails({
                 documentation = stripDuplicateDescription(documentation, description);
             }
 
+            const sig = signature;
+            await appendParameterComments(sig, context, documentation);
+            await appendTypeParameterComments(sig, context, documentation);
+
             const examples = cloneExamples(comment?.examples ?? []);
 
             const detail: EntityMemberSummary['signatures'][number] = {
@@ -105,4 +109,44 @@ export async function buildSignatureDetails({
             return detail;
         })
     );
+}
+
+async function appendParameterComments(
+    sig: DocSignature,
+    context: FormatContext,
+    documentation: CommentParagraph[]
+): Promise<void> {
+    if (!sig.parameters.length) return;
+    for (const param of sig.parameters) {
+        if (param.comment) {
+            const formatted = await formatCommentRich(param.comment, context);
+            if (formatted.paragraphs.length) {
+                documentation.push({
+                    plain: `Parameter: ${param.name}`,
+                    html: `<strong>Parameter:</strong> <code>${param.name}</code>`
+                });
+                documentation.push(...formatted.paragraphs);
+            }
+        }
+    }
+}
+
+async function appendTypeParameterComments(
+    sig: DocSignature,
+    context: FormatContext,
+    documentation: CommentParagraph[]
+): Promise<void> {
+    if (!sig.typeParameters.length) return;
+    for (const tp of sig.typeParameters) {
+        if (tp.comment) {
+            const formatted = await formatCommentRich(tp.comment, context);
+            if (formatted.paragraphs.length) {
+                documentation.push({
+                    plain: `Type parameter: ${tp.name}`,
+                    html: `<strong>Type parameter:</strong> <code>${tp.name}</code>`
+                });
+                documentation.push(...formatted.paragraphs);
+            }
+        }
+    }
 }
