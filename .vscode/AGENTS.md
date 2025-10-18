@@ -17,3 +17,4 @@
 - Do NOT use "any" type unless it makes sense in context.
 - DO NOT type cast 'as unknown as ...' if the type is already correct.
 - Try to avoid type casting unless absolutely necessary.
+- DO NOT cast types if the type is already correct.

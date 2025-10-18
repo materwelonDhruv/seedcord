@@ -75,7 +75,7 @@ export async function extractPackageDocs(
         includeVersion: true,
         categorizeByGroup: false,
         excludeExternals: false,
-        excludePrivate: false,
+        excludePrivate: true,
         excludeProtected: false,
         excludeInternal: false,
         logLevel: LogLevel.Warn,
