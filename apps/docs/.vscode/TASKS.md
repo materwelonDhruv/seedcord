@@ -1,12 +1,6 @@
-[ ] 26. de-dupe search entries
-
-[ ] 27. missing space between examples (example emojis)
-
-[ ] 28. function param and typeparam tsdocs broken (Checkable)
-
 [ ] 30. when underlining for hyperlinking in shiki codeblock, if smth that’s hyperlink is preceded by a `[` for example `[number]`, the left `[` also gets underlined.
 
-[ ] 31. In the search, the icon for methods should what we are using for methods. Right now it uses the icon for functions.
+[ ] 31. In the search, the icon for methods should what we are using for methods. Right now it uses the icon for functions. Also need a separate icon for params. (for both the section in members list in entity pages and in search results)
 
 [ ] 32. If something is marked as deprecated, the tag should have a red tint, styled similar to other tags though. And the deprecated content should be visible some how. In the clean way that follows the styling we already have.
 

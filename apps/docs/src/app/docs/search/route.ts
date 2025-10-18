@@ -2,7 +2,7 @@ import { kindName, type DocSearchEntry, type DocNode } from '@seedcord/docs-engi
 import { NextResponse, type NextRequest } from 'next/server';
 
 import { getDocsEngine } from '@lib/docs/engine';
-import { resolveManifestPackageName } from '@lib/docs/packages';
+import { DEFAULT_MANIFEST_PACKAGE, resolveManifestPackageName } from '@lib/docs/packages';
 import { buildEntityHref, buildPackageBasePath } from '@lib/docs/routes';
 
 const MAX_RESULTS = 24;
@@ -232,11 +232,27 @@ export async function GET(request: NextRequest): Promise<NextResponse<SearchResp
     const engine = await getDocsEngine();
     const pkgParam = url.searchParams.get('pkg');
     const manifestPackage = pkgParam ? resolveManifestPackageName(engine, pkgParam) : undefined;
-    const results = engine.search(query, manifestPackage).slice(0, MAX_RESULTS);
+    const rawResults = engine.search(query, manifestPackage);
 
-    const payload = results
+    const grouped = new Map<string, DocSearchEntry[]>();
+    for (const entry of rawResults) {
+        const key = `${entry.slug}::${getResultKind(entry.kind)}`;
+        const list = grouped.get(key) ?? [];
+        list.push(entry);
+        grouped.set(key, list);
+    }
+
+    const filteredEntries: DocSearchEntry[] = [];
+    for (const [, group] of grouped) {
+        const preferred = group.find((e) => e.packageName === DEFAULT_MANIFEST_PACKAGE) ?? group[0];
+        if (preferred) filteredEntries.push(preferred);
+        if (filteredEntries.length >= MAX_RESULTS) break;
+    }
+
+    const payload = filteredEntries
         .map((entry) => mapSearchEntry(engine, entry))
-        .filter((entry): entry is CommandActionPayload => entry !== null);
+        .filter((entry): entry is CommandActionPayload => entry !== null)
+        .slice(0, MAX_RESULTS);
 
     return NextResponse.json({ results: payload });
 }
