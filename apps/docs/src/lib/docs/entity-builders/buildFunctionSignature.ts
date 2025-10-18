@@ -21,7 +21,7 @@ export async function buildFunctionSignature(
 
     const parameters = await buildFunctionParameters(signature, rendered, context);
     const comment = await formatCommentRich(signature.comment, context);
-    const typeParameters = await buildFunctionTypeParams(rendered, context);
+    const typeParameters = await buildFunctionTypeParams(signature, rendered, context);
 
     const model: FunctionSignatureModel = {
         id: ensureSignatureAnchor(signature),
