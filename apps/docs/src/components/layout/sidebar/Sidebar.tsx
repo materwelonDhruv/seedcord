@@ -65,7 +65,7 @@ export function Sidebar({
     variant = 'desktop',
     className
 }: SidebarProps): ReactElement {
-    const pathname = usePathname();
+    const pathname = usePathname() ?? '';
     const containerStyles = getContainerStyles(variant);
     const listStyles = getListStyles(variant);
     const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();

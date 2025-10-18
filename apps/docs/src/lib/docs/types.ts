@@ -164,7 +164,7 @@ export interface FunctionSignatureParameterModel {
 
 type RenderedTypeParameter = NonNullable<RenderedSignature['typeParams']>[number];
 
-export interface FunctionTypeParameterModel extends WithDeprecationStatus {
+export interface FunctionTypeParameterModel {
     name: RenderedTypeParameter['name'];
     constraint?: string | undefined;
     default?: string | undefined;
