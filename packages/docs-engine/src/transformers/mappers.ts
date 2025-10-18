@@ -1,9 +1,8 @@
-import { Serializer } from 'typedoc';
-
 import { toGlobalId, type GlobalId } from '../ids';
 import { kindLabel } from '../kinds';
 import { mapFlags } from './flag-mapper';
 import { formatRenderedSignature, renderSignatureView } from './signature-renderer';
+import { typeToken, toDocType } from './type-helpers';
 
 import type {
     DocComment,
@@ -31,38 +30,6 @@ import type {
     TypeParameterReflection
 } from 'typedoc';
 
-const serializer = new Serializer();
-
-const typeToken = (type: SomeType | ReflectionType | undefined): string => {
-    if (!type) {
-        return 't';
-    }
-
-    try {
-        const serialized = serializer.toObject(type) as { type?: unknown };
-        const primitive = serialized.type;
-        if (typeof primitive === 'string' && primitive.length > 0) {
-            return primitive;
-        }
-    } catch {
-        // ignore serialization failures and fall back to placeholder token
-    }
-
-    return 't';
-};
-
-const toDocType = (type: SomeType | ReflectionType | undefined): DocType | null => {
-    if (!type) {
-        return null;
-    }
-
-    try {
-        return serializer.toObject(type);
-    } catch {
-        return type as unknown as DocType;
-    }
-};
-
 interface ReferenceCandidate {
     name?: string;
     packageName?: string;
@@ -74,16 +41,13 @@ interface ReferenceCandidate {
     url?: string;
     sources?: { url?: string }[];
 }
-
 const selectPackageName = (candidate: ReferenceCandidate, fallback: string): string | undefined => {
     const pkg = candidate.packageName ?? candidate.package;
     if (typeof pkg === 'string' && pkg.length > 0) {
         return pkg;
     }
-
     return fallback.length > 0 ? fallback : undefined;
 };
-
 const pickReferenceUrl = (candidate: ReferenceCandidate): string | undefined => {
     if (candidate.externalUrl && candidate.externalUrl.length > 0) {
         return candidate.externalUrl;
@@ -102,7 +66,6 @@ const pickReferenceUrl = (candidate: ReferenceCandidate): string | undefined => 
 
     return undefined;
 };
-
 const pickReferenceTarget = (candidate: ReferenceCandidate): number | undefined => {
     if (typeof candidate.target === 'number') {
         return candidate.target;
@@ -114,8 +77,24 @@ const pickReferenceTarget = (candidate: ReferenceCandidate): number | undefined 
 
     return undefined;
 };
+export const mapType = (context: TransformContext, type: SomeType | ReflectionType | undefined): DocType | null => {
+    const out = toDocType(type);
+    try {
+        if (out && typeof out === 'object' && out.type === 'reference') {
+            const targetId = pickReferenceTarget(out as ReferenceCandidate);
+            if (typeof targetId === 'number') {
+                const node = context.nodes.get(targetId);
+                if (node?.type && typeof node.type === 'object') {
+                    return node.type;
+                }
+            }
+        }
+    } catch {
+        // swallow any errors and fall back to the original mapped type
+    }
 
-export const mapType = (type: SomeType | ReflectionType | undefined): DocType | null => toDocType(type);
+    return out;
+};
 
 export const mapComment = (context: TransformContext, comment?: Comment | null): DocComment | null =>
     context.commentTransformer.toDocComment(comment ?? undefined);
@@ -124,7 +103,6 @@ export const mapSources = (sources: SourceReference[] | undefined): DocSource[] 
     if (!Array.isArray(sources)) {
         return [];
     }
-
     return sources.map((source) => {
         const result: DocSource = {
             fileName: source.fileName,
@@ -139,7 +117,6 @@ export const mapSources = (sources: SourceReference[] | undefined): DocSource[] 
         return result;
     });
 };
-
 export const primaryUrlFromSources = (sources?: SourceReference[]): string | undefined =>
     Array.isArray(sources)
         ? sources.find((source) => typeof source.url === 'string' && source.url.length > 0)?.url
@@ -156,7 +133,7 @@ export const mapSignatureParameters = (
             id: parameter.id,
             name: parameter.name,
             kind: parameter.kind,
-            type: mapType(parameter.type),
+            type: mapType(context, parameter.type),
             comment: mapComment(context, parameter.comment),
             flags: mapFlags(parameter)
         };
@@ -186,12 +163,12 @@ export const mapTypeParameters = (
             }
         };
 
-        const constraint = mapType(parameter.type);
+        const constraint = mapType(context, parameter.type);
         if (constraint !== null) {
             out.constraint = constraint;
         }
 
-        const def = mapType(parameter.default);
+        const def = mapType(context, parameter.default);
         if (def !== null) {
             out.default = def;
         }
@@ -340,7 +317,7 @@ export const mapSignature = (
         anchor,
         overloadIndex: index,
         kindLabel: kindLabel(signature.kind),
-        type: mapType(signature.type),
+        type: mapType(context, signature.type),
         parameters: mapSignatureParameters(context, signature.parameters),
         typeParameters: mapTypeParameters(context, signature.typeParameters),
         comment,
@@ -371,18 +348,21 @@ export const mapSignature = (
     return docSignature;
 };
 
-const mapDocTypeArray = (types: readonly (SomeType | ReflectionType)[] | undefined): DocType[] => {
+const mapDocTypeArray = (
+    context: TransformContext,
+    types: readonly (SomeType | ReflectionType)[] | undefined
+): DocType[] => {
     const out: DocType[] = [];
     for (const type of types ?? []) {
-        const mapped = mapType(type);
+        const mapped = mapType(context, type);
         if (mapped) out.push(mapped);
     }
     return out;
 };
 
-export const mapInheritance = (reflection: DeclarationReflection): DocInheritance => ({
-    extends: mapDocTypeArray(reflection.extendedTypes),
-    implements: mapDocTypeArray(reflection.implementedTypes),
-    extendedBy: mapDocTypeArray(reflection.extendedBy),
-    implementedBy: mapDocTypeArray(reflection.implementedBy)
+export const mapInheritance = (context: TransformContext, reflection: DeclarationReflection): DocInheritance => ({
+    extends: mapDocTypeArray(context, reflection.extendedTypes),
+    implements: mapDocTypeArray(context, reflection.implementedTypes),
+    extendedBy: mapDocTypeArray(context, reflection.extendedBy),
+    implementedBy: mapDocTypeArray(context, reflection.implementedBy)
 });

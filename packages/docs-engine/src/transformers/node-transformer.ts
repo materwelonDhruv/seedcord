@@ -178,14 +178,14 @@ export class NodeTransformer {
     }
 
     private applyDeclarationDetails(node: DocNode, reflection: DeclarationReflection): void {
-        const mappedType = mapType(reflection.type);
+        const mappedType = mapType(this.context, reflection.type);
         if (mappedType !== null) {
             node.type = mappedType;
         }
 
         node.typeParameters = mapTypeParameters(this.context, reflection.typeParameters);
         node.sources = mapSources(reflection.sources);
-        const inheritance = mapInheritance(reflection);
+        const inheritance = mapInheritance(this.context, reflection);
         node.inheritance = inheritance;
         node.header = renderDeclarationHeader(this.context, node.name, {
             kind: node.kind,
