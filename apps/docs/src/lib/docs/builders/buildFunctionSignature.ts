@@ -2,11 +2,11 @@ import { cloneCommentParagraphs } from '../comments/creators';
 import { formatSignature, highlightCode, renderInlineType } from '../formatting';
 import { buildFunctionParameters } from './buildFunctionParameters';
 import { buildFunctionTypeParams } from './buildFunctionTypeParams';
-import { ensureSignatureAnchor } from './utils';
+import { ensureSignatureAnchor, buildDeprecationStatusFromNodeLike } from './utils';
 import { formatCommentRich } from '../comments/formatter';
 
 import type { CodeRepresentation, FormatContext, FunctionSignatureModel } from '../types';
-import type { DocSignature } from '@seedcord/docs-engine';
+import type { DocNode, DocSignature } from '@seedcord/docs-engine';
 
 export async function buildFunctionSignature(
     signature: DocSignature,
@@ -31,7 +31,8 @@ export async function buildFunctionSignature(
         parameters,
         typeParameters,
         summary: cloneCommentParagraphs(comment.paragraphs),
-        examples: comment.examples.slice()
+        examples: comment.examples.slice(),
+        deprecationStatus: buildDeprecationStatusFromNodeLike(signature as unknown as DocNode)
     };
 
     if (rendered?.returnType) {

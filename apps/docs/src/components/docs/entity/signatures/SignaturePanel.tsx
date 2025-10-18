@@ -1,6 +1,7 @@
 import { cn } from '../../../../lib/utils';
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
+import DecoratedEntity from '../DecoratedEntity';
 
 import type { MemberSignatureDetail } from '../types';
 import type { ReactElement } from 'react';
@@ -15,7 +16,7 @@ export function SignaturePanel({
     signature: MemberSignatureDetail;
     isActive: boolean;
 }): ReactElement {
-    return (
+    const section = (
         <section
             id={signature.anchor}
             className={cn('space-y-3', isActive ? 'block' : 'hidden')}
@@ -34,4 +35,10 @@ export function SignaturePanel({
             {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
         </section>
     );
+
+    if (signature.deprecationStatus?.isDeprecated) {
+        return <DecoratedEntity deprecationStatus={signature.deprecationStatus}>{section}</DecoratedEntity>;
+    }
+
+    return section;
 }

@@ -8,7 +8,7 @@ import type {
     FunctionSignatureModel
 } from '@/lib/docs/types';
 import { formatVersionLabel } from '@/lib/docs/version';
-import type { EntityTone } from '@/lib/entityMetadata';
+import type { EntityTone, EntityToneStyle } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
 
 import { cn } from '@lib/utils';
@@ -93,6 +93,86 @@ const SourceButton = ({ href }: { href: string }): ReactElement => (
     </Button>
 );
 
+function HeaderTop({
+    toneStyles,
+    toneIcon,
+    badgeLabel,
+    pkg,
+    version,
+    tags,
+    symbolName,
+    summaryNodes,
+    sourceUrl
+}: {
+    toneStyles: EntityToneStyle;
+    toneIcon: React.ComponentType<Record<string, unknown>>;
+    badgeLabel: string;
+    pkg: string;
+    version?: string | null | undefined;
+    tags: readonly string[];
+    symbolName: string;
+    summaryNodes: React.ReactNode;
+    sourceUrl?: string | null | undefined;
+}): ReactElement {
+    return (
+        <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+                <Pill className={toneStyles.badge}>
+                    <Icon icon={toneIcon} size={16} />
+                    {badgeLabel}
+                </Pill>
+                <Pill className="border-border bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] text-subtle">
+                    {pkg}
+                </Pill>
+                {version ? (
+                    <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
+                        {formatVersionLabel(version)}
+                    </Pill>
+                ) : null}
+                <TagPills tags={tags} />
+            </div>
+
+            <div className="flex items-start gap-3 sm:gap-4">
+                <div className="min-w-0 flex-1 space-y-2.5">
+                    <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
+                    <div className="space-y-2 text-sm leading-relaxed text-subtle">{summaryNodes}</div>
+                </div>
+                {sourceUrl ? <SourceButton href={sourceUrl} /> : null}
+            </div>
+        </div>
+    );
+}
+
+function SignatureArea({
+    active,
+    fn,
+    signature,
+    headerExamples
+}: {
+    active?: FunctionSignatureModel | undefined;
+    fn: readonly FunctionSignatureModel[];
+    signature: CodeRepresentation;
+    headerExamples: readonly CommentExample[];
+}): ReactElement {
+    return (
+        <>
+            <SignatureBlock signature={active ? active.code : signature} />
+
+            {fn.length ? (
+                <div className="mt-3">
+                    <FunctionSignaturesInline signatures={fn} />
+                </div>
+            ) : null}
+
+            {headerExamples.length ? (
+                <div className="mt-3">
+                    <CommentExamples examples={headerExamples} />
+                </div>
+            ) : null}
+        </>
+    );
+}
+
 export function EntityHeader({
     badgeLabel,
     pkg,
@@ -121,48 +201,35 @@ export function EntityHeader({
         headerSummary,
         'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
     );
+    const activeIsDeprecated = Boolean(active?.deprecationStatus.isDeprecated);
 
     const headerContent = (
         <>
-            <div className="space-y-3">
-                <div className="flex flex-wrap items-center gap-2.5">
-                    <Pill className={toneStyles.badge}>
-                        <Icon icon={ToneIcon} size={16} />
-                        {badgeLabel}
-                    </Pill>
-                    <Pill className="border-border bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] text-subtle">
-                        {pkg}
-                    </Pill>
-                    {version ? (
-                        <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
-                            {formatVersionLabel(version)}
-                        </Pill>
-                    ) : null}
-                    <TagPills tags={tags} />
-                </div>
+            <HeaderTop
+                toneStyles={toneStyles}
+                toneIcon={ToneIcon}
+                badgeLabel={badgeLabel}
+                pkg={pkg}
+                version={version}
+                tags={tags}
+                symbolName={symbolName}
+                summaryNodes={summaryNodes}
+                sourceUrl={sourceUrl}
+            />
 
-                <div className="flex items-start gap-3 sm:gap-4">
-                    <div className="min-w-0 flex-1 space-y-2.5">
-                        <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
-                        <div className="space-y-2 text-sm leading-relaxed text-subtle">{summaryNodes}</div>
-                    </div>
-                    {sourceUrl ? <SourceButton href={sourceUrl} /> : null}
-                </div>
-            </div>
-
-            <SignatureBlock signature={active ? active.code : signature} />
-
-            {fn.length ? (
-                <div className="mt-3">
-                    <FunctionSignaturesInline signatures={fn} />
-                </div>
-            ) : null}
-
-            {headerExamples.length ? (
-                <div className="mt-3">
-                    <CommentExamples examples={headerExamples} />
-                </div>
-            ) : null}
+            {deprecationStatus.isDeprecated ? (
+                <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
+            ) : activeIsDeprecated ? (
+                <DecoratedEntity
+                    deprecationStatus={
+                        active?.deprecationStatus ?? { isDeprecated: true, deprecationMessage: undefined }
+                    }
+                >
+                    <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
+                </DecoratedEntity>
+            ) : (
+                <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
+            )}
         </>
     );
 
