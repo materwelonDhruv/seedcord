@@ -44,7 +44,9 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
 
     const tags = collectMemberTags(node);
     if (tags.length) summary.tags = tags;
-    if (node.flags.access) summary.access = node.flags.access;
+    if (node.flags.access && (node.flags.access === 'public' || node.flags.access === 'protected')) {
+        summary.access = node.flags.access;
+    }
     const accessorType = normalizeAccessor(node.flags.accessor);
     if (accessorType) summary.accessorType = accessorType;
     if (node.sourceUrl) summary.sourceUrl = node.sourceUrl;

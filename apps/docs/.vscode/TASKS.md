@@ -44,9 +44,9 @@ information, useful for container orchestration and monitoring.
 
 [x] 18. Interfaces do not need the “Showing members with Private/Public...” sentence in Member overview
 
-[ ] 19. get rid of the public private protected tags. show them in the signature instead. same for functions. Same for static. And for readonly. And for abstract. And for async (isAsync flag exists).
+[x] 19. get rid of the private access level all together. Typescript declarations themselves don't have private members in the output.
 
-[ ] 20. In the engine output, you’ll see smth called flags.
+[x] 20. In the engine output, you’ll see smth called flags.
 
 - If something is abstract, reflect that in the signature instead of as a tag
 - If something’s accessor is “getter”, show get in the signature. Tag “Accessor”
@@ -62,7 +62,7 @@ information, useful for container orchestration and monitoring.
 
 [ ] 23. latest package version should show latest and not the package version exactly. like latest • version
 
-[ ] 24. reloading should remember scroll and collapsed categories in the sidebar
+[ ] 24. reloading should remember scroll and collapsed categories in the sidebar. It should also remember the last selected package. And what access level is selected.
 
 [ ] 25. way to copy function page link. hashtag on hover in function hero card on the right of the name
 

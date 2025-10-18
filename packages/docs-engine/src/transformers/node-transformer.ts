@@ -77,11 +77,8 @@ const buildPathSegments = (
 ): string[] => {
     const label = typeof reflection.name === 'string' && reflection.name.length > 0 ? reflection.name : 'anonymous';
 
-    if (reflection.kind === ReflectionKind.Project) {
-        return []; // project is the root, no path segments
-    }
+    if (reflection.kind === ReflectionKind.Project) return [];
 
-    // if we're at the first level under the project, start the path with the label
     return parentPath.length === 0 ? [label] : [...parentPath, label];
 };
 
@@ -221,7 +218,7 @@ export class NodeTransformer {
     }
 
     private populateSignatures(node: DocNode, reflection: DeclarationReflection): void {
-        const acc = reflection as unknown as { getSignature?: SignatureReflection; setSignature?: SignatureReflection };
+        const acc = reflection;
         const out: SignatureReflection[] = [];
 
         if (Array.isArray(reflection.signatures)) out.push(...reflection.signatures);

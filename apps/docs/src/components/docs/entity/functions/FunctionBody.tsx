@@ -31,7 +31,6 @@ function buildTypeParamMember(tp: FunctionTypeParameterModel, index: number): En
         id,
         label: tp.name,
         description: tp.description ? { plain: tp.description, html: tp.description } : { plain: '', html: '' },
-        // Put any description only on the signature to avoid duplication in sharedDocumentation
         sharedDocumentation: [],
         sharedExamples: [],
         signatures: [

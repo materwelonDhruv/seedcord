@@ -16,6 +16,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'UnknownException' },
     { query: 'Mongo' },
     { query: 'BaseComponent' },
+    { query: 'CooldownManager' },
 
     // Properties
     { query: 'db' },

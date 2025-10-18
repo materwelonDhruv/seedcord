@@ -118,7 +118,7 @@ const renderReferenceType: TypeRenderer = (ctx, type, parts) => {
         label = referenceType.qualifiedName;
     }
 
-    const reference = buildReference(ctx, referenceType as unknown as ReferenceLike);
+    const reference = buildReference(ctx, referenceType);
     if (reference) {
         parts.push({ kind: 'ref', text: label, ref: reference });
     } else {

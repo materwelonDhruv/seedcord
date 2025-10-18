@@ -20,7 +20,31 @@ export const ensureSignatureAnchor = (signature: DocSignature): string =>
 
 export async function resolveHeaderSignature(node: DocNode, context: FormatContext): Promise<CodeRepresentation> {
     if (node.header) {
-        return formatDeclarationHeader(node.header, context);
+        const headerRep = await formatDeclarationHeader(node.header, context);
+
+        const accessAtStart = headerRep.text.match(/^(public|protected)\b/);
+        if (accessAtStart) {
+            const access = accessAtStart[1];
+            if (node.flags.isReadonly && !/^\s*(?:public|protected)\s+readonly\b/.test(headerRep.text)) {
+                const rest = headerRep.text.replace(/^(?:public|protected)\b\s*/i, '');
+                return highlightCode(`${access} readonly ${rest}`);
+            }
+
+            return headerRep;
+        }
+
+        const parts: string[] = [];
+        if (node.flags.access) parts.push(node.flags.access);
+        if (node.flags.isReadonly) parts.push('readonly');
+        if (node.flags.isAbstract) parts.push('abstract');
+        if (node.flags.isStatic) parts.push('static');
+        if (node.flags.isAsync) parts.push('async');
+
+        if (parts.length) {
+            return highlightCode(`${parts.join(' ')} ${headerRep.text}`);
+        }
+
+        return headerRep;
     }
 
     const rendered = node.signatures[0]?.render;
@@ -48,10 +72,14 @@ export function collectMemberTags(node: DocNode): string[] {
     const { flags } = node;
 
     if (flags.isStatic) tags.add('static');
-    if (flags.isReadonly) tags.add('readonly');
     if (flags.isAbstract) tags.add('abstract');
     if (flags.isOptional) tags.add('optional');
     if (flags.isDeprecated) tags.add('deprecated');
+    const flagsRecord = flags;
+    if (flagsRecord.isOverwriting === true) tags.add('overrides');
+    const accessorVal = flagsRecord.accessor;
+    if (typeof accessorVal === 'string') tags.add('accessor');
+    if (flagsRecord.isDecorator === true) tags.add('decorator');
 
     return Array.from(tags);
 }

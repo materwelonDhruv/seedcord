@@ -5,14 +5,14 @@ import { buildFunctionTypeParams } from './buildFunctionTypeParams';
 import { ensureSignatureAnchor } from './utils';
 
 import type { CodeRepresentation, FormatContext, FunctionSignatureModel } from '../types';
-import type { DocSignature, RenderedSignature } from '@seedcord/docs-engine';
+import type { DocSignature } from '@seedcord/docs-engine';
 
 export async function buildFunctionSignature(
     signature: DocSignature,
     context: FormatContext,
     isAsync = false
 ): Promise<FunctionSignatureModel> {
-    const rendered = (signature as unknown as { render?: RenderedSignature }).render;
+    const rendered = signature.render;
     const baseCode: CodeRepresentation = rendered
         ? await formatSignature(rendered, context)
         : await highlightCode(signature.name);

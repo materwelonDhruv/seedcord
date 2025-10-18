@@ -1,4 +1,4 @@
-export const MEMBER_ACCESS_LEVELS = ['public', 'protected', 'private'] as const;
+export const MEMBER_ACCESS_LEVELS = ['public', 'protected'] as const;
 
 export type MemberAccessLevel = (typeof MEMBER_ACCESS_LEVELS)[number];
 

@@ -6,7 +6,7 @@ import type { EnumMemberModel, FormatContext } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
 
 export async function buildEnumMember(node: DocNode, context: FormatContext): Promise<EnumMemberModel> {
-    const code = await highlightCode((node as unknown as { headerText?: string }).headerText ?? node.name);
+    const code = await highlightCode(node.headerText ?? node.name);
     const comment = await formatCommentRich(node.comment, context);
     const member: EnumMemberModel = {
         id: ensureSlug(node),

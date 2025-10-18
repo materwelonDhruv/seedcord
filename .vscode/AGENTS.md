@@ -15,4 +15,5 @@
 - Use ts paths if available instead of relative paths. (Check tsconfig.json)
 - Import order eslint warnings and indentation and spacing eslint warnings can be fixed by running `pnpm lint:fix` after all changes are made.
 - Do NOT use "any" type unless it makes sense in context.
+- DO NOT type cast 'as unknown as ...' if the type is already correct.
 - Try to avoid type casting unless absolutely necessary.
