@@ -188,6 +188,7 @@ export interface DocNode {
     id: number;
     key: GlobalId;
     packageName: string;
+    sourcePackageName: string;
     packageVersion?: string;
     name: string;
     path: string[];

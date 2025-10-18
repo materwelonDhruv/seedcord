@@ -28,3 +28,26 @@ export const toDocType = (type: SomeType | ReflectionType | undefined): DocType 
         return type as unknown as DocType;
     }
 };
+
+interface ReferenceTypeLike {
+    type?: string;
+    package?: string;
+    packageName?: string;
+}
+
+interface SourceRefLike {
+    fileName?: string;
+    fullFileName?: string;
+}
+
+export function hasVariant(x: unknown): x is { variant?: string } {
+    return !!x && typeof x === 'object' && 'variant' in x;
+}
+
+export function hasRefType(x: unknown): x is { type?: ReferenceTypeLike } {
+    return !!x && typeof x === 'object' && 'type' in x;
+}
+
+export function hasSources(x: unknown): x is { sources?: SourceRefLike[] } {
+    return !!x && typeof x === 'object' && 'sources' in x;
+}

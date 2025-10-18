@@ -22,29 +22,17 @@ import { toGlobalId } from '../ids';
 import { kindLabel } from '../kinds';
 import { slugForNode } from '../slugger';
 import { mapFlags } from './flag-mapper';
+import { hasVariant, hasRefType, hasSources } from './type-helpers';
 
 import type { DocInheritance, DocNode } from '../types';
 
 const formatLiteralValue = (value: unknown): string | undefined => {
     if (value === undefined) return undefined;
     if (value === null) return 'null';
-
-    if (typeof value === 'string') {
-        return JSON.stringify(value);
-    }
-
-    if (typeof value === 'number') {
-        return Number.isFinite(value) ? String(value) : undefined;
-    }
-
-    if (typeof value === 'boolean') {
-        return value ? 'true' : 'false';
-    }
-
-    if (typeof value === 'bigint') {
-        return `${value.toString()}n`;
-    }
-
+    if (typeof value === 'string') return JSON.stringify(value);
+    if (typeof value === 'number') return Number.isFinite(value) ? String(value) : undefined;
+    if (typeof value === 'boolean') return value ? 'true' : 'false';
+    if (typeof value === 'bigint') return `${value.toString()}n`;
     return undefined;
 };
 
@@ -55,16 +43,12 @@ const extractEnumLiteralValue = (
     const literalFromReflection = (reflection.type as { type?: string; value?: unknown } | undefined) ?? null;
     if (literalFromReflection && literalFromReflection.type === 'literal' && 'value' in literalFromReflection) {
         const formatted = formatLiteralValue(literalFromReflection.value);
-        if (formatted !== undefined) {
-            return formatted;
-        }
+        if (formatted !== undefined) return formatted;
     }
 
     if (mappedType && typeof mappedType === 'object' && (mappedType as { type?: string }).type === 'literal') {
         const literal = mappedType as { value?: unknown };
-        if ('value' in literal) {
-            return formatLiteralValue(literal.value);
-        }
+        if ('value' in literal) return formatLiteralValue(literal.value);
     }
 
     return undefined;
@@ -76,9 +60,7 @@ const buildPathSegments = (
     parentPath: readonly string[]
 ): string[] => {
     const label = typeof reflection.name === 'string' && reflection.name.length > 0 ? reflection.name : 'anonymous';
-
     if (reflection.kind === ReflectionKind.Project) return [];
-
     return parentPath.length === 0 ? [label] : [...parentPath, label];
 };
 
@@ -95,6 +77,7 @@ interface CreateNodeParams {
     reflection: ProjectReflection | DeclarationReflection;
     reflectionName: string;
     packageName: string;
+    sourcePackageName: string;
     path: string[];
     qualifiedName: string;
     slug: string;
@@ -114,10 +97,14 @@ export class NodeTransformer {
         const packageName = String(this.context.manifest.name);
         const reflectionName =
             typeof reflection.name === 'string' && reflection.name.length > 0 ? reflection.name : packageName;
+
+        const sourcePackageName = this.resolveSourcePackageName(reflection, packageName);
+
         const node = this.createBaseNode({
             reflection,
             reflectionName,
             packageName,
+            sourcePackageName,
             path,
             qualifiedName,
             slug
@@ -145,12 +132,13 @@ export class NodeTransformer {
     }
 
     private createBaseNode(params: CreateNodeParams): DocNode {
-        const { reflection, reflectionName, packageName, path, qualifiedName, slug } = params;
+        const { reflection, reflectionName, packageName, sourcePackageName, path, qualifiedName, slug } = params;
         const node: DocNode = {
             id: reflection.id,
             key: toGlobalId(packageName, reflection.id),
             name: reflectionName,
             packageName,
+            sourcePackageName,
             path,
             qualifiedName,
             slug,
@@ -170,18 +158,45 @@ export class NodeTransformer {
         };
 
         const version = this.packageVersion();
-        if (version) {
-            node.packageVersion = version;
-        }
+        if (version) node.packageVersion = version;
 
         return node;
     }
 
+    // eslint-disable-next-line complexity
+    private resolveSourcePackageName(
+        reflection: ProjectReflection | DeclarationReflection,
+        fallbackPackage: string
+    ): string {
+        if (
+            hasVariant(reflection) &&
+            hasRefType(reflection) &&
+            reflection.variant === 'reference' &&
+            reflection.type?.type === 'reference'
+        ) {
+            const fromPkg = reflection.type.package ?? reflection.type.packageName;
+            if (typeof fromPkg === 'string' && fromPkg.length > 0) {
+                return fromPkg;
+            }
+        }
+
+        if (hasSources(reflection) && Array.isArray(reflection.sources)) {
+            for (const s of reflection.sources) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                const file = s.fullFileName ?? s.fileName ?? '';
+                const nm = file.match(/(?:^|[\\/])node_modules[\\/](?<pkg>@[^\\/]+[\\/][^\\/]+|[^\\/]+)/);
+                if (nm?.groups?.pkg) return nm.groups.pkg;
+                const mono = file.match(/(?:^|[\\/])packages[\\/](?<pkg>@[^\\/]+[\\/][^\\/]+|[^\\/]+)[\\/]/);
+                if (mono?.groups?.pkg) return mono.groups.pkg;
+            }
+        }
+
+        return fallbackPackage;
+    }
+
     private applyDeclarationDetails(node: DocNode, reflection: DeclarationReflection): void {
         const mappedType = mapType(this.context, reflection.type);
-        if (mappedType !== null) {
-            node.type = mappedType;
-        }
+        if (mappedType !== null) node.type = mappedType;
 
         node.typeParameters = mapTypeParameters(this.context, reflection.typeParameters);
         node.sources = mapSources(reflection.sources);
@@ -200,21 +215,15 @@ export class NodeTransformer {
         node.implementationOf = mapReference(this.context, reflection.implementationOf);
 
         const def = (reflection as unknown as { defaultValue?: string }).defaultValue;
-        if (typeof def === 'string' && def.length > 0) {
-            node.defaultValue = def;
-        }
+        if (typeof def === 'string' && def.length > 0) node.defaultValue = def;
 
         if (node.defaultValue === undefined && reflection.kind === ReflectionKind.EnumMember) {
             const literalValue = extractEnumLiteralValue(reflection, node.type);
-            if (literalValue !== undefined) {
-                node.defaultValue = literalValue;
-            }
+            if (literalValue !== undefined) node.defaultValue = literalValue;
         }
 
         const sourceUrl = primaryUrlFromSources(reflection.sources);
-        if (typeof sourceUrl === 'string') {
-            node.sourceUrl = sourceUrl;
-        }
+        if (typeof sourceUrl === 'string') node.sourceUrl = sourceUrl;
     }
 
     private populateSignatures(node: DocNode, reflection: DeclarationReflection): void {
@@ -241,10 +250,7 @@ export class NodeTransformer {
     }
 
     private applyGroups(node: DocNode, container: ContainerReflection): void {
-        if (!Array.isArray(container.groups) || container.groups.length === 0) {
-            return;
-        }
-
+        if (!Array.isArray(container.groups) || container.groups.length === 0) return;
         node.groups = container.groups.map((group) => mapGroups(group, node.packageName));
     }
 }
