@@ -18,6 +18,8 @@
     --entity-function-color: #0a9961;
     --entity-enum-color: #d93c62;
     --entity-variable-color: #1770ac;
+    --deprecated-dark: #cf3234;
+    --deprecated-light: #801f20;
     --mark-circle-a: color-mix(in srgb, var(--accent-a) 65%, white);
     --mark-circle-b: color-mix(in srgb, var(--accent-b) 55%, white);
     --mark-circle-c: color-mix(in srgb, var(--text) 30%, white);
@@ -35,6 +37,7 @@
     --entity-function-color: #76e4b3;
     --entity-enum-color: #ffa0b6;
     --entity-variable-color: #79c4f4;
+    --deprecated-dark: #cf3234;
     --mark-circle-a: color-mix(in srgb, var(--accent-a) 78%, transparent);
     --mark-circle-b: color-mix(in srgb, var(--accent-b) 82%, transparent);
     --mark-circle-c: color-mix(in srgb, var(--accent-b) 45%, white);
@@ -180,7 +183,6 @@
     display: inline;
 }
 
-/* Style links that are injected into highlighted code blocks */
 .shiki a,
 .shiki-inline a {
     color: inherit;
@@ -208,6 +210,40 @@
 .shiki-theme-group .shiki-light,
 .shiki-inline-group .shiki-light {
     display: none;
+}
+
+.deprecated-card {
+    position: relative;
+    border: 3px solid var(--deprecated-dark);
+}
+
+.deprecated-card::before {
+    content: '';
+    position: absolute;
+    top: -1px;
+    left: -1px;
+    width: 28px;
+    height: 20px;
+    background: transparent;
+    z-index: 2;
+}
+
+.deprecated-label {
+    position: absolute;
+    top: -0.6rem;
+    left: 0.75rem;
+    z-index: 3;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.125rem 0.5rem;
+    font-size: 0.625rem;
+    font-weight: 700;
+    color: white;
+    border-radius: 9999px;
+    background-color: var(--deprecated-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
 }
 
 [data-theme='light'] .shiki-theme-group .shiki-dark,

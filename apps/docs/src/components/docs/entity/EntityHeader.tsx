@@ -1,6 +1,13 @@
-import { ArrowUpRight } from 'lucide-react';
+/* eslint-disable max-lines-per-function */
+import { AlertTriangle, ArrowUpRight } from 'lucide-react';
 
-import type { CommentParagraph, CodeRepresentation, CommentExample, FunctionSignatureModel } from '@/lib/docs/types';
+import type {
+    CodeRepresentation,
+    CommentExample,
+    CommentParagraph,
+    DeprecationStatus,
+    FunctionSignatureModel
+} from '@/lib/docs/types';
 import { formatVersionLabel } from '@/lib/docs/version';
 import type { EntityTone } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
@@ -10,6 +17,7 @@ import Button from '@ui/Button';
 import { Icon } from '@ui/Icon';
 
 import { CommentExamples } from './comments/CommentExamples';
+import { CommentParagraphs } from './comments/CommentParagraphs';
 import FunctionSignaturesInline from './functions/FunctionSignaturesInline';
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
@@ -37,7 +45,7 @@ interface EntityHeaderProps {
     summaryExamples?: readonly CommentExample[];
     sourceUrl?: string | null;
     version?: string;
-    isDeprecated?: boolean;
+    deprecationStatus?: DeprecationStatus;
 }
 
 const Pill = ({ className, children }: { className?: string; children: ReactNode }): ReactElement => (
@@ -74,7 +82,7 @@ export function EntityHeader({
     tone,
     sourceUrl,
     version,
-    isDeprecated = false,
+    deprecationStatus = { isDeprecated: false },
     summaryExamples = [],
     functionSignatures
 }: EntityHeaderProps): ReactElement {
@@ -93,8 +101,8 @@ export function EntityHeader({
         'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
     );
 
-    return (
-        <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+    const headerContent = (
+        <>
             <div className="space-y-3">
                 <div className="flex flex-wrap items-center gap-2.5">
                     <Pill className={toneStyles.badge}>
@@ -107,11 +115,6 @@ export function EntityHeader({
                     {version ? (
                         <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
                             {formatVersionLabel(version)}
-                        </Pill>
-                    ) : null}
-                    {isDeprecated ? (
-                        <Pill className="border-[color-mix(in_srgb,var(--entity-variable-color)_48%,transparent)] bg-[color-mix(in_srgb,var(--entity-variable-color)_12%,transparent)] text-[color-mix(in_srgb,var(--entity-variable-color)_72%,var(--text))]">
-                            Deprecated
                         </Pill>
                     ) : null}
                 </div>
@@ -138,6 +141,36 @@ export function EntityHeader({
                     <CommentExamples examples={headerExamples} />
                 </div>
             ) : null}
+        </>
+    );
+
+    if (!deprecationStatus.isDeprecated) {
+        return (
+            <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+                {headerContent}
+            </header>
+        );
+    }
+
+    return (
+        <header className="min-w-0">
+            <div className="relative">
+                <div className="deprecated-card rounded-2xl p-4 shadow-soft sm:p-5">
+                    <div className="mb-3 flex items-start gap-3 text-sm text-subtle">
+                        <div className="mt-0.5 flex-shrink-0 text-[var(--deprecated-dark)]">
+                            <Icon icon={AlertTriangle} size={16} />
+                        </div>
+                        {deprecationStatus.deprecationMessage ? (
+                            <div className="min-w-0 text-sm leading-relaxed text-subtle">
+                                <CommentParagraphs paragraphs={deprecationStatus.deprecationMessage} />
+                            </div>
+                        ) : null}
+                    </div>
+
+                    {headerContent}
+                </div>
+                <span className="deprecated-label">Deprecated</span>
+            </div>
         </header>
     );
 }

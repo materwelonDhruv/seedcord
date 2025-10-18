@@ -1,7 +1,7 @@
 import { cloneCommentParagraphs } from '../comments/creators';
 import { formatCommentRich } from '../comments/formatter';
 import { highlightCode } from '../formatting';
-import { ensureSlug } from './utils';
+import { ensureSlug, collectMemberTags } from './utils';
 
 import type { EnumMemberModel, FormatContext } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
@@ -15,6 +15,9 @@ export async function buildEnumMember(node: DocNode, context: FormatContext): Pr
         summary: cloneCommentParagraphs(comment.paragraphs),
         signature: code
     };
+
+    const tags = collectMemberTags(node);
+    if (tags.length) member.tags = tags;
 
     if (node.defaultValue !== undefined) member.value = node.defaultValue;
     if (node.sourceUrl) member.sourceUrl = node.sourceUrl;

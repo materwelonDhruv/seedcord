@@ -45,7 +45,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}
                 {...(model.version ? { version: model.version } : {})}
-                isDeprecated={model.isDeprecated}
+                deprecationStatus={model.deprecationStatus}
                 {...(functionSignatures ? { functionSignatures } : {})}
             />
             {body ?? MEMBERS_PLACEHOLDER}

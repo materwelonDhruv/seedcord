@@ -97,6 +97,15 @@ export interface CategoryConfig {
 
 export type EntityKind = EntityTone;
 
+export type DeprecationStatus =
+    | {
+          isDeprecated: false;
+      }
+    | {
+          isDeprecated: true;
+          deprecationMessage: CommentParagraph[] | undefined;
+      };
+
 export interface BaseEntityModel extends WithCode<'signature'>, WithDocs<'summary', 'summaryExamples'>, WithSourceUrl {
     kind: EntityKind;
     name: string;
@@ -105,7 +114,7 @@ export interface BaseEntityModel extends WithCode<'signature'>, WithDocs<'summar
     manifestPackage: string;
     displayPackage: string;
     version?: string;
-    isDeprecated: boolean;
+    deprecationStatus: DeprecationStatus;
 }
 
 export interface ClassLikeEntityModel extends BaseEntityModel {
@@ -119,6 +128,7 @@ export interface EnumMemberModel extends WithCode<'signature'>, WithSummary<'sum
     id: string;
     label: string;
     value?: DocNode['defaultValue'];
+    tags?: readonly string[];
 }
 
 export interface EnumEntityModel extends BaseEntityModel {

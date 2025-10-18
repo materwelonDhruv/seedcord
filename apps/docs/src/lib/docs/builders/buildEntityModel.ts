@@ -2,7 +2,7 @@ import { formatCommentRich } from '../comments/formatter';
 import { createFormatContext } from '../formatting';
 import { resolveHeaderSignature } from './utils';
 import { formatDisplayPackageName } from '../packages';
-import { createBaseEntityModel } from './baseEntityModel';
+import { buildBaseEntityModel } from './baseEntityModel';
 import { buildClassLikeEntity } from './buildClassLikeEntity';
 import { buildEnumEntity } from './buildEnumEntity';
 import { buildFunctionEntity } from './buildFunctionEntity';
@@ -20,7 +20,7 @@ export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promi
     const signature = await resolveHeaderSignature(node, context);
     const kind = resolveEntityKind(node);
 
-    const base = createBaseEntityModel({
+    const base = buildBaseEntityModel({
         node,
         kind,
         manifestPackage,
