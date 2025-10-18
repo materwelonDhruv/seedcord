@@ -9,7 +9,8 @@ import type { ReactElement } from 'react';
 
 export function renderMemberOverview(
     columns: ReactElement[],
-    memberAccessLevel: MemberAccessLevel
+    memberAccessLevel: MemberAccessLevel,
+    showAccessControls = false
 ): ReactElement | null {
     if (!columns.length) {
         return null;
@@ -27,13 +28,15 @@ export function renderMemberOverview(
                 <Icon icon={ChevronDown} size={18} className="text-subtle transition-transform group-open:rotate-180" />
             </summary>
             <div className="mt-3 space-y-4">
-                <p className="text-xs text-subtle">
-                    Showing members with{' '}
-                    <span className="font-semibold text-[var(--text)]">
-                        {formatMemberAccessLabel(memberAccessLevel)}
-                    </span>{' '}
-                    visibility and higher.
-                </p>
+                {showAccessControls ? (
+                    <p className="text-xs text-subtle">
+                        Showing members with{' '}
+                        <span className="font-semibold text-[var(--text)]">
+                            {formatMemberAccessLabel(memberAccessLevel)}
+                        </span>{' '}
+                        visibility and higher.
+                    </p>
+                ) : null}
                 <div className={cn('grid min-w-0 gap-3', quickPanelGridColumns)}>{columns}</div>
             </div>
         </details>

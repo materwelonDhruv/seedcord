@@ -63,7 +63,7 @@ export default function EntityMembersSection({
                 </div>
             ) : null}
             <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
-            {renderMemberOverview(quickPanelColumns, memberAccessLevel)}
+            {renderMemberOverview(quickPanelColumns, memberAccessLevel, showAccessControls)}
 
             <div className="min-w-0 space-y-8">
                 <MemberDetailGroup items={typeParameters} prefix="typeParameter" />

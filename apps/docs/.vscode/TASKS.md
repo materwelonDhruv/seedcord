@@ -42,7 +42,7 @@ information, useful for container orchestration and monitoring.
 
 [ ] 17. Make sure to correctly parse and display the comments for @typeParam and @param. It's currently broken for type params. Can you please check the places we're trying to read those comments and find any bugs?
 
-[ ] 18. Interfaces do not need the “Showing members with” sentence in Member overview
+[x] 18. Interfaces do not need the “Showing members with Private/Public...” sentence in Member overview
 
 [ ] 19. get rid of the public private protected tags. show them in the signature instead. same for functions. Same for static. And for readonly. And for abstract. And for async (isAsync flag exists).
 
@@ -72,7 +72,7 @@ information, useful for container orchestration and monitoring.
 
 [ ] 28. function param and typeparam tsdocs broken (Checkable)
 
-[ ] 29. prettier api in the map: [https://prettier.io/docs/api](https://prettier.io/docs/options) so we can link it
+[x] 29. prettier api in the map: [https://prettier.io/docs/api](https://prettier.io/docs/options) so we can link it
 
 [ ] 30. - when underlining for hyperlinking in shiki codeblock, if smth that’s hyperlink is preceded by a `[` for example `[number]`, the left `[` also gets underlined.
 
