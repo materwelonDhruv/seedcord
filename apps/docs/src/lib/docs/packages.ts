@@ -55,16 +55,12 @@ const normalizeKey = (value: string): string => value.trim().toLowerCase();
 
 function sanitizeExternalKey(value: string): string {
     if (!value) return '';
-    // Remove generic parameters: Foo<Bar> -> Foo
-    let v = value.replace(/<.*>/g, '');
-    // Convert array suffixes: Foo[] -> Foo
-    v = v.replace(/\[\]/g, '');
-    // Remove union tails like "A | B" -> "A"
-    v = v.replace(/\|.*/g, '');
-    // Trim whitespace
-    v = v.trim();
-    // Lowercase for map keys
-    return v.toLowerCase();
+    return value
+        .replace(/<.*>/g, '') // remove generics
+        .replace(/\[\]/g, '') // remove array brackets
+        .replace(/\|.*/g, '') // remove union tails
+        .trim() // trim whitespace
+        .toLowerCase(); // normalize case
 }
 
 export function resolveExternalPackageUrl(packageName?: string | null): string | null {
@@ -86,9 +82,9 @@ export function resolveExternalPackageUrl(packageName?: string | null): string |
         candidates.add(cap);
     }
     const stripped = packageName
-        .trim()
-        .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '')
-        .trim();
+        .trim() // trim whitespace
+        .replace(/^[^a-zA-Z0-9]+|[^a-zA-Z0-9]+$/g, '') // remove surrounding non-alphanumerics
+        .trim(); // trim again
     if (stripped) candidates.add(sanitizeExternalKey(stripped));
 
     for (const key of candidates) {
