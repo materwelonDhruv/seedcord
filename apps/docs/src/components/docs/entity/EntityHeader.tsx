@@ -1,6 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 
 import type { CommentParagraph, CodeRepresentation, CommentExample, FunctionSignatureModel } from '@/lib/docs/types';
+import { formatVersionLabel } from '@/lib/docs/version';
 import type { EntityTone } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
 
@@ -106,7 +107,7 @@ export function EntityHeader({
                     </Pill>
                     {version ? (
                         <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
-                            v{version}
+                            {formatVersionLabel(version)}
                         </Pill>
                     ) : null}
                     {isDeprecated ? (

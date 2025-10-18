@@ -5,6 +5,7 @@ import type { EntityTone } from '@/lib/entityMetadata';
 import { getDocsEngine } from './engine';
 import { DEFAULT_MANIFEST_PACKAGE, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
+import { formatVersionLabel } from './version';
 
 import type {
     NavigationEntityItem,
@@ -23,8 +24,6 @@ export const CATEGORY_CONFIG: readonly CategoryConfig[] = [
     { entity: 'types', title: 'Types', tone: 'type' },
     { entity: 'variables', title: 'Variables', tone: 'variable' }
 ] as const;
-
-const formatVersionLabel = (version: string): string => (version.startsWith('v') ? version : `v${version}`);
 
 const createNavigationItem = (
     manifestPackage: string,
