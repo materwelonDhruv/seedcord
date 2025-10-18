@@ -1,12 +1,10 @@
-[ ] 25. way to copy function page link. hashtag on hover in function hero card on the right of the name
-
 [ ] 26. de-dupe search entries
 
 [ ] 27. missing space between examples (example emojis)
 
 [ ] 28. function param and typeparam tsdocs broken (Checkable)
 
-[ ] 30. - when underlining for hyperlinking in shiki codeblock, if smth that’s hyperlink is preceded by a `[` for example `[number]`, the left `[` also gets underlined.
+[ ] 30. when underlining for hyperlinking in shiki codeblock, if smth that’s hyperlink is preceded by a `[` for example `[number]`, the left `[` also gets underlined.
 
 [ ] 31. In the search, the icon for methods should what we are using for methods. Right now it uses the icon for functions.
 

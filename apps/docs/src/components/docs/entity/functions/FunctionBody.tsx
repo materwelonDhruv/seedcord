@@ -99,7 +99,7 @@ export default function FunctionBody({ model }: { model: FunctionEntityModel }):
                 <MemberDetailGroup items={typeParameterItems} prefix="typeParameter" />
             </div>
             <div>
-                <MemberDetailGroup items={parameterItems} prefix="property" />
+                <MemberDetailGroup items={parameterItems} prefix="property" title="Params" />
             </div>
         </section>
     );

@@ -14,16 +14,18 @@ import type { ReactElement } from 'react';
 
 export function MemberDetailGroup({
     items,
-    prefix
+    prefix,
+    title: titleProp
 }: {
     items: readonly EntityMemberSummary[];
     prefix: MemberPrefix;
+    title?: string | undefined;
 }): ReactElement | null {
     if (!items.length) {
         return null;
     }
 
-    const title = MEMBER_TITLES[prefix];
+    const title = titleProp ?? MEMBER_TITLES[prefix];
     const panelId = `${prefix}-member-panel`;
     const [expanded, setExpanded] = useState(true);
 
