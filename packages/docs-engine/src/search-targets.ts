@@ -72,3 +72,6 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'PERM_GROUPS' },
     { query: 'PRETTIER_CONFIG' }
 ];
+
+// Single default search target for testing
+// export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [{ query: 'checkPermissions' }];

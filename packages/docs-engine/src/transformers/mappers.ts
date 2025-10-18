@@ -317,6 +317,7 @@ export const mapSignature = (
         anchor,
         overloadIndex: index,
         kindLabel: kindLabel(signature.kind),
+        flags: mapFlags(signature),
         type: mapType(context, signature.type),
         parameters: mapSignatureParameters(context, signature.parameters),
         typeParameters: mapTypeParameters(context, signature.typeParameters),

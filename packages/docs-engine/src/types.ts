@@ -155,6 +155,7 @@ export interface DocSignature {
     anchor: string;
     overloadIndex: number;
     kindLabel: string;
+    flags: DocFlags;
     type?: DocType | null;
     parameters: DocSignatureParameter[];
     typeParameters: DocTypeParameter[];
