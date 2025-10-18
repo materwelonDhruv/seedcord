@@ -2,8 +2,8 @@ import { kindName, type DocNode, type DocPackageModel, type DocsEngine } from '@
 
 import { resolveEntityTone } from '@/lib/entityMetadata';
 
+import { buildEntityModel } from './builders/buildEntityModel';
 import { getDocsEngine } from './engine';
-import { buildEntityModel } from './entity-builders/buildEntityModel';
 import { resolveManifestPackageName } from './packages';
 
 import type { InternalEntityLookupParams, EntityQueryParams, EntityKind, EntityModel } from './types';
