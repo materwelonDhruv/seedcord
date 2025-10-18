@@ -148,7 +148,7 @@ export abstract class BaseComponent<TComponent> {
     /**
      * Builds a customId string for interactive components
      *
-     * Creates customIds in the format "prefix:arg1-arg2-arg3" for buttons, modals, etc.
+     * Creates customIds in the format `prefix:arg1-arg2-arg3` for buttons, modals, etc.
      * Arguments are joined with hyphens and separated from prefix with a colon.
      *
      * @param prefix - The route prefix that handlers will match against
