@@ -1,4 +1,3 @@
-/* eslint-disable max-lines-per-function */
 import { AlertTriangle, ArrowUpRight } from 'lucide-react';
 
 import type {
@@ -24,7 +23,7 @@ import { buildSummaryNodes } from './utils/buildSummaryNodes';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
-import type { ReactElement, ReactNode } from 'react';
+import type { JSX, ReactElement, ReactNode } from 'react';
 
 function getHeaderExamples(
     active: FunctionSignatureModel | undefined,
@@ -72,6 +71,44 @@ const SourceButton = ({ href }: { href: string }): ReactElement => (
         </a>
     </Button>
 );
+
+const MaybeDeprecatedHeader = ({
+    headerContent,
+    deprecationStatus
+}: {
+    headerContent: JSX.Element;
+    deprecationStatus: DeprecationStatus;
+}): ReactElement => {
+    if (!deprecationStatus.isDeprecated) {
+        return (
+            <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+                {headerContent}
+            </header>
+        );
+    }
+
+    return (
+        <header className="min-w-0">
+            <div className="relative">
+                <div className="deprecated-card rounded-2xl p-4 shadow-soft sm:p-5">
+                    {deprecationStatus.deprecationMessage ? (
+                        <div className="mb-3 flex items-start gap-3 text-sm text-subtle">
+                            <div className="mt-0.5 flex-shrink-0 text-[var(--deprecated-dark)]">
+                                <Icon icon={AlertTriangle} size={16} />
+                            </div>
+                            <div className="min-w-0 text-sm leading-relaxed text-subtle">
+                                <CommentParagraphs paragraphs={deprecationStatus.deprecationMessage} />
+                            </div>
+                        </div>
+                    ) : null}
+
+                    {headerContent}
+                </div>
+                <span className="deprecated-label">Deprecated</span>
+            </div>
+        </header>
+    );
+};
 
 export function EntityHeader({
     badgeLabel,
@@ -144,33 +181,5 @@ export function EntityHeader({
         </>
     );
 
-    if (!deprecationStatus.isDeprecated) {
-        return (
-            <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
-                {headerContent}
-            </header>
-        );
-    }
-
-    return (
-        <header className="min-w-0">
-            <div className="relative">
-                <div className="deprecated-card rounded-2xl p-4 shadow-soft sm:p-5">
-                    <div className="mb-3 flex items-start gap-3 text-sm text-subtle">
-                        <div className="mt-0.5 flex-shrink-0 text-[var(--deprecated-dark)]">
-                            <Icon icon={AlertTriangle} size={16} />
-                        </div>
-                        {deprecationStatus.deprecationMessage ? (
-                            <div className="min-w-0 text-sm leading-relaxed text-subtle">
-                                <CommentParagraphs paragraphs={deprecationStatus.deprecationMessage} />
-                            </div>
-                        ) : null}
-                    </div>
-
-                    {headerContent}
-                </div>
-                <span className="deprecated-label">Deprecated</span>
-            </div>
-        </header>
-    );
+    return <MaybeDeprecatedHeader headerContent={headerContent} deprecationStatus={deprecationStatus} />;
 }

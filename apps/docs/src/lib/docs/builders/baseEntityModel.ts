@@ -1,9 +1,34 @@
 import { ensureSlug } from './utils';
+import { createPlainParagraph } from '../comments/creators';
 
-import type { EntityKind, CommentParagraph, CommentExample, CodeRepresentation, BaseEntityModel } from '../types';
+import type {
+    EntityKind,
+    CommentParagraph,
+    CommentExample,
+    CodeRepresentation,
+    BaseEntityModel,
+    DeprecationStatus
+} from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
 
-export function createBaseEntityModel({
+function buildDeprecationStatus(node: DocNode): DeprecationStatus {
+    if (!node.flags.isDeprecated) return { isDeprecated: false };
+
+    const deprecationBlock = node.comment?.blockTags.find((val) => val.tag === '@deprecated');
+
+    let paragraphs: CommentParagraph[] | undefined;
+    const deprecationText = deprecationBlock?.text;
+    if (deprecationText && deprecationText.length > 0) {
+        paragraphs = [createPlainParagraph(deprecationText)];
+    }
+
+    return {
+        isDeprecated: true,
+        deprecationMessage: paragraphs
+    };
+}
+
+export function buildBaseEntityModel({
     node,
     kind,
     manifestPackage,
@@ -30,7 +55,7 @@ export function createBaseEntityModel({
         summary,
         summaryExamples,
         signature,
-        isDeprecated: node.flags.isDeprecated
+        deprecationStatus: buildDeprecationStatus(node)
     };
 
     if (node.packageVersion) base.version = node.packageVersion;
