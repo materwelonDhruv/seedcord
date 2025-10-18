@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, type ReactElement } from 'react';
+import { useContext, useMemo, type ReactElement } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { DocsUIContext } from '@components/docs/DocsUIContext';
 import MemberAccessControls from '@components/docs/entity/member/MemberAccessControls';
 import { useUIStore, type UIStore } from '@store/ui';
 
@@ -29,20 +30,23 @@ export default function EntityMembersSection({
     typeParameters = [],
     showAccessControls = false
 }: EntityMembersSectionProps): ReactElement {
+    const ctx = useContext(DocsUIContext);
     const memberAccessLevel = useUIStore(useShallow((state: UIStore) => state.memberAccessLevel));
+
+    const effectiveMemberAccessLevel = ctx?.memberAccessLevel ?? memberAccessLevel;
     const openMemberSection = useMemberNavigation();
 
     const filteredProperties = useMemo(
-        () => properties.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
-        [properties, memberAccessLevel]
+        () => properties.filter((member) => shouldIncludeMember(member, effectiveMemberAccessLevel)),
+        [properties, effectiveMemberAccessLevel]
     );
     const filteredMethods = useMemo(
-        () => methods.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
-        [methods, memberAccessLevel]
+        () => methods.filter((member) => shouldIncludeMember(member, effectiveMemberAccessLevel)),
+        [methods, effectiveMemberAccessLevel]
     );
     const filteredConstructors = useMemo(
-        () => constructors.filter((member) => shouldIncludeMember(member, memberAccessLevel)),
-        [constructors, memberAccessLevel]
+        () => constructors.filter((member) => shouldIncludeMember(member, effectiveMemberAccessLevel)),
+        [constructors, effectiveMemberAccessLevel]
     );
     const quickPanelColumns: ReactElement[] = [
         <MemberList key="properties" items={filteredProperties} prefix="property" onNavigate={openMemberSection} />,
@@ -63,7 +67,7 @@ export default function EntityMembersSection({
                 </div>
             ) : null}
             <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
-            {renderMemberOverview(quickPanelColumns, memberAccessLevel, showAccessControls)}
+            {renderMemberOverview(quickPanelColumns, effectiveMemberAccessLevel, showAccessControls)}
 
             <div className="min-w-0 space-y-8">
                 <MemberDetailGroup items={typeParameters} prefix="typeParameter" />

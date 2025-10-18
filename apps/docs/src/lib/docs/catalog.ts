@@ -3,7 +3,7 @@ import { cache } from 'react';
 import type { EntityTone } from '@/lib/entityMetadata';
 
 import { getDocsEngine } from './engine';
-import { DEFAULT_MANIFEST_PACKAGE, formatDisplayPackageName } from './packages';
+import { DEFAULT_MANIFEST_PACKAGE, DEFAULT_VERSION, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
 import { formatVersionLabel } from './version';
 
@@ -130,5 +130,29 @@ export const loadDocsCatalog = cache(async (): Promise<DocsCatalog> => {
 export const findCatalogEntry = (catalog: DocsCatalog, packageId: string): PackageCatalogEntry | undefined =>
     catalog.find((entry) => entry.id === packageId);
 
-export const findCatalogVersion = (entry: PackageCatalogEntry, versionId: string): PackageVersionCatalog | undefined =>
-    entry.versions.find((version) => version.id === versionId);
+const parseSemver = (v: string): [number, number, number] => {
+    const s = v.replace(/^v/, '');
+    const parts = s.split('.').map((p) => Number(p.replace(/[^0-9]/g, '')) || 0);
+    return [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0];
+};
+
+const compareSemver = (a: string, b: string): number => {
+    const [am, an, ap] = parseSemver(a);
+    const [bm, bn, bp] = parseSemver(b);
+    if (am !== bm) return am - bm;
+    if (an !== bn) return an - bn;
+    return ap - bp;
+};
+
+export const findCatalogVersion = (
+    entry: PackageCatalogEntry,
+    versionId: string
+): PackageVersionCatalog | undefined => {
+    if (!entry.versions.length) return undefined;
+
+    if (versionId === DEFAULT_VERSION) {
+        return entry.versions.slice().sort((a, b) => compareSemver(b.manifestVersion, a.manifestVersion))[0];
+    }
+
+    return entry.versions.find((version) => version.id === versionId);
+};

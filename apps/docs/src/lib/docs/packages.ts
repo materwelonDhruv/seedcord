@@ -42,6 +42,7 @@ const PACKAGE_OVERRIDES: Record<string, PackageOverride> = {
 };
 
 export const DEFAULT_MANIFEST_PACKAGE = 'seedcord';
+export const DEFAULT_VERSION = 'latest';
 
 const sortPackages = (packages: readonly string[]): string[] =>
     packages.slice().sort((a, b) => {

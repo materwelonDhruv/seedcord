@@ -1,7 +1,3 @@
-[x] 23. latest package version should show latest and not the package version exactly. like latest • version
-
-[ ] 24. reloading should remember scroll and collapsed categories in the sidebar. It should also remember the last selected package. And what access level is selected.
-
 [ ] 25. way to copy function page link. hashtag on hover in function hero card on the right of the name
 
 [ ] 26. de-dupe search entries
@@ -23,3 +19,7 @@
 [ ] 35. Get rid of all the placeholder texts like "Additional TypeDoc metadata will appear here once the symbol is sourced from generated documentation artifacts." for example. There are many others like that. If there is no content to show, just don’t show anything instead of showing a placeholder.
 
 [ ] 36. In type param rendered comments on entity pages, the type param comment duplicates itself above and below the signature.
+
+[ ] 37. The param and typeparam section in methods below signature and above example can be a dropdown like examples. closed by default.
+
+[ ] 38. Keep chevron usage across the project consistent. Pointing right means closed, pointing down means opened. In some places it's down as closed and up as opened.

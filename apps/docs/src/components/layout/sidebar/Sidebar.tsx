@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import { useMemo, useState, useEffect, useRef } from 'react';
 
 import { cn } from '@lib/utils';
+import useUIStore from '@store/ui';
 
 import { SidebarCategoryList } from './SidebarCategoryList';
 import { SidebarEmptyState } from './SidebarEmptyState';
@@ -94,12 +95,27 @@ export function Sidebar({
         restSegments
     );
 
+    const setSelectedPackage = useUIStore((s) => s.setSelectedPackage);
+    const setSelectedVersion = useUIStore((s) => s.setSelectedVersion);
+
     const onPackageChange = (value: string): void => {
+        try {
+            setSelectedPackage(value);
+        } catch {
+            // ignore
+        }
+
         setLocalPackageId(value);
         handlePackageChange(value);
     };
 
     const onVersionChange = (value: string): void => {
+        try {
+            setSelectedVersion(value);
+        } catch {
+            // ignore
+        }
+
         setLocalVersionId(value);
         handleVersionChange(value);
     };

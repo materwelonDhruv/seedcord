@@ -1,7 +1,9 @@
 'use client';
 
+import { useContext } from 'react';
 import { useShallow } from 'zustand/react/shallow';
 
+import { DocsUIContext } from '@components/docs/DocsUIContext';
 import { MEMBER_ACCESS_LEVELS, formatMemberAccessLabel } from '@lib/memberAccess';
 import { cn } from '@lib/utils';
 import { useUIStore, type UIStore } from '@store/ui';
@@ -17,12 +19,16 @@ export function MemberAccessControls({
     orientation?: 'vertical' | 'horizontal';
     showLegend?: boolean;
 } = {}): ReactElement {
+    const ctx = useContext(DocsUIContext);
+
     const { memberAccessLevel, setMemberAccessLevel } = useUIStore(
         useShallow((state: UIStore) => ({
             memberAccessLevel: state.memberAccessLevel,
             setMemberAccessLevel: state.setMemberAccessLevel
         }))
     );
+
+    const initialLevel = ctx?.memberAccessLevel;
 
     const containerClasses =
         orientation === 'horizontal' ? 'flex items-center gap-3' : 'flex flex-col items-stretch gap-2';
@@ -38,7 +44,7 @@ export function MemberAccessControls({
                 className="inline-flex overflow-hidden rounded-full border border-border/60 bg-[color-mix(in_srgb,var(--surface)_97%,transparent)]"
             >
                 {MEMBER_ACCESS_LEVELS.map((level, index) => {
-                    const isActive = memberAccessLevel === level;
+                    const isActive = (initialLevel ?? memberAccessLevel) === level;
                     return (
                         <button
                             key={level}
