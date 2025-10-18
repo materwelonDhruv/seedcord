@@ -104,6 +104,33 @@ function signatureIsAsync(signature: SignatureReflection | undefined, context: A
     return returnsPromise(signature.type, context);
 }
 
+function signatureIsDeprecated(ref: Reflection | SignatureReflection | DeclarationReflection | undefined): boolean {
+    if (!ref) return false;
+
+    const comment = (ref as { comment?: Comment | null }).comment ?? null;
+    if (comment) {
+        const deprecatedTag = comment.getTag('@deprecated');
+        if (deprecatedTag) return true;
+
+        const blockTags = comment.blockTags;
+        if (Array.isArray(blockTags) && blockTags.some((tag) => tag.tag === '@deprecated')) return true;
+    }
+
+    if (Boolean((ref as { flags?: { isDeprecated?: boolean } }).flags?.isDeprecated)) {
+        return true;
+    }
+
+    if (ref.isDeclaration()) {
+        const decl = ref;
+        const signatures = collectDeclarationSignatures(decl);
+        if (signatures.length > 0) {
+            return signatures.some((sig) => signatureIsDeprecated(sig));
+        }
+    }
+
+    return false;
+}
+
 function returnsPromise(type: SomeType | undefined, context: AsyncDetectionContext): boolean {
     if (!type || context.types.has(type)) {
         return false;
@@ -279,7 +306,7 @@ export const mapFlags = (reflection: Reflection | ParameterReflection): DocFlags
         isReadonly: Boolean(flags.isReadonly),
         isOptional: Boolean(flags.isOptional),
         isAsync: asyncBehavior,
-        isDeprecated: Boolean((flags as { isDeprecated?: boolean }).isDeprecated),
+        isDeprecated: signatureIsDeprecated(reflection),
         isInherited: inherited,
         isDecorator,
         isInternal: Boolean((flags as { isInternal?: boolean }).isInternal) || hasModifier(comment, '@internal'),
