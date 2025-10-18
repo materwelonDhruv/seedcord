@@ -19,7 +19,7 @@ export type HandlerCtor = new (...args: any[]) => Handler;
  * @example
  * ```typescript
  * \@Checkable
- * class AdminCommand extends InteractionHandler {
+ * class AdminCommand extends InteractionHandler implements WithChecks {
  *   async runChecks() {
  *     // Perform admin permission checks
  *   }

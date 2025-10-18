@@ -1,9 +1,9 @@
 import {
-    Binary,
     Braces,
     ExternalLink,
     FileText,
     FunctionSquare,
+    Workflow,
     Hammer,
     ListTree,
     PackageSearch,
@@ -30,10 +30,10 @@ export const SEARCH_KIND_ICONS: Record<SearchResultKind, LucideIcon> = {
     enum: ListTree,
     function: FunctionSquare,
     constructor: Hammer,
-    method: FunctionSquare,
+    method: Workflow,
     property: SquareDot,
     variable: Variable,
-    parameter: Binary,
+    parameter: SquareDot,
     typeParameter: Sigma,
     enumMember: ListTree
 };
