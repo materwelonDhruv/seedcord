@@ -26,33 +26,38 @@ const DEFAULT_PACKAGE = '@seedcord/core';
 const DEFAULT_VERSION = 'v0.2.5';
 const DEFAULT_ACCESS_LEVEL: MemberAccessLevel = 'protected';
 
-export const useUIStore = create<UIStore>((set) => ({
-    isCommandPaletteOpen: false,
-    selectedPackage: DEFAULT_PACKAGE,
-    selectedVersion: DEFAULT_VERSION,
-    memberAccessLevel: DEFAULT_ACCESS_LEVEL,
-    setCommandPaletteOpen: (open) => {
-        log('Command palette visibility updated', { open });
-        set({ isCommandPaletteOpen: open });
-    },
-    toggleCommandPalette: () =>
-        set((state) => {
-            const open = !state.isCommandPaletteOpen;
-            log('Command palette toggled', { open });
-            return { isCommandPaletteOpen: open };
-        }),
-    setSelectedPackage: (pkg) => {
-        log('Package filter changed', { pkg });
-        set({ selectedPackage: pkg });
-    },
-    setSelectedVersion: (version) => {
-        log('Version filter changed', { version });
-        set({ selectedVersion: version });
-    },
-    setMemberAccessLevel: (level) => {
-        log('Member access filter changed', { level: formatMemberAccessLabel(level) });
-        set({ memberAccessLevel: level });
-    }
-}));
+export const useUIStore = create<UIStore>((set) => {
+    return {
+        isCommandPaletteOpen: false,
+        selectedPackage: DEFAULT_PACKAGE,
+        selectedVersion: DEFAULT_VERSION,
+        memberAccessLevel: DEFAULT_ACCESS_LEVEL,
+        setCommandPaletteOpen: (open) => {
+            log('Command palette visibility updated', { open });
+            set({ isCommandPaletteOpen: open });
+        },
+        toggleCommandPalette: () =>
+            set((state) => {
+                const open = !state.isCommandPaletteOpen;
+                log('Command palette toggled', { open });
+                return { isCommandPaletteOpen: open };
+            }),
+        setSelectedPackage: (pkg) => {
+            log('Package filter changed', { pkg });
+            if (typeof window !== 'undefined') window.localStorage.setItem('docs.selectedPackage', pkg);
+            set({ selectedPackage: pkg });
+        },
+        setSelectedVersion: (version) => {
+            log('Version filter changed', { version });
+            if (typeof window !== 'undefined') window.localStorage.setItem('docs.selectedVersion', version);
+            set({ selectedVersion: version });
+        },
+        setMemberAccessLevel: (level) => {
+            log('Member access filter changed', { level: formatMemberAccessLabel(level) });
+            if (typeof window !== 'undefined') window.localStorage.setItem('docs.memberAccessLevel', level);
+            set({ memberAccessLevel: level });
+        }
+    };
+});
 
 export default useUIStore;

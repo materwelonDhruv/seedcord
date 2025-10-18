@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 
 import { cn } from '@lib/utils';
 
@@ -18,6 +18,45 @@ import { useSidebarSelection } from './utils/useSidebarSelection';
 import type { SidebarProps } from './types';
 import type { ReactElement } from 'react';
 
+/* eslint-disable max-lines-per-function */
+
+function useSidebarPersistence(
+    localPackageId: string,
+    localVersionId: string,
+    handleScroll: (e: React.UIEvent<HTMLDivElement>) => void
+): {
+    scrollRef: React.RefObject<HTMLDivElement | null>;
+    collapsedStorageKey: string;
+    composedHandleScroll: (e: React.UIEvent<HTMLDivElement>) => void;
+} {
+    const scrollRef = useRef<HTMLDivElement | null>(null);
+    const collapsedStorageKey = `docs.sidebar.collapsed:${localPackageId}:${localVersionId}`;
+    const scrollStorageKey = `docs.sidebar.scroll:${localPackageId}:${localVersionId}`;
+
+    useEffect(() => {
+        const ls = typeof window !== 'undefined' ? window.localStorage : null;
+        const el = scrollRef.current;
+        if (el && ls) {
+            const saved = ls.getItem(scrollStorageKey);
+            if (saved) {
+                const n = Number(saved);
+                if (!Number.isNaN(n)) el.scrollTop = n;
+            }
+        }
+    }, [localPackageId, localVersionId, scrollStorageKey]);
+
+    const composedHandleScroll = (e: React.UIEvent<HTMLDivElement>): void => {
+        handleScroll(e);
+        const ls = typeof window !== 'undefined' ? window.localStorage : null;
+        const el = scrollRef.current;
+        if (el && ls) {
+            ls.setItem(scrollStorageKey, String(el.scrollTop));
+        }
+    };
+
+    return { scrollRef, collapsedStorageKey, composedHandleScroll };
+}
+
 export function Sidebar({
     catalog,
     activePackageId,
@@ -33,6 +72,12 @@ export function Sidebar({
     const restSegments = useMemo(() => resolveRestSegments(pathname), [pathname]);
     const [localPackageId, setLocalPackageId] = useState<string>(activePackageId);
     const [localVersionId, setLocalVersionId] = useState<string>(activeVersionId);
+
+    const { scrollRef, collapsedStorageKey, composedHandleScroll } = useSidebarPersistence(
+        localPackageId,
+        localVersionId,
+        handleScroll
+    );
 
     useEffect(() => setLocalPackageId(activePackageId), [activePackageId]);
     useEffect(() => setLocalVersionId(activeVersionId), [activeVersionId]);
@@ -64,16 +109,19 @@ export function Sidebar({
     }
 
     const isDesktop = variant === 'desktop';
-    const navClassName = cn(
-        'flex h-full flex-col p-4',
-        isDesktop
-            ? 'rounded-none border-0 bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] shadow-none'
-            : 'rounded-2xl border border-border bg-surface shadow-soft',
-        className
-    );
 
     return (
-        <nav aria-label="Library navigation" className={navClassName} style={containerStyles}>
+        <nav
+            aria-label="Library navigation"
+            className={cn(
+                'flex h-full flex-col p-4',
+                isDesktop
+                    ? 'rounded-none border-0 bg-[color-mix(in_srgb,var(--surface)_82%,transparent)] shadow-none'
+                    : 'rounded-2xl border border-border bg-surface shadow-soft',
+                className
+            )}
+            style={containerStyles}
+        >
             <div className="shrink-0 space-y-3">
                 <SidebarHeader
                     packageOptions={packageOptions}
@@ -85,16 +133,21 @@ export function Sidebar({
                 />
             </div>
             <div
+                ref={scrollRef}
                 className="relative mt-4 flex-1 min-h-0 overflow-y-auto pe-1 [overscroll-behavior:contain]"
                 style={listStyles}
                 onWheel={handleWheel}
-                onScroll={handleScroll}
+                onScroll={composedHandleScroll}
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onTouchCancel={handleTouchEnd}
             >
-                <SidebarCategoryList categories={activeVersion.categories} activeHref={pathname} />
+                <SidebarCategoryList
+                    categories={activeVersion.categories}
+                    activeHref={pathname}
+                    storageKey={collapsedStorageKey}
+                />
             </div>
         </nav>
     );

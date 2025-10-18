@@ -22,6 +22,7 @@ export interface SidebarProps {
 export interface SidebarCategoryListProps {
     categories: readonly NavigationCategory[];
     activeHref: string;
+    storageKey?: string;
 }
 
 export interface SidebarItemProps {

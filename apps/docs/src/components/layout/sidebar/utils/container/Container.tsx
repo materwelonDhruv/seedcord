@@ -1,8 +1,9 @@
 'use client';
 
-import { cloneElement, isValidElement, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { cloneElement, isValidElement, useLayoutEffect, useMemo, useRef, useState, useEffect } from 'react';
 
 import { cn } from '@lib/utils';
+import useUIStore from '@store/ui';
 import { ScrollToTopButton } from '@ui/ScrollToTopButton';
 
 import { DesktopSidebarFrame } from './DesktopSidebarFrame';
@@ -11,6 +12,7 @@ import { MobilePanelDialog } from './MobilePanelDialog';
 import { SIDEBAR_WIDTH } from '../constants';
 
 import type { SidebarProps as SidebarComponentProps } from '../../types';
+import type { MemberAccessLevel } from '@lib/memberAccess';
 import type { CSSProperties, ReactElement, ReactNode } from 'react';
 
 export interface ContainerProps {
@@ -60,6 +62,24 @@ export function Container({ sidebar, children, className }: ContainerProps): Rea
         return () => {
             window.removeEventListener('resize', updateNavigationHeight);
         };
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        try {
+            const ls = window.localStorage;
+            const pkg = ls.getItem('docs.selectedPackage');
+            const ver = ls.getItem('docs.selectedVersion');
+            const access = ls.getItem('docs.memberAccessLevel');
+            const setPkg = useUIStore.getState().setSelectedPackage;
+            const setVer = useUIStore.getState().setSelectedVersion;
+            const setAccess = useUIStore.getState().setMemberAccessLevel;
+            if (pkg) setPkg(pkg);
+            if (ver) setVer(ver);
+            if (access) setAccess(access as MemberAccessLevel);
+        } catch {
+            // ignore
+        }
     }, []);
 
     const containerStyle: CSSProperties & {
