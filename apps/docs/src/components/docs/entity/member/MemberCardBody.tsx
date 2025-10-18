@@ -7,6 +7,7 @@ import SignatureSelector from '../signatures/SignatureSelector';
 import { useActiveSignature } from '../utils/useActiveSignature';
 
 import type { EntityMemberSummary } from '../types';
+import type { DeprecationStatus } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 const FALLBACK_TEXT =
@@ -14,7 +15,13 @@ const FALLBACK_TEXT =
 
 export type SignatureSelection = [string, (id: string) => void];
 
-export function MemberCardBody({ member }: { member: EntityMemberSummary }): ReactElement {
+export function MemberCardBody({
+    member,
+    parentDeprecationStatus
+}: {
+    member: EntityMemberSummary;
+    parentDeprecationStatus?: DeprecationStatus | undefined;
+}): ReactElement {
     const [activeSignatureId, setActiveSignatureId] = useActiveSignature(member);
     const hasSharedDocumentation = member.sharedDocumentation.length > 0;
     const hasSharedExamples = member.sharedExamples.length > 0;
@@ -36,6 +43,7 @@ export function MemberCardBody({ member }: { member: EntityMemberSummary }): Rea
                     key={signature.id}
                     signature={signature}
                     isActive={signature.id === activeSignatureId || (!activeSignatureId && index === 0)}
+                    parentDeprecationStatus={parentDeprecationStatus ?? member.deprecationStatus}
                 />
             ))}
             {hasSharedExamples ? <CommentExamples examples={member.sharedExamples} /> : null}

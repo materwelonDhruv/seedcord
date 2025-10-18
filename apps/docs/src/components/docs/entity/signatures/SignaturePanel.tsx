@@ -1,3 +1,5 @@
+import type { DeprecationStatus } from '@/lib/docs/types';
+
 import { cn } from '../../../../lib/utils';
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
@@ -11,10 +13,12 @@ export const SIGNATURE_CONTAINER_CLASS =
 
 export function SignaturePanel({
     signature,
-    isActive
+    isActive,
+    parentDeprecationStatus
 }: {
     signature: MemberSignatureDetail;
     isActive: boolean;
+    parentDeprecationStatus?: DeprecationStatus | undefined;
 }): ReactElement {
     const section = (
         <section
@@ -36,8 +40,34 @@ export function SignaturePanel({
         </section>
     );
 
-    if (signature.deprecationStatus?.isDeprecated) {
-        return <DecoratedEntity deprecationStatus={signature.deprecationStatus}>{section}</DecoratedEntity>;
+    function deprecationMessageKey(ds?: DeprecationStatus): string | null {
+        if (!ds?.isDeprecated) return null;
+        if (!ds.deprecationMessage) return '__NONE__';
+        return ds.deprecationMessage.map((p) => p.plain).join('\n');
+    }
+
+    const parentKey = deprecationMessageKey(parentDeprecationStatus);
+    const sigKey = deprecationMessageKey(signature.deprecationStatus);
+
+    // Only decorate when:
+    // - the signature is active (visible),
+    // - the signature is deprecated,
+    // - the parent is NOT deprecated,
+    // - and the parent's deprecation message is not equal to the signature's.
+    const shouldDecorate =
+        Boolean(isActive) &&
+        Boolean(signature.deprecationStatus?.isDeprecated) &&
+        !Boolean(parentDeprecationStatus?.isDeprecated) &&
+        parentKey !== sigKey;
+
+    if (shouldDecorate) {
+        return (
+            <DecoratedEntity
+                deprecationStatus={signature.deprecationStatus ?? { isDeprecated: true, deprecationMessage: undefined }}
+            >
+                {section}
+            </DecoratedEntity>
+        );
     }
 
     return section;

@@ -6,6 +6,10 @@ import {
     type SignatureReflection
 } from 'typedoc';
 
+import { toGlobalId } from '../ids';
+import { kindLabel } from '../kinds';
+import { slugForNode } from '../slugger';
+import { mapFlags } from './flag-mapper';
 import {
     mapGroups,
     mapInheritance,
@@ -18,11 +22,7 @@ import {
 } from './mappers';
 import { formatRenderedDeclarationHeader, renderDeclarationHeader } from './signature-renderer';
 import { registerNode, type TransformContext } from './transform-context';
-import { toGlobalId } from '../ids';
-import { kindLabel } from '../kinds';
-import { slugForNode } from '../slugger';
-import { mapFlags } from './flag-mapper';
-import { hasVariant, hasRefType, hasSources } from './type-helpers';
+import { hasRefType, hasSources, hasVariant } from './type-helpers';
 
 import type { DocInheritance, DocNode } from '../types';
 

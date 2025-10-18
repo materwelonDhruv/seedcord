@@ -52,7 +52,7 @@ export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: 
         >
             <DecoratedEntity deprecationStatus={deprecationStatus}>
                 <MemberCardHeader member={member} anchorId={anchorId} tags={tags} prefix={prefix} />
-                <MemberCardBody member={member} />
+                <MemberCardBody member={member} parentDeprecationStatus={deprecationStatus} />
             </DecoratedEntity>
         </article>
     );

@@ -1,7 +1,7 @@
 import { Serializer } from 'typedoc';
 
 import type { DocType } from '../types';
-import type { SomeType, ReflectionType } from 'typedoc';
+import type { ReflectionType, SomeType } from 'typedoc';
 
 const serializer = new Serializer();
 

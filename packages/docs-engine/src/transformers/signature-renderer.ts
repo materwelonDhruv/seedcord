@@ -138,7 +138,7 @@ const applyModifiers = (flags: DocFlags): string[] => {
     if (flags.isAsync) {
         modifiers.push('async');
     }
-    if (flags.access && flags.access !== 'public') {
+    if (flags.access) {
         modifiers.push(flags.access);
     }
 
