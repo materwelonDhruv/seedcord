@@ -63,8 +63,11 @@ function buildInternalHref(engine: DocsEngine, packageName: string, slug: string
     const tone = resolveEntityTone(kindName(node.kind));
     const version = node.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
 
+    const nodeWithSource = node;
+    const manifestForHref = nodeWithSource.sourcePackageName;
+
     return buildEntityHref({
-        manifestPackage: node.packageName,
+        manifestPackage: manifestForHref,
         slug: node.slug,
         tone,
         version
@@ -79,7 +82,7 @@ function buildMemberHrefFromNode(engine: DocsEngine, packageName: string, node: 
         const entityVersion = entityNode.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
 
         const entityHref = buildEntityHref({
-            manifestPackage: entityNode.packageName,
+            manifestPackage: entityNode.sourcePackageName,
             slug: entityNode.slug,
             tone: entityTone,
             version: entityVersion
@@ -104,7 +107,7 @@ function buildMemberHrefFromNode(engine: DocsEngine, packageName: string, node: 
         const ownerVersion = owner.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
 
         return buildEntityHref({
-            manifestPackage: owner.packageName,
+            manifestPackage: owner.sourcePackageName,
             slug: owner.slug,
             tone: ownerTone,
             version: ownerVersion

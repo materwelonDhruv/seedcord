@@ -9,12 +9,12 @@ import { formatVersionLabel } from './version';
 
 import type { DocsEngine } from './engine';
 import type {
-    NavigationEntityItem,
-    NavigationCategory,
-    PackageCatalogEntry,
-    PackageVersionCatalog,
+    CategoryConfig,
     DocsCatalog,
-    CategoryConfig
+    NavigationCategory,
+    NavigationEntityItem,
+    PackageCatalogEntry,
+    PackageVersionCatalog
 } from './types';
 
 type GetPackageDirectoryReturn = ReturnType<DocsEngine['getPackageDirectory']>;
@@ -40,11 +40,7 @@ const createNavigationItem = (
     href: buildEntityHref({ manifestPackage, version, slug, tone })
 });
 
-const buildCategories = (
-    manifestPackage: string,
-    version: string,
-    directory: GetPackageDirectoryReturn
-): NavigationCategory[] => {
+const buildCategories = (version: string, directory: GetPackageDirectoryReturn): NavigationCategory[] => {
     if (!directory) {
         return [];
     }
@@ -56,7 +52,11 @@ const buildCategories = (
         }
 
         const items = entries
-            .map(([slug, node]) => createNavigationItem(manifestPackage, version, slug, node.name, tone))
+            .map(([slug, node]) => {
+                const nodeWithSource = node;
+                const manifestForHref: string = nodeWithSource.sourcePackageName;
+                return createNavigationItem(manifestForHref, version, slug, node.name, tone);
+            })
             .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 
         if (!items.length) {
@@ -82,7 +82,7 @@ const buildPackageEntry = (
     const displayName = formatDisplayPackageName(manifestPackage);
     const description = `Reference documentation for ${displayName}.`;
     const versionLabel = formatVersionLabel(version);
-    const categories = buildCategories(manifestPackage, version, directory);
+    const categories = buildCategories(version, directory);
 
     const versionCatalog: PackageVersionCatalog = {
         id: version,

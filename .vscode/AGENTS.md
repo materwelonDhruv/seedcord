@@ -1,3 +1,8 @@
+- DO NOT do any inline imports unless absolutely necessary. For example, `as import('some-package').SomeType`. BAD BAD BAD.
+- Do NOT use "any" type unless it makes sense in context.
+- DO NOT type cast 'as unknown as ...' if the type is already correct.
+- Try to avoid type casting unless absolutely necessary.
+- DO NOT cast types if the type is already correct.
 - DO NOT try to lint or run scripts unless it's absolutely needed to complete the given task.
 - DO NOT run `pnpm lint`. ALWAYS run `pnpm lint:fix` instead.
 - ALWAYS, I repeat, ALWAYS first cd into the package or app's directory, then run the command via pnpm.
@@ -14,8 +19,3 @@
 - If files are large and cause a lint error because of that, consider breaking them down into smaller, more manageable files.
 - Use ts paths if available instead of relative paths. (Check tsconfig.json)
 - Import order eslint warnings and indentation and spacing eslint warnings can be fixed by running `pnpm lint:fix` after all changes are made.
-- Do NOT use "any" type unless it makes sense in context.
-- DO NOT type cast 'as unknown as ...' if the type is already correct.
-- Try to avoid type casting unless absolutely necessary.
-- DO NOT cast types if the type is already correct.
-- DO NOT do any inline imports unless absolutely necessary.

@@ -2,7 +2,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 
 import { buildPackage } from './package-builder';
-import { propagateSourceInformation } from './source-fixer';
+// import { propagateSourceInformation } from './source-fixer';
 
 import type { GlobalId } from '../ids';
 import type { DocCollection, DocManifest, DocManifestPackage, DocPackageModel } from '../types';
@@ -145,8 +145,8 @@ export const buildCollection = async (manifest: DocManifest, options: ResolveOpt
         packages.push(model);
     }
 
-    const roots = packages.map((pkg) => pkg.root);
-    propagateSourceInformation(roots);
+    // const roots = packages.map((pkg) => pkg.root);
+    // propagateSourceInformation(roots);
 
     const { byKey, byGlobalSlug } = buildGlobalMaps(packages);
     return { manifest, packages, byKey, byGlobalSlug };

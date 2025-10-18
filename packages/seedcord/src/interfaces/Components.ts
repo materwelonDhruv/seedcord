@@ -248,7 +248,6 @@ export abstract class CustomError extends Error {
     protected constructor(public override message: string) {
         super(message);
 
-        // TODO: Is this line even needed?
         Error.captureStackTrace(this, this.constructor);
     }
 
