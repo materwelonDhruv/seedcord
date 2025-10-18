@@ -1,4 +1,4 @@
-import { formatCommentRich } from '../commentFormatting';
+import { formatCommentRich } from '../comments/formatter';
 import { createFormatContext } from '../formatting';
 import { resolveHeaderSignature } from './utils';
 import { formatDisplayPackageName } from '../packages';

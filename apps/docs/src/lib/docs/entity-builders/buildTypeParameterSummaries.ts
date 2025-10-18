@@ -1,4 +1,5 @@
-import { createPlainParagraph, formatCommentRich } from '../commentFormatting';
+import { createPlainParagraph } from '../comments/creators';
+import { formatCommentRich } from '../comments/formatter';
 import { renderInlineType, highlightCode } from '../formatting';
 
 import type { FormatContext, CommentParagraph, CommentExample } from '../types';

@@ -15,3 +15,5 @@
 [ ] 38. Keep chevron usage across the project consistent. Pointing right means closed, pointing down means opened. In some places it's down as closed and up as opened.
 
 [ ] 39. CopyAnchorTag isn't good on mobile screens because it's too far left and basically hangs off the screen. Instead, only for mobile, show it on the right side of the screen next to the heading text.
+
+[ ] 40. Custom scroll bar that matches the seedcord theme for dark and light. Is sleek. And has transition when it appears/disappears.

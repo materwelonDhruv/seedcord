@@ -1,4 +1,4 @@
-import { formatCommentRich } from '../commentFormatting';
+import { formatCommentRich } from '../comments/formatter';
 import { highlightCode, renderInlineType } from '../formatting';
 import { isInlineType } from './buildFunctionParameters';
 

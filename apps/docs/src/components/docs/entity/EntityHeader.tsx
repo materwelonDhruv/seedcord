@@ -86,7 +86,6 @@ export function EntityHeader({
     const [activeId] = useActiveSignatureList(ids as ActiveSignatureListProps[]);
     const active = fn.find((s) => s.id === activeId) ?? fn[0];
 
-    // Prefer the active signature's summary (if present) for the header lead.
     const headerSummary = active?.summary.length ? active.summary : summary;
     const headerExamples = getHeaderExamples(active, summaryExamples);
     const summaryNodes = buildSummaryNodes(

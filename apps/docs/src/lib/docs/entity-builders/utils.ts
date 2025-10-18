@@ -1,4 +1,4 @@
-import { createPlainParagraph, cloneCommentParagraphs } from '../commentFormatting';
+import { cloneCommentParagraphs, createPlainParagraph } from '../comments/creators';
 import { formatDeclarationHeader, formatSignature, highlightCode } from '../formatting';
 
 import type { CommentExample, FormatContext, CodeRepresentation, CommentParagraph, FormattedComment } from '../types';

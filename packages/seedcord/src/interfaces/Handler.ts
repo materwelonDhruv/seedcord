@@ -169,6 +169,8 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
  *
  * Extend this class to provide autocomplete suggestions for slash command options.
  * The focused option is automatically available via the `focused` property.
+ *
+ * @deprecated Just testing
  */
 export abstract class AutocompleteHandler extends BaseHandler<AutocompleteInteraction> implements Handler {
     /** The currently focused autocomplete option (Based on what you set in `\@AutocompleteRoute`) */

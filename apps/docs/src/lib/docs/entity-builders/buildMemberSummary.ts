@@ -1,4 +1,4 @@
-import { formatCommentRich } from '../commentFormatting';
+import { formatCommentRich } from '../comments/formatter';
 import { resolveReferenceHref } from '../resolveReferenceHref';
 import { buildSignatureDetails } from './buildSignatureDetails';
 import {

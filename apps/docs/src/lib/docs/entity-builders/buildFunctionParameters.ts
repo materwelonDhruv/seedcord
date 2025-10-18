@@ -1,5 +1,5 @@
 // buildFunctionParameters.ts
-import { formatCommentRich } from '../commentFormatting';
+import { formatCommentRich } from '../comments/formatter';
 import { highlightCode, renderInlineType } from '../formatting';
 
 import type { FunctionSignatureParameterModel, FormatContext } from '../types';

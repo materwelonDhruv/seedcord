@@ -1,4 +1,5 @@
-import { cloneCommentParagraphs, formatCommentRich } from '../commentFormatting';
+import { cloneCommentParagraphs } from '../comments/creators';
+import { formatCommentRich } from '../comments/formatter';
 import { highlightCode } from '../formatting';
 import { ensureSlug } from './utils';
 
