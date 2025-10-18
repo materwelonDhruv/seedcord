@@ -1,4 +1,5 @@
-import { buildMemberSummary, buildTypeParameterSummaries } from '../memberBuilders';
+import { buildMemberSummary } from './buildMemberSummary';
+import { buildTypeParameterSummaries } from './buildTypeParameterSummaries';
 
 import type { BaseEntityModel, ClassLikeEntityModel, FormatContext } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';

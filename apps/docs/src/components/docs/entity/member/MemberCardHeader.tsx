@@ -1,6 +1,6 @@
 import { Code } from 'lucide-react';
 
-import { formatMemberAccessLabel } from '@lib/memberAccess';
+// access label formatting is now shown in signatures; import removed
 import { CopyAnchorButton } from '@ui/CopyAnchorButton';
 import { Icon } from '@ui/Icon';
 
@@ -47,11 +47,6 @@ export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardH
                         </h3>
                     </div>
                     <div className="ml-auto flex items-center gap-2">
-                        {member.access ? (
-                            <span className="inline-flex items-center rounded-full bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.1em] text-subtle">
-                                {formatMemberAccessLabel(member.access)}
-                            </span>
-                        ) : null}
                         {member.sourceUrl ? (
                             <a
                                 href={member.sourceUrl}

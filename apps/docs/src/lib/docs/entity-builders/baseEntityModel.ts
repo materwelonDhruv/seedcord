@@ -1,4 +1,4 @@
-import { ensureSlug } from '../memberBuilders';
+import { ensureSlug } from './utils';
 
 import type { EntityKind, CommentParagraph, CommentExample, CodeRepresentation, BaseEntityModel } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';

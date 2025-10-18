@@ -1,6 +1,6 @@
 import { cloneCommentParagraphs, formatCommentRich } from '../commentFormatting';
 import { highlightCode } from '../formatting';
-import { ensureSlug } from '../memberBuilders';
+import { ensureSlug } from './utils';
 
 import type { EnumMemberModel, FormatContext } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';

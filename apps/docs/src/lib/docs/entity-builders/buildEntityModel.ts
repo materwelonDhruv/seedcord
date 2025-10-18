@@ -1,6 +1,6 @@
 import { formatCommentRich } from '../commentFormatting';
 import { createFormatContext } from '../formatting';
-import { resolveHeaderSignature } from '../memberBuilders';
+import { resolveHeaderSignature } from './utils';
 import { formatDisplayPackageName } from '../packages';
 import { createBaseEntityModel } from './baseEntityModel';
 import { buildClassLikeEntity } from './buildClassLikeEntity';

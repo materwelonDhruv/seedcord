@@ -8,7 +8,9 @@ export async function buildFunctionEntity(
     node: DocNode,
     context: FormatContext
 ): Promise<FunctionEntityModel> {
-    const signatures = await Promise.all(node.signatures.map((sig) => buildFunctionSignature(sig, context)));
+    const signatures = await Promise.all(
+        node.signatures.map((sig) => buildFunctionSignature(sig, context, Boolean(node.flags.isAsync)))
+    );
     const summaryToUse = base.summary.length ? base.summary : (signatures[0]?.summary ?? base.summary);
     return { ...base, summary: summaryToUse, signatures };
 }
