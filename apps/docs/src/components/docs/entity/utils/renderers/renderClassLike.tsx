@@ -22,6 +22,7 @@ export function renderClassLike(model: ClassLikeModel): ReactElement {
                     constructors={model.constructors}
                     typeParameters={model.typeParameters}
                     showAccessControls={showAccessControls}
+                    parentDeprecationStatus={model.deprecationStatus}
                 />
             ) : (
                 MEMBERS_PLACEHOLDER

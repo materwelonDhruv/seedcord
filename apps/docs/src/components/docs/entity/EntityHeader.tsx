@@ -1,4 +1,4 @@
-import { AlertTriangle, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 
 import type {
     CodeRepresentation,
@@ -16,14 +16,14 @@ import Button from '@ui/Button';
 import { Icon } from '@ui/Icon';
 
 import { CommentExamples } from './comments/CommentExamples';
-import { CommentParagraphs } from './comments/CommentParagraphs';
+import DecoratedEntity from './DecoratedEntity';
 import FunctionSignaturesInline from './functions/FunctionSignaturesInline';
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
-import type { JSX, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
 function getHeaderExamples(
     active: FunctionSignatureModel | undefined,
@@ -45,6 +45,7 @@ interface EntityHeaderProps {
     sourceUrl?: string | null;
     version?: string;
     deprecationStatus?: DeprecationStatus;
+    tags?: readonly string[];
 }
 
 const Pill = ({ className, children }: { className?: string; children: ReactNode }): ReactElement => (
@@ -57,6 +58,26 @@ const Pill = ({ className, children }: { className?: string; children: ReactNode
         {children}
     </span>
 );
+
+const TagPills = ({ tags }: { tags: readonly string[] }): ReactElement | null => {
+    if (!tags.length) return null;
+
+    return (
+        <>
+            {tags.includes('internal') ? (
+                <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
+                    Internal
+                </Pill>
+            ) : null}
+
+            {tags.includes('decorator') ? (
+                <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
+                    Decorator
+                </Pill>
+            ) : null}
+        </>
+    );
+};
 
 const SourceButton = ({ href }: { href: string }): ReactElement => (
     <Button
@@ -72,44 +93,6 @@ const SourceButton = ({ href }: { href: string }): ReactElement => (
     </Button>
 );
 
-const MaybeDeprecatedHeader = ({
-    headerContent,
-    deprecationStatus
-}: {
-    headerContent: JSX.Element;
-    deprecationStatus: DeprecationStatus;
-}): ReactElement => {
-    if (!deprecationStatus.isDeprecated) {
-        return (
-            <header className="min-w-0 space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
-                {headerContent}
-            </header>
-        );
-    }
-
-    return (
-        <header className="min-w-0">
-            <div className="relative">
-                <div className="deprecated-card rounded-2xl p-4 shadow-soft sm:p-5">
-                    {deprecationStatus.deprecationMessage ? (
-                        <div className="mb-3 flex items-start gap-3 text-sm text-subtle">
-                            <div className="mt-0.5 flex-shrink-0 text-[var(--deprecated-dark)]">
-                                <Icon icon={AlertTriangle} size={16} />
-                            </div>
-                            <div className="min-w-0 text-sm leading-relaxed text-subtle">
-                                <CommentParagraphs paragraphs={deprecationStatus.deprecationMessage} />
-                            </div>
-                        </div>
-                    ) : null}
-
-                    {headerContent}
-                </div>
-                <span className="deprecated-label">Deprecated</span>
-            </div>
-        </header>
-    );
-};
-
 export function EntityHeader({
     badgeLabel,
     pkg,
@@ -120,6 +103,7 @@ export function EntityHeader({
     sourceUrl,
     version,
     deprecationStatus = { isDeprecated: false },
+    tags = [],
     summaryExamples = [],
     functionSignatures
 }: EntityHeaderProps): ReactElement {
@@ -154,6 +138,7 @@ export function EntityHeader({
                             {formatVersionLabel(version)}
                         </Pill>
                     ) : null}
+                    <TagPills tags={tags} />
                 </div>
 
                 <div className="flex items-start gap-3 sm:gap-4">
@@ -181,5 +166,13 @@ export function EntityHeader({
         </>
     );
 
-    return <MaybeDeprecatedHeader headerContent={headerContent} deprecationStatus={deprecationStatus} />;
+    return (
+        <header className="min-w-0">
+            <DecoratedEntity deprecationStatus={deprecationStatus}>
+                <div className="space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+                    {headerContent}
+                </div>
+            </DecoratedEntity>
+        </header>
+    );
 }

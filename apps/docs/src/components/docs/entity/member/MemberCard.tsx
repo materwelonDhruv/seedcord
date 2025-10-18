@@ -1,7 +1,10 @@
+import type { DeprecationStatus } from '@/lib/docs/types';
+
 import { cn } from '@lib/utils';
 
 import { MemberCardBody } from './MemberCardBody';
 import { MemberCardHeader } from './MemberCardHeader';
+import DecoratedEntity from '../DecoratedEntity';
 import { buildTagList } from '../utils/buildTagList';
 
 import type { EntityMemberSummary, MemberPrefix } from '../types';
@@ -11,11 +14,32 @@ interface MemberCardProps {
     member: EntityMemberSummary;
     prefix: MemberPrefix;
     isLast: boolean;
+    parentDeprecationStatus?: DeprecationStatus | undefined;
 }
-export function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactElement {
+export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: MemberCardProps): ReactElement {
     const tags = buildTagList(member);
     const anchorId = `${prefix}-${member.id}`;
     const hasTags = tags.length > 0;
+    const isDeprecated =
+        tags.includes('deprecated') ||
+        Boolean(member.tags?.includes('deprecated')) ||
+        Boolean(member.deprecationStatus?.isDeprecated);
+
+    // Prefer model-provided deprecationStatus, otherwise build one. If the member has no deprecation message
+    // but the parent entity has one, prefer that message for clarity.
+    let deprecationStatus: DeprecationStatus =
+        member.deprecationStatus ??
+        (isDeprecated
+            ? { isDeprecated: true, deprecationMessage: member.description ? [member.description] : undefined }
+            : { isDeprecated: false });
+
+    if (
+        deprecationStatus.isDeprecated &&
+        deprecationStatus.deprecationMessage === undefined &&
+        parentDeprecationStatus?.isDeprecated
+    ) {
+        deprecationStatus = { isDeprecated: true, deprecationMessage: parentDeprecationStatus.deprecationMessage };
+    }
 
     return (
         <article
@@ -26,8 +50,10 @@ export function MemberCard({ member, prefix, isLast }: MemberCardProps): ReactEl
                 isLast ? 'pb-4' : 'pb-6'
             )}
         >
-            <MemberCardHeader member={member} anchorId={anchorId} tags={tags} prefix={prefix} />
-            <MemberCardBody member={member} />
+            <DecoratedEntity deprecationStatus={deprecationStatus}>
+                <MemberCardHeader member={member} anchorId={anchorId} tags={tags} prefix={prefix} />
+                <MemberCardBody member={member} />
+            </DecoratedEntity>
         </article>
     );
 }

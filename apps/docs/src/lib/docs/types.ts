@@ -45,6 +45,15 @@ export interface CommentExample {
 
 export interface FormattedComment extends WithDocs<'paragraphs', 'examples'> {}
 
+export type DeprecationStatus =
+    | {
+          isDeprecated: false;
+      }
+    | {
+          isDeprecated: true;
+          deprecationMessage: CommentParagraph[] | undefined;
+      };
+
 export type WithSourceUrl = Pick<DocNode, 'sourceUrl'>;
 
 export type WithCode<Key extends string = 'code'> = ReadonlyRecord<Key, CodeRepresentation>;
@@ -57,6 +66,9 @@ export type WithDocs<
     SummaryKey extends string = 'summary',
     ExamplesKey extends string = 'examples'
 > = WithSummary<SummaryKey> & WithExamples<ExamplesKey>;
+
+export type WithDeprecationStatus = ReadonlyRecord<'deprecationStatus', DeprecationStatus>;
+
 export interface NavigationEntityItem {
     id: string;
     label: string;
@@ -97,24 +109,19 @@ export interface CategoryConfig {
 
 export type EntityKind = EntityTone;
 
-export type DeprecationStatus =
-    | {
-          isDeprecated: false;
-      }
-    | {
-          isDeprecated: true;
-          deprecationMessage: CommentParagraph[] | undefined;
-      };
-
-export interface BaseEntityModel extends WithCode<'signature'>, WithDocs<'summary', 'summaryExamples'>, WithSourceUrl {
+export interface BaseEntityModel
+    extends WithCode<'signature'>,
+        WithDocs<'summary', 'summaryExamples'>,
+        WithSourceUrl,
+        WithDeprecationStatus {
     kind: EntityKind;
     name: string;
     slug: string;
     qualifiedName: string;
     manifestPackage: string;
     displayPackage: string;
+    tags?: readonly string[];
     version?: string;
-    deprecationStatus: DeprecationStatus;
 }
 
 export interface ClassLikeEntityModel extends BaseEntityModel {
@@ -124,7 +131,11 @@ export interface ClassLikeEntityModel extends BaseEntityModel {
     constructors: EntityMemberSummary[];
 }
 
-export interface EnumMemberModel extends WithCode<'signature'>, WithSummary<'summary'>, WithSourceUrl {
+export interface EnumMemberModel
+    extends WithCode<'signature'>,
+        WithSummary<'summary'>,
+        WithSourceUrl,
+        WithDeprecationStatus {
     id: string;
     label: string;
     value?: DocNode['defaultValue'];
@@ -153,7 +164,7 @@ export interface FunctionSignatureParameterModel {
 
 type RenderedTypeParameter = NonNullable<RenderedSignature['typeParams']>[number];
 
-export interface FunctionTypeParameterModel {
+export interface FunctionTypeParameterModel extends WithDeprecationStatus {
     name: RenderedTypeParameter['name'];
     constraint?: string | undefined;
     default?: string | undefined;
@@ -161,7 +172,7 @@ export interface FunctionTypeParameterModel {
     code?: CodeRepresentation | undefined;
 }
 
-export interface FunctionSignatureModel extends WithCode, WithDocs, WithSourceUrl {
+export interface FunctionSignatureModel extends WithCode, WithDocs, WithSourceUrl, WithDeprecationStatus {
     id: string;
     overloadIndex: number;
     parameters: FunctionSignatureParameterModel[];

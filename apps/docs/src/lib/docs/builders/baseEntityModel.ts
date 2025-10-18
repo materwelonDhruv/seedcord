@@ -1,31 +1,16 @@
-import { ensureSlug } from './utils';
-import { createPlainParagraph } from '../comments/creators';
+import { buildDeprecationStatusFromNodeLike, ensureSlug } from './utils';
 
-import type {
-    EntityKind,
-    CommentParagraph,
-    CommentExample,
-    CodeRepresentation,
-    BaseEntityModel,
-    DeprecationStatus
-} from '../types';
+import type { BaseEntityModel, CodeRepresentation, CommentExample, CommentParagraph, EntityKind } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
 
-function buildDeprecationStatus(node: DocNode): DeprecationStatus {
-    if (!node.flags.isDeprecated) return { isDeprecated: false };
+export function buildEntityTags(node: DocNode): string[] {
+    const tags = new Set<string>();
+    const flags = node.flags;
 
-    const deprecationBlock = node.comment?.blockTags.find((val) => val.tag === '@deprecated');
+    if (flags.isInternal) tags.add('internal');
+    if (flags.isDecorator) tags.add('decorator');
 
-    let paragraphs: CommentParagraph[] | undefined;
-    const deprecationText = deprecationBlock?.text;
-    if (deprecationText && deprecationText.length > 0) {
-        paragraphs = [createPlainParagraph(deprecationText)];
-    }
-
-    return {
-        isDeprecated: true,
-        deprecationMessage: paragraphs
-    };
+    return Array.from(tags);
 }
 
 export function buildBaseEntityModel({
@@ -55,8 +40,11 @@ export function buildBaseEntityModel({
         summary,
         summaryExamples,
         signature,
-        deprecationStatus: buildDeprecationStatus(node)
+        deprecationStatus: buildDeprecationStatusFromNodeLike(node)
     };
+
+    const entityTags = buildEntityTags(node);
+    if (entityTags.length) base.tags = entityTags;
 
     if (node.packageVersion) base.version = node.packageVersion;
     if (node.sourceUrl) base.sourceUrl = node.sourceUrl;

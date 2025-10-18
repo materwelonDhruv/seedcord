@@ -14,6 +14,7 @@ import { shouldIncludeMember } from './utils/shouldIncludeMember';
 import { useMemberNavigation } from './utils/useMemberNavigation';
 
 import type { EntityMemberSummary } from './types';
+import type { DeprecationStatus } from '@lib/docs/types';
 
 export interface EntityMembersSectionProps {
     properties: readonly EntityMemberSummary[];
@@ -21,6 +22,7 @@ export interface EntityMembersSectionProps {
     typeParameters?: readonly EntityMemberSummary[];
     constructors?: readonly EntityMemberSummary[];
     showAccessControls?: boolean;
+    parentDeprecationStatus?: DeprecationStatus | undefined;
 }
 
 export default function EntityMembersSection({
@@ -28,7 +30,8 @@ export default function EntityMembersSection({
     methods,
     constructors = [],
     typeParameters = [],
-    showAccessControls = false
+    showAccessControls = false,
+    parentDeprecationStatus
 }: EntityMembersSectionProps): ReactElement {
     const ctx = useContext(DocsUIContext);
     const memberAccessLevel = useUIStore(useShallow((state: UIStore) => state.memberAccessLevel));
@@ -66,13 +69,29 @@ export default function EntityMembersSection({
                     <MemberAccessControls orientation="horizontal" showLegend={false} className="flex-shrink-0" />
                 </div>
             ) : null}
-            <MemberDetailGroup items={filteredConstructors} prefix="constructor" />
+            <MemberDetailGroup
+                items={filteredConstructors}
+                prefix="constructor"
+                parentDeprecationStatus={parentDeprecationStatus}
+            />
             {renderMemberOverview(quickPanelColumns, effectiveMemberAccessLevel, showAccessControls)}
 
             <div className="min-w-0 space-y-8">
-                <MemberDetailGroup items={typeParameters} prefix="typeParameter" />
-                <MemberDetailGroup items={filteredProperties} prefix="property" />
-                <MemberDetailGroup items={filteredMethods} prefix="method" />
+                <MemberDetailGroup
+                    items={typeParameters}
+                    prefix="typeParameter"
+                    parentDeprecationStatus={parentDeprecationStatus}
+                />
+                <MemberDetailGroup
+                    items={filteredProperties}
+                    prefix="property"
+                    parentDeprecationStatus={parentDeprecationStatus}
+                />
+                <MemberDetailGroup
+                    items={filteredMethods}
+                    prefix="method"
+                    parentDeprecationStatus={parentDeprecationStatus}
+                />
             </div>
         </section>
     );

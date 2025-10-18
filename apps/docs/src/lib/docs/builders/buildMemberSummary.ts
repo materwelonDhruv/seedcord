@@ -8,7 +8,8 @@ import {
     deriveSharedDocumentation,
     cloneExamples,
     collectMemberTags,
-    normalizeAccessor
+    normalizeAccessor,
+    buildDeprecationStatusFromNodeLike
 } from './utils';
 
 import type { FormatContext } from '../types';
@@ -41,6 +42,8 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
         sharedExamples,
         signatures
     };
+
+    summary.deprecationStatus = buildDeprecationStatusFromNodeLike(node);
 
     const tags = collectMemberTags(node);
     if (tags.length) summary.tags = tags;

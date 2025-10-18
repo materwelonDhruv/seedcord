@@ -10,16 +10,19 @@ import { MEMBER_TITLES, MEMBER_HEADER_ICONS } from '../constants';
 import { MemberCard } from './MemberCard';
 
 import type { EntityMemberSummary, MemberPrefix } from '../types';
+import type { DeprecationStatus } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 export function MemberDetailGroup({
     items,
     prefix,
-    title: titleProp
+    title: titleProp,
+    parentDeprecationStatus
 }: {
     items: readonly EntityMemberSummary[];
     prefix: MemberPrefix;
     title?: string | undefined;
+    parentDeprecationStatus?: DeprecationStatus | undefined;
 }): ReactElement | null {
     if (!items.length) {
         return null;
@@ -64,7 +67,13 @@ export function MemberDetailGroup({
                 )}
             >
                 {items.map((item, index) => (
-                    <MemberCard key={item.id} member={item} prefix={prefix} isLast={index === items.length - 1} />
+                    <MemberCard
+                        key={item.id}
+                        member={item}
+                        prefix={prefix}
+                        isLast={index === items.length - 1}
+                        parentDeprecationStatus={parentDeprecationStatus}
+                    />
                 ))}
             </div>
         </section>

@@ -1,7 +1,14 @@
 import { cloneCommentParagraphs, createPlainParagraph } from '../comments/creators';
 import { formatDeclarationHeader, formatSignature, highlightCode } from '../formatting';
 
-import type { CommentExample, FormatContext, CodeRepresentation, CommentParagraph, FormattedComment } from '../types';
+import type {
+    CommentExample,
+    FormatContext,
+    CodeRepresentation,
+    CommentParagraph,
+    FormattedComment,
+    DeprecationStatus
+} from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type { DocNode, DocSignature } from '@seedcord/docs-engine';
 
@@ -75,6 +82,7 @@ export function collectMemberTags(node: DocNode): string[] {
     if (flags.isAbstract) tags.add('abstract');
     if (flags.isOptional) tags.add('optional');
     if (flags.isDeprecated) tags.add('deprecated');
+    if (flags.isInternal) tags.add('internal');
     const flagsRecord = flags;
     if (flagsRecord.isOverwriting === true) tags.add('overrides');
     const accessorVal = flagsRecord.accessor;
@@ -134,4 +142,21 @@ export function deriveSharedDocumentation(
     }
 
     return stripDuplicateDescription(nodeComment.paragraphs, description);
+}
+
+export function buildDeprecationStatusFromNodeLike(node: DocNode): DeprecationStatus {
+    if (!node.flags.isDeprecated) return { isDeprecated: false };
+
+    const deprecationBlock = node.comment?.blockTags.find((val) => val.tag === '@deprecated');
+
+    let paragraphs: CommentParagraph[] | undefined;
+    const deprecationText = deprecationBlock?.text;
+    if (typeof deprecationText === 'string' && deprecationText.length > 0) {
+        paragraphs = [createPlainParagraph(deprecationText)];
+    }
+
+    return {
+        isDeprecated: true,
+        deprecationMessage: paragraphs
+    };
 }

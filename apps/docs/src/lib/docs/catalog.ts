@@ -7,6 +7,7 @@ import { DEFAULT_MANIFEST_PACKAGE, DEFAULT_VERSION, formatDisplayPackageName } f
 import { buildEntityHref, buildPackageBasePath } from './routes';
 import { formatVersionLabel } from './version';
 
+import type { DocsEngine } from './engine';
 import type {
     NavigationEntityItem,
     NavigationCategory,
@@ -15,6 +16,8 @@ import type {
     DocsCatalog,
     CategoryConfig
 } from './types';
+
+type GetPackageDirectoryReturn = ReturnType<DocsEngine['getPackageDirectory']>;
 
 export const CATEGORY_CONFIG: readonly CategoryConfig[] = [
     { entity: 'classes', title: 'Classes', tone: 'class' },
@@ -40,7 +43,7 @@ const createNavigationItem = (
 const buildCategories = (
     manifestPackage: string,
     version: string,
-    directory: ReturnType<import('@seedcord/docs-engine').DocsEngine['getPackageDirectory']>
+    directory: GetPackageDirectoryReturn
 ): NavigationCategory[] => {
     if (!directory) {
         return [];
@@ -74,7 +77,7 @@ const buildCategories = (
 const buildPackageEntry = (
     manifestPackage: string,
     version: string,
-    directory: ReturnType<import('@seedcord/docs-engine').DocsEngine['getPackageDirectory']>
+    directory: GetPackageDirectoryReturn
 ): PackageCatalogEntry => {
     const displayName = formatDisplayPackageName(manifestPackage);
     const description = `Reference documentation for ${displayName}.`;

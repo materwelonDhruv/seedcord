@@ -1,7 +1,13 @@
 import { cloneCommentParagraphs } from '../comments/creators';
 import { formatCommentRich } from '../comments/formatter';
 import { formatSignature, highlightCode } from '../formatting';
-import { ensureSlug, stripDuplicateDescription, cloneExamples, ensureSignatureAnchor } from './utils';
+import {
+    ensureSlug,
+    stripDuplicateDescription,
+    cloneExamples,
+    ensureSignatureAnchor,
+    buildDeprecationStatusFromNodeLike
+} from './utils';
 
 import type { CodeRepresentation, CommentExample, CommentParagraph, FormatContext, FormattedComment } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
@@ -101,6 +107,9 @@ export async function buildSignatureDetails({
                 documentation,
                 examples
             };
+
+            const sigDep = buildDeprecationStatusFromNodeLike(signature as unknown as DocNode);
+            if (sigDep.isDeprecated) detail.deprecationStatus = sigDep;
 
             const signatureSourceUrl = signature.sourceUrl ?? node.sourceUrl;
             if (signatureSourceUrl) {

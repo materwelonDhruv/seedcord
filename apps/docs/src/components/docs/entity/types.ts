@@ -1,4 +1,12 @@
-import type { CommentParagraph, CommentExample, EntityModel, WithCode, WithDocs, WithSourceUrl } from '@lib/docs/types';
+import type {
+    CommentParagraph,
+    CommentExample,
+    EntityModel,
+    WithCode,
+    WithDocs,
+    WithSourceUrl,
+    DeprecationStatus
+} from '@lib/docs/types';
 import type { MemberAccessLevel } from '@lib/memberAccess';
 
 export type MemberAccessorType = 'getter' | 'setter' | 'accessor';
@@ -6,6 +14,7 @@ export type MemberAccessorType = 'getter' | 'setter' | 'accessor';
 export interface MemberSignatureDetail extends WithCode, WithDocs<'documentation', 'examples'>, WithSourceUrl {
     id: string;
     anchor: string;
+    deprecationStatus?: DeprecationStatus | undefined;
 }
 
 export interface EntityMemberSummary extends WithSourceUrl {
@@ -17,6 +26,7 @@ export interface EntityMemberSummary extends WithSourceUrl {
     signatures: MemberSignatureDetail[];
     inheritedFrom?: string | { name: string; href?: string };
     tags?: readonly string[];
+    deprecationStatus?: DeprecationStatus;
     access?: MemberAccessLevel;
     accessorType?: MemberAccessorType;
 }
