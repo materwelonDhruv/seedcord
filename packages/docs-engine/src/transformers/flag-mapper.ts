@@ -29,7 +29,11 @@ const CALLABLE_KINDS: ReflectionKind[] = [
     ReflectionKind.Function,
     ReflectionKind.Method,
     ReflectionKind.CallSignature,
-    ReflectionKind.ConstructorSignature
+    ReflectionKind.ConstructorSignature,
+    ReflectionKind.Constructor,
+    ReflectionKind.Accessor,
+    ReflectionKind.GetSignature,
+    ReflectionKind.SetSignature
 ];
 
 const PROMISE_TYPE_NAMES = new Set(['Promise', 'PromiseLike']);
