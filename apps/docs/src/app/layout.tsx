@@ -3,7 +3,7 @@ import Script from 'next/script';
 
 import './globals.css';
 
-import Header from '../components/header';
+import Navbar from '../components/header/Navbar';
 import HotkeyProvider from '../components/providers/HotkeyProvider';
 import ThemeProvider from '../components/providers/ThemeProvider';
 import CommandPalette from '../components/search/command-palette';
@@ -91,7 +91,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
                         </a>
                         <div className="flex min-h-screen flex-col">
                             <ScrollbarVisibility />
-                            <Header />
+                            <Navbar />
                             <div className="flex-1">{children}</div>
                         </div>
                     </HotkeyProvider>

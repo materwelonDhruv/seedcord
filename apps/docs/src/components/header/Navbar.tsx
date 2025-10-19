@@ -13,7 +13,7 @@ import SeedcordMark from './SeedcordMark';
 
 import type { ReactElement } from 'react';
 
-export function Navbar(): ReactElement {
+function Navbar(): ReactElement {
     return (
         <header className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_srgb,var(--bg)_97%,#ffffff_3%)] backdrop-blur">
             <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 md:px-6">
