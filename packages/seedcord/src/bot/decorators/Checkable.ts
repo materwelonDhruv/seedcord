@@ -14,7 +14,7 @@ export type HandlerCtor = new (...args: any[]) => Handler;
  * for handlers that need pre-execution validation.
  *
  * @typeParam TypeHandler - The type of the handler class being decorated
- * @param ctor - The handler to mark as checkable (Do not pass this directly. Just call the decorator without a **()**)
+ * @param ctor - The handler to mark as checkable (Do not pass this directly. Just call the decorator without a `()`)
  * @decorator
  * @example
  * ```typescript

@@ -16,14 +16,26 @@ import type {
 } from '../types';
 import type { DocComment, DocCommentExample } from '@seedcord/docs-engine';
 
-function renderInlineTag(part: InlineTagPart, context: FormatContext): { plain: string; html: string } {
+async function renderInlineTag(part: InlineTagPart, context: FormatContext): Promise<{ plain: string; html: string }> {
     if (part.tag === '@link') {
         const href = resolveInlineHref(part, context);
         if (href) {
             const sanitizedHref = escapeAttribute(sanitizeInternalHref(href));
             const rawLabel = typeof part.text === 'string' ? part.text : href;
-            const escapedLabel = escapeHtml(rawLabel);
             const external = /^https?:\/\//i.test(href);
+
+            try {
+                const linkMarkdown = `[${rawLabel}](${href})`;
+                const highlighted = (await highlightInlineToHtml(linkMarkdown, DEFAULT_INLINE_LANG)) ?? null;
+
+                if (highlighted) {
+                    return { plain: rawLabel, html: highlighted };
+                }
+            } catch {
+                // fallthrough to simple anchor fallback below
+            }
+
+            const escapedLabel = escapeHtml(rawLabel);
             const attrs = external ? ' target="_blank" rel="noreferrer noopener"' : '';
 
             return {
@@ -106,7 +118,7 @@ async function appendPart(
             return;
         }
         case 'inline-tag': {
-            const rendered = renderInlineTag(part, context);
+            const rendered = await renderInlineTag(part, context);
             accumulator.append(rendered.plain, rendered.html);
             return;
         }
