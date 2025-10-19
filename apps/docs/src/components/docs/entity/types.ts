@@ -20,7 +20,7 @@ export interface MemberSignatureDetail extends WithCode, WithDocs<'documentation
 export interface EntityMemberSummary extends WithSourceUrl {
     id: string;
     label: string;
-    description?: CommentParagraph;
+    description?: CommentParagraph | null;
     sharedDocumentation: CommentParagraph[];
     sharedExamples: CommentExample[];
     signatures: MemberSignatureDetail[];

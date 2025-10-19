@@ -23,8 +23,3 @@ export const MEMBER_TITLES: Record<MemberPrefix, string> = {
     constructor: 'Constructors',
     typeParameter: 'Type parameters'
 };
-export const MEMBERS_PLACEHOLDER = (
-    <p className="text-sm text-subtle">
-        TypeDoc metadata for this symbol is empty in the debugging manifest. Check back after the next extraction run.
-    </p>
-);

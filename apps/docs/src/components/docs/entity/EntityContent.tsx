@@ -6,7 +6,6 @@ import type { EntityModel, FunctionEntityModel } from '@/lib/docs/types';
 
 import { log } from '@lib/logger';
 
-import { MEMBERS_PLACEHOLDER } from './constants';
 import { EntityHeader } from './EntityHeader';
 import { renderEntityBody } from './utils/renderers/renderEntityBody';
 import { useEntityTone } from './utils/useEntityTone';
@@ -44,11 +43,12 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 symbolName={model.name}
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}
+                tags={model.tags ?? []}
                 {...(model.version ? { version: model.version } : {})}
                 deprecationStatus={model.deprecationStatus}
                 {...(functionSignatures ? { functionSignatures } : {})}
             />
-            {body ?? MEMBERS_PLACEHOLDER}
+            {body ?? null}
         </article>
     );
 }

@@ -17,7 +17,7 @@ interface SignatureDetailsOptions {
     node: DocNode;
     context: FormatContext;
     signatureComments: (FormattedComment | undefined)[];
-    description: CommentParagraph;
+    description: CommentParagraph | null;
     descriptionSignatureIndex: number | null;
     headerSignature: CodeRepresentation;
 }

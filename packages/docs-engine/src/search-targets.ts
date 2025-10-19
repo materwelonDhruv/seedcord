@@ -15,6 +15,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'CoordinatedShutdown' },
     { query: 'UnknownException' },
     { query: 'Mongo' },
+    { query: 'Bot' },
     { query: 'BaseComponent' },
     { query: 'CooldownManager' },
     { query: 'WebhookLog' },

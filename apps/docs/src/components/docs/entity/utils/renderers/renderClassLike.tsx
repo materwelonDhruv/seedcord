@@ -1,6 +1,5 @@
 import { type ReactElement, Fragment } from 'react';
 
-import { MEMBERS_PLACEHOLDER } from '../../constants';
 import EntityMembersSection from '../../EntityMembersSection';
 
 import type { ClassLikeModel } from '../../types';
@@ -24,9 +23,7 @@ export function renderClassLike(model: ClassLikeModel): ReactElement {
                     showAccessControls={showAccessControls}
                     parentDeprecationStatus={model.deprecationStatus}
                 />
-            ) : (
-                MEMBERS_PLACEHOLDER
-            )}
+            ) : null}
         </Fragment>
     );
 }

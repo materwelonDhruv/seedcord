@@ -4,7 +4,7 @@ import { renderClassLike } from './renderClassLike';
 import { renderEnum } from './renderEnum';
 import { renderFunction } from './renderFunction';
 import { renderType } from './renderType';
-import { renderVariable } from './renderVariable';
+// import { renderVariable } from './renderVariable';
 
 import type { ReactElement } from 'react';
 
@@ -20,7 +20,7 @@ export function renderEntityBody(model: EntityModel): ReactElement | null {
         case 'function':
             return renderFunction(model);
         case 'variable':
-            return renderVariable(model);
+        // return renderVariable(model);
         default:
             return null;
     }

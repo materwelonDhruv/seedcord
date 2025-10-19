@@ -12,8 +12,6 @@ import type {
 import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type { DocNode, DocSignature } from '@seedcord/docs-engine';
 
-export const FALLBACK_DESCRIPTION = 'Documentation will be sourced from TypeDoc soon.';
-
 export const cloneExamples = (examples: readonly CommentExample[] | null | undefined): CommentExample[] =>
     examples?.length ? [...examples] : [];
 
@@ -76,24 +74,32 @@ export function normalizeAccessor(accessor?: string | null): EntityMemberSummary
 
 export function collectMemberTags(node: DocNode): string[] {
     const tags = new Set<string>();
-    const { flags } = node;
 
-    if (flags.isStatic) tags.add('static');
-    if (flags.isAbstract) tags.add('abstract');
-    if (flags.isOptional) tags.add('optional');
-    if (flags.isDeprecated) tags.add('deprecated');
-    if (flags.isInternal) tags.add('internal');
-    const flagsRecord = flags;
-    if (flagsRecord.isOverwriting === true) tags.add('overrides');
-    const accessorVal = flagsRecord.accessor;
-    if (typeof accessorVal === 'string') tags.add('accessor');
-    if (flagsRecord.isDecorator === true) tags.add('decorator');
+    const addFlags = (f: DocNode['flags'] | undefined): void => {
+        if (!f) return;
+        if (f.isStatic) tags.add('static');
+        if (f.isAbstract) tags.add('abstract');
+        if (f.isOptional) tags.add('optional');
+        if (f.isDeprecated) tags.add('deprecated');
+        if (f.isInternal) tags.add('internal');
+        if (f.isOverwriting === true) tags.add('overrides');
+        if (typeof f.accessor === 'string') tags.add('accessor');
+        if (f.isDecorator === true) tags.add('decorator');
+    };
+
+    addFlags(node.flags);
+
+    if (Array.isArray(node.signatures) && node.signatures.length > 0) {
+        for (const sig of node.signatures) {
+            addFlags(sig.flags);
+        }
+    }
 
     return Array.from(tags);
 }
 
 interface DescriptionSelection {
-    description: CommentParagraph;
+    description: CommentParagraph | null;
     signatureIndex: number | null;
 }
 
@@ -118,14 +124,14 @@ export function selectDescription(
         return { description: firstParagraph, signatureIndex: null };
     }
 
-    return { description: createPlainParagraph(FALLBACK_DESCRIPTION), signatureIndex: null };
+    return { description: null, signatureIndex: null };
 }
 
 export function stripDuplicateDescription(
     paragraphs: readonly CommentParagraph[],
-    description: CommentParagraph
+    description: CommentParagraph | null
 ): CommentParagraph[] {
-    if (paragraphs.length && paragraphs[0] === description) {
+    if (description && paragraphs.length && paragraphs[0] === description) {
         return paragraphs.slice(1);
     }
 
@@ -134,7 +140,7 @@ export function stripDuplicateDescription(
 
 export function deriveSharedDocumentation(
     nodeComment: FormattedComment,
-    description: CommentParagraph,
+    description: CommentParagraph | null,
     descriptionSignatureIndex: number | null
 ): CommentParagraph[] {
     if (descriptionSignatureIndex !== null) {
