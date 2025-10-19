@@ -17,6 +17,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'Mongo' },
     { query: 'BaseComponent' },
     { query: 'CooldownManager' },
+    { query: 'WebhookLog' },
 
     // Properties
     { query: 'db' },

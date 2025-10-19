@@ -79,7 +79,8 @@ export function SlashRoute(routeOrRoutes: string | string[]) {
  * Routes button interactions to handler classes
  *
  * Matches the customId prefix before the first colon.
- * For customId "accept:user123", use \@ButtonRoute("accept").
+ *
+ * For customId `accept:user123`, use `@ButtonRoute("accept")`.
  *
  * @param routeOrRoutes - CustomId prefix(es) to handle
  * @decorator
