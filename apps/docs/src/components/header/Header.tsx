@@ -29,7 +29,7 @@ export function Header(): ReactElement {
                         <nav className="hidden items-center gap-2 lg:flex" aria-label="Primary navigation">
                             <Link
                                 href="/docs"
-                                className="inline-flex items-center gap-2 rounded-2xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
+                                className="inline-flex items-center gap-2 rounded-xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
                             >
                                 Docs home
                             </Link>
