@@ -30,57 +30,80 @@ function resolveNodeById(engine: DocsEngine, id: number, currentPackage: string)
 }
 
 export function resolveInlineHref(part: InlineTagPart, context: FormatContext): string | null {
-    if (typeof part.target === 'number') {
+    const tryResolveNumberTarget = (): string | null => {
+        if (typeof part.target !== 'number') return null;
         const node = resolveNodeById(context.engine, part.target, context.manifestPackage);
-        if (node) {
-            const reference: DocReference = {
-                targetKey: node.key,
-                name: node.name,
-                packageName: node.packageName
-            };
+        if (!node) return null;
 
-            return resolveReferenceHref(reference, {
+        const reference: DocReference = {
+            targetKey: node.key,
+            name: node.name,
+            packageName: node.packageName
+        };
+
+        return resolveReferenceHref(reference, { engine: context.engine, currentPackage: context.manifestPackage });
+    };
+
+    const tryResolveStringTarget = (): string | null => {
+        if (typeof part.target !== 'string') return null;
+        const normalized = part.target.trim();
+        if (normalized.startsWith('http://') || normalized.startsWith('https://')) return normalized;
+        return null;
+    };
+
+    const tryResolveUrlProp = (): string | null => {
+        if (typeof part.url === 'string' && part.url.length > 0) return part.url;
+        return null;
+    };
+
+    const tryResolveObjectTarget = (): string | null => {
+        if (!part.target || typeof part.target !== 'object') return null;
+        const t = part.target as Partial<DocReference>;
+
+        const reference: Partial<DocReference> = {};
+        if (typeof t.name === 'string') reference.name = t.name;
+        if (typeof t.packageName === 'string') reference.packageName = t.packageName;
+        if (typeof t.qualifiedName === 'string') reference.qualifiedName = t.qualifiedName;
+        if (typeof t.externalUrl === 'string') reference.externalUrl = t.externalUrl;
+
+        if (reference.name || reference.packageName || reference.qualifiedName || reference.externalUrl) {
+            return resolveReferenceHref(reference as DocReference, {
                 engine: context.engine,
                 currentPackage: context.manifestPackage
             });
         }
-    }
 
-    if (typeof part.target === 'string') {
-        const normalized = part.target.trim();
-        if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
-            return normalized;
-        }
-    }
+        return null;
+    };
 
-    if (typeof part.url === 'string' && part.url.length > 0) {
-        return part.url;
-    }
+    const tryResolveBySearch = (): string | null => {
+        const rawLabel = typeof part.text === 'string' ? part.text : '';
+        const trimmedLabel = rawLabel.trim();
+        if (!trimmedLabel) return null;
 
-    const rawLabel = typeof part.text === 'string' ? part.text : '';
-    const trimmedLabel = rawLabel.trim();
-
-    if (trimmedLabel) {
         const [candidate] = context.engine.search(trimmedLabel, context.manifestPackage);
-        if (candidate) {
-            const node =
-                context.engine.getNodeByGlobalSlug(candidate.packageName, candidate.slug) ??
-                context.engine.getNodeBySlug(candidate.packageName, candidate.slug);
+        if (!candidate) return null;
 
-            if (node) {
-                const reference: DocReference = {
-                    targetKey: node.key,
-                    name: node.name,
-                    packageName: node.packageName
-                };
+        const node =
+            context.engine.getNodeByGlobalSlug(candidate.packageName, candidate.slug) ??
+            context.engine.getNodeBySlug(candidate.packageName, candidate.slug);
+        if (!node) return null;
 
-                return resolveReferenceHref(reference, {
-                    engine: context.engine,
-                    currentPackage: context.manifestPackage
-                });
-            }
-        }
-    }
+        const reference: DocReference = {
+            targetKey: node.key,
+            name: node.name,
+            packageName: node.packageName
+        };
 
-    return null;
+        return resolveReferenceHref(reference, { engine: context.engine, currentPackage: context.manifestPackage });
+    };
+
+    return (
+        tryResolveNumberTarget() ??
+        tryResolveStringTarget() ??
+        tryResolveUrlProp() ??
+        tryResolveObjectTarget() ??
+        tryResolveBySearch() ??
+        null
+    );
 }
