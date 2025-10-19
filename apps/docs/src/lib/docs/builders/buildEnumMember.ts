@@ -20,7 +20,7 @@ export async function buildEnumMember(node: DocNode, context: FormatContext): Pr
     const tags = collectMemberTags(node);
     if (tags.length) member.tags = tags;
 
-    if (node.defaultValue !== undefined) member.value = node.defaultValue;
+    if (node.defaultValue) member.value = node.defaultValue;
     if (node.sourceUrl) member.sourceUrl = node.sourceUrl;
 
     return member;

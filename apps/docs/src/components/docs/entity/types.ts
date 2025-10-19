@@ -25,6 +25,7 @@ export interface EntityMemberSummary extends WithSourceUrl {
     sharedExamples: CommentExample[];
     signatures: MemberSignatureDetail[];
     inheritedFrom?: string | { name: string; href?: string };
+    seeAlso?: readonly { name: string; href?: string }[];
     tags?: readonly string[];
     deprecationStatus?: DeprecationStatus;
     access?: MemberAccessLevel;

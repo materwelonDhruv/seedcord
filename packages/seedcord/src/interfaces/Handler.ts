@@ -44,6 +44,7 @@ export interface Handler {
  * Should always accompany the `@Catchable` decorator. Will require the class to implement the `runChecks` method.
  *
  * @see {@link Checkable}
+ * @see {@link Catchable}
  */
 export interface WithChecks {
     /**

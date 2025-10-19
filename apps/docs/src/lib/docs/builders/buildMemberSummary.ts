@@ -2,17 +2,17 @@ import { formatCommentRich } from '../comments/formatter';
 import { resolveReferenceHref } from '../resolveReferenceHref';
 import { buildSignatureDetails } from './buildSignatureDetails';
 import {
-    ensureSlug,
-    resolveHeaderSignature,
-    selectDescription,
-    deriveSharedDocumentation,
+    buildDeprecationStatusFromNodeLike,
     cloneExamples,
     collectMemberTags,
+    deriveSharedDocumentation,
+    ensureSlug,
     normalizeAccessor,
-    buildDeprecationStatusFromNodeLike
+    resolveHeaderSignature,
+    selectDescription
 } from './utils';
 
-import type { FormatContext } from '../types';
+import type { FormatContext, SeeAlsoEntryWithoutTarget } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type { DocNode } from '@seedcord/docs-engine';
 
@@ -40,6 +40,11 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
         description,
         sharedDocumentation,
         sharedExamples,
+        seeAlso: (nodeComment.seeAlso ?? []).map((s) => {
+            const entry: SeeAlsoEntryWithoutTarget = { name: s.name };
+            if (s.href?.length) entry.href = s.href;
+            return entry;
+        }),
         signatures
     };
 
@@ -47,7 +52,7 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
 
     const tags = collectMemberTags(node);
     if (tags.length) summary.tags = tags;
-    if (node.flags.access && (node.flags.access === 'public' || node.flags.access === 'protected')) {
+    if (node.flags.access === 'public' || node.flags.access === 'protected') {
         summary.access = node.flags.access;
     }
     const accessorType = normalizeAccessor(node.flags.accessor);

@@ -1,6 +1,7 @@
 import { formatCommentRich } from '../comments/formatter';
-import { highlightCode, renderInlineType } from '../formatting';
+import { highlightCode } from '../formatting';
 import { isInlineType } from './buildFunctionParameters';
+import { renderInlineType } from '../comments/renderers/renderInlineType';
 
 import type { FunctionTypeParameterModel, FormatContext } from '../types';
 import type { RenderedSignature, DocSignature } from '@seedcord/docs-engine';

@@ -44,6 +44,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 tone={tone}
                 sourceUrl={model.sourceUrl ?? null}
                 tags={model.tags ?? []}
+                seeAlso={model.seeAlso}
                 {...(model.version ? { version: model.version } : {})}
                 deprecationStatus={model.deprecationStatus}
                 {...(functionSignatures ? { functionSignatures } : {})}

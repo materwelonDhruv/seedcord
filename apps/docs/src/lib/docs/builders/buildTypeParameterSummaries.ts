@@ -1,6 +1,7 @@
 import { createPlainParagraph } from '../comments/creators';
 import { formatCommentRich } from '../comments/formatter';
-import { renderInlineType, highlightCode } from '../formatting';
+import { renderInlineType } from '../comments/renderers/renderInlineType';
+import { highlightCode } from '../formatting';
 
 import type { FormatContext, CommentParagraph, CommentExample } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';

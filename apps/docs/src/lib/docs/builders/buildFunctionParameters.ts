@@ -1,6 +1,7 @@
 // buildFunctionParameters.ts
 import { formatCommentRich } from '../comments/formatter';
-import { highlightCode, renderInlineType } from '../formatting';
+import { renderInlineType } from '../comments/renderers/renderInlineType';
+import { highlightCode } from '../formatting';
 
 import type { FunctionSignatureParameterModel, FormatContext } from '../types';
 import type { DocSignature, InlineType, RenderedSignature } from '@seedcord/docs-engine';

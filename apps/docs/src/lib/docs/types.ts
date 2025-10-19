@@ -8,7 +8,7 @@ import type {
     DocSignatureParameter,
     RenderedSignature
 } from '@seedcord/docs-engine';
-import type { ReadonlyRecord } from '@seedcord/types';
+import type { ReadonlyRecord, TypedOmit } from '@seedcord/types';
 
 export interface FormatContext {
     engine: DocsEngine;
@@ -30,9 +30,6 @@ export type InlineTagPart = CommentDisplayPart & {
     url?: string;
 };
 
-export type CodePart = CommentDisplayPart & { kind: 'code'; text?: string };
-export type TextPart = CommentDisplayPart & { kind: 'text'; text?: string };
-
 export interface CommentParagraph {
     plain: string;
     html: string;
@@ -43,7 +40,18 @@ export interface CommentExample {
     code: CodeRepresentation;
 }
 
-export interface FormattedComment extends WithDocs<'paragraphs', 'examples'> {}
+export interface SeeAlsoEntry {
+    name: string;
+    href?: string;
+    target?: unknown;
+}
+
+export type SeeAlsoEntryWithoutTarget = TypedOmit<SeeAlsoEntry, 'target'>;
+export interface FormattedComment {
+    paragraphs: readonly CommentParagraph[];
+    examples: readonly CommentExample[];
+    seeAlso?: readonly SeeAlsoEntry[];
+}
 
 export type DeprecationStatus =
     | {
@@ -122,6 +130,7 @@ export interface BaseEntityModel
     displayPackage: string;
     tags?: readonly string[];
     version?: string;
+    seeAlso?: readonly SeeAlsoEntry[];
 }
 
 export interface ClassLikeEntityModel extends BaseEntityModel {

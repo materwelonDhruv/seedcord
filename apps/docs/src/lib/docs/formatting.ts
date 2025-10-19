@@ -1,67 +1,10 @@
 import { highlightToHtml } from '@lib/shiki';
 
-import { resolveExternalPackageUrl } from './packages';
-import { resolveReferenceHref } from './resolveReferenceHref';
+import { renderInlineType } from './comments/renderers/renderInlineType';
+import { renderSigParts } from './comments/renderers/renderSigParts';
 
-import type { DocsEngine } from './engine';
-import type { FormatContext, CodeRepresentation } from './types';
-import type {
-    DocComment,
-    InlineType,
-    RenderedDeclarationHeader,
-    RenderedSignature,
-    SigPart
-} from '@seedcord/docs-engine';
-
-export const SPACE = ' ';
-
-export const createFormatContext = (engine: DocsEngine, manifestPackage: string): FormatContext => ({
-    engine,
-    manifestPackage
-});
-
-function resolveOptions(context: FormatContext): { engine: DocsEngine; currentPackage: string } {
-    return { engine: context.engine, currentPackage: context.manifestPackage };
-}
-
-function renderSigParts(parts: SigPart[], context: FormatContext): string {
-    let result = '';
-
-    for (const part of parts) {
-        switch (part.kind) {
-            case 'space':
-                if (!result.endsWith(SPACE) && result.length > 0) {
-                    result += SPACE;
-                }
-                break;
-            case 'ref': {
-                const href = resolveReferenceHref(part.ref, resolveOptions(context));
-                if (href) {
-                    result += `[${part.text}](${href})`;
-                } else {
-                    const external = resolveExternalPackageUrl(part.text);
-                    if (external) {
-                        result += `[${part.text}](${external})`;
-                    } else {
-                        result += part.text;
-                    }
-                }
-                break;
-            }
-            default: {
-                const external = resolveExternalPackageUrl(part.text);
-                if (external) {
-                    result += `[${part.text}](${external})`;
-                } else {
-                    result += part.text;
-                }
-                break;
-            }
-        }
-    }
-
-    return result;
-}
+import type { CodeRepresentation, FormatContext } from './types';
+import type { DocComment, RenderedDeclarationHeader, RenderedSignature } from '@seedcord/docs-engine';
 
 export async function formatDeclarationHeader(
     header: RenderedDeclarationHeader,
@@ -166,14 +109,6 @@ export async function formatSignature(
         text,
         html: await highlightToHtml(text)
     };
-}
-
-export function renderInlineType(type: InlineType | undefined, context: FormatContext): string {
-    if (!type) {
-        return '';
-    }
-
-    return renderSigParts(type.parts, context);
 }
 
 export function formatComment(comment: DocComment | null | undefined): string[] {

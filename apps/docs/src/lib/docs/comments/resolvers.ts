@@ -107,3 +107,7 @@ export function resolveInlineHref(part: InlineTagPart, context: FormatContext): 
         null
     );
 }
+
+export function resolveOptions(context: FormatContext): { engine: DocsEngine; currentPackage: string } {
+    return { engine: context.engine, currentPackage: context.manifestPackage };
+}

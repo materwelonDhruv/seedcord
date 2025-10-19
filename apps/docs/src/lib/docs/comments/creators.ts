@@ -1,6 +1,7 @@
 import { escapeHtml } from './cleaners';
 
-import type { ParagraphAccumulator, CommentParagraph } from '../types';
+import type { ParagraphAccumulator, CommentParagraph, FormatContext } from '../types';
+import type { DocsEngine } from '@seedcord/docs-engine';
 
 export function createParagraphAccumulator(): ParagraphAccumulator {
     let plainBuffer = '';
@@ -55,3 +56,8 @@ export function createPlainParagraph(text: string): CommentParagraph {
 export const cloneCommentParagraphs = (
     paragraphs: readonly CommentParagraph[] | null | undefined
 ): CommentParagraph[] => (paragraphs?.length ? [...paragraphs] : []);
+
+export const createFormatContext = (engine: DocsEngine, manifestPackage: string): FormatContext => ({
+    engine,
+    manifestPackage
+});

@@ -20,6 +20,7 @@ import DecoratedEntity from './DecoratedEntity';
 import FunctionSignaturesInline from './functions/FunctionSignaturesInline';
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
+import SeeAlso from '../ui/SeeAlso';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
@@ -46,6 +47,7 @@ interface EntityHeaderProps {
     version?: string;
     deprecationStatus?: DeprecationStatus;
     tags?: readonly string[];
+    seeAlso?: readonly { name: string; href?: string }[] | undefined;
 }
 
 const Pill = ({ className, children }: { className?: string; children: ReactNode }): ReactElement => (
@@ -185,7 +187,8 @@ export function EntityHeader({
     deprecationStatus = { isDeprecated: false },
     tags = [],
     summaryExamples = [],
-    functionSignatures
+    functionSignatures,
+    seeAlso
 }: EntityHeaderProps): ReactElement {
     const toneConfig = getToneConfig(tone);
     const toneStyles = toneConfig.styles;
@@ -216,6 +219,8 @@ export function EntityHeader({
                 summaryNodes={summaryNodes}
                 sourceUrl={sourceUrl}
             />
+
+            <SeeAlso entries={seeAlso} />
 
             {deprecationStatus.isDeprecated ? (
                 <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />

@@ -1,5 +1,3 @@
-import { formatCommentRich } from '../comments/formatter';
-import { createFormatContext } from '../formatting';
 import { resolveHeaderSignature } from './utils';
 import { formatDisplayPackageName } from '../packages';
 import { buildBaseEntityModel } from './baseEntityModel';
@@ -9,6 +7,8 @@ import { buildFunctionEntity } from './buildFunctionEntity';
 import { buildTypeEntity } from './buildTypeEntity';
 import { buildVariableEntity } from './buildVariableEntity';
 import { resolveEntityKind } from './resolveEntityKind';
+import { createFormatContext } from '../comments/creators';
+import { formatCommentRich } from '../comments/formatter';
 
 import type { EntityModel } from '../types';
 import type { DocNode, DocsEngine } from '@seedcord/docs-engine';
@@ -27,7 +27,8 @@ export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promi
         displayPackage: formatDisplayPackageName(manifestPackage),
         summary: formattedSummary.paragraphs,
         summaryExamples: formattedSummary.examples,
-        signature
+        signature,
+        seeAlso: formattedSummary.seeAlso
     });
 
     switch (kind) {

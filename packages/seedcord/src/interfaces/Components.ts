@@ -265,8 +265,6 @@ export abstract class CustomError extends Error {
 
     /**
      * Sets whether this error should be emitted to logs
-     *
-     * @see {@link emit}
      */
     public set emit(value: boolean) {
         this._emit = value;

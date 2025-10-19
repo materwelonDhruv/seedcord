@@ -1,5 +1,6 @@
 'use client';
 
+import SeeAlso from '../../ui/SeeAlso';
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
 import { SignaturePanel } from '../signatures/SignaturePanel';
@@ -54,6 +55,7 @@ export function MemberCardBody({
                     )}
                 </p>
             ) : null}
+            <SeeAlso entries={member.seeAlso} />
         </div>
     );
 }

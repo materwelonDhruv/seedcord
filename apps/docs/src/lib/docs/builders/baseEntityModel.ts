@@ -1,6 +1,13 @@
 import { buildDeprecationStatusFromNodeLike, ensureSlug } from './utils';
 
-import type { BaseEntityModel, CodeRepresentation, CommentExample, CommentParagraph, EntityKind } from '../types';
+import type {
+    BaseEntityModel,
+    CodeRepresentation,
+    CommentExample,
+    CommentParagraph,
+    EntityKind,
+    SeeAlsoEntryWithoutTarget
+} from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
 
 export function buildEntityTags(node: DocNode): string[] {
@@ -10,7 +17,7 @@ export function buildEntityTags(node: DocNode): string[] {
     if (flags.isInternal) tags.add('internal');
     if (flags.isDecorator) tags.add('decorator');
 
-    if (Array.isArray(node.signatures) && node.signatures.length > 0) {
+    if (node.signatures.length > 0) {
         for (const sig of node.signatures) {
             const sflags = sig.flags;
             if (sflags.isInternal) tags.add('internal');
@@ -28,7 +35,8 @@ export function buildBaseEntityModel({
     displayPackage,
     summary,
     summaryExamples,
-    signature
+    signature,
+    seeAlso
 }: {
     node: DocNode;
     kind: EntityKind;
@@ -37,6 +45,7 @@ export function buildBaseEntityModel({
     summary: readonly CommentParagraph[];
     summaryExamples: readonly CommentExample[];
     signature: CodeRepresentation;
+    seeAlso?: readonly SeeAlsoEntryWithoutTarget[] | undefined;
 }): BaseEntityModel {
     const base: BaseEntityModel = {
         kind,
@@ -56,6 +65,7 @@ export function buildBaseEntityModel({
 
     if (node.packageVersion) base.version = node.packageVersion;
     if (node.sourceUrl) base.sourceUrl = node.sourceUrl;
+    if (seeAlso?.length) base.seeAlso = seeAlso;
 
     return base;
 }
