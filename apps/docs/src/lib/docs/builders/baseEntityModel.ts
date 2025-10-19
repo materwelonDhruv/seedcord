@@ -10,6 +10,14 @@ export function buildEntityTags(node: DocNode): string[] {
     if (flags.isInternal) tags.add('internal');
     if (flags.isDecorator) tags.add('decorator');
 
+    if (Array.isArray(node.signatures) && node.signatures.length > 0) {
+        for (const sig of node.signatures) {
+            const sflags = sig.flags;
+            if (sflags.isInternal) tags.add('internal');
+            if (sflags.isDecorator) tags.add('decorator');
+        }
+    }
+
     return Array.from(tags);
 }
 
