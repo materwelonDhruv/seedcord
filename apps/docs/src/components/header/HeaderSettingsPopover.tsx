@@ -6,6 +6,8 @@ import { Settings } from 'lucide-react';
 import Button from '@ui/Button';
 import { Icon } from '@ui/Icon';
 
+import ClearHistoryRow from './settings/ClearHistoryRow';
+
 import type { ReactElement } from 'react';
 
 export function HeaderSettingsPopover(): ReactElement {
@@ -25,12 +27,12 @@ export function HeaderSettingsPopover(): ReactElement {
                 <Popover.Content
                     sideOffset={12}
                     align="end"
-                    className="w-56 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] p-4 text-sm text-[var(--text)] shadow-soft"
+                    className="w-64 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] p-4 text-sm text-[var(--text)] shadow-soft"
                 >
-                    <p className="font-semibold text-[var(--text)]">Documentation settings</p>
-                    <p className="mt-2 text-xs leading-relaxed text-subtle">
-                        We&apos;re building richer customization options. Stay tuned!
-                    </p>
+                    <div className="mt-2">
+                        <ClearHistoryRow />
+                    </div>
+
                     <Popover.Arrow className="fill-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)]" />
                 </Popover.Content>
             </Popover.Portal>

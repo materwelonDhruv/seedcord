@@ -1,12 +1,9 @@
-import { cookies } from 'next/headers';
-
 import DocsUIProvider from '@components/docs/DocsUIContext';
 import Sidebar from '@components/layout/sidebar/Sidebar';
 import Container from '@components/layout/sidebar/utils/container/Container';
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
 
 import type { DocsCatalog, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';
-import type { MemberAccessLevel } from '@lib/memberAccess';
 import type { ReactNode } from 'react';
 
 interface DocsLayoutParams {
@@ -65,29 +62,8 @@ const resolveActiveSelection = (
 export default async function DocsLayout({ children, params }: DocsLayoutProps): Promise<ReactNode> {
     const catalog = await loadDocsCatalog();
     const resolvedParams = await params;
-    const ck = await cookies();
-    const get = (name: string): string | undefined => {
-        try {
-            const c = ck.get(name);
-            return c?.value ?? undefined;
-        } catch {
-            return undefined;
-        }
-    };
-
-    const snapshot = {
-        selectedPackage: get('docs.selectedPackage'),
-        selectedVersion: get('docs.selectedVersion'),
-        memberAccessLevel: get('docs.memberAccessLevel') as unknown as MemberAccessLevel
-    };
-
+    const snapshot = {};
     const effectiveParams: DocsLayoutParams = { ...resolvedParams };
-    if (!resolvedParams.packageId && snapshot.selectedPackage) {
-        effectiveParams.packageId = snapshot.selectedPackage;
-    }
-    if (!resolvedParams.versionId && snapshot.selectedVersion) {
-        effectiveParams.versionId = snapshot.selectedVersion;
-    }
 
     const { activePackage, activeVersion } = resolveActiveSelection(catalog, effectiveParams);
 

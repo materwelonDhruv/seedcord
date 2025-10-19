@@ -48,22 +48,6 @@ const readSnapshotFromWindow = (): Snapshot => {
     }
 };
 
-const SECONDS_PER_MINUTE = 60;
-const MINUTES_PER_HOUR = 60;
-const HOURS_PER_DAY = 24;
-const DAYS_PER_YEAR = 365;
-
-const COOKIE_MAX_AGE_SECONDS = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER_DAY * DAYS_PER_YEAR;
-
-const writeCookie = (name: string, value: string): void => {
-    try {
-        // set path=/ so cookies are sent to server routes and any subpaths
-        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}`;
-    } catch {
-        // ignore
-    }
-};
-
 export const useUIStore = create<UIStore>((set) => {
     const snapshot = readSnapshotFromWindow();
 
@@ -89,7 +73,6 @@ export const useUIStore = create<UIStore>((set) => {
             log('Package filter changed', { pkg });
             if (typeof window !== 'undefined') {
                 window.localStorage.setItem('docs.selectedPackage', pkg);
-                writeCookie('docs.selectedPackage', pkg);
             }
             set({ selectedPackage: pkg });
         },
@@ -98,7 +81,6 @@ export const useUIStore = create<UIStore>((set) => {
             log('Version filter changed', { version });
             if (typeof window !== 'undefined') {
                 window.localStorage.setItem('docs.selectedVersion', version);
-                writeCookie('docs.selectedVersion', version);
             }
             set({ selectedVersion: version });
         },
@@ -107,7 +89,6 @@ export const useUIStore = create<UIStore>((set) => {
             log('Member access filter changed', { level: formatMemberAccessLabel(level) });
             if (typeof window !== 'undefined') {
                 window.localStorage.setItem('docs.memberAccessLevel', level);
-                writeCookie('docs.memberAccessLevel', level);
             }
             set({ memberAccessLevel: level });
         }
