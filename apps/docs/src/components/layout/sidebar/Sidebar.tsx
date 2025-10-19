@@ -92,7 +92,8 @@ export function Sidebar({
     const { handlePackageChange, handleVersionChange } = useSidebarNavigationHandlers(
         catalog,
         versionOptions,
-        restSegments
+        restSegments,
+        localPackageId
     );
 
     const setSelectedPackage = useUIStore((s) => s.setSelectedPackage);

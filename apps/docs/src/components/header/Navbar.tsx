@@ -13,7 +13,7 @@ import SeedcordMark from './SeedcordMark';
 
 import type { ReactElement } from 'react';
 
-export function Header(): ReactElement {
+export function Navbar(): ReactElement {
     return (
         <header className="sticky top-0 z-50 border-b border-border bg-[color-mix(in_srgb,var(--bg)_97%,#ffffff_3%)] backdrop-blur">
             <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 md:px-6">
@@ -29,7 +29,7 @@ export function Header(): ReactElement {
                         <nav className="hidden items-center gap-2 lg:flex" aria-label="Primary navigation">
                             <Link
                                 href="/docs"
-                                className="inline-flex items-center gap-2 rounded-2xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
+                                className="inline-flex items-center gap-2 rounded-xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
                             >
                                 Docs home
                             </Link>
@@ -75,4 +75,4 @@ export function Header(): ReactElement {
     );
 }
 
-export default Header;
+export default Navbar;
