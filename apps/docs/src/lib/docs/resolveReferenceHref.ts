@@ -49,7 +49,7 @@ function buildInternalHref(engine: DocsEngine, packageName: string, slug: string
         const version = engine.getPackage(packageName)?.manifest.version ?? null;
 
         return buildEntityHref({
-            manifestPackage: packageName,
+            name: packageName,
             slug,
             tone: null,
             version
@@ -61,16 +61,12 @@ function buildInternalHref(engine: DocsEngine, packageName: string, slug: string
     }
 
     const tone = resolveEntityTone(kindName(node.kind));
-    const version = node.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
-
-    const nodeWithSource = node;
-    const manifestForHref = nodeWithSource.sourcePackageName;
 
     return buildEntityHref({
-        manifestPackage: manifestForHref,
+        name: node.sourcePackage.name,
         slug: node.slug,
         tone,
-        version
+        version: node.sourcePackage.version
     });
 }
 
@@ -79,13 +75,12 @@ function buildMemberHrefFromNode(engine: DocsEngine, packageName: string, node: 
 
     if (entityNode) {
         const entityTone = resolveEntityTone(kindName(entityNode.kind));
-        const entityVersion = entityNode.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
 
         const entityHref = buildEntityHref({
-            manifestPackage: entityNode.sourcePackageName,
+            name: entityNode.sourcePackage.name,
             slug: entityNode.slug,
             tone: entityTone,
-            version: entityVersion
+            version: entityNode.sourcePackage.version
         });
 
         const nodeKind = kindName(node.kind).toLowerCase();
@@ -104,13 +99,12 @@ function buildMemberHrefFromNode(engine: DocsEngine, packageName: string, node: 
     const owner = findOwnerNode(engine, packageName, node);
     if (owner) {
         const ownerTone = resolveEntityTone(kindName(owner.kind));
-        const ownerVersion = owner.packageVersion ?? engine.getPackage(packageName)?.manifest.version ?? null;
 
         return buildEntityHref({
-            manifestPackage: owner.sourcePackageName,
+            name: owner.sourcePackage.name,
             slug: owner.slug,
             tone: ownerTone,
-            version: ownerVersion
+            version: owner.sourcePackage.version
         });
     }
 

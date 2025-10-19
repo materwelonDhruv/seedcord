@@ -215,7 +215,7 @@ export interface InternalEntityLookupParams {
     kind: EntityKind | null;
 }
 export interface BuildEntityHrefOptions {
-    manifestPackage: string;
+    name: string;
     slug: string;
     version?: string | null;
     tone?: string | null;

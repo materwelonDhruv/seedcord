@@ -18,6 +18,11 @@ import type {
 } from '../types';
 import type { ReflectionKind } from 'typedoc';
 
+export interface PackageLookups {
+    byName: Map<string, DocManifestPackage>;
+    byAlias: Map<string, DocManifestPackage>;
+}
+
 const buildIndexes = (root: DocNode, manifest: DocManifestPackage): DocIndexes => {
     const byId = new Map<number, DocNode>();
     const bySlug = new Map<string, DocNode>();
@@ -269,10 +274,17 @@ const collectTokens = (node: DocNode, summary: string, file: string | undefined,
     return Array.from(tokens);
 };
 
-export const buildPackage = async (pkg: DocManifestPackage, projectPath: string): Promise<DocPackageModel> => {
+export const buildPackage = async (
+    pkg: DocManifestPackage,
+    projectPath: string,
+    lookups: PackageLookups
+): Promise<DocPackageModel> => {
     const loader = new ProjectLoader();
     const project = await loader.fromFile(projectPath);
-    const context = createTransformContext(pkg);
+    const context = createTransformContext(pkg, {
+        packagesByName: lookups.byName,
+        packagesByAlias: lookups.byAlias
+    });
     const transformer = new NodeTransformer(context);
     const root = transformer.transform(project);
     const indexes = buildIndexes(root, pkg);

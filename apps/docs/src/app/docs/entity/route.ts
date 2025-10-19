@@ -28,7 +28,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const href = buildEntityHref({
-        manifestPackage: entity.manifestPackage,
+        name: entity.manifestPackage,
         slug: entity.slug,
         version: entity.version ?? null,
         tone: entity.kind

@@ -184,11 +184,16 @@ export interface DocInheritance {
     implementedBy?: DocType[];
 }
 
+export interface SourcePackage {
+    name: string;
+    version: string;
+}
+
 export interface DocNode {
     id: number;
     key: GlobalId;
     packageName: string;
-    sourcePackageName: string;
+    sourcePackage: SourcePackage;
     packageVersion?: string;
     name: string;
     path: string[];

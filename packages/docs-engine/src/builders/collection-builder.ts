@@ -1,11 +1,54 @@
 import { existsSync } from 'node:fs';
 import path from 'node:path';
 
-import { buildPackage } from './package-builder';
+import { buildPackage, type PackageLookups } from './package-builder';
 // import { propagateSourceInformation } from './source-fixer';
 
 import type { GlobalId } from '../ids';
 import type { DocCollection, DocManifest, DocManifestPackage, DocPackageModel } from '../types';
+
+const normalizeAlias = (value: string): string => value.trim().toLowerCase();
+
+const computeAliases = (name: string): string[] => {
+    const aliases = new Set<string>();
+
+    const add = (candidate: string | null | undefined): void => {
+        if (!candidate) return;
+        aliases.add(candidate);
+        aliases.add(normalizeAlias(candidate));
+    };
+
+    add(name);
+
+    const withoutScope = name.startsWith('@') ? name.slice(1) : name;
+    add(withoutScope);
+
+    const segments = withoutScope.split('/');
+    const last = segments.at(-1);
+    if (last && last.length > 0) {
+        add(last);
+    }
+
+    return Array.from(aliases);
+};
+
+const createPackageLookups = (packages: DocManifestPackage[]): PackageLookups => {
+    const byName = new Map<string, DocManifestPackage>();
+    const byAlias = new Map<string, DocManifestPackage>();
+
+    for (const pkg of packages) {
+        byName.set(pkg.name, pkg);
+        const aliases = computeAliases(pkg.name);
+        for (const alias of aliases) {
+            const key = normalizeAlias(alias);
+            if (!byAlias.has(key)) {
+                byAlias.set(key, pkg);
+            }
+        }
+    }
+
+    return { byName, byAlias } satisfies PackageLookups;
+};
 
 export interface ResolveOptions {
     workspaceRoot?: string;
@@ -133,6 +176,7 @@ const relativizeFromManifestOutput = (output: string, manifestOutputDir: string)
 
 export const buildCollection = async (manifest: DocManifest, options: ResolveOptions): Promise<DocCollection> => {
     const baseCandidates = collectBaseCandidates(options);
+    const packageLookups = createPackageLookups(manifest.packages);
     const packages: DocPackageModel[] = [];
 
     for (const pkg of manifest.packages) {
@@ -141,7 +185,7 @@ export const buildCollection = async (manifest: DocManifest, options: ResolveOpt
             continue;
         }
 
-        const model = await buildPackage(pkg, projectPath);
+        const model = await buildPackage(pkg, projectPath, packageLookups);
         packages.push(model);
     }
 

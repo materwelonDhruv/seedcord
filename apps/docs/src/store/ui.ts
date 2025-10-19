@@ -57,7 +57,8 @@ const COOKIE_MAX_AGE_SECONDS = SECONDS_PER_MINUTE * MINUTES_PER_HOUR * HOURS_PER
 
 const writeCookie = (name: string, value: string): void => {
     try {
-        document.cookie = `${name}=${encodeURIComponent(value)}; path=/docs; max-age=${COOKIE_MAX_AGE_SECONDS}`;
+        // set path=/ so cookies are sent to server routes and any subpaths
+        document.cookie = `${name}=${encodeURIComponent(value)}; path=/; max-age=${COOKIE_MAX_AGE_SECONDS}`;
     } catch {
         // ignore
     }

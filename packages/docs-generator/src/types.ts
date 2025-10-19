@@ -7,7 +7,7 @@ export interface SeedcordDocsConfig {
 }
 
 /**
- * The exact bits of package.json we care about when generating docs
+ * The exact bits of package.json important when generating docs
  */
 export interface PackageManifest {
     name: string;
@@ -18,7 +18,7 @@ export interface PackageManifest {
 }
 
 /**
- * Typedoc run summary we use for console output and manifest writing
+ * Typedoc run summary
  */
 export interface PackageDocResult {
     name: string;

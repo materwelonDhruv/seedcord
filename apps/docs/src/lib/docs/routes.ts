@@ -9,9 +9,9 @@ export const DEFAULT_VERSION_SEGMENT = 'latest';
 
 const encodeSegment = (segment: string): string => encodeURIComponent(segment);
 
-export const buildEntityHref = ({ manifestPackage, slug, version, tone }: BuildEntityHrefOptions): Route => {
+export const buildEntityHref = ({ name, slug, version, tone }: BuildEntityHrefOptions): Route => {
     const resolvedTone = tone ? resolveEntityTone(tone) : null;
-    const packageSegment = encodeSegment(formatDisplayPackageName(manifestPackage));
+    const packageSegment = encodeSegment(formatDisplayPackageName(name));
     const versionSegment = encodeSegment(version ?? DEFAULT_VERSION_SEGMENT);
     const segments: string[] = ['', 'docs', 'packages', packageSegment, versionSegment];
 

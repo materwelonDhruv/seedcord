@@ -122,8 +122,7 @@ const findEntityNode = (engine: Awaited<ReturnType<typeof getDocsEngine>>, entry
 
 const buildEntityUrl = (node: DocNode, fallbackVersion: string | null): string =>
     buildEntityHref({
-        // Prefer the original source package when the node was re-exported by another package.
-        manifestPackage: (node as DocNode & { sourcePackageName: string }).sourcePackageName,
+        name: node.sourcePackage.name,
         slug: node.slug,
         version: node.packageVersion ?? fallbackVersion,
         tone: kindName(node.kind)
@@ -201,10 +200,11 @@ const mapSearchEntry = (
             engine.getNodeByGlobalSlug(entry.packageName, entry.slug) ??
             engine.getNodeBySlug(entry.packageName, entry.slug);
 
-        const manifestPackageForHref = node ? node.sourcePackageName : entry.packageName;
+        const name = node ? node.sourcePackage.name : entry.packageName;
+        const version = node ? node.sourcePackage.version : (entry.packageVersion ?? null);
 
         payload.href = buildEntityHref({
-            manifestPackage: manifestPackageForHref,
+            name: name,
             slug: entry.slug,
             version,
             tone: resultKind

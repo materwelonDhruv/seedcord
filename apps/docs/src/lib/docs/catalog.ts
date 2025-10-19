@@ -37,10 +37,10 @@ const createNavigationItem = (
 ): NavigationEntityItem => ({
     id: slug,
     label,
-    href: buildEntityHref({ manifestPackage, version, slug, tone })
+    href: buildEntityHref({ name: manifestPackage, version, slug, tone })
 });
 
-const buildCategories = (version: string, directory: GetPackageDirectoryReturn): NavigationCategory[] => {
+const buildCategories = (directory: GetPackageDirectoryReturn): NavigationCategory[] => {
     if (!directory) {
         return [];
     }
@@ -53,9 +53,7 @@ const buildCategories = (version: string, directory: GetPackageDirectoryReturn):
 
         const items = entries
             .map(([slug, node]) => {
-                const nodeWithSource = node;
-                const manifestForHref: string = nodeWithSource.sourcePackageName;
-                return createNavigationItem(manifestForHref, version, slug, node.name, tone);
+                return createNavigationItem(node.sourcePackage.name, node.sourcePackage.version, slug, node.name, tone);
             })
             .sort((a, b) => a.label.localeCompare(b.label, undefined, { sensitivity: 'base' }));
 
@@ -82,7 +80,7 @@ const buildPackageEntry = (
     const displayName = formatDisplayPackageName(manifestPackage);
     const description = `Reference documentation for ${displayName}.`;
     const versionLabel = formatVersionLabel(version);
-    const categories = buildCategories(version, directory);
+    const categories = buildCategories(directory);
 
     const versionCatalog: PackageVersionCatalog = {
         id: version,

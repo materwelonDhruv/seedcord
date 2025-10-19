@@ -24,7 +24,7 @@ import { formatRenderedDeclarationHeader, renderDeclarationHeader } from './sign
 import { registerNode, type TransformContext } from './transform-context';
 import { hasRefType, hasSources, hasVariant } from './type-helpers';
 
-import type { DocInheritance, DocNode } from '../types';
+import type { DocInheritance, DocManifestPackage, DocNode, SourcePackage } from '../types';
 
 const formatLiteralValue = (value: unknown): string | undefined => {
     if (value === undefined) return undefined;
@@ -77,7 +77,7 @@ interface CreateNodeParams {
     reflection: ProjectReflection | DeclarationReflection;
     reflectionName: string;
     packageName: string;
-    sourcePackageName: string;
+    sourcePackage: SourcePackage;
     path: string[];
     qualifiedName: string;
     slug: string;
@@ -98,13 +98,13 @@ export class NodeTransformer {
         const reflectionName =
             typeof reflection.name === 'string' && reflection.name.length > 0 ? reflection.name : packageName;
 
-        const sourcePackageName = this.resolveSourcePackageName(reflection, packageName);
+        const sourcePackage = this.resolveSourcePackage(reflection, packageName);
 
         const node = this.createBaseNode({
             reflection,
             reflectionName,
             packageName,
-            sourcePackageName,
+            sourcePackage,
             path,
             qualifiedName,
             slug
@@ -132,13 +132,13 @@ export class NodeTransformer {
     }
 
     private createBaseNode(params: CreateNodeParams): DocNode {
-        const { reflection, reflectionName, packageName, sourcePackageName, path, qualifiedName, slug } = params;
+        const { reflection, reflectionName, packageName, sourcePackage, path, qualifiedName, slug } = params;
         const node: DocNode = {
             id: reflection.id,
             key: toGlobalId(packageName, reflection.id),
             name: reflectionName,
             packageName,
-            sourcePackageName,
+            sourcePackage,
             path,
             qualifiedName,
             slug,
@@ -163,11 +163,60 @@ export class NodeTransformer {
         return node;
     }
 
-    // eslint-disable-next-line complexity
-    private resolveSourcePackageName(
+    private resolveManifestPackage(name: string): DocManifestPackage | null {
+        if (!name) {
+            return null;
+        }
+
+        const direct = this.context.packagesByName.get(name);
+        if (direct) {
+            return direct;
+        }
+
+        const normalized = name.trim().toLowerCase();
+        if (!normalized) {
+            return null;
+        }
+
+        return this.context.packagesByAlias.get(normalized) ?? null;
+    }
+
+    // eslint-disable-next-line complexity, max-statements
+    private resolveSourcePackage(
         reflection: ProjectReflection | DeclarationReflection,
-        fallbackPackage: string
-    ): string {
+        fallbackPackageName: string
+    ): SourcePackage {
+        const fallback = this.resolveManifestPackage(fallbackPackageName);
+        let name = fallback?.name ?? fallbackPackageName;
+        let version = fallback?.version ?? this.packageVersion() ?? '';
+        let matchedManifest = Boolean(fallback);
+
+        const applyCandidate = (candidate: string | null | undefined, inferredVersion?: string): void => {
+            if (!candidate) {
+                return;
+            }
+
+            const manifest = this.resolveManifestPackage(candidate);
+            if (manifest) {
+                name = manifest.name;
+                const manifestVersion = typeof manifest.version === 'string' ? manifest.version : '';
+                if (manifestVersion.length > 0) {
+                    version = manifestVersion;
+                } else if (inferredVersion && inferredVersion.length > 0 && version.length === 0) {
+                    version = inferredVersion;
+                }
+                matchedManifest = true;
+                return;
+            }
+
+            if (!matchedManifest) {
+                name = candidate;
+                if (inferredVersion && inferredVersion.length > 0 && version.length === 0) {
+                    version = inferredVersion;
+                }
+            }
+        };
+
         if (
             hasVariant(reflection) &&
             hasRefType(reflection) &&
@@ -176,7 +225,7 @@ export class NodeTransformer {
         ) {
             const fromPkg = reflection.type.package ?? reflection.type.packageName;
             if (typeof fromPkg === 'string' && fromPkg.length > 0) {
-                return fromPkg;
+                applyCandidate(fromPkg);
             }
         }
 
@@ -184,14 +233,39 @@ export class NodeTransformer {
             for (const s of reflection.sources) {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 const file = s.fullFileName ?? s.fileName ?? '';
+
+                const pnpm = file.match(/[\\/](?:node_modules)[\\/]\.pnpm[\\/](?<slug>[^\\/]+?)\\b[\\/]/);
+                if (pnpm?.groups?.slug) {
+                    const slug = pnpm.groups.slug;
+                    const atIdx = slug.lastIndexOf('@');
+                    if (atIdx > 0) {
+                        const rawName = slug.slice(0, atIdx);
+                        const ver = slug.slice(atIdx + 1);
+                        const inferredName = rawName.startsWith('@')
+                            ? rawName.replace(/\+/g, '/')
+                            : rawName.replace(/\+/g, '/');
+
+                        applyCandidate(inferredName, ver);
+                    }
+                }
+
                 const nm = file.match(/(?:^|[\\/])node_modules[\\/](?<pkg>@[^\\/]+[\\/][^\\/]+|[^\\/]+)/);
-                if (nm?.groups?.pkg) return nm.groups.pkg;
+                if (nm?.groups?.pkg) {
+                    applyCandidate(nm.groups.pkg);
+                }
+
                 const mono = file.match(/(?:^|[\\/])packages[\\/](?<pkg>@[^\\/]+[\\/][^\\/]+|[^\\/]+)[\\/]/);
-                if (mono?.groups?.pkg) return mono.groups.pkg;
+                if (mono?.groups?.pkg) {
+                    applyCandidate(mono.groups.pkg);
+                }
+
+                if (version.length > 0 && matchedManifest) {
+                    break;
+                }
             }
         }
 
-        return fallbackPackage;
+        return { name, version } satisfies SourcePackage;
     }
 
     private applyDeclarationDetails(node: DocNode, reflection: DeclarationReflection): void {
