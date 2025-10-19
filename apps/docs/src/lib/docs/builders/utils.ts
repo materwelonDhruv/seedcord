@@ -23,6 +23,32 @@ export const ensureSignatureAnchor = (signature: DocSignature): string =>
         ? signature.anchor
         : `${signature.name}-${signature.overloadIndex}`;
 
+function computeModifierParts(node: DocNode): string[] {
+    const parts: string[] = [];
+    if (node.flags.access) parts.push(node.flags.access);
+    if (node.flags.isReadonly) parts.push('readonly');
+    if (node.flags.isAbstract) parts.push('abstract');
+    if (node.flags.isStatic) parts.push('static');
+    if (node.flags.isAsync) parts.push('async');
+    return parts;
+}
+
+function headerHasPrefix(headerText: string, parts: string[]): boolean {
+    const base = headerText.trim().toLowerCase();
+    const prefix = parts.join(' ').trim().toLowerCase();
+
+    const baseTokens = base.split(/\s+/).filter(Boolean);
+    const prefixTokens = prefix.split(/\s+/).filter(Boolean);
+
+    if (prefixTokens.length > baseTokens.length) return false;
+
+    for (let i = 0; i < prefixTokens.length; i += 1) {
+        if (baseTokens[i] !== prefixTokens[i]) return false;
+    }
+
+    return true;
+}
+
 export async function resolveHeaderSignature(node: DocNode, context: FormatContext): Promise<CodeRepresentation> {
     if (node.header) {
         const headerRep = await formatDeclarationHeader(node.header, context);
@@ -38,14 +64,13 @@ export async function resolveHeaderSignature(node: DocNode, context: FormatConte
             return headerRep;
         }
 
-        const parts: string[] = [];
-        if (node.flags.access) parts.push(node.flags.access);
-        if (node.flags.isReadonly) parts.push('readonly');
-        if (node.flags.isAbstract) parts.push('abstract');
-        if (node.flags.isStatic) parts.push('static');
-        if (node.flags.isAsync) parts.push('async');
+        const parts = computeModifierParts(node);
 
         if (parts.length) {
+            if (headerHasPrefix(headerRep.text, parts)) {
+                return headerRep;
+            }
+
             return highlightCode(`${parts.join(' ')} ${headerRep.text}`);
         }
 
