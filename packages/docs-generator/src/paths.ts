@@ -1,7 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-// helpers can use this to make noice relative paths
 const currentFile = fileURLToPath(import.meta.url);
 const srcDir = path.dirname(currentFile);
 

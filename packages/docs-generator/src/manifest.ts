@@ -7,9 +7,6 @@ import { defaultPaths } from './paths';
 import type { ApiDocsPaths } from './paths';
 import type { PackageDocResult } from './types';
 
-/**
- * stash a summary json so we can peek at what happened without reading console spam
- */
 export async function writeManifest(results: PackageDocResult[], paths: ApiDocsPaths = defaultPaths): Promise<void> {
     const payload = {
         generatedAt: new Date().toISOString(),

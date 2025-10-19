@@ -66,7 +66,6 @@ export async function extractPackageDocs(
     const warnings: string[] = [];
     const errors: string[] = [];
 
-    // spin up typedoc with the same options we'd pass on the command line
     const app = await Application.bootstrapWithPlugins({
         entryPoints,
         entryPointStrategy: EntryPointStrategy.Resolve,
@@ -85,10 +84,8 @@ export async function extractPackageDocs(
     externalPluginsLoaded = true;
 
     const blockTags = (app.options.getValue('blockTags') as string[] | undefined) ?? [];
-    // typedoc ignores @decorator out of the box and spams warnings, so we tell it that tag is legit here
     if (!blockTags.includes('@decorator')) app.options.setValue('blockTags', [...blockTags, '@decorator']);
 
-    // typedoc writes to stdout, so we intercept the logger to stash warn/error lines for the manifest
     const originalLog = app.logger.log.bind(app.logger);
     app.logger.log = (message, level, ...rest) => {
         const raw = typeof message === 'string' ? message : JSON.stringify(message);
