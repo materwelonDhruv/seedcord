@@ -1,8 +1,8 @@
 @layer utilities {
     .badge-entity-class {
         @apply inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-sm;
-        border: 1px solid var(--tone-class-badge-border, color-mix(in oklab, var(--entity-class) 35%, transparent));
-        background-color: var(--tone-class-badge-bg, color-mix(in oklab, var(--entity-class) 18%, transparent));
+        border: 1px solid var(--tone-class-badge-border, color-mix(in srgb, var(--entity-class) 35%, transparent));
+        background-color: var(--tone-class-badge-bg, color-mix(in srgb, var(--entity-class) 18%, transparent));
         color: var(--entity-class);
     }
 
@@ -10,11 +10,14 @@
         @apply transition-colors;
     }
     .item-hover-accent-b:hover {
-        border-color: color-mix(in oklab, var(--accent-b) 24%, transparent);
+        border-color: color-mix(in srgb, var(--accent-b) 24%, transparent);
+        background-color: color-mix(in srgb, var(--accent-b) 10%, transparent);
     }
 
     .focus-ring-accent-b:focus-visible {
-        @apply ring-2 ring-(--accent-b) ring-offset-2 ring-offset-(--color-bg);
+        @apply ring-2 ring-offset-2;
+        --tw-ring-color: var(--accent-b);
+        --tw-ring-offset-color: var(--bg);
     }
 
     .bg-glow {
