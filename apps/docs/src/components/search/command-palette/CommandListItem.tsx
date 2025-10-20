@@ -28,57 +28,23 @@ type NonEntityResultKind = Extract<
 const ENTITY_RESULT_KINDS = new Set<SearchResultKind>(['class', 'interface', 'type', 'enum', 'function', 'variable']);
 
 const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
-    package: [
-        'border-[color-mix(in_srgb,var(--accent-b)_38%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--accent-b)_16%,var(--surface)_84%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--accent-b)_12%)]'
-    ].join(' '),
-    page: [
-        'border-[color-mix(in_srgb,var(--accent-a)_34%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--accent-a)_14%,var(--surface)_86%)]',
-        'text-[color-mix(in_srgb,var(--text)_90%,var(--accent-a)_10%)]'
-    ].join(' '),
-    resource: [
-        'border-[color-mix(in_srgb,#8b90a7_46%,var(--border))]',
-        'bg-[color-mix(in_srgb,#8b90a7_18%,var(--surface)_82%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,#8b90a7_12%)]'
-    ].join(' '),
-    constructor: [
-        'border-[color-mix(in_srgb,var(--entity-function-color)_34%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-function-color)_12%,var(--surface)_88%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-function-color)_12%)]'
-    ].join(' '),
-    method: [
-        'border-[color-mix(in_srgb,var(--entity-function-color)_34%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-function-color)_12%,var(--surface)_88%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-function-color)_12%)]'
-    ].join(' '),
-    property: [
-        'border-[color-mix(in_srgb,var(--entity-variable-color)_38%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-variable-color)_15%,var(--surface)_85%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-variable-color)_12%)]'
-    ].join(' '),
-    parameter: [
-        'border-[color-mix(in_srgb,var(--entity-type-color)_32%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-type-color)_12%,var(--surface)_88%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-type-color)_12%)]'
-    ].join(' '),
-    typeParameter: [
-        'border-[color-mix(in_srgb,var(--entity-type-color)_32%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-type-color)_12%,var(--surface)_88%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-type-color)_12%)]'
-    ].join(' '),
-    enumMember: [
-        'border-[color-mix(in_srgb,var(--entity-enum-color)_34%,var(--border))]',
-        'bg-[color-mix(in_srgb,var(--entity-enum-color)_14%,var(--surface)_86%)]',
-        'text-[color-mix(in_srgb,var(--text)_88%,var(--entity-enum-color)_12%)]'
-    ].join(' ')
+    package: ['border-(--badge-package-border)', 'bg-(--badge-package-bg)', 'text-(--badge-package-text)'].join(' '),
+    page: ['border-(--badge-page-border)', 'bg-(--badge-page-bg)', 'text-(--badge-page-text)'].join(' '),
+    resource: ['border-(--badge-resource-border)', 'bg-(--badge-resource-bg)', 'text-(--badge-resource-text)'].join(
+        ' '
+    ),
+    constructor: ['border-(--entity-function)/34', 'bg-(--entity-tint-12)', 'text-(--entity-function)'].join(' '),
+    method: ['border-(--entity-function)/34', 'bg-(--entity-tint-12)', 'text-(--entity-function)'].join(' '),
+    property: ['border-(--entity-variable)/38', 'bg-(--entity-tint-14)', 'text-(--entity-variable)'].join(' '),
+    parameter: ['border-(--entity-type)/32', 'bg-(--entity-tint-12)', 'text-(--entity-type)'].join(' '),
+    typeParameter: ['border-(--entity-type)/32', 'bg-(--entity-tint-12)', 'text-(--entity-type)'].join(' '),
+    enumMember: ['border-(--entity-enum)/34', 'bg-(--entity-tint-14)', 'text-(--entity-enum)'].join(' ')
 };
 
 const BASE_ICON_CLASSES = [
     'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150',
-    'group-hover/item:shadow-[0_0_0_1px_color-mix(in_srgb,currentColor_30%,transparent)]',
-    'group-data-[selected=true]/item:shadow-[0_0_0_1px_color-mix(in_srgb,currentColor_42%,transparent)]'
+    'group-hover/item:shadow-[var(--shadow-outline)]',
+    'group-data-[selected=true]/item:shadow-[var(--shadow-outline)]'
 ].join(' ');
 
 interface CommandListItemProps {
@@ -108,9 +74,9 @@ export function CommandListItem({ action, onSelect }: CommandListItemProps): Rea
             title={action.path}
             className={cn(
                 'group/item mt-1 flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-(--text) outline-none transition first:mt-0',
-                'hover:border-[color-mix(in_srgb,var(--accent-b)_24%,transparent)] hover:bg-[color-mix(in_srgb,var(--accent-b)_10%,transparent)]',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--accent-b)_28%,transparent)] focus-visible:ring-offset-2 focus-visible:ring-offset-[color-mix(in_srgb,var(--bg)_96%,transparent)]',
-                'data-[selected=true]:border-[color-mix(in_srgb,var(--accent-b)_38%,transparent)] data-[selected=true]:bg-[color-mix(in_srgb,var(--accent-b)_16%,transparent)] data-[selected=true]:shadow-[0_0_0_1px_color-mix(in_srgb,var(--accent-b)_22%,transparent)]'
+                'hover:border-(--accent-b)/24 hover:bg-(--accent-b)/10',
+                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--focus-outline-b) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg-dim)',
+                'data-[selected=true]:border-(--accent-b)/38 data-[selected=true]:bg-(--accent-b)/16 data-[selected=true]:shadow-(--shadow-outline)'
             )}
             aria-label={action.label}
             keywords={keywords}

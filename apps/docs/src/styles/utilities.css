@@ -1,5 +1,4 @@
 @layer utilities {
-    /* Entity badge utilities */
     .badge-entity-class {
         @apply inline-flex items-center gap-2 rounded-full px-2 py-0.5 text-sm;
         border: 1px solid var(--tone-class-badge-border, color-mix(in oklab, var(--entity-class) 35%, transparent));
@@ -7,7 +6,6 @@
         color: var(--entity-class);
     }
 
-    /* Named hover helper */
     .item-hover-accent-b {
         @apply transition-colors;
     }
@@ -15,12 +13,10 @@
         border-color: color-mix(in oklab, var(--accent-b) 24%, transparent);
     }
 
-    /* Fix: “ring” is not a CSS property; use Tailwind utilities via @apply */
     .focus-ring-accent-b:focus-visible {
         @apply ring-2 ring-(--accent-b) ring-offset-2 ring-offset-(--color-bg);
     }
 
-    /* Generic surface and overlay utilities */
     .bg-glow {
         background-image: var(--glow);
     }
@@ -29,5 +25,23 @@
     }
     .shadow-outline-token {
         box-shadow: var(--shadow-outline);
+    }
+}
+
+@layer utilities {
+    .bg-page {
+        background-color: var(--bg-dim);
+    }
+    .bg-surface-muted {
+        background-color: var(--surface-muted);
+    }
+    .hover-bg-accent-a:hover {
+        background-color: var(--accent-a-hover);
+    }
+    .hover-bg-accent-b:hover {
+        background-color: var(--accent-b-hover);
+    }
+    .shadow-soft-token {
+        box-shadow: var(--shadow-soft-token, var(--shadow-soft));
     }
 }

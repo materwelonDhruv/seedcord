@@ -45,7 +45,7 @@ export function InstallCommandTabs({ commands }: InstallCommandTabsProps): React
                             'rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition',
                             command.id === activeCommand.id
                                 ? 'border-[color-mix(in_srgb,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_srgb,var(--accent-a)_18%,transparent)] text-(--text)'
-                                : 'border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] text-subtle hover:border-[color-mix(in_srgb,var(--accent-a)_30%,var(--border))] hover:text-(--text)'
+                                : 'border-(--border) bg-(--surface-muted) text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
                         )}
                     >
                         {command.label}

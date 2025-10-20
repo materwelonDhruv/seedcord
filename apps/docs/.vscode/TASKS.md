@@ -23,3 +23,9 @@
 [ ] 48. Rendering for virtual and remarks.
 
 [ ] 49. Render markdown in comments.
+
+[ ] 50. Sidebar dropdowns don't update on package change. And neither does their content. Please fix.
+
+[ ] 52. Sidebar dropdowns styling. The selection item's border radius is too round.
+
+[ ] 53. Command palette: when I'm focused on the input box, there's a harsh outline around the entire box. What happened to the previous styling that matched the rest of the project?

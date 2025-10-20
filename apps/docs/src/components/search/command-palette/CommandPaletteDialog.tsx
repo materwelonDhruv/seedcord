@@ -104,7 +104,7 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
             <Dialog.Portal>
                 <Dialog.Overlay
                     data-command-overlay
-                    className="fixed inset-0 bg-[color-mix(in_srgb,var(--bg)_55%,#070917_45%)]/70 backdrop-blur-sm"
+                    className="fixed inset-0 bg-(--command-overlay)/70 backdrop-blur-sm"
                 />
                 <Dialog.Content
                     data-command-content
@@ -120,7 +120,7 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                 >
                     <Command
                         ref={commandRef}
-                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
+                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-(--border) bg-(--bg-dim) text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >

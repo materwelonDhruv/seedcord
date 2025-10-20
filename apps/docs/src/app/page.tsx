@@ -7,7 +7,7 @@ const GUIDE_URL = 'https://github.com/materwelonDhruv/seedcord-guide';
 
 export default function Home(): ReactElement {
     return (
-        <main id="main-content" className="bg-[color-mix(in_srgb,var(--bg)_94%,#050507_6%)]">
+        <main id="main-content" className="bg-(--bg-dim)">
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 md:px-6 lg:py-24">
                 <section className="flex flex-wrap items-start justify-start gap-12 text-left lg:justify-between">
                     <div className="flex min-w-0 max-w-xl flex-1 flex-col items-start gap-6">
@@ -21,7 +21,7 @@ export default function Home(): ReactElement {
                         <div className="flex flex-row flex-wrap items-center gap-3">
                             <Link
                                 href="/docs"
-                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-a) px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-a)_88%,black)] focus-visible:outline-2 focus-visible:outline-(--accent-a) focus-visible:outline-offset-2"
+                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-a) px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-(--accent-a-hover) focus-visible:outline-2 focus-visible:outline-(--accent-a) focus-visible:outline-offset-2"
                             >
                                 View documentation
                             </Link>
@@ -29,14 +29,14 @@ export default function Home(): ReactElement {
                                 href={GUIDE_URL}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-b) px-6 py-3 text-sm font-semibold text-black shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-b)_92%,#000_8%)] focus-visible:outline-2 focus-visible:outline-(--accent-b) focus-visible:outline-offset-2"
+                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-b) px-6 py-3 text-sm font-semibold text-black shadow-soft transition hover:bg-(--accent-b-hover) focus-visible:outline-2 focus-visible:outline-(--accent-b) focus-visible:outline-offset-2"
                             >
                                 Read the guide
                             </Link>
                         </div>
                     </div>
                     <div className="relative hidden items-center justify-center lg:flex lg:flex-1 lg:max-w-md">
-                        <div className="relative flex aspect-square w-32 items-center justify-center overflow-hidden rounded-3xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-[0_28px_60px_-36px_color-mix(in_srgb,var(--text)_28%,transparent)] sm:w-40 md:w-52 lg:w-64">
+                        <div className="relative flex aspect-square w-32 items-center justify-center overflow-hidden rounded-3xl border border-(--border)/80 bg-(--surface-muted) p-4 shadow-(--shadow-soft-token) sm:w-40 md:w-52 lg:w-64">
                             <Image
                                 src="/logo.svg"
                                 alt="Seedcord logo"

@@ -223,7 +223,7 @@ export function EntityHeader({
     return (
         <header className="min-w-0">
             <DeprecatedEntity deprecationStatus={deprecationStatus}>
-                <div className="space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
+                <div className="space-y-4 rounded-2xl border border-(--border) bg-(--surface-muted) p-4 shadow-soft sm:p-5">
                     {headerContent}
                 </div>
             </DeprecatedEntity>

@@ -5,138 +5,114 @@ const ENTITIES_INTERNAL = {
         label: 'Class',
         icon: SquareStack,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-class-color)_85%,var(--text))]',
+            heading: 'text-(--tone-class-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-class-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-class-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-class-color)]'
+                'hover:border-(--tone-class-badge-border)',
+                'hover:bg-(--tone-class-item-bg)',
+                'focus-visible:outline-(--entity-class)'
             ].join(' '),
-            badge: [
-                'border-[color-mix(in_srgb,var(--entity-class-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-class-color)_18%,transparent)]',
-                'text-[var(--entity-class-color)]'
-            ].join(' '),
+            badge: ['border-(--tone-class-badge-border)', 'bg-(--tone-class-badge-bg)', 'text-(--entity-class)'].join(
+                ' '
+            ),
             tag: [
-                'border-[color-mix(in_srgb,var(--entity-class-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-class-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-class-color)_70%,var(--text))]'
+                'border-(--tone-class-badge-border)',
+                'bg-(--tone-class-tag-bg)',
+                'text-(--tone-class-tag-text)'
             ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-class-color)_68%,var(--text))]'
+            accent: 'text-(--tone-class-heading)'
         }
     },
     interface: {
         label: 'Interface',
         icon: Puzzle,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-interface-color)_80%,var(--text))]',
+            heading: 'text-(--tone-interface-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-interface-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-interface-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-interface-color)]'
+                'hover:border-(--tone-interface-badge-border)',
+                'hover:bg-(--tone-interface-item-bg)',
+                'focus-visible:outline-(--entity-interface)'
             ].join(' '),
             badge: [
-                'border-[color-mix(in_srgb,var(--entity-interface-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-interface-color)_18%,transparent)]',
-                'text-[var(--entity-interface-color)]'
+                'border-(--tone-interface-badge-border)',
+                'bg-(--tone-interface-badge-bg)',
+                'text-(--entity-interface)'
             ].join(' '),
             tag: [
-                'border-[color-mix(in_srgb,var(--entity-interface-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-interface-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-interface-color)_70%,var(--text))]'
+                'border-(--tone-interface-badge-border)',
+                'bg-(--tone-interface-tag-bg)',
+                'text-(--tone-interface-tag-text)'
             ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-interface-color)_68%,var(--text))]'
+            accent: 'text-(--tone-interface-heading)'
         }
     },
     type: {
         label: 'Type',
         icon: Braces,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-type-color)_80%,var(--text))]',
+            heading: 'text-(--tone-type-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-type-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-type-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-type-color)]'
+                'hover:border-(--tone-type-badge-border)',
+                'hover:bg-(--tone-type-item-bg)',
+                'focus-visible:outline-(--entity-type)'
             ].join(' '),
-            badge: [
-                'border-[color-mix(in_srgb,var(--entity-type-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-type-color)_18%,transparent)]',
-                'text-[var(--entity-type-color)]'
-            ].join(' '),
-            tag: [
-                'border-[color-mix(in_srgb,var(--entity-type-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-type-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-type-color)_70%,var(--text))]'
-            ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-type-color)_68%,var(--text))]'
+            badge: ['border-(--tone-type-badge-border)', 'bg-(--tone-type-badge-bg)', 'text-(--entity-type)'].join(' '),
+            tag: ['border-(--tone-type-badge-border)', 'bg-(--tone-type-tag-bg)', 'text-(--tone-type-tag-text)'].join(
+                ' '
+            ),
+            accent: 'text-(--tone-type-heading)'
         }
     },
     function: {
         label: 'Function',
         icon: FunctionSquare,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-function-color)_80%,var(--text))]',
+            heading: 'text-(--tone-func-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-function-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-function-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-function-color)]'
+                'hover:border-(--tone-func-badge-border)',
+                'hover:bg-(--tone-func-item-bg)',
+                'focus-visible:outline-(--entity-function)'
             ].join(' '),
-            badge: [
-                'border-[color-mix(in_srgb,var(--entity-function-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-function-color)_18%,transparent)]',
-                'text-[var(--entity-function-color)]'
-            ].join(' '),
-            tag: [
-                'border-[color-mix(in_srgb,var(--entity-function-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-function-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-function-color)_70%,var(--text))]'
-            ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-function-color)_68%,var(--text))]'
+            badge: ['border-(--tone-func-badge-border)', 'bg-(--tone-func-badge-bg)', 'text-(--entity-function)'].join(
+                ' '
+            ),
+            tag: ['border-(--tone-func-badge-border)', 'bg-(--tone-func-tag-bg)', 'text-(--tone-func-tag-text)'].join(
+                ' '
+            ),
+            accent: 'text-(--tone-func-heading)'
         }
     },
     enum: {
         label: 'Enum',
         icon: ListTree,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-enum-color)_80%,var(--text))]',
+            heading: 'text-(--tone-enum-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-enum-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-enum-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-enum-color)]'
+                'hover:border-(--tone-enum-badge-border)',
+                'hover:bg-(--tone-enum-item-bg)',
+                'focus-visible:outline-(--entity-enum)'
             ].join(' '),
-            badge: [
-                'border-[color-mix(in_srgb,var(--entity-enum-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-enum-color)_18%,transparent)]',
-                'text-[var(--entity-enum-color)]'
-            ].join(' '),
-            tag: [
-                'border-[color-mix(in_srgb,var(--entity-enum-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-enum-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-enum-color)_70%,var(--text))]'
-            ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-enum-color)_68%,var(--text))]'
+            badge: ['border-(--tone-enum-badge-border)', 'bg-(--tone-enum-badge-bg)', 'text-(--entity-enum)'].join(' '),
+            tag: ['border-(--tone-enum-badge-border)', 'bg-(--tone-enum-tag-bg)', 'text-(--tone-enum-tag-text)'].join(
+                ' '
+            ),
+            accent: 'text-(--tone-enum-heading)'
         }
     },
     variable: {
         label: 'Variable',
         icon: Variable,
         styles: {
-            heading: 'text-[color-mix(in_srgb,var(--entity-variable-color)_78%,var(--text))]',
+            heading: 'text-(--tone-var-heading)',
             item: [
-                'hover:border-[color-mix(in_srgb,var(--entity-variable-color)_55%,transparent)]',
-                'hover:bg-[color-mix(in_srgb,var(--entity-variable-color)_12%,transparent)]',
-                'focus-visible:outline-[var(--entity-variable-color)]'
+                'hover:border-(--tone-var-badge-border)',
+                'hover:bg-(--tone-var-item-bg)',
+                'focus-visible:outline-(--entity-variable)'
             ].join(' '),
-            badge: [
-                'border-[color-mix(in_srgb,var(--entity-variable-color)_35%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-variable-color)_18%,transparent)]',
-                'text-[var(--entity-variable-color)]'
-            ].join(' '),
-            tag: [
-                'border-[color-mix(in_srgb,var(--entity-variable-color)_28%,transparent)]',
-                'bg-[color-mix(in_srgb,var(--entity-variable-color)_12%,transparent)]',
-                'text-[color-mix(in_srgb,var(--entity-variable-color)_70%,var(--text))]'
-            ].join(' '),
-            accent: 'text-[color-mix(in_srgb,var(--entity-variable-color)_68%,var(--text))]'
+            badge: ['border-(--tone-var-badge-border)', 'bg-(--tone-var-badge-bg)', 'text-(--entity-variable)'].join(
+                ' '
+            ),
+            tag: ['border-(--tone-var-badge-border)', 'bg-(--tone-var-tag-bg)', 'text-(--tone-var-tag-text)'].join(' '),
+            accent: 'text-(--tone-var-heading)'
         }
     }
 } as const;

@@ -28,10 +28,7 @@ export async function CodeBlock({
 
     return (
         <figure
-            className={cn(
-                'relative rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] shadow-soft',
-                className
-            )}
+            className={cn('relative rounded-2xl border border-(--border) bg-(--surface-muted) shadow-soft', className)}
         >
             {showHeader ? (
                 <figcaption className="flex items-center justify-between gap-3 border-b border-border/70 bg-[color-mix(in_srgb,var(--surface)_90%,#ffffff_10%)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-subtle">

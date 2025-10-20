@@ -9,7 +9,7 @@ import type { MemberSignatureDetail, WithParentDeprecationStatus } from '../type
 import type { ReactElement } from 'react';
 
 export const SIGNATURE_CONTAINER_CLASS =
-    'code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
+    'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
 
 interface SignaturePanelProps extends WithParentDeprecationStatus {
     signature: MemberSignatureDetail;

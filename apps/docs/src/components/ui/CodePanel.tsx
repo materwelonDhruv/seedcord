@@ -11,7 +11,7 @@ interface CodePanelProps {
 }
 
 const CODE_CONTAINER_CLASS =
-    'code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-sm text-[var(--text)] sm:px-4 sm:py-3';
+    'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-sm text-[var(--text)] sm:px-4 sm:py-3';
 
 export function CodePanel({ representation, title, description, className }: CodePanelProps): ReactElement {
     return (

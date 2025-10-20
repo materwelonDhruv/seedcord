@@ -23,11 +23,11 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                 ) : null}
             </header>
             {signature.code.html ? (
-                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-(--text) sm:text-sm">
+                <div className="code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 </div>
             ) : (
-                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-(--text) sm:text-sm">
+                <div className="code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <pre className="code-scroll-content whitespace-pre-wrap">{signature.code.text}</pre>
                 </div>
             )}
@@ -39,7 +39,7 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                         {signature.parameters.map((parameter) => (
                             <li
                                 key={parameter.name}
-                                className="rounded-lg border border-border/60 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-3 text-sm text-subtle"
+                                className="rounded-lg border border-(--border)/60 bg-(--surface-muted) p-3 text-sm text-subtle"
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     {renderParameterBadge(parameter)}
