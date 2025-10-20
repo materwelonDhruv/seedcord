@@ -41,7 +41,7 @@ const extractEnumLiteralValue = (
     mappedType: DocNode['type']
 ): string | undefined => {
     const literalFromReflection = (reflection.type as { type?: string; value?: unknown } | undefined) ?? null;
-    if (literalFromReflection && literalFromReflection.type === 'literal' && 'value' in literalFromReflection) {
+    if (literalFromReflection?.type === 'literal' && 'value' in literalFromReflection) {
         const formatted = formatLiteralValue(literalFromReflection.value);
         if (formatted !== undefined) return formatted;
     }
