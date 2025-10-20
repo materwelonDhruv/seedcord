@@ -22,6 +22,36 @@ interface SignatureDetailsOptions {
     headerSignature: CodeRepresentation;
 }
 
+function buildModifierPrefix(node: DocNode, signature?: { kindLabel?: string }): string {
+    const flags = node.flags;
+    const parts: string[] = [];
+
+    const access = flags.access as string | undefined;
+    if (access) parts.push(access);
+
+    if (flags.isAbstract === true) parts.push('abstract');
+    if (flags.isStatic === true) parts.push('static');
+    if (flags.isReadonly === true) parts.push('readonly');
+    if (flags.isAsync === true) parts.push('async');
+
+    let accessorToken: string | undefined;
+    if (signature && typeof signature.kindLabel === 'string') {
+        const kl = signature.kindLabel.toLowerCase();
+        if (kl.includes('get')) accessorToken = 'get';
+        if (kl.includes('set')) accessorToken = 'set';
+    }
+
+    if (!accessorToken) {
+        const accessor = flags.accessor as string | undefined;
+        if (accessor === 'getter') accessorToken = 'get';
+        if (accessor === 'setter') accessorToken = 'set';
+    }
+
+    if (accessorToken) parts.push(accessorToken);
+
+    return parts.join(' ');
+}
+
 export async function buildSignatureDetails({
     node,
     context,
@@ -47,36 +77,6 @@ export async function buildSignatureDetails({
         }
 
         return [fallbackDetail];
-    }
-
-    function buildModifierPrefix(node: DocNode, signature?: { kindLabel?: string }): string {
-        const flags = node.flags;
-        const parts: string[] = [];
-
-        const access = flags.access as string | undefined;
-        if (access) parts.push(access);
-
-        if (flags.isAbstract === true) parts.push('abstract');
-        if (flags.isStatic === true) parts.push('static');
-        if (flags.isReadonly === true) parts.push('readonly');
-        if (flags.isAsync === true) parts.push('async');
-
-        let accessorToken: string | undefined;
-        if (signature && typeof signature.kindLabel === 'string') {
-            const kl = signature.kindLabel.toLowerCase();
-            if (kl.includes('get')) accessorToken = 'get';
-            if (kl.includes('set')) accessorToken = 'set';
-        }
-
-        if (!accessorToken) {
-            const accessor = flags.accessor as string | undefined;
-            if (accessor === 'getter') accessorToken = 'get';
-            if (accessor === 'setter') accessorToken = 'set';
-        }
-
-        if (accessorToken) parts.push(accessorToken);
-
-        return parts.join(' ');
     }
 
     return Promise.all(
@@ -105,7 +105,8 @@ export async function buildSignatureDetails({
                 anchor: ensureSignatureAnchor(signature),
                 code,
                 documentation,
-                examples
+                examples,
+                throws: comment?.throws ?? []
             };
 
             const sigDep = buildDeprecationStatusFromNodeLike(signature as unknown as DocNode);

@@ -6,7 +6,8 @@ import type {
     CommentExample,
     CommentParagraph,
     EntityKind,
-    SeeAlsoEntryWithoutTarget
+    WithSeeAlso,
+    WithThrows
 } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';
 
@@ -28,16 +29,7 @@ export function buildEntityTags(node: DocNode): string[] {
     return Array.from(tags);
 }
 
-export function buildBaseEntityModel({
-    node,
-    kind,
-    manifestPackage,
-    displayPackage,
-    summary,
-    summaryExamples,
-    signature,
-    seeAlso
-}: {
+interface BuildBaseEntityModelParams extends WithThrows, WithSeeAlso {
     node: DocNode;
     kind: EntityKind;
     manifestPackage: string;
@@ -45,8 +37,11 @@ export function buildBaseEntityModel({
     summary: readonly CommentParagraph[];
     summaryExamples: readonly CommentExample[];
     signature: CodeRepresentation;
-    seeAlso?: readonly SeeAlsoEntryWithoutTarget[] | undefined;
-}): BaseEntityModel {
+}
+
+export function buildBaseEntityModel(params: BuildBaseEntityModelParams): BaseEntityModel {
+    const { node, kind, manifestPackage, displayPackage, summary, summaryExamples, signature, seeAlso, throws } =
+        params;
     const base: BaseEntityModel = {
         kind,
         name: node.name,
@@ -66,6 +61,7 @@ export function buildBaseEntityModel({
     if (node.packageVersion) base.version = node.packageVersion;
     if (node.sourceUrl) base.sourceUrl = node.sourceUrl;
     if (seeAlso?.length) base.seeAlso = seeAlso;
+    if (throws?.length) base.throws = throws;
 
     return base;
 }

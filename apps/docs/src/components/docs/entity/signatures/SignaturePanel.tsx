@@ -3,23 +3,20 @@ import type { DeprecationStatus } from '@/lib/docs/types';
 import { cn } from '../../../../lib/utils';
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';
-import DecoratedEntity from '../DecoratedEntity';
+import DeprecatedEntity from '../DeprecatedEntity';
 
-import type { MemberSignatureDetail } from '../types';
+import type { MemberSignatureDetail, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
 
 export const SIGNATURE_CONTAINER_CLASS =
     'code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
 
-export function SignaturePanel({
-    signature,
-    isActive,
-    parentDeprecationStatus
-}: {
+interface SignaturePanelProps extends WithParentDeprecationStatus {
     signature: MemberSignatureDetail;
     isActive: boolean;
-    parentDeprecationStatus?: DeprecationStatus | undefined;
-}): ReactElement {
+}
+
+export function SignaturePanel({ signature, isActive, parentDeprecationStatus }: SignaturePanelProps): ReactElement {
     const section = (
         <section
             id={signature.anchor}
@@ -37,6 +34,14 @@ export function SignaturePanel({
             </div>
             {signature.documentation.length ? <CommentParagraphs paragraphs={signature.documentation} /> : null}
             {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
+            {signature.throws?.length ? (
+                <div>
+                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                    </p>
+                    <CommentParagraphs paragraphs={signature.throws} />
+                </div>
+            ) : null}
         </section>
     );
 
@@ -62,11 +67,11 @@ export function SignaturePanel({
 
     if (shouldDecorate) {
         return (
-            <DecoratedEntity
+            <DeprecatedEntity
                 deprecationStatus={signature.deprecationStatus ?? { isDeprecated: true, deprecationMessage: undefined }}
             >
                 {section}
-            </DecoratedEntity>
+            </DeprecatedEntity>
         );
     }
 

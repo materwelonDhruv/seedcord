@@ -4,27 +4,31 @@ import type {
     CodeRepresentation,
     CommentExample,
     CommentParagraph,
-    DeprecationStatus,
-    FunctionSignatureModel
+    FunctionSignatureModel,
+    WithDeprecationStatus,
+    WithSeeAlso,
+    WithThrows
 } from '@/lib/docs/types';
 import { formatVersionLabel } from '@/lib/docs/version';
 import type { EntityTone, EntityToneStyle } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
 
-import { cn } from '@lib/utils';
 import Button from '@ui/Button';
 import { Icon } from '@ui/Icon';
 
+import { Pill } from '../ui/Pill';
+import SeeAlso from '../ui/SeeAlso';
+import { TagPills } from '../ui/TagPills';
 import { CommentExamples } from './comments/CommentExamples';
-import DecoratedEntity from './DecoratedEntity';
+import { CommentParagraphs } from './comments/CommentParagraphs';
+import DeprecatedEntity from './DeprecatedEntity';
 import FunctionSignaturesInline from './functions/FunctionSignaturesInline';
 import { SignatureBlock } from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
-import SeeAlso from '../ui/SeeAlso';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 
 function getHeaderExamples(
     active: FunctionSignatureModel | undefined,
@@ -34,7 +38,7 @@ function getHeaderExamples(
     return summaryExamples ?? [];
 }
 
-interface EntityHeaderProps {
+interface EntityHeaderProps extends WithThrows, WithSeeAlso, WithDeprecationStatus {
     badgeLabel: string;
     pkg: string;
     symbolName: string;
@@ -45,41 +49,8 @@ interface EntityHeaderProps {
     summaryExamples?: readonly CommentExample[];
     sourceUrl?: string | null;
     version?: string;
-    deprecationStatus?: DeprecationStatus;
     tags?: readonly string[];
-    seeAlso?: readonly { name: string; href?: string }[] | undefined;
 }
-
-const Pill = ({ className, children }: { className?: string; children: ReactNode }): ReactElement => (
-    <span
-        className={cn(
-            'inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-wide',
-            className
-        )}
-    >
-        {children}
-    </span>
-);
-
-const TagPills = ({ tags }: { tags: readonly string[] }): ReactElement | null => {
-    if (!tags.length) return null;
-
-    return (
-        <>
-            {tags.includes('internal') ? (
-                <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
-                    Internal
-                </Pill>
-            ) : null}
-
-            {tags.includes('decorator') ? (
-                <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
-                    Decorator
-                </Pill>
-            ) : null}
-        </>
-    );
-};
 
 const SourceButton = ({ href }: { href: string }): ReactElement => (
     <Button
@@ -175,6 +146,7 @@ function SignatureArea({
     );
 }
 
+// eslint-disable-next-line complexity
 export function EntityHeader({
     badgeLabel,
     pkg,
@@ -188,7 +160,8 @@ export function EntityHeader({
     tags = [],
     summaryExamples = [],
     functionSignatures,
-    seeAlso
+    seeAlso,
+    throws
 }: EntityHeaderProps): ReactElement {
     const toneConfig = getToneConfig(tone);
     const toneStyles = toneConfig.styles;
@@ -204,7 +177,7 @@ export function EntityHeader({
         headerSummary,
         'Review the generated signature below while we finish migrating full TypeDoc content into the reference UI.'
     );
-    const activeIsDeprecated = Boolean(active?.deprecationStatus.isDeprecated);
+    const activeIsDeprecated = Boolean(active?.deprecationStatus?.isDeprecated);
 
     const headerContent = (
         <>
@@ -220,18 +193,27 @@ export function EntityHeader({
                 sourceUrl={sourceUrl}
             />
 
+            {throws?.length ? (
+                <div>
+                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                    </p>
+                    <CommentParagraphs paragraphs={throws} />
+                </div>
+            ) : null}
+
             <SeeAlso entries={seeAlso} />
 
             {deprecationStatus.isDeprecated ? (
                 <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
             ) : activeIsDeprecated ? (
-                <DecoratedEntity
+                <DeprecatedEntity
                     deprecationStatus={
                         active?.deprecationStatus ?? { isDeprecated: true, deprecationMessage: undefined }
                     }
                 >
                     <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
-                </DecoratedEntity>
+                </DeprecatedEntity>
             ) : (
                 <SignatureArea active={active} fn={fn} signature={signature} headerExamples={headerExamples} />
             )}
@@ -240,11 +222,11 @@ export function EntityHeader({
 
     return (
         <header className="min-w-0">
-            <DecoratedEntity deprecationStatus={deprecationStatus}>
+            <DeprecatedEntity deprecationStatus={deprecationStatus}>
                 <div className="space-y-4 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-soft sm:p-5">
                     {headerContent}
                 </div>
-            </DecoratedEntity>
+            </DeprecatedEntity>
         </header>
     );
 }

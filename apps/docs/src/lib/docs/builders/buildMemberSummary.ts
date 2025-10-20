@@ -40,6 +40,7 @@ export async function buildMemberSummary(node: DocNode, context: FormatContext):
         description,
         sharedDocumentation,
         sharedExamples,
+        throws: nodeComment.throws ?? [],
         seeAlso: (nodeComment.seeAlso ?? []).map((s) => {
             const entry: SeeAlsoEntryWithoutTarget = { name: s.name };
             if (s.href?.length) entry.href = s.href;

@@ -45,6 +45,7 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
                 sourceUrl={model.sourceUrl ?? null}
                 tags={model.tags ?? []}
                 seeAlso={model.seeAlso}
+                throws={model.throws}
                 {...(model.version ? { version: model.version } : {})}
                 deprecationStatus={model.deprecationStatus}
                 {...(functionSignatures ? { functionSignatures } : {})}

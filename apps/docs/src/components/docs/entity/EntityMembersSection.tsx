@@ -13,16 +13,14 @@ import { renderMemberOverview } from './utils/renderers/renderMemberOverview';
 import { shouldIncludeMember } from './utils/shouldIncludeMember';
 import { useMemberNavigation } from './utils/useMemberNavigation';
 
-import type { EntityMemberSummary } from './types';
-import type { DeprecationStatus } from '@lib/docs/types';
+import type { EntityMemberSummary, WithParentDeprecationStatus } from './types';
 
-export interface EntityMembersSectionProps {
+export interface EntityMembersSectionProps extends WithParentDeprecationStatus {
     properties: readonly EntityMemberSummary[];
     methods: readonly EntityMemberSummary[];
     typeParameters?: readonly EntityMemberSummary[];
     constructors?: readonly EntityMemberSummary[];
     showAccessControls?: boolean;
-    parentDeprecationStatus?: DeprecationStatus | undefined;
 }
 
 export default function EntityMembersSection({

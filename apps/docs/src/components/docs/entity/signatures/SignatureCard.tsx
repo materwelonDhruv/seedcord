@@ -74,6 +74,14 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                 </div>
             ) : null}
             {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
+            {signature.throws?.length ? (
+                <div>
+                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                    </p>
+                    <CommentParagraphs paragraphs={signature.throws} />
+                </div>
+            ) : null}
         </article>
     );
 }

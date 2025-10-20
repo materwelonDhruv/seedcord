@@ -28,7 +28,8 @@ export async function buildEntityModel(engine: DocsEngine, node: DocNode): Promi
         summary: formattedSummary.paragraphs,
         summaryExamples: formattedSummary.examples,
         signature,
-        seeAlso: formattedSummary.seeAlso
+        seeAlso: formattedSummary.seeAlso,
+        throws: formattedSummary.throws
     });
 
     switch (kind) {

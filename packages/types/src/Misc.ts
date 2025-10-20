@@ -132,3 +132,13 @@ export type UnionToTuple<UnionType, TupleArray extends unknown[] = []> = [UnionT
  * @typeParam ValueType - Value for every key in the record.
  */
 export type ReadonlyRecord<KeyType extends PropertyKey, ValueType> = Readonly<Record<KeyType, ValueType>>;
+
+/**
+ * Renames a key in an object type
+ * @typeParam T - The object type containing the key to rename
+ * @typeParam From - The key to rename
+ * @typeParam To - The new name for the key
+ */
+export type RenameKey<BaseObj, FromKey extends PropertyKey, ToKey extends PropertyKey> = {
+    [K in keyof BaseObj as K extends FromKey ? ToKey : K]: BaseObj[K];
+};

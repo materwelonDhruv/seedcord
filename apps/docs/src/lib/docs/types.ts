@@ -47,11 +47,6 @@ export interface SeeAlsoEntry {
 }
 
 export type SeeAlsoEntryWithoutTarget = TypedOmit<SeeAlsoEntry, 'target'>;
-export interface FormattedComment {
-    paragraphs: readonly CommentParagraph[];
-    examples: readonly CommentExample[];
-    seeAlso?: readonly SeeAlsoEntry[];
-}
 
 export type DeprecationStatus =
     | {
@@ -75,7 +70,27 @@ export type WithDocs<
     ExamplesKey extends string = 'examples'
 > = WithSummary<SummaryKey> & WithExamples<ExamplesKey>;
 
-export type WithDeprecationStatus = ReadonlyRecord<'deprecationStatus', DeprecationStatus>;
+export type WithDeprecationStatus<IsRequired = false> = IsRequired extends true
+    ? Record<'deprecationStatus', DeprecationStatus>
+    : Partial<Record<'deprecationStatus', DeprecationStatus | undefined>>;
+
+export type WithThrows<IsRequired = false> = IsRequired extends true
+    ? Record<'throws', readonly CommentParagraph[]>
+    : Partial<Record<'throws', readonly CommentParagraph[] | undefined>>;
+
+export type WithSeeAlso<IsRequired = false, HasTarget = false> = IsRequired extends true
+    ? Record<'seeAlso', HasTarget extends true ? readonly SeeAlsoEntry[] : readonly SeeAlsoEntryWithoutTarget[]>
+    : Partial<
+          Record<
+              'seeAlso',
+              HasTarget extends true ? readonly SeeAlsoEntry[] : readonly SeeAlsoEntryWithoutTarget[] | undefined
+          >
+      >;
+
+export interface FormattedComment extends WithThrows, WithSeeAlso {
+    paragraphs: readonly CommentParagraph[];
+    examples: readonly CommentExample[];
+}
 
 export interface NavigationEntityItem {
     id: string;
@@ -121,7 +136,9 @@ export interface BaseEntityModel
     extends WithCode<'signature'>,
         WithDocs<'summary', 'summaryExamples'>,
         WithSourceUrl,
-        WithDeprecationStatus {
+        WithDeprecationStatus,
+        WithThrows,
+        WithSeeAlso {
     kind: EntityKind;
     name: string;
     slug: string;
@@ -130,7 +147,6 @@ export interface BaseEntityModel
     displayPackage: string;
     tags?: readonly string[];
     version?: string;
-    seeAlso?: readonly SeeAlsoEntry[];
 }
 
 export interface ClassLikeEntityModel extends BaseEntityModel {
@@ -181,7 +197,7 @@ export interface FunctionTypeParameterModel {
     code?: CodeRepresentation | undefined;
 }
 
-export interface FunctionSignatureModel extends WithCode, WithDocs, WithSourceUrl, WithDeprecationStatus {
+export interface FunctionSignatureModel extends WithCode, WithDocs, WithSourceUrl, WithDeprecationStatus, WithThrows {
     id: string;
     overloadIndex: number;
     parameters: FunctionSignatureParameterModel[];

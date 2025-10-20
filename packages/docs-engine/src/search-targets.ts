@@ -65,6 +65,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'SelectMenuRoute' },
     { query: 'AutocompleteRoute' },
     { query: 'checkPermissions' },
+    { query: 'hasPermsToAssign' },
 
     // Variables
     { query: 'BuilderTypes' },

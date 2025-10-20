@@ -4,7 +4,7 @@ import { CopyAnchorButton } from '@ui/CopyAnchorButton';
 import { Icon } from '@ui/Icon';
 
 import { CommentParagraphs } from '../comments/CommentParagraphs';
-import DecoratedEntity from '../DecoratedEntity';
+import DeprecatedEntity from '../DeprecatedEntity';
 
 import type { DeprecationStatus, EnumMemberModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
@@ -83,11 +83,11 @@ export function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactEl
     const anchorId = `enum-member-${member.id}`;
     const hasSummary = member.summary.length > 0;
 
-    const deprecationStatus: DeprecationStatus = member.deprecationStatus;
+    const deprecationStatus: DeprecationStatus | undefined = member.deprecationStatus;
 
     return (
         <article id={anchorId} className="group/name relative min-w-0">
-            <DecoratedEntity deprecationStatus={deprecationStatus}>
+            <DeprecatedEntity deprecationStatus={deprecationStatus}>
                 <div className="group/name relative min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="min-w-0 flex-1 space-y-3">
@@ -110,7 +110,7 @@ export function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactEl
                     </div>
                     {hasSummary ? <CommentParagraphs paragraphs={member.summary} className="mt-2 space-y-0" /> : null}
                 </div>
-            </DecoratedEntity>
+            </DeprecatedEntity>
         </article>
     );
 }

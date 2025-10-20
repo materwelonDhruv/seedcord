@@ -7,19 +7,16 @@ import { SignaturePanel } from '../signatures/SignaturePanel';
 import SignatureSelector from '../signatures/SignatureSelector';
 import { useActiveSignature } from '../utils/useActiveSignature';
 
-import type { EntityMemberSummary } from '../types';
-import type { DeprecationStatus } from '@lib/docs/types';
+import type { EntityMemberSummary, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
 
 export type SignatureSelection = [string, (id: string) => void];
 
-export function MemberCardBody({
-    member,
-    parentDeprecationStatus
-}: {
+interface MemberCardBodyProps extends WithParentDeprecationStatus {
     member: EntityMemberSummary;
-    parentDeprecationStatus?: DeprecationStatus | undefined;
-}): ReactElement {
+}
+
+export function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps): ReactElement {
     const [activeSignatureId, setActiveSignatureId] = useActiveSignature(member);
     const hasSharedDocumentation = member.sharedDocumentation.length > 0;
     const hasSharedExamples = member.sharedExamples.length > 0;
@@ -54,6 +51,14 @@ export function MemberCardBody({
                         <span>{member.inheritedFrom.name}</span>
                     )}
                 </p>
+            ) : null}
+            {member.throws?.length ? (
+                <div>
+                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                    </p>
+                    <CommentParagraphs paragraphs={member.throws} />
+                </div>
             ) : null}
             <SeeAlso entries={member.seeAlso} />
         </div>

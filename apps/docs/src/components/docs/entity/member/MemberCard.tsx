@@ -4,17 +4,16 @@ import { cn } from '@lib/utils';
 
 import { MemberCardBody } from './MemberCardBody';
 import { MemberCardHeader } from './MemberCardHeader';
-import DecoratedEntity from '../DecoratedEntity';
+import DeprecatedEntity from '../DeprecatedEntity';
 import { buildTagList } from '../utils/buildTagList';
 
-import type { EntityMemberSummary, MemberPrefix } from '../types';
+import type { EntityMemberSummary, MemberPrefix, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
 
-interface MemberCardProps {
+interface MemberCardProps extends WithParentDeprecationStatus {
     member: EntityMemberSummary;
     prefix: MemberPrefix;
     isLast: boolean;
-    parentDeprecationStatus?: DeprecationStatus | undefined;
 }
 export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: MemberCardProps): ReactElement {
     const tags = buildTagList(member);
@@ -50,10 +49,10 @@ export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: 
                 isLast ? 'pb-4' : 'pb-6'
             )}
         >
-            <DecoratedEntity deprecationStatus={deprecationStatus}>
+            <DeprecatedEntity deprecationStatus={deprecationStatus}>
                 <MemberCardHeader member={member} anchorId={anchorId} tags={tags} prefix={prefix} />
                 <MemberCardBody member={member} parentDeprecationStatus={deprecationStatus} />
-            </DecoratedEntity>
+            </DeprecatedEntity>
         </article>
     );
 }

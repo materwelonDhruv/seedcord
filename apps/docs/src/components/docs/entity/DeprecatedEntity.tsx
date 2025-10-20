@@ -1,20 +1,21 @@
 import { AlertTriangle } from 'lucide-react';
 
-import type { DeprecationStatus } from '@/lib/docs/types';
+import type { WithDeprecationStatus } from '@/lib/docs/types';
 
 import { Icon } from '@ui/Icon';
 
 import { CommentParagraphs } from './comments/CommentParagraphs';
 
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 
-export default function DecoratedEntity({
+interface DeprecatedEntityProps extends WithDeprecationStatus {
+    children: ReactNode;
+}
+
+export default function DeprecatedEntity({
     deprecationStatus = { isDeprecated: false },
     children
-}: {
-    deprecationStatus?: DeprecationStatus;
-    children: ReactNode;
-}): ReactElement {
+}: DeprecatedEntityProps): ReactElement {
     if (!deprecationStatus.isDeprecated) return <>{children}</>;
 
     return (

@@ -6,24 +6,24 @@ import { useState } from 'react';
 import { cn } from '@lib/utils';
 import { Icon } from '@ui/Icon';
 
-import { MEMBER_TITLES, MEMBER_HEADER_ICONS } from '../constants';
+import { MEMBER_HEADER_ICONS, MEMBER_TITLES } from '../constants';
 import { MemberCard } from './MemberCard';
 
-import type { EntityMemberSummary, MemberPrefix } from '../types';
-import type { DeprecationStatus } from '@lib/docs/types';
+import type { EntityMemberSummary, MemberPrefix, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
+
+interface MemberDetailGroupProps extends WithParentDeprecationStatus {
+    items: readonly EntityMemberSummary[];
+    prefix: MemberPrefix;
+    title?: string | undefined;
+}
 
 export function MemberDetailGroup({
     items,
     prefix,
     title: titleProp,
     parentDeprecationStatus
-}: {
-    items: readonly EntityMemberSummary[];
-    prefix: MemberPrefix;
-    title?: string | undefined;
-    parentDeprecationStatus?: DeprecationStatus | undefined;
-}): ReactElement | null {
+}: MemberDetailGroupProps): ReactElement | null {
     if (!items.length) {
         return null;
     }
