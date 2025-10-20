@@ -12,11 +12,11 @@ export default function Home(): ReactElement {
                 <section className="flex flex-wrap items-start justify-start gap-12 text-left lg:justify-between">
                     <div className="flex min-w-0 max-w-xl flex-1 flex-col items-start gap-6">
                         <h1 className="text-4xl font-black tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl">
-                            A modern developer portal for the Seedcord ecosystem.
+                            The only Discord bot framework you&apos;ll ever need.
                         </h1>
                         <p className="text-lg leading-8 text-subtle">
                             Seedcord is an opinionated Discord bot framework built on top of Discord.js. You handle the
-                            logic, we orchestrate the rest.
+                            logic, it handles the rest.
                         </p>
                         <div className="flex flex-row flex-wrap items-center gap-3">
                             <Link
@@ -36,12 +36,6 @@ export default function Home(): ReactElement {
                         </div>
                     </div>
                     <div className="relative hidden items-center justify-center lg:flex lg:flex-1 lg:max-w-md">
-                        <div className="pointer-events-none absolute inset-0 -z-10 flex items-center justify-center">
-                            <div
-                                className="h-[220px] w-[220px] max-w-[60vw] rounded-[32px] bg-[radial-gradient(circle_at_center,color-mix(in_srgb,var(--text)_12%,var(--surface)_88%)_0%,transparent_70%)] opacity-55 blur-3xl transition-opacity dark:opacity-70"
-                                aria-hidden
-                            />
-                        </div>
                         <div className="relative flex aspect-square w-32 items-center justify-center overflow-hidden rounded-3xl border border-border/80 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] p-4 shadow-[0_28px_60px_-36px_color-mix(in_srgb,var(--text)_28%,transparent)] sm:w-40 md:w-52 lg:w-64">
                             <Image
                                 src="/logo.svg"
