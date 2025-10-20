@@ -34,7 +34,7 @@ export async function buildTypeParameterSummaries(
             const examples: CommentExample[] = [];
 
             const docParam = docTypeParams ? docTypeParams.find((d) => d.name === param.name) : undefined;
-            let description: CommentParagraph = createPlainParagraph('Type parameter.');
+            let description: CommentParagraph = createPlainParagraph('');
             if (docParam?.comment) {
                 const formatted = await formatCommentRich(docParam.comment, context);
                 if (formatted.paragraphs.length) {
