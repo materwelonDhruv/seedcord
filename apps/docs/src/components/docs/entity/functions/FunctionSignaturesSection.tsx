@@ -12,10 +12,10 @@ interface FunctionSignaturesSectionProps {
 }
 
 export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSectionProps): ReactElement | null {
-    if (!signatures.length) return null;
-
     const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
     const [activeSignatureId, setActiveSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
+
+    if (!signatures.length) return null;
 
     const activeSignature = (signatures.find((s) => s.id === activeSignatureId) ??
         signatures[0]) as FunctionSignatureModel;

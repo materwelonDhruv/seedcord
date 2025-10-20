@@ -9,37 +9,47 @@ export function useActiveSignature(member: EntityMemberSummary): SignatureSelect
     const [activeSignatureId, setActiveSignatureId] = useState(() => member.signatures[0]?.id ?? '');
 
     useEffect(() => {
-        const [firstSignature] = member.signatures;
-        if (!firstSignature) {
-            return;
-        }
-
-        setActiveSignatureId((current) => {
-            if (current && member.signatures.some((signature) => signature.id === current)) {
-                return current;
+        const first = member.signatures[0];
+        if (!first) return;
+        if (!activeSignatureId || !member.signatures.some((s) => s.id === activeSignatureId)) {
+            let t: number | undefined;
+            if (typeof window !== 'undefined') {
+                t = window.setTimeout(() => setActiveSignatureId(first.id), 0);
             }
-            return firstSignature.id;
-        });
-    }, [member.signatures]);
+
+            return () => {
+                if (typeof window !== 'undefined' && t !== undefined) window.clearTimeout(t);
+            };
+        }
+        return undefined;
+    }, [member.signatures, activeSignatureId]);
 
     useEffect(() => {
-        if (typeof window === 'undefined') {
-            return;
-        }
+        if (typeof window === 'undefined') return undefined;
 
-        const hash = window.location.hash.slice(1);
-        if (!hash) {
-            return;
-        }
+        const init = (): void => {
+            const hash = window.location.hash.slice(1);
+            if (!hash) return;
+            const matching = member.signatures.find((s) => s.id === hash || s.anchor === hash);
+            if (matching && matching.id !== activeSignatureId) {
+                setActiveSignatureId(matching.id);
+            }
+        };
 
-        const matchingSignature = member.signatures.find(
-            (signature) => signature.anchor === hash || signature.id === hash
-        );
+        const initTimeout = window.setTimeout(init, 0);
+        const onHash = (): void => {
+            const hash = window.location.hash.slice(1);
+            if (!hash) return;
+            const matching = member.signatures.find((s) => s.id === hash || s.anchor === hash);
+            if (matching) setActiveSignatureId(matching.id);
+        };
 
-        if (matchingSignature) {
-            setActiveSignatureId(matchingSignature.id);
-        }
-    }, [member.signatures]);
+        window.addEventListener('hashchange', onHash);
+        return () => {
+            window.clearTimeout(initTimeout);
+            window.removeEventListener('hashchange', onHash);
+        };
+    }, [member.signatures, activeSignatureId]);
 
     return [activeSignatureId, setActiveSignatureId];
 }

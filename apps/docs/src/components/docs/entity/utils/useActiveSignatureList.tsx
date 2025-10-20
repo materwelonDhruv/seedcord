@@ -10,43 +10,33 @@ export interface ActiveSignatureListProps {
 export function useActiveSignatureList(
     signatures: ActiveSignatureListProps[]
 ): readonly [string, (id: string) => void] {
-    const [activeSignatureId, setActiveSignatureId] = useState(() => signatures[0]?.id ?? '');
+    const [activeId, setActiveId] = useState<string>(() => signatures[0]?.id ?? '');
+
+    const effectiveActiveId = signatures.some((s) => s.id === activeId) ? activeId : (signatures[0]?.id ?? '');
 
     useEffect(() => {
-        const [firstSignature] = signatures;
-        if (!firstSignature) return;
+        if (typeof window === 'undefined') return undefined;
 
-        setActiveSignatureId((current) => {
-            if (current && signatures.some((s) => s.id === current)) return current;
-            return firstSignature.id;
-        });
-    }, [signatures]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-        const hash = window.location.hash.slice(1);
-        if (!hash) return;
-
-        const matching = signatures.find((s) => s.id === hash || s.anchor === hash);
-        if (matching) setActiveSignatureId(matching.id);
-    }, [signatures]);
-
-    useEffect(() => {
-        if (typeof window === 'undefined') return;
-
-        const onHashChange = (): void => {
+        const handleHash = (): void => {
             const hash = window.location.hash.slice(1);
             if (!hash) return;
             const matching = signatures.find((s) => s.id === hash || s.anchor === hash);
-            if (matching) setActiveSignatureId(matching.id);
+            if (matching) {
+                setActiveId(matching.id);
+            }
         };
 
-        window.addEventListener('hashchange', onHashChange);
-        return () => window.removeEventListener('hashchange', onHashChange);
+        const initTimeout = window.setTimeout(handleHash, 0);
+        window.addEventListener('hashchange', handleHash);
+        return () => {
+            window.clearTimeout(initTimeout);
+            window.removeEventListener('hashchange', handleHash);
+        };
     }, [signatures]);
 
     const setActive = (id: string): void => {
-        setActiveSignatureId(id);
+        if (id === activeId) return;
+        setActiveId(id);
         if (typeof window !== 'undefined') {
             try {
                 window.location.hash = id;
@@ -56,5 +46,5 @@ export function useActiveSignatureList(
         }
     };
 
-    return [activeSignatureId, setActive] as const;
+    return [effectiveActiveId, setActive] as const;
 }

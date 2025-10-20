@@ -24,13 +24,13 @@ export function MemberDetailGroup({
     title: titleProp,
     parentDeprecationStatus
 }: MemberDetailGroupProps): ReactElement | null {
-    if (!items.length) {
-        return null;
-    }
-
     const title = titleProp ?? MEMBER_TITLES[prefix];
     const panelId = `${prefix}-member-panel`;
     const [expanded, setExpanded] = useState(true);
+
+    if (!items.length) {
+        return null;
+    }
 
     return (
         <section className="min-w-0 space-y-4" data-member-group={prefix}>

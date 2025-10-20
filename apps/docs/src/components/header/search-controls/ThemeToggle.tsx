@@ -1,6 +1,6 @@
 import { MonitorSmartphone, Sun, MoonStar } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { log } from '@lib/logger';
 import Button from '@ui/Button';
@@ -10,11 +10,8 @@ import type { ReactElement } from 'react';
 
 export function ThemeToggle(): ReactElement {
     const { resolvedTheme, setTheme } = useTheme();
-    const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        setMounted(true);
-    }, []);
+    const [mounted] = useState(() => typeof window !== 'undefined');
 
     const handleToggle = (): void => {
         const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';

@@ -1,3 +1,5 @@
+'use client';
+
 import type { FunctionSignatureModel } from '@/lib/docs/types';
 
 import SignatureSelector from '../signatures/SignatureSelector';
@@ -11,10 +13,9 @@ export default function FunctionSignaturesInline({
 }: {
     signatures: readonly FunctionSignatureModel[];
 }): ReactElement | null {
-    if (!signatures.length) return null;
-
     const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
     const [activeSignatureId, setActiveSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
+    if (!signatures.length) return null;
     return (
         <div>
             <SignatureSelector

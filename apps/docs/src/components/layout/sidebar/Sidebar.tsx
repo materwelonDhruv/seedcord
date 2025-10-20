@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMemo, useState, useEffect, useRef } from 'react';
+import { useMemo, useRef, useEffect } from 'react';
 
 import { cn } from '@lib/utils';
 import useUIStore from '@store/ui';
@@ -71,17 +71,14 @@ export function Sidebar({
     const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
 
     const restSegments = useMemo(() => resolveRestSegments(pathname), [pathname]);
-    const [localPackageId, setLocalPackageId] = useState<string>(activePackageId);
-    const [localVersionId, setLocalVersionId] = useState<string>(activeVersionId);
+    const localPackageId = activePackageId;
+    const localVersionId = activeVersionId;
 
     const { scrollRef, collapsedStorageKey, composedHandleScroll } = useSidebarPersistence(
         localPackageId,
         localVersionId,
         handleScroll
     );
-
-    useEffect(() => setLocalPackageId(activePackageId), [activePackageId]);
-    useEffect(() => setLocalVersionId(activeVersionId), [activeVersionId]);
 
     const { activePackage, activeVersion, packageOptions, versionOptions } = useSidebarSelection(
         catalog,
@@ -105,8 +102,6 @@ export function Sidebar({
         } catch {
             // ignore
         }
-
-        setLocalPackageId(value);
         handlePackageChange(value);
     };
 
@@ -116,8 +111,6 @@ export function Sidebar({
         } catch {
             // ignore
         }
-
-        setLocalVersionId(value);
         handleVersionChange(value);
     };
 

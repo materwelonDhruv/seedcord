@@ -78,8 +78,6 @@ function buildParamMember(p: FunctionSignatureParameterModel, index: number): En
 
 export default function FunctionBody({ model }: { model: FunctionEntityModel }): ReactElement | null {
     const signatures = model.signatures;
-    if (!signatures.length) return null;
-
     const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
     const [activeSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
 
@@ -87,6 +85,8 @@ export default function FunctionBody({ model }: { model: FunctionEntityModel }):
         () => signatures.find((s) => s.id === activeSignatureId) ?? signatures[0],
         [signatures, activeSignatureId]
     ) as FunctionSignatureModel;
+
+    if (!signatures.length) return null;
 
     const rawTypeParams = activeSignature.typeParameters ?? [];
     const typeParameterItems: EntityMemberSummary[] = rawTypeParams.map((tp, idx) => buildTypeParamMember(tp, idx));

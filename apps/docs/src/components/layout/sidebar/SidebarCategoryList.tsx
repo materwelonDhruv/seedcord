@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import { getToneConfig } from '@lib/entityMetadata';
 import { cn } from '@lib/utils';
@@ -67,21 +67,19 @@ function SidebarCategory({
 }
 
 export function SidebarCategoryList({ categories, activeHref, storageKey }: SidebarCategoryListProps): ReactElement {
-    const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
+    const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>(() => {
+        if (!storageKey) return {};
 
-    useEffect(() => {
-        if (!storageKey) return;
         try {
-            const ls = window.localStorage;
-            const saved = ls.getItem(storageKey);
-            if (saved) {
-                const parsed = JSON.parse(saved) as Record<string, boolean>;
-                setCollapsedCategories(parsed);
-            }
+            if (typeof window === 'undefined') return {};
+            const saved = window.localStorage.getItem(storageKey);
+            if (saved) return JSON.parse(saved) as Record<string, boolean>;
         } catch {
-            // ignore
+            // ignore and fall through to empty
         }
-    }, [storageKey]);
+
+        return {};
+    });
 
     const toggleCategory = (key: string): void => {
         setCollapsedCategories((prev) => {

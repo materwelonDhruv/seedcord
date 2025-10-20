@@ -35,8 +35,8 @@ export function useCommandPaletteSearch({ query, open }: UseCommandPaletteSearch
         const trimmed = query.trim();
 
         if (!open || trimmed.length < MIN_SEARCH_QUERY_LENGTH) {
-            setState(createDefaultState());
-            return;
+            const resetTimeout = window.setTimeout(() => setState(createDefaultState()), 0);
+            return () => window.clearTimeout(resetTimeout);
         }
 
         let cancelled = false;

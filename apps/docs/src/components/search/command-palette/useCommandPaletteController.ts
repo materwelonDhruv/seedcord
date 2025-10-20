@@ -77,24 +77,21 @@ export function useCommandPaletteController(): CommandPaletteController {
     const pathname = usePathname();
     const inputRef = useRef<HTMLInputElement>(null);
     const [searchValue, setSearchValue] = useState('');
-    const [mounted, setMounted] = useState(false);
+    const [mounted] = useState(() => typeof window !== 'undefined');
 
     useEffect(() => {
-        setMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!mounted) {
-            return undefined;
-        }
+        if (!mounted) return undefined;
 
         if (open) {
-            setSearchValue('');
-            const timeout = window.setTimeout(() => {
+            const resetTimeout = window.setTimeout(() => setSearchValue(''), 0);
+            const focusTimeout = window.setTimeout(() => {
                 inputRef.current?.focus();
             }, FOCUS_DELAY_MS);
             log('Command palette opened', { fromPath: pathname });
-            return () => window.clearTimeout(timeout);
+            return () => {
+                window.clearTimeout(resetTimeout);
+                window.clearTimeout(focusTimeout);
+            };
         }
 
         log('Command palette closed');
