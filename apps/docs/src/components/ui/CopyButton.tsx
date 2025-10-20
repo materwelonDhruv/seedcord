@@ -49,8 +49,8 @@ export function CopyButton({
                 void handleCopy();
             }}
             className={cn(
-                'z-10 h-9 w-9 rounded-full border border-transparent bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] text-[var(--text)] transition hover:border-[color-mix(in_srgb,var(--accent-a)_45%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_92%,var(--accent-a)_8%)]',
-                copied ? 'text-[var(--accent-a)]' : null,
+                'z-10 h-9 w-9 rounded-full border border-transparent bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] text-(--text) transition hover:border-[color-mix(in_srgb,var(--accent-a)_45%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_92%,var(--accent-a)_8%)]',
+                copied ? 'text-(--accent-a)' : null,
                 className
             )}
         >

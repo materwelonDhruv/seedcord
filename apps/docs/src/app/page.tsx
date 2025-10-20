@@ -11,7 +11,7 @@ export default function Home(): ReactElement {
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 md:px-6 lg:py-24">
                 <section className="flex flex-wrap items-start justify-start gap-12 text-left lg:justify-between">
                     <div className="flex min-w-0 max-w-xl flex-1 flex-col items-start gap-6">
-                        <h1 className="text-4xl font-black tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl">
+                        <h1 className="text-4xl font-black tracking-tight text-(--text) sm:text-5xl lg:text-6xl">
                             The only Discord bot framework you&apos;ll ever need.
                         </h1>
                         <p className="text-lg leading-8 text-subtle">
@@ -21,7 +21,7 @@ export default function Home(): ReactElement {
                         <div className="flex flex-row flex-wrap items-center gap-3">
                             <Link
                                 href="/docs"
-                                className="inline-flex items-center justify-center rounded-2xl bg-[var(--accent-a)] px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-a)_88%,black)] focus-visible:outline-2 focus-visible:outline-[var(--accent-a)] focus-visible:outline-offset-2"
+                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-a) px-6 py-3 text-sm font-semibold text-white shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-a)_88%,black)] focus-visible:outline-2 focus-visible:outline-(--accent-a) focus-visible:outline-offset-2"
                             >
                                 View documentation
                             </Link>
@@ -29,7 +29,7 @@ export default function Home(): ReactElement {
                                 href={GUIDE_URL}
                                 target="_blank"
                                 rel="noreferrer"
-                                className="inline-flex items-center justify-center rounded-2xl bg-[var(--accent-b)] px-6 py-3 text-sm font-semibold text-black shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-b)_92%,#000_8%)] focus-visible:outline-2 focus-visible:outline-[var(--accent-b)] focus-visible:outline-offset-2"
+                                className="inline-flex items-center justify-center rounded-2xl bg-(--accent-b) px-6 py-3 text-sm font-semibold text-black shadow-soft transition hover:bg-[color-mix(in_srgb,var(--accent-b)_92%,#000_8%)] focus-visible:outline-2 focus-visible:outline-(--accent-b) focus-visible:outline-offset-2"
                             >
                                 Read the guide
                             </Link>

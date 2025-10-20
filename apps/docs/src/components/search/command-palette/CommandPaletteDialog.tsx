@@ -108,7 +108,7 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                 />
                 <Dialog.Content
                     data-command-content
-                    className="fixed inset-0 z-[70] flex items-start justify-center px-4 pt-20 pb-8 sm:px-6 sm:pt-24 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16"
+                    className="fixed inset-0 z-70 flex items-start justify-center px-4 pt-20 pb-8 sm:px-6 sm:pt-24 md:pt-28 md:pb-12 lg:pt-32 lg:pb-16"
                     onInteractOutside={handleClose}
                     onPointerDown={(event) => {
                         const target = event.target as Node | null;
@@ -120,7 +120,7 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
                 >
                     <Command
                         ref={commandRef}
-                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-[var(--text)] shadow-soft transition sm:max-w-2xl md:max-w-3xl"
+                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >

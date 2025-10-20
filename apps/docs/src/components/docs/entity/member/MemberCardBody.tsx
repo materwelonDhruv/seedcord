@@ -40,7 +40,7 @@ export function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBo
             {hasSharedExamples ? <CommentExamples examples={member.sharedExamples} /> : null}
             {member.inheritedFrom ? (
                 <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                    <span className="font-semibold text-[var(--text)]">Inherited from:</span>
+                    <span className="font-semibold text-(--text)">Inherited from:</span>
                     {typeof member.inheritedFrom === 'string' ? (
                         <span>{member.inheritedFrom}</span>
                     ) : member.inheritedFrom.href ? (
@@ -55,7 +55,7 @@ export function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBo
             {member.throws?.length ? (
                 <div>
                     <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                        <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={member.throws} />
                 </div>

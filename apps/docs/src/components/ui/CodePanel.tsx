@@ -23,7 +23,7 @@ export function CodePanel({ representation, title, description, className }: Cod
         >
             {title ? (
                 <header className="space-y-1">
-                    <h2 className="text-lg font-semibold text-[var(--text)]">{title}</h2>
+                    <h2 className="text-lg font-semibold text-(--text)">{title}</h2>
                     {description ? <p className="text-xs text-subtle">{description}</p> : null}
                 </header>
             ) : description ? (

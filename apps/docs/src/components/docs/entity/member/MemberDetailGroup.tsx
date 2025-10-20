@@ -44,7 +44,7 @@ export function MemberDetailGroup({
                     aria-expanded={expanded}
                     aria-controls={panelId}
                 >
-                    <span className="flex items-center gap-2 text-lg font-semibold text-[var(--text)]">
+                    <span className="flex items-center gap-2 text-lg font-semibold text-(--text)">
                         <Icon icon={MEMBER_HEADER_ICONS[prefix]} size={18} aria-hidden />
                         {title}
                     </span>

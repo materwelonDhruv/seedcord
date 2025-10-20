@@ -1,13 +1,4 @@
-[x] 32. NOTE: I've already done quite a bit of work on this, but it's not finished yet. you gotta check files to see what I've done so far and finish it up. Deprecation UI overhaul:
-I currently have deprecated tags set up. But I want to do something different. IF an entity is deprecated, (entity can be anything btw. function, param, type param, class, interface, property, method, enum, enum member, etc) that entity's card's border should become red (save global css for this deprecated deep red (and its light mode version)). If the entity doesn't have a card border, like entity members in some pages, you can make it use a border because we need it to be obvious. Anyway, so, border. In the border, I want the top left of the border itself to have a gap. And inside that gap, we'll have the word "deprecated". Now, ofc, deprecations will have comments themselves. So, in the deprecated entity member's card that now has a red border, before any content inside it, you'll add the deprecated comment above and before the comment, use that alert icon from lucide.
-
-[ ] 33. Ensure TypeDoc-style {@link ...} tags inside comments resolve to working hyperlinks using the existing comment formatting/resolver pipeline (the files under comments). Links should be inline and adopt the same underline treatment we already apply for code-rendered links (Shiki style). Make sure to use our existing linking functions as they handle external and internal linking. And this is a comment, so do your research to integrate.
-
-[ ] 34. If any entity is marked as `@internal`, it should have a tag for that in the main signature card. (or if its a method or prop, in the member card). Same for `@decorator` in the main signature card. We need a good way to show tags in the main card because that's reserved for important tags only.
-
-[ ] 35. Correctly parse markdown in tsdoc comments. Right now it shows the raw markdown.
-
-[ ] 36. Get rid of all the placeholder texts like "Additional TypeDoc metadata will appear here once the symbol is sourced from generated documentation artifacts." for example. There are many others like that. If there is no content to show, just don’t show anything instead of showing a placeholder.
+[ ] 42. Render @throws comment similar to Inherits from and See also sections. This is mostly done because we have a bunch of code and the types etc to handle it, but I don't see it rendered on the website. Also, please check kind-function-haspermstoassign.txt. You can see that it has an array for throws. Use the type from docs-engine package that's exported and access this array instead of looking for `@throws` tags.
 
 [ ] 37. In type param rendered comments on entity pages, the type param comment duplicates itself above and below the signature.
 
@@ -15,8 +6,20 @@ I currently have deprecated tags set up. But I want to do something different. I
 
 [ ] 39. Keep chevron usage across the project consistent. Pointing right means closed, pointing down means opened. In some places it's down as closed and up as opened.
 
-[ ] 40. CopyAnchorTag isn't good on mobile screens because it's too far left and basically hangs off the screen. Instead, only for mobile, show it on the right side of the screen next to the heading text.
+[ ] 40. CopyAnchorTag isn't good on mobile screens because it's too far left and basically hangs off the screen. Instead, ONLY on mobile, show it on the right side of the screen in the same row as the heading text.
 
-[ ] 41. Custom scroll bar that matches the seedcord theme for dark and light. Is sleek. And has transition when it appears/disappears.
+[ ] 41. Custom scroll bar that matches the seedcord theme for dark and light. Is sleek. And has transition when it appears/disappears. This should also be used in code blocks when overflowing for horizontal scroll.
 
-[ ] 42. Render @throws comment.
+[ ] 43. local storage is saving the selectedPackage. But it's not being used on reload. On reload, it goes back to default package.
+
+[ ] 44. In tsdoc comments, if there are bullet points or numbered lists, (-, •, 1., 2., etc.), render them as actual lists in the rendered comments. Not just plain text with those characters.
+
+[ ] 45. If a text is specifically a string (inside "" or '') in the signature of any entity, don't attempt to hyperlink it. Because right now for example, `type LifecycleAction = "start" | "complete" | "error"`, the "error" is hyperlinked to the mdn Error page.
+
+[ ] 46. Something about tooltips in the sidebar feels off. Also, tooltips in general across the app. Lets use the tooltip component from that ui library we're using, but make our own custom component using it so we have consistent styling. I don't like how the tooltips are transparent background. So first thing is fixing that.
+
+[ ] 47. Browser navigation popup on mobile doesn't close when I click an option in it. Also, when scrolling in this popup on mobile, the scroll doesn't keep scrolling when I lift my finger. It stops immediately. It should have some momentum.
+
+[ ] 48. Rendering for virtual and remarks.
+
+[ ] 49. Render markdown in comments.

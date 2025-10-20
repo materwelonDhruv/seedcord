@@ -25,12 +25,7 @@ export function Icon({ icon: iconComponent, size = 18, title, className }: IconP
     }
 
     return (
-        <IconComponent
-            aria-hidden
-            focusable="false"
-            className={cn('flex-shrink-0 text-current', className)}
-            size={size}
-        />
+        <IconComponent aria-hidden focusable="false" className={cn('shrink-0 text-current', className)} size={size} />
     );
 }
 

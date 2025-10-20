@@ -1,0 +1,51 @@
+/* Centralized design tokens */
+
+/* Light defaults */
+:root {
+    /* Core semantic tokens */
+    --color-bg: oklch(98% 0.01 260);
+    --color-text: oklch(12% 0.02 260);
+    --color-surface: oklch(96% 0.01 260 / 0.08);
+    --overlay: oklch(100% 0% 0 / 0.6);
+
+    /* Accent palette */
+    --accent-a: oklch(65% 0.24 30);
+    --accent-b: oklch(70% 0.22 145);
+
+    /* Entity tones */
+    --entity-class: oklch(65% 0.18 260);
+    --entity-interface: oklch(76% 0.2 310);
+    --entity-type: oklch(75% 0.19 60);
+    --entity-function: oklch(72% 0.16 170);
+    --entity-enum: oklch(68% 0.18 25);
+    --entity-variable: oklch(70% 0.16 230);
+
+    /* Precomputed blends (optional fallbacks for UIs that don’t want inline color-mix) */
+    --tone-class-heading: color-mix(in oklab, var(--entity-class) 80%, var(--color-text));
+    --tone-class-tag-bg: color-mix(in oklab, var(--entity-class) 12%, transparent);
+
+    --tone-func-heading: color-mix(in oklab, var(--entity-function) 80%, var(--color-text));
+    --tone-func-item-bg: color-mix(in oklab, var(--entity-function) 12%, transparent);
+    --tone-func-badge-bg: color-mix(in oklab, var(--entity-function) 18%, transparent);
+    --tone-func-badge-border: color-mix(in oklab, var(--entity-function) 35%, transparent);
+
+    /* Glows/shadows */
+    --glow: radial-gradient(
+        circle at center,
+        color-mix(in oklab, var(--color-text) 12%, var(--color-surface)) 0%,
+        transparent 70%
+    );
+    --shadow-soft: 0 28px 60px -36px color-mix(in oklab, var(--color-text) 28%, transparent);
+    --shadow-outline: 0 0 0 4px color-mix(in oklab, var(--accent-b) 16%, transparent);
+}
+
+/* Dark overrides — selector matches html or body with the attribute */
+[data-theme='dark'] {
+    --color-bg: oklch(6% 0.01 260);
+    --color-text: oklch(92% 0.02 260);
+    --color-surface: oklch(8% 0.01 260 / 0.12);
+    --overlay: oklch(0% 0% 0 / 0.6);
+
+    --accent-a: oklch(60% 0.26 30);
+    --accent-b: oklch(68% 0.24 145);
+}

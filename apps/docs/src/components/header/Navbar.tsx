@@ -21,7 +21,7 @@ function Navbar(): ReactElement {
                     <div className="flex items-center gap-3">
                         <Link
                             href="/"
-                            className="group flex cursor-pointer items-center rounded-2xl border border-transparent px-3 py-1.5 text-[var(--text)] transition hover:border-[color-mix(in_srgb,var(--border)_70%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg)_92%,#ffffff_8%)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_45%,transparent)] focus-visible:outline-offset-2"
+                            className="group flex cursor-pointer items-center rounded-2xl border border-transparent px-3 py-1.5 text-(--text) transition hover:border-[color-mix(in_srgb,var(--border)_70%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg)_92%,#ffffff_8%)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_45%,transparent)] focus-visible:outline-offset-2"
                             aria-label="Seedcord home"
                         >
                             <SeedcordMark textClassName="transition group-hover:text-[color-mix(in_srgb,var(--text)_88%,#4b5563_12%)]" />
@@ -29,7 +29,7 @@ function Navbar(): ReactElement {
                         <nav className="hidden items-center gap-2 lg:flex" aria-label="Primary navigation">
                             <Link
                                 href="/docs"
-                                className="inline-flex items-center gap-2 rounded-xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
+                                className="inline-flex items-center gap-2 rounded-xl border border-transparent px-3 py-1.5 text-sm font-semibold text-subtle transition hover:border-[color-mix(in_srgb,var(--accent-a)_40%,var(--border))] hover:bg-[color-mix(in_srgb,var(--surface)_94%,var(--accent-a)_6%)] hover:text-(--text) focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_42%,transparent)] focus-visible:outline-offset-2"
                             >
                                 Docs home
                             </Link>
@@ -47,7 +47,7 @@ function Navbar(): ReactElement {
                                             variant="ghost"
                                             size="icon"
                                             aria-label="Open GitHub repository"
-                                            className="text-[var(--text)]"
+                                            className="text-(--text)"
                                         >
                                             <Link
                                                 href="https://github.com/materwelondhruv/seedcord"
@@ -60,10 +60,10 @@ function Navbar(): ReactElement {
                                     </Tooltip.Trigger>
                                     <Tooltip.Content
                                         sideOffset={6}
-                                        className="rounded-md bg-[var(--surface)] px-2 py-1 text-xs text-[var(--text)] shadow-soft"
+                                        className="rounded-md bg-(--surface) px-2 py-1 text-xs text-(--text) shadow-soft"
                                     >
                                         View repository
-                                        <Tooltip.Arrow className="fill-[var(--surface)]" />
+                                        <Tooltip.Arrow className="fill-(--surface)" />
                                     </Tooltip.Content>
                                 </Tooltip.Root>
                             </div>

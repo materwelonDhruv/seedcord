@@ -6,13 +6,13 @@ export default function GettingStartedPage(): ReactElement {
     return (
         <article className="space-y-5 rounded-2xl border border-border bg-surface p-5 shadow-soft">
             <header className="space-y-2">
-                <h1 className="text-3xl font-semibold text-[var(--text)]">Getting started</h1>
+                <h1 className="text-3xl font-semibold text-(--text)">Getting started</h1>
                 <p className="text-sm text-subtle">
                     Placeholder content for the onboarding guide. TODO: replace with real quickstart sourced from
                     markdown/TypeDoc.
                 </p>
             </header>
-            <section className="space-y-4 text-sm leading-6 text-[var(--text)]">
+            <section className="space-y-4 text-sm leading-6 text-(--text)">
                 <p>
                     Welcome to the Seedcord docs prototype. This page will eventually walk through installation,
                     bootstrapping the CLI, and running your first bot. For now, explore the interactive controls

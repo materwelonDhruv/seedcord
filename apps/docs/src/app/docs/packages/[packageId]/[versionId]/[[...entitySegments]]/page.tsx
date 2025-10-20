@@ -63,11 +63,11 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
                     <li key={item.id}>
                         <Link
                             href={item.href}
-                            className="flex items-center justify-between rounded-xl border border-transparent bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-2 text-sm font-medium text-[var(--text)] shadow-soft transition hover:border-[color-mix(in_srgb,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_srgb,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="flex items-center justify-between rounded-xl border border-transparent bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_srgb,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_srgb,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                             <span>{item.label}</span>
                             <span
-                                className={`${toneStyles.badge} inline-flex h-6 min-w-[2.25rem] items-center justify-center rounded-full border text-xs font-semibold px-2 py-1`}
+                                className={`${toneStyles.badge} inline-flex h-6 min-w-9 items-center justify-center rounded-full border text-xs font-semibold px-2 py-1`}
                             >
                                 {category.tone}
                             </span>
@@ -90,7 +90,7 @@ function PackageVersionOverview({
         <section className="space-y-8">
             <header className="space-y-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.35em] text-subtle">Reference overview</p>
-                <h1 className="text-3xl font-semibold text-[var(--text)] sm:text-4xl">
+                <h1 className="text-3xl font-semibold text-(--text) sm:text-4xl">
                     {entry.label} · {version.label}
                 </h1>
             </header>

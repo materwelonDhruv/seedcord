@@ -17,24 +17,24 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-[var(--text)]"
+                        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-(--text)"
                         aria-label="Open source in a new tab"
                     ></Button>
                 ) : null}
             </header>
             {signature.code.html ? (
-                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-[var(--text)] sm:text-sm">
+                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 </div>
             ) : (
-                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-[var(--text)] sm:text-sm">
+                <div className="code-scroll-area rounded-xl border border-border bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <pre className="code-scroll-content whitespace-pre-wrap">{signature.code.text}</pre>
                 </div>
             )}
             <CommentParagraphs paragraphs={signature.summary} />
             {signature.parameters.length ? (
                 <div className="space-y-2">
-                    <h4 className="text-sm font-semibold text-[var(--text)]">Parameters</h4>
+                    <h4 className="text-sm font-semibold text-(--text)">Parameters</h4>
                     <ul className="space-y-2">
                         {signature.parameters.map((parameter) => (
                             <li
@@ -45,15 +45,15 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
                                     {renderParameterBadge(parameter)}
                                     {parameter.display?.html ? (
                                         <div
-                                            className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]"
+                                            className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)"
                                             dangerouslySetInnerHTML={{ __html: parameter.display.html }}
                                         />
                                     ) : parameter.display?.text ? (
-                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]">
+                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.display.text}
                                         </code>
                                     ) : parameter.type ? (
-                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-[var(--text)]">
+                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.type}
                                         </code>
                                     ) : null}
@@ -77,7 +77,7 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
             {signature.throws?.length ? (
                 <div>
                     <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                        <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={signature.throws} />
                 </div>

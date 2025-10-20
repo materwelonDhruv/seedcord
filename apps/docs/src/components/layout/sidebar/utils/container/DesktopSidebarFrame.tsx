@@ -3,7 +3,7 @@ import type { ReactNode, ReactElement } from 'react';
 export function DesktopSidebarFrame({ sidebar }: { sidebar: ReactNode }): ReactElement {
     return (
         <aside
-            className="hidden lg:block lg:flex-shrink-0"
+            className="hidden lg:block lg:shrink-0"
             style={{
                 width: 'var(--sidebar-width)'
             }}

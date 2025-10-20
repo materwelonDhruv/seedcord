@@ -16,7 +16,7 @@ export function MobileSearchButton(): ReactElement {
         <Button
             variant="ghost"
             size="icon"
-            className="sm:hidden text-[var(--text)]"
+            className="sm:hidden text-(--text)"
             onClick={() => {
                 log('Mobile search button clicked');
                 setCommandPaletteOpen(true);

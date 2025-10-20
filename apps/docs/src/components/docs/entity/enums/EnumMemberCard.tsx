@@ -58,7 +58,7 @@ function ActionsCell({
     sourceUrl: string | undefined;
 }): ReactElement {
     return (
-        <div className="ml-auto flex h-8 w-[4.5rem] shrink-0 items-center justify-end gap-2 pl-2">
+        <div className="ml-auto flex h-8 w-18 shrink-0 items-center justify-end gap-2 pl-2">
             <CopyAnchorButton
                 anchorId={anchorId}
                 label={label}
@@ -69,7 +69,7 @@ function ActionsCell({
                     href={sourceUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
+                    className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
                     aria-label={`Open source for ${label} in a new tab`}
                 >
                     <Icon icon={Code} size={16} />

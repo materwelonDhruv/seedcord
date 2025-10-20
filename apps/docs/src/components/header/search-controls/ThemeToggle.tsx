@@ -1,6 +1,6 @@
 import { MonitorSmartphone, Sun, MoonStar } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { log } from '@lib/logger';
 import Button from '@ui/Button';
@@ -11,7 +11,12 @@ import type { ReactElement } from 'react';
 export function ThemeToggle(): ReactElement {
     const { resolvedTheme, setTheme } = useTheme();
 
-    const [mounted] = useState(() => typeof window !== 'undefined');
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        const t = setTimeout(() => setMounted(true), 0);
+        return () => clearTimeout(t);
+    }, []);
 
     const handleToggle = (): void => {
         const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
@@ -26,7 +31,7 @@ export function ThemeToggle(): ReactElement {
                 size="icon"
                 aria-label="Toggle theme"
                 title="Toggle theme"
-                className="text-[var(--text)]"
+                className="text-(--text)"
                 disabled
             >
                 <Icon icon={MonitorSmartphone} size={18} />
@@ -44,7 +49,7 @@ export function ThemeToggle(): ReactElement {
             onClick={handleToggle}
             aria-label={label}
             title={label}
-            className="text-[var(--text)]"
+            className="text-(--text)"
         >
             {icon}
         </Button>

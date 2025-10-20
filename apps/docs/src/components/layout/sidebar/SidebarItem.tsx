@@ -22,7 +22,7 @@ export function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactEl
             <Link
                 href={href}
                 className={cn(
-                    'flex w-full items-center gap-2 rounded-lg border border-transparent bg-transparent px-3 py-2 text-left text-sm font-medium text-[var(--text)] transition focus-visible:outline-2 focus-visible:outline-offset-2',
+                    'flex w-full items-center gap-2 rounded-lg border border-transparent bg-transparent px-3 py-2 text-left text-sm font-medium text-(--text) transition focus-visible:outline-2 focus-visible:outline-offset-2',
                     toneStyles.item,
                     isActive
                         ? 'border-[color-mix(in_srgb,var(--accent-b)_45%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_14%,var(--bg)_86%)]'
@@ -45,13 +45,9 @@ export function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactEl
                     <Tooltip.Trigger asChild>
                         <span className="min-w-0 truncate">{label}</span>
                     </Tooltip.Trigger>
-                    <Tooltip.Content
-                        sideOffset={6}
-                        align="center"
-                        className="rounded-sm bg-[var(--surface)] p-1 text-xs"
-                    >
+                    <Tooltip.Content sideOffset={6} align="center" className="rounded-sm bg-(--surface) p-1 text-xs">
                         {label}
-                        <Tooltip.Arrow className="fill-[var(--surface)]" />
+                        <Tooltip.Arrow className="fill-(--surface)" />
                     </Tooltip.Content>
                 </Tooltip.Root>
             </Link>

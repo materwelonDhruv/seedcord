@@ -21,7 +21,7 @@ export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardH
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
                 {tags.length ? (
-                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-[0.1em] text-subtle">
+                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-widest text-subtle">
                         {tags.map((tag) => (
                             <li
                                 key={tag}
@@ -39,10 +39,10 @@ export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardH
                             label={member.label}
                             className={
                                 'absolute -left-8 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center opacity-0 transition-opacity ' +
-                                'group-hover/name:opacity-100 group-focus-within/name:opacity-100 group-active/name:opacity-100 text-subtle hover:text-[var(--text)]'
+                                'group-hover/name:opacity-100 group-focus-within/name:opacity-100 group-active/name:opacity-100 text-subtle hover:text-(--text)'
                             }
                         />
-                        <h3 className="truncate text-base font-semibold text-[var(--text)] sm:text-lg">
+                        <h3 className="truncate text-base font-semibold text-(--text) sm:text-lg">
                             {prefix === 'method' ? `${member.label}()` : member.label}
                         </h3>
                     </div>
@@ -52,7 +52,7 @@ export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardH
                                 href={member.sourceUrl}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-[var(--text)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
+                                className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
                                 aria-label={`Open source for ${member.label} in a new tab`}
                             >
                                 <Icon icon={Code} size={16} />

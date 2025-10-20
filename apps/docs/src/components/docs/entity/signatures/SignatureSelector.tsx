@@ -21,7 +21,7 @@ export default function SignatureSelector({
 
     return (
         <fieldset className="space-y-2">
-            <legend className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">{legend}</legend>
+            <legend className="text-xs font-semibold uppercase tracking-widest text-subtle">{legend}</legend>
             <div className="flex flex-wrap gap-2">
                 {signatures.map((signature, index) => {
                     const checked = signature.id === activeSignatureId;
@@ -33,7 +33,7 @@ export default function SignatureSelector({
                             className={cn(
                                 'cursor-pointer rounded-full border px-3 py-1 text-xs font-semibold transition',
                                 checked
-                                    ? 'border-[color-mix(in_srgb,var(--accent-b)_48%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_12%,var(--surface)_88%)] text-[var(--text)]'
+                                    ? 'border-[color-mix(in_srgb,var(--accent-b)_48%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_12%,var(--surface)_88%)] text-(--text)'
                                     : 'border-border/70 text-subtle hover:border-[color-mix(in_srgb,var(--accent-b)_32%,var(--border))]'
                             )}
                         >

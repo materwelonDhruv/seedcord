@@ -21,7 +21,7 @@ export function CommentExamples({ examples, className, open = false }: CommentEx
 
     return (
         <details className={cn('space-y-3 group', className)} open={open}>
-            <summary className="cursor-pointer flex items-center gap-2 text-sm font-semibold text-[var(--text)]">
+            <summary className="cursor-pointer flex items-center gap-2 text-sm font-semibold text-(--text)">
                 <span className="flex items-center">
                     <Icon
                         icon={ChevronDown}

@@ -57,7 +57,7 @@ const SourceButton = ({ href }: { href: string }): ReactElement => (
         asChild
         variant="ghost"
         size="icon"
-        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-[var(--text)]"
+        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-(--text)"
         aria-label="Open source in a new tab"
     >
         <a href={href} target="_blank" rel="noreferrer noopener">
@@ -107,7 +107,7 @@ function HeaderTop({
 
             <div className="flex items-start gap-3 sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-2.5">
-                    <h1 className="text-2xl font-bold text-[var(--text)] sm:text-3xl lg:text-4xl">{symbolName}</h1>
+                    <h1 className="text-2xl font-bold text-(--text) sm:text-3xl lg:text-4xl">{symbolName}</h1>
                     <div className="space-y-2 text-sm leading-relaxed text-subtle">{summaryNodes}</div>
                 </div>
                 {sourceUrl ? <SourceButton href={sourceUrl} /> : null}
@@ -196,7 +196,7 @@ export function EntityHeader({
             {throws?.length ? (
                 <div>
                     <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                        <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={throws} />
                 </div>

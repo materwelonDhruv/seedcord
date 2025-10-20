@@ -25,7 +25,7 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
 
     return (
         <section className="min-w-0 space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
-            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">
+            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-widest text-subtle">
                 {title}
             </h2>
             <ul className="space-y-2">
@@ -37,7 +37,7 @@ export function MemberList({ items, prefix, onNavigate }: MemberListProps): Reac
                                 onNavigate(`${prefix}-${item.id}`);
                             }}
                             className={cn(
-                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3.5 py-2 text-sm text-[var(--text)] transition',
+                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-3.5 py-2 text-sm text-(--text) transition',
                                 'hover:border-[color-mix(in_srgb,var(--accent-b)_34%,var(--border))] hover:bg-[color-mix(in_srgb,var(--accent-b)_12%,var(--surface)_88%)]'
                             )}
                         >

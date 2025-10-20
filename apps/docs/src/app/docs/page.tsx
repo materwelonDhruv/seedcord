@@ -35,7 +35,7 @@ export default async function DocsIndexPage(): Promise<ReactElement> {
         <section className="space-y-12">
             <header className="space-y-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.4em] text-subtle">Getting started</p>
-                <h1 className="text-3xl font-semibold text-[var(--text)] sm:text-4xl">Install the package</h1>
+                <h1 className="text-3xl font-semibold text-(--text) sm:text-4xl">Install the package</h1>
             </header>
 
             <article className="space-y-4 rounded-2xl border border-border bg-surface p-6 shadow-soft">

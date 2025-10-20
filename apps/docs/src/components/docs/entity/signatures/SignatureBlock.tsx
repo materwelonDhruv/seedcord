@@ -15,7 +15,7 @@ export function SignatureBlock({ signature }: { signature: CodeRepresentation })
 
     return (
         <div className={containerClassName}>
-            <pre className="code-scroll-content whitespace-pre-wrap text-sm text-[var(--text)]">
+            <pre className="code-scroll-content whitespace-pre-wrap text-sm text-(--text)">
                 <code>{signature.text}</code>
             </pre>
         </div>

@@ -25,7 +25,7 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
                     value={searchValue}
                     onValueChange={onValueChange}
                     placeholder="Search packages, symbols, members, and resources"
-                    className="flex-1 bg-transparent text-sm text-[var(--text)] outline-none placeholder:text-subtle focus:outline-none focus-visible:outline-none"
+                    className="flex-1 bg-transparent text-sm text-(--text) outline-none placeholder:text-subtle focus:outline-none focus-visible:outline-none"
                     aria-label="Search documentation"
                 />
                 <Button
@@ -33,7 +33,7 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
                     size="icon"
                     onClick={onClose}
                     aria-label="Close command palette"
-                    className="flex h-9 w-9 items-center justify-center rounded-md text-subtle transition hover:text-[var(--text)] sm:hidden"
+                    className="flex h-9 w-9 items-center justify-center rounded-md text-subtle transition hover:text-(--text) sm:hidden"
                 >
                     <Icon icon={X} size={16} aria-hidden />
                 </Button>
@@ -41,7 +41,7 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
                     type="button"
                     onClick={onClose}
                     aria-label="Close command palette"
-                    className="hidden items-center gap-1 rounded-md border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-subtle transition hover:text-[var(--text)] sm:inline-flex"
+                    className="hidden items-center gap-1 rounded-md border border-border/70 bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-2 py-1 text-[0.7rem] font-semibold uppercase tracking-wide text-subtle transition hover:text-(--text) sm:inline-flex"
                 >
                     Esc
                 </button>

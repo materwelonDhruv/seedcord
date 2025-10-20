@@ -23,7 +23,7 @@ export function renderMemberOverview(
             open
             className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
         >
-            <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-[var(--text)]">
+            <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-(--text)">
                 <span className="text-lg font-semibold">Member overview</span>
                 <Icon icon={ChevronDown} size={18} className="text-subtle transition-transform group-open:rotate-180" />
             </summary>
@@ -31,7 +31,7 @@ export function renderMemberOverview(
                 {showAccessControls ? (
                     <p className="text-xs text-subtle">
                         Showing members with{' '}
-                        <span className="font-semibold text-[var(--text)]">
+                        <span className="font-semibold text-(--text)">
                             {formatMemberAccessLabel(memberAccessLevel)}
                         </span>{' '}
                         visibility and higher.

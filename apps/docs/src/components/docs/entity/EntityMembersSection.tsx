@@ -59,12 +59,10 @@ export default function EntityMembersSection({
             {showAccessControls ? (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="space-y-0.5">
-                        <p className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">
-                            Member visibility
-                        </p>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-subtle">Member visibility</p>
                         <p className="text-xs text-subtle/80">Filter class members by access level.</p>
                     </div>
-                    <MemberAccessControls orientation="horizontal" showLegend={false} className="flex-shrink-0" />
+                    <MemberAccessControls orientation="horizontal" showLegend={false} className="shrink-0" />
                 </div>
             ) : null}
             <MemberDetailGroup

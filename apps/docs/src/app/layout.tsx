@@ -85,7 +85,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
                         <CommandPalette />
                         <a
                             href="#main-content"
-                            className="fixed left-6 top-4 z-[60] -translate-y-20 transform rounded-full bg-[var(--accent-b)] px-4 py-2 text-sm font-semibold text-black transition focus-visible:translate-y-0"
+                            className="fixed left-6 top-4 z-60 -translate-y-20 transform rounded-full bg-(--accent-b) px-4 py-2 text-sm font-semibold text-black transition focus-visible:translate-y-0"
                         >
                             Skip to content
                         </a>

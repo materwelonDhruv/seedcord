@@ -27,7 +27,7 @@ export function SignaturePanel({ signature, isActive, parentDeprecationStatus }:
                 {signature.code.html ? (
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 ) : (
-                    <pre className="code-scroll-content whitespace-pre text-sm text-[var(--text)]">
+                    <pre className="code-scroll-content whitespace-pre text-sm text-(--text)">
                         <code>{signature.code.text}</code>
                     </pre>
                 )}
@@ -37,7 +37,7 @@ export function SignaturePanel({ signature, isActive, parentDeprecationStatus }:
             {signature.throws?.length ? (
                 <div>
                     <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-                        <span className="font-semibold text-[var(--text)]">Throws:</span>
+                        <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={signature.throws} />
                 </div>

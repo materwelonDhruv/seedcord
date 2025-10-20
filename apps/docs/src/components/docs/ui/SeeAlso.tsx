@@ -9,7 +9,7 @@ export default function SeeAlso({
 
     return (
         <p className="flex flex-wrap items-baseline gap-2 text-subtle">
-            <span className="font-semibold text-[var(--text)]">See also:</span>
+            <span className="font-semibold text-(--text)">See also:</span>
             <span className="min-w-0">
                 {entries.map((s, i) => (
                     <span key={i} className="inline">

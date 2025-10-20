@@ -36,7 +36,7 @@ export function MemberAccessControls({
     return (
         <div className={cn(containerClasses, className)}>
             {showLegend ? (
-                <span className="text-xs font-semibold uppercase tracking-[0.1em] text-subtle">Access</span>
+                <span className="text-xs font-semibold uppercase tracking-widest text-subtle">Access</span>
             ) : null}
             <div
                 role="radiogroup"
@@ -53,11 +53,11 @@ export function MemberAccessControls({
                             aria-checked={isActive}
                             onClick={() => setMemberAccessLevel(level)}
                             className={cn(
-                                'relative px-3 py-1.5 text-xs font-medium transition-colors focus-visible:z-[1] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color-mix(in_srgb,var(--accent-b)_35%,transparent)] focus-visible:ring-offset-1 focus-visible:ring-offset-[color-mix(in_srgb,var(--surface)_98%,transparent)]',
+                                'relative px-3 py-1.5 text-xs font-medium transition-colors focus-visible:z-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color-mix(in_srgb,var(--accent-b)_35%,transparent)] focus-visible:ring-offset-1 focus-visible:ring-offset-[color-mix(in_srgb,var(--surface)_98%,transparent)]',
                                 index > 0 && 'border-l border-border/50',
                                 isActive
                                     ? 'bg-[color-mix(in_srgb,var(--accent-b)_14%,var(--surface)_86%)] text-[color-mix(in_srgb,var(--text)_92%,var(--accent-b)_8%)]'
-                                    : 'text-subtle hover:text-[var(--text)]'
+                                    : 'text-subtle hover:text-(--text)'
                             )}
                         >
                             {formatMemberAccessLabel(level)}
