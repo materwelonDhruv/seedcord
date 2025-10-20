@@ -1,5 +1,5 @@
-import type { AtLeastOne } from './Misc';
-import type { EmbedBuilder, ActionRowBuilder, MessageActionRowComponentBuilder } from 'discord.js';
+import type { RequireAtLeastOne } from '@seedcord/types';
+import type { ActionRowBuilder, EmbedBuilder, MessageActionRowComponentBuilder } from 'discord.js';
 
 /** Discord message content with embeds and components */
 export interface MessageContent {
@@ -8,4 +8,4 @@ export interface MessageContent {
 }
 
 /** Discord message that requires at least one of content, embeds, or components */
-export type AtleastOneMessageComponent = AtLeastOne<{ content: string } & MessageContent>;
+export type AtleastOneMessageComponent = RequireAtLeastOne<{ content: string } & MessageContent>;

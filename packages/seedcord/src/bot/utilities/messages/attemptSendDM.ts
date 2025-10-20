@@ -1,4 +1,5 @@
-import type { AtleastOneMessageComponent, Nullable } from '@seedcord/types';
+import type { AtleastOneMessageComponent } from '../Types';
+import type { Nullable } from '@seedcord/types';
 import type { Message, User } from 'discord.js';
 
 /**

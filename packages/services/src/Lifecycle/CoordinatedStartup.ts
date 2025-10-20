@@ -2,7 +2,8 @@ import chalk from 'chalk';
 
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
 
-import type { LifecycleTask, PhaseEvents, UnionToTuple } from '@seedcord/types';
+import type { LifecycleTask, PhaseEvents } from './LifecycleTypes';
+import type { UnionToTuple } from '@seedcord/types';
 
 /**
  * Startup phases for coordinated initialization

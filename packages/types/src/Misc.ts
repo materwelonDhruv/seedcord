@@ -1,9 +1,26 @@
 /**
- * Makes at least one property of an object type required
- * @typeParam Props - The object type to modify
+ * Makes at least one property of an object type required. It will make all properties of ObjectType optional if `Keys` is not provided.
+ * @typeParam ObjectType - The object type to modify
+ * @typeParam Keys - The keys of the object type to make required (defaults to all keys)
  */
-export type AtLeastOne<Props, SingleKeyObjectMap = { [K in keyof Props]: Pick<Props, K> }> = Partial<Props> &
-    SingleKeyObjectMap[keyof SingleKeyObjectMap];
+export type RequireAtLeastOne<ObjectType, Keys extends keyof ObjectType = keyof ObjectType> = Omit<ObjectType, Keys> &
+    {
+        [Key in Keys]-?: Required<Pick<ObjectType, Key>> & Partial<Omit<Pick<ObjectType, Keys>, Key>>;
+    }[Keys];
+
+/**
+ * Makes exactly one property of an object type required, and all others optional.
+ * @typeParam ObjectType - The object type to modify
+ * @typeParam PropertyKeys - The keys of the object type to make exactly one required (defaults to all keys)
+ */
+export type RequireExactlyOne<ObjectType, PropertyKeys extends keyof ObjectType = keyof ObjectType> = Omit<
+    ObjectType,
+    PropertyKeys
+> &
+    {
+        [Property in PropertyKeys]-?: Required<Pick<ObjectType, Property>> &
+            Partial<Record<Exclude<PropertyKeys, Property>, never>>;
+    }[PropertyKeys];
 
 /**
  * Makes a type nullable by adding null and undefined
@@ -12,7 +29,7 @@ export type AtLeastOne<Props, SingleKeyObjectMap = { [K in keyof Props]: Pick<Pr
 export type Nullable<Value = null> = Value extends null ? null | undefined : Value | null | undefined;
 
 /**
- * Helper type to create a numeric range
+ * Creates a union type representing a range of numbers
  * @typeParam Lower - The lower bound of the range
  * @typeParam Upper - The upper bound of the range
  */
@@ -51,27 +68,6 @@ export type XOR<ThisObj, OtherObj> = ThisObj | OtherObj extends object
     ? (Without<ThisObj, OtherObj> & OtherObj) | (Without<OtherObj, ThisObj> & ThisObj)
     : ThisObj | OtherObj;
 
-/**
- * Type-safe version of Omit that ensures the keys exist on the target object
- * @typeParam TargetObj - The object type to omit properties from
- * @typeParam ObjKeys - The keys to omit from the object
- */
-export type TypedOmit<TargetObj, ObjKeys extends keyof TargetObj> = Omit<TargetObj, ObjKeys>;
-
-/**
- * Type-safe version of Exclude that ensures the excluded types are valid members
- * @typeParam Target - The union type to exclude from
- * @typeParam UnionKeys - The types to exclude from the union
- */
-export type TypedExclude<Target, UnionKeys extends Target> = Exclude<Target, UnionKeys>;
-
-/**
- * Type-safe version of Extract that ensures the extracted types are valid members
- * @typeParam Target - The union type to extract from
- * @typeParam UnionKeys - The types to extract from the union
- */
-export type TypedExtract<Target, UnionKeys extends Target> = Extract<Target, UnionKeys>;
-
 /** Represents any constructor function that can be instantiated with new */
 export type ConstructorFunction = new (...args: any[]) => unknown;
 
@@ -86,23 +82,13 @@ export type StartsWith<
 > = BaseUnion extends `${StartingString}${string}` ? BaseUnion : never;
 
 /**
- * Extracts the constructor signature from a constructor type
- * @typeParam ConstructorType - The constructor type to extract the signature from
- */
-export type TypedConstructor<ConstructorType> = ConstructorType extends new (...args: infer A) => infer R
-    ? new (...args: A) => R
-    : ConstructorType extends abstract new (...args: infer A) => infer R
-      ? new (...args: A) => R
-      : never;
-
-/**
  * Converts a union type to an intersection type
  * @typeParam UnionType - The union type to convert to an intersection
  */
-export type UnionToIntersection<UnionType> = (UnionType extends unknown ? (x: UnionType) => void : never) extends (
-    x: infer I
+export type UnionToIntersection<UnionType> = (UnionType extends unknown ? (k: UnionType) => void : never) extends (
+    k: infer Intersection
 ) => void
-    ? I
+    ? Intersection
     : never;
 
 /**
@@ -127,18 +113,107 @@ export type UnionToTuple<UnionType, TupleArray extends unknown[] = []> = [UnionT
     : UnionToTuple<Exclude<UnionType, LastOf<UnionType>>, [LastOf<UnionType>, ...TupleArray]>;
 
 /**
+ * Renames a key in an object type
+ * @typeParam BaseObj - The object type containing the key to rename
+ * @typeParam FromKey - The key to rename
+ * @typeParam ToKey - The new name for the key
+ */
+export type RenameKey<BaseObj, FromKey extends PropertyKey, ToKey extends PropertyKey> = {
+    [K in keyof BaseObj as K extends FromKey ? ToKey : K]: BaseObj[K];
+};
+
+/**
+ * Brands a type with a unique identifier to create nominal typing
+ * @typeParam BaseType - The base type to brand
+ * @typeParam BrandingLabel - A unique string to identify the brand
+ */
+export type Brand<BaseType, BrandingLabel extends string> = BaseType & { readonly __brand: BrandingLabel };
+
+/**
+ * Simplifies a complex type by resolving intersections and mapped types making it easier to read
+ * @typeParam TypeToSimplify - The type to simplify
+ */
+export type Simplify<TypeToSimplify> = { [Property in keyof TypeToSimplify]: TypeToSimplify[Property] } & {};
+
+/**
+ * Merges two object types, with properties from the right type overriding those from the left in case of conflicts
+ * @typeParam LeftType - The first object type
+ * @typeParam RightType - The second object type
+ */
+export type Merge<LeftType, RightType> = Simplify<Omit<LeftType, keyof RightType> & RightType>;
+
+/**
+ * Primitive value types in TypeScript
+ */
+export type PrimitiveValue = string | number | boolean | bigint | symbol | null | undefined;
+
+/**
+ * Represents any function type
+ */
+export type AnyFunction = (...args: any[]) => unknown;
+
+/**
+ * Represents any asynchronous function type
+ */
+export type AnyAsyncFunction = (...args: any[]) => Promise<unknown>;
+
+/**
+ * A type that can be either a value of TypeModel or a Promise that resolves to TypeModel
+ * @typeParam TypeModel - The type to make awaitable
+ */
+export type Awaitable<TypeModel> = TypeModel | Promise<TypeModel>;
+
+/**
+ * Recursively makes all properties of a type mutable (removes readonly)
+ * @typeParam TypeModel - The type to make mutable
+ */
+export type MutableDeep<TypeModel> = TypeModel extends PrimitiveValue | AnyFunction
+    ? TypeModel
+    : { -readonly [Property in keyof TypeModel]: MutableDeep<TypeModel[Property]> };
+
+/**
+ * Shallowly makes all properties of a type mutable (removes readonly)
+ * @typeParam TypeModel - The type to make mutable
+ */
+export type ShallowMutable<TypeModel> = {
+    -readonly [Property in keyof TypeModel]: TypeModel[Property];
+};
+
+/**
+ * Recursively makes all properties of a type readonly
+ * @typeParam TypeModel - The type to make readonly
+ */
+export type DeepReadonly<TypeModel> = TypeModel extends PrimitiveValue | AnyFunction
+    ? TypeModel
+    : { readonly [Property in keyof TypeModel]: DeepReadonly<TypeModel[Property]> };
+
+/**
+ * Shallowly makes all properties of a type readonly
+ * @typeParam TypeModel - The type to make readonly
+ */
+export type ShallowReadonly<TypeModel> = {
+    readonly [Property in keyof TypeModel]: TypeModel[Property];
+};
+
+/**
+ * Gets the keys of an object type that match a specific value type
+ * @typeParam ObjectType - The object type to filter keys from
+ * @typeParam ValueType - The value type to match keys against
+ */
+export type KeysMatching<ObjectType, ValueType> = {
+    [Property in keyof ObjectType]-?: ObjectType[Property] extends ValueType ? Property : never;
+}[keyof ObjectType];
+
+/**
+ * Picks the properties of an object type that match a specific value type
+ * @typeParam ObjectType - The object type to pick properties from
+ * @typeParam ValueType - The value type to match properties against
+ */
+export type PickByValue<ObjectType, ValueType> = Pick<ObjectType, KeysMatching<ObjectType, ValueType>>;
+
+/**
  * Builds a record type whose properties are all readonly.
  * @typeParam KeyType - Keys for the resulting record.
  * @typeParam ValueType - Value for every key in the record.
  */
 export type ReadonlyRecord<KeyType extends PropertyKey, ValueType> = Readonly<Record<KeyType, ValueType>>;
-
-/**
- * Renames a key in an object type
- * @typeParam T - The object type containing the key to rename
- * @typeParam From - The key to rename
- * @typeParam To - The new name for the key
- */
-export type RenameKey<BaseObj, FromKey extends PropertyKey, ToKey extends PropertyKey> = {
-    [K in keyof BaseObj as K extends FromKey ? ToKey : K]: BaseObj[K];
-};

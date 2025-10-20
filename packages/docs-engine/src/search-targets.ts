@@ -46,7 +46,7 @@ export const DEFAULT_SEARCH_TARGETS: SearchTarget[] = [
     { query: 'CooldownOptions' },
 
     // Types
-    { query: 'AtleastOne' },
+    { query: 'RequireAtLeastOne' },
     { query: 'TupleOf' },
     { query: 'NumberRange' },
     { query: 'TypedConstructor' },

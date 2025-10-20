@@ -1,6 +1,6 @@
 import { fetchText } from './fetchText';
 
-import type { AtleastOneMessageComponent } from '@seedcord/types';
+import type { AtleastOneMessageComponent } from '../Types';
 import type { Client, Message, TextChannelResolvable } from 'discord.js';
 
 /**

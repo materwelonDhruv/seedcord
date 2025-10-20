@@ -1,4 +1,4 @@
-import type { NumberRange, TypedExclude } from './Misc';
+import type { NumberRange, TypedExclude } from '@seedcord/types';
 
 /** Actions that can occur during lifecycle phases */
 export type LifecycleAction = 'start' | 'complete' | 'error';

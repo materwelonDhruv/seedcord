@@ -34,6 +34,7 @@ export * from './bot/utilities/channels/sendInText';
 
 // Bot Utilities Errors Exports
 export * from './bot/utilities/errors/extractErrorResponse';
+export * from './bot/utilities/errors/throwCustomError';
 
 // Bot Utilities Messages Exports
 export * from './bot/utilities/messages/attemptSendDM';
@@ -52,11 +53,11 @@ export * from './bot/utilities/users/fetchManyUsers';
 export * from './bot/utilities/users/fetchUser';
 export * from './bot/utilities/users/updateMemberRoles';
 
+// Bot Utility Types Exports
+export type * from './bot/utilities/Types';
+
 // Bot Default Exports
 export * from './bot/defaults/UnhandledEvent';
-
-// Library exports
-export * from './library/Helpers';
 
 // Interfaces exports
 export * from './interfaces/Components';
