@@ -1,5 +1,21 @@
 import type { AnyFunction } from './FunctionTypes';
-import type { StringKey, JoinPath } from './PrimitiveUtils';
+import type { StringKey } from './PrimitiveAndMisc';
+
+/**
+ * Joins a prefix and key string with a separator, handling empty prefixes.
+ * @typeParam Prefix - The prefix string
+ * @typeParam KeyStr - The key string
+ * @typeParam Separator - The separator string
+ *
+ * @example
+ * ```ts
+ * type Joined1 = JoinPath<'a.b', 'c', '.'>; // Result: 'a.b.c'
+ * type Joined2 = JoinPath<'', 'c', '.'>;    // Result: 'c'
+ * ```
+ */
+export type JoinPath<Prefix extends string, KeyStr extends string, Separator extends string> = [Prefix] extends ['']
+    ? KeyStr
+    : `${Prefix}${Separator}${KeyStr}`;
 
 /**
  * Builds a union of all valid path strings in an object, e.g. "a", "a.b", "a.b.c".
@@ -7,6 +23,22 @@ import type { StringKey, JoinPath } from './PrimitiveUtils';
  * - Supports a custom separator.
  * @typeParam ObjectType - The object type to extract paths from
  * @typeParam Separator - The separator string
+ *
+ * @example
+ * ```ts
+ * type Example = {
+ *     a: {
+ *         b: {
+ *             c: number;
+ *         };
+ *     };
+ *     d: string;
+ *     e: () => void;
+ *     f: { g: string }[];
+ * };
+ * type Paths = UnionOfPathsInObject<Example>;
+ * // Result: "a" | "a.b" | "a.b.c" | "d" | "e" | "f"
+ * ```
  */
 export type UnionOfPathsInObject<ObjectType, Separator extends string = '.', Prefix extends string = ''> = {
     [Key in keyof ObjectType]: StringKey<Key> extends infer KeyStr extends string
@@ -28,13 +60,14 @@ export type UnionOfPathsInObject<ObjectType, Separator extends string = '.', Pre
  *
  * @internal
  */
-export type GetInternal<
+// eslint-disable-next-line @typescript-eslint/naming-convention
+export type _Get<
     Obj,
     Path extends string,
     Separator extends string
 > = Path extends `${infer Head}${Separator}${infer Tail}`
     ? Head extends keyof Obj
-        ? GetInternal<NonNullable<Obj[Head]>, Tail, Separator>
+        ? _Get<NonNullable<Obj[Head]>, Tail, Separator>
         : never
     : Path extends keyof Obj
       ? Obj[Path]
@@ -45,9 +78,25 @@ export type GetInternal<
  * Supports object paths (no array indexes in this minimal variant).
  * @typeParam ObjectType - The object type to get the property from
  * @typeParam Path - The dotted path string representing the nested property
+ * @typeParam Separator - The separator string
+ *
+ * @example
+ * ```ts
+ * type Example = {
+ *     a: {
+ *         b: {
+ *             c: number;
+ *         };
+ *     };
+ *     d: string;
+ * };
+ *
+ * type Test1 = Get<Example, 'a.b.c'>; // Result: number
+ * type Test2 = Get<Example, 'd'>;     // Result: string
+ * ```
  */
 export type Get<
     ObjectType,
     Path extends UnionOfPathsInObject<ObjectType, Separator>,
     Separator extends string = '.'
-> = GetInternal<ObjectType, Path & string, Separator>;
+> = _Get<ObjectType, Path & string, Separator>;
