@@ -1,4 +1,4 @@
-import type { ConstructorFunction } from '@seedcord/types';
+import type { Constructor } from 'type-fest';
 
 /**
  * Enum defining interaction route types for decorators
@@ -70,7 +70,7 @@ export const InteractionMetadataKey = Symbol('interaction:metadata');
  * ```
  */
 export function SlashRoute(routeOrRoutes: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         storeMetadata(InteractionRoutes.Slash, routeOrRoutes, constructor);
     };
 }
@@ -86,7 +86,7 @@ export function SlashRoute(routeOrRoutes: string | string[]) {
  * @decorator
  */
 export function ButtonRoute(routeOrRoutes: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         storeMetadata(InteractionRoutes.Button, routeOrRoutes, constructor);
     };
 }
@@ -100,7 +100,7 @@ export function ButtonRoute(routeOrRoutes: string | string[]) {
  * @decorator
  */
 export function ModalRoute(routeOrRoutes: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         storeMetadata(InteractionRoutes.Modal, routeOrRoutes, constructor);
     };
 }
@@ -113,7 +113,7 @@ export function ModalRoute(routeOrRoutes: string | string[]) {
  * @decorator
  */
 export function ContextMenuRoute(type: 'message' | 'user', routeOrRoutes: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         const routeType = type === 'message' ? InteractionRoutes.MessageContextMenu : InteractionRoutes.UserContextMenu;
         storeMetadata(routeType, routeOrRoutes, constructor);
     };
@@ -132,7 +132,7 @@ export function ContextMenuRoute(type: 'message' | 'user', routeOrRoutes: string
  * @decorator
  */
 export function AutocompleteRoute(commandRoutes: string | string[], focusedFields: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         const routes = Array.isArray(commandRoutes) ? commandRoutes : [commandRoutes];
         const fields = Array.isArray(focusedFields) ? focusedFields : [focusedFields];
 
@@ -156,7 +156,7 @@ export function AutocompleteRoute(commandRoutes: string | string[], focusedField
  * @decorator
  */
 export function SelectMenuRoute(type: SelectMenuType, routeOrRoutes: string | string[]) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         const routeMap = {
             [SelectMenuType.String]: InteractionRoutes.StringMenu,
             [SelectMenuType.User]: InteractionRoutes.UserMenu,
@@ -172,7 +172,7 @@ export function SelectMenuRoute(type: SelectMenuType, routeOrRoutes: string | st
 /**
  * Helper to store route(s) in an array on reflect metadata.
  */
-function storeMetadata(symbol: InteractionRoutes, routes: string | string[], constructor: ConstructorFunction): void {
+function storeMetadata(symbol: InteractionRoutes, routes: string | string[], constructor: Constructor<unknown>): void {
     const areRoutes = (routes: unknown): routes is string[] => {
         return Array.isArray(routes) && routes.every((r) => typeof r === 'string');
     };

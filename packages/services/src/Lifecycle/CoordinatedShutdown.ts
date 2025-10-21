@@ -4,7 +4,7 @@ import { Envapt } from 'envapt';
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
 
 import type { LifecycleTask, PhaseEvents } from './LifecycleTypes';
-import type { UnionToTuple } from '@seedcord/types';
+import type { UnionToTuple } from 'type-fest';
 
 /**
  * Shutdown phases for coordinated application shutdown.

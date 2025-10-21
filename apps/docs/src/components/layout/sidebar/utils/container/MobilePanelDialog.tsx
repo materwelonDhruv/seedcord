@@ -1,7 +1,7 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 
-import Button from '@ui/Button';
+import Button from '@/components/ui/AButton';
 
 import type { ReactNode } from 'react';
 

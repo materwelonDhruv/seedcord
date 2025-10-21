@@ -1,5 +1,5 @@
 import type { EffectKeys } from '../types/Effects';
-import type { ConstructorFunction } from '@seedcord/types';
+import type { Constructor } from 'type-fest';
 
 /**
  * Metadata key used to store effect handler information
@@ -28,7 +28,7 @@ export const EffectMetadataKey = Symbol('effect:metadata');
  * ```
  */
 export function RegisterEffect<TEffect extends EffectKeys>(effect: TEffect) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         Reflect.defineMetadata(EffectMetadataKey, effect, constructor);
     };
 }

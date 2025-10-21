@@ -3,8 +3,8 @@
 import * as Popover from '@radix-ui/react-popover';
 import { Settings } from 'lucide-react';
 
-import Button from '@ui/Button';
-import { Icon } from '@ui/Icon';
+import Button from '@/components/ui/AButton';
+import { Icon } from '@/components/ui/AnIcon';
 
 import ClearHistoryRow from './settings/ClearHistoryRow';
 

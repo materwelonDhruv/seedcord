@@ -3,9 +3,10 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import Icon from '@/components/ui/AnIcon';
+
 import { getToneConfig } from '@lib/entityMetadata';
 import { cn } from '@lib/utils';
-import Icon from '@ui/Icon';
 
 import { SidebarItem } from './SidebarItem';
 

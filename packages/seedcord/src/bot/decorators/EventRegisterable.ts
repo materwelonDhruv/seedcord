@@ -1,5 +1,5 @@
-import type { ConstructorFunction } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
+import type { Constructor } from 'type-fest';
 
 export const EventMetadataKey = Symbol('event:metadata');
 
@@ -23,7 +23,7 @@ export const EventMetadataKey = Symbol('event:metadata');
  * ```
  */
 export function RegisterEvent<KeyofEvents extends keyof ClientEvents>(eventName: KeyofEvents) {
-    return function (constructor: ConstructorFunction): void {
+    return function (constructor: Constructor<unknown>): void {
         Reflect.defineMetadata(EventMetadataKey, eventName, constructor);
     };
 }

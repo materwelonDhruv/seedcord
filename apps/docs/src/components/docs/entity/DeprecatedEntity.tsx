@@ -1,8 +1,7 @@
 import { AlertTriangle } from 'lucide-react';
 
+import { Icon } from '@/components/ui/AnIcon';
 import type { WithDeprecationStatus } from '@/lib/docs/types';
-
-import { Icon } from '@ui/Icon';
 
 import { CommentParagraphs } from './comments/CommentParagraphs';
 

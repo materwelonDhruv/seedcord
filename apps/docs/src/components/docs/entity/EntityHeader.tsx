@@ -1,5 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 
+import Button from '@/components/ui/AButton';
+import { Icon } from '@/components/ui/AnIcon';
 import type {
     CodeRepresentation,
     CommentExample,
@@ -12,9 +14,6 @@ import type {
 import { formatVersionLabel } from '@/lib/docs/version';
 import type { EntityTone, EntityToneStyle } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
-
-import Button from '@ui/Button';
-import { Icon } from '@ui/Icon';
 
 import { Pill } from '../ui/Pill';
 import SeeAlso from '../ui/SeeAlso';

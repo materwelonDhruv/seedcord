@@ -110,5 +110,6 @@ export const rawExternalLinks = {
     '@discordjs/collection': 'https://discord.js.org/docs',
     mongoose: 'https://mongoosejs.com/docs/guide.html',
     prettier: 'https://prettier.io/docs/api',
-    'prettier.io': 'https://prettier.io/docs/api'
+    'prettier.io': 'https://prettier.io/docs/api',
+    'type-fest': 'https://github.com/sindresorhus/type-fest'
 } as const;

@@ -5,8 +5,8 @@ import { useCallback, useState } from 'react';
 
 import { cn } from '@lib/utils';
 
-import Button from './Button';
-import { Icon } from './Icon';
+import Button from './AButton';
+import { Icon } from './AnIcon';
 
 import type { ReactElement } from 'react';
 

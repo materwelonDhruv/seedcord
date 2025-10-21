@@ -1,9 +1,9 @@
 import { ChevronDown } from 'lucide-react';
 
+import { Icon } from '@/components/ui/AnIcon';
 import type { CommentExample } from '@/lib/docs/types';
 
 import { cn } from '@lib/utils';
-import { Icon } from '@ui/Icon';
 
 import type { ReactElement } from 'react';
 

@@ -5,7 +5,7 @@ import { type ReactElement, useCallback, useEffect, useRef, useState } from 'rea
 
 import { cn } from '@lib/utils';
 
-import { Icon } from './Icon';
+import { Icon } from './AnIcon';
 
 const COPY_FEEDBACK_DURATION_MS = 1600;
 

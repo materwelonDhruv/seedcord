@@ -1,10 +1,10 @@
-import type { TupleOf } from '@seedcord/types';
+import type { TupleOf } from 'type-fest';
 
 export interface RoundToDenomOptions {
     /**
      * Suffixes to use for each denomination level. Defaults to `['K', 'M', 'B', 'T', 'Q']`.
      */
-    suffixes?: TupleOf<string, 5>;
+    suffixes?: TupleOf<5, string>;
     /** Number of decimal places to include in the rounded result. Defaults to `1`. */
     precision?: number;
 }

@@ -1,6 +1,5 @@
+import Button from '@/components/ui/AButton';
 import type { FunctionSignatureModel } from '@/lib/docs/types';
-
-import Button from '@ui/Button';
 
 import { CommentExamples } from '../comments/CommentExamples';
 import { CommentParagraphs } from '../comments/CommentParagraphs';

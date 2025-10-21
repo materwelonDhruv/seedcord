@@ -3,8 +3,9 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
+import { Icon } from '@/components/ui/AnIcon';
+
 import { cn } from '@lib/utils';
-import { Icon } from '@ui/Icon';
 
 import { MEMBER_HEADER_ICONS, MEMBER_TITLES } from '../constants';
 import { MemberCard } from './MemberCard';

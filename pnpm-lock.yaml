@@ -24,6 +24,9 @@ catalogs:
         reflect-metadata:
             specifier: 0.2.2
             version: 0.2.2
+        type-fest:
+            specifier: 5.1.0
+            version: 5.1.0
         typedoc:
             specifier: 0.28.14
             version: 0.28.13
@@ -149,6 +152,9 @@ importers:
             shiki:
                 specifier: ^3.13.0
                 version: 3.13.0
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             zustand:
                 specifier: ^5.0.8
                 version: 5.0.8(@types/react@19.2.2)(react@19.2.0)
@@ -361,6 +367,9 @@ importers:
             seedcord:
                 specifier: workspace:^
                 version: link:../seedcord
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             typescript:
                 specifier: catalog:peer
                 version: 5.9.3
@@ -398,6 +407,9 @@ importers:
             reflect-metadata:
                 specifier: catalog:deps
                 version: 0.2.2
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             typescript:
                 specifier: catalog:peer
                 version: 5.9.3
@@ -426,6 +438,9 @@ importers:
             envapt:
                 specifier: catalog:deps
                 version: 4.0.0
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             typescript:
                 specifier: catalog:peer
                 version: 5.9.3
@@ -472,6 +487,9 @@ importers:
             discord.js:
                 specifier: catalog:deps
                 version: 14.23.2
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             typescript:
                 specifier: catalog:peer
                 version: 5.9.3
@@ -497,6 +515,9 @@ importers:
             discord.js:
                 specifier: catalog:deps
                 version: 14.23.2
+            type-fest:
+                specifier: catalog:deps
+                version: 5.1.0
             typescript:
                 specifier: catalog:peer
                 version: 5.9.3
@@ -7324,6 +7345,13 @@ packages:
             }
         engines: { node: ^14.18.0 || >=16.0.0 }
 
+    tagged-tag@1.0.0:
+        resolution:
+            {
+                integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==
+            }
+        engines: { node: '>=20' }
+
     tailwindcss@4.1.15:
         resolution:
             {
@@ -7601,6 +7629,13 @@ packages:
                 integrity: sha512-XleUoc9uwGXqjWwXaUTZAmzMcFZ5858QA2vvx1Ur5xIcixXIP+8LnFDgRplU30us6teqdlskFfu+ae4K79Ooew==
             }
         engines: { node: '>= 0.8.0' }
+
+    type-fest@5.1.0:
+        resolution:
+            {
+                integrity: sha512-wQ531tuWvB6oK+pchHIu5lHe5f5wpSCqB8Kf4dWQRbOYc9HTge7JL0G4Qd44bh6QuJCccIzL3bugb8GI0MwHrg==
+            }
+        engines: { node: '>=20' }
 
     typed-array-buffer@1.0.3:
         resolution:
@@ -10631,7 +10666,7 @@ snapshots:
             '@typescript-eslint/parser': 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
             eslint: 9.38.0(jiti@2.6.1)
             eslint-import-resolver-node: 0.3.9
-            eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.38.0(jiti@2.6.1))
+            eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1))
             eslint-plugin-import: 2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-typescript@3.10.1)(eslint@9.38.0(jiti@2.6.1))
             eslint-plugin-jsx-a11y: 6.10.2(eslint@9.38.0(jiti@2.6.1))
             eslint-plugin-react: 7.37.5(eslint@9.38.0(jiti@2.6.1))
@@ -10662,7 +10697,7 @@ snapshots:
         transitivePeerDependencies:
             - supports-color
 
-    eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0)(eslint@9.38.0(jiti@2.6.1)):
+    eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1)):
         dependencies:
             '@nolyfill/is-core-module': 1.0.39
             debug: 4.4.3(supports-color@5.5.0)
@@ -10703,14 +10738,14 @@ snapshots:
         transitivePeerDependencies:
             - supports-color
 
-    eslint-module-utils@2.12.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.38.0(jiti@2.6.1)):
+    eslint-module-utils@2.12.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1)):
         dependencies:
             debug: 3.2.7
         optionalDependencies:
             '@typescript-eslint/parser': 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3)
             eslint: 9.38.0(jiti@2.6.1)
             eslint-import-resolver-node: 0.3.9
-            eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0)(eslint@9.38.0(jiti@2.6.1))
+            eslint-import-resolver-typescript: 3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1))
         transitivePeerDependencies:
             - supports-color
 
@@ -10754,7 +10789,7 @@ snapshots:
             doctrine: 2.1.0
             eslint: 9.38.0(jiti@2.6.1)
             eslint-import-resolver-node: 0.3.9
-            eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1)(eslint@9.38.0(jiti@2.6.1))
+            eslint-module-utils: 2.12.1(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.10.1(eslint-plugin-import@2.32.0(@typescript-eslint/parser@8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.3))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1)))(eslint@9.38.0(jiti@2.6.1))
             hasown: 2.0.2
             is-core-module: 2.16.1
             is-glob: 4.0.3
@@ -12528,6 +12563,8 @@ snapshots:
         dependencies:
             '@pkgr/core': 0.2.9
 
+    tagged-tag@1.0.0: {}
+
     tailwindcss@4.1.15: {}
 
     tapable@2.3.0: {}
@@ -12674,6 +12711,10 @@ snapshots:
     type-check@0.4.0:
         dependencies:
             prelude-ls: 1.2.1
+
+    type-fest@5.1.0:
+        dependencies:
+            tagged-tag: 1.0.0
 
     typed-array-buffer@1.0.3:
         dependencies:

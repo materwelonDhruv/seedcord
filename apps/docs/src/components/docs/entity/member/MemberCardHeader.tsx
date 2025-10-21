@@ -1,8 +1,9 @@
 import { Code } from 'lucide-react';
 
 // access label formatting is now shown in signatures; import removed
+import { Icon } from '@/components/ui/AnIcon';
+
 import { CopyAnchorButton } from '@ui/CopyAnchorButton';
-import { Icon } from '@ui/Icon';
 
 import { CommentParagraphs } from '../comments/CommentParagraphs';
 

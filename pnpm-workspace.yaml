@@ -11,6 +11,7 @@ catalogs:
         prettier: 3.6.2
         reflect-metadata: 0.2.2
         typedoc: 0.28.14
+        type-fest: 5.1.0
     peer:
         eslint: 9.38.0
         typescript: 5.9.3

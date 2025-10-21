@@ -1,4 +1,5 @@
-import type { NumberRange, TypedExclude } from '@seedcord/types';
+import type { TypedExclude } from '@seedcord/types';
+import type { IntClosedRange } from 'type-fest';
 
 /** Actions that can occur during lifecycle phases */
 export type LifecycleAction = 'start' | 'complete' | 'error';
@@ -9,7 +10,7 @@ export type LifecycleAction = 'start' | 'complete' | 'error';
  * @typeParam Phases - Array of phase numbers to generate events for
  */
 export type PhaseEvents<Prefix extends string, Phases extends number[]> =
-    | `phase:${NumberRange<1, Phases['length']>}:${TypedExclude<LifecycleAction, 'error'>}`
+    | `phase:${IntClosedRange<1, Phases['length']>}:${TypedExclude<LifecycleAction, 'error'>}`
     | `${Prefix}:${LifecycleAction}`;
 
 /** Base interface for a lifecycle task */
