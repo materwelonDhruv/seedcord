@@ -24,7 +24,7 @@ function Navbar(): ReactElement {
                             className="group flex cursor-pointer items-center rounded-2xl border border-transparent px-3 py-1.5 text-(--text) transition hover:border-[color-mix(in_srgb,var(--border)_70%,transparent)] hover:bg-[color-mix(in_srgb,var(--bg)_92%,#ffffff_8%)] focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-a)_45%,transparent)] focus-visible:outline-offset-2"
                             aria-label="Seedcord home"
                         >
-                            <SeedcordMark textClassName="transition group-hover:text-[color-mix(in_srgb,var(--text)_88%,#4b5563_12%)]" />
+                            <SeedcordMark />
                         </Link>
                         <nav className="hidden items-center gap-2 lg:flex" aria-label="Primary navigation">
                             <Link
@@ -40,32 +40,21 @@ function Navbar(): ReactElement {
                             <div className="flex items-center gap-2">
                                 <HeaderSearchControls />
                                 <HeaderSettingsPopover />
-                                <Tooltip.Root>
-                                    <Tooltip.Trigger asChild>
-                                        <Button
-                                            asChild
-                                            variant="ghost"
-                                            size="icon"
-                                            aria-label="Open GitHub repository"
-                                            className="text-(--text)"
-                                        >
-                                            <Link
-                                                href="https://github.com/materwelondhruv/seedcord"
-                                                target="_blank"
-                                                rel="noreferrer"
-                                            >
-                                                <Icon icon={GithubIcon} size={20} />
-                                            </Link>
-                                        </Button>
-                                    </Tooltip.Trigger>
-                                    <Tooltip.Content
-                                        sideOffset={6}
-                                        className="rounded-md bg-(--surface) px-2 py-1 text-xs text-(--text) shadow-soft"
+                                <Button
+                                    asChild
+                                    variant="ghost"
+                                    size="icon"
+                                    aria-label="Open GitHub repository"
+                                    className="text-(--text)"
+                                >
+                                    <Link
+                                        href="https://github.com/materwelondhruv/seedcord"
+                                        target="_blank"
+                                        rel="noreferrer"
                                     >
-                                        View repository
-                                        <Tooltip.Arrow className="fill-(--surface)" />
-                                    </Tooltip.Content>
-                                </Tooltip.Root>
+                                        <Icon icon={GithubIcon} size={20} />
+                                    </Link>
+                                </Button>
                             </div>
                         </Tooltip.Provider>
                     </div>

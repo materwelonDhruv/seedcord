@@ -75,10 +75,10 @@
     }
 }
 
-:focus-visible {
+/* :focus-visible {
     outline: 2px solid color-mix(in srgb, var(--accent-b) 78%, transparent);
     outline-offset: 3px;
-}
+} */
 
 .border-border {
     border-color: var(--border);
