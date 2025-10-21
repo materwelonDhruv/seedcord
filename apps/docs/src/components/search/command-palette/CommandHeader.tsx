@@ -3,8 +3,8 @@
 import { Command } from 'cmdk';
 import { Search, X } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
-import { Icon } from '@/components/ui/AnIcon';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
 
 import type { ReactElement, RefObject } from 'react';
 
@@ -15,7 +15,7 @@ interface CommandHeaderProps {
     searchValue: string;
 }
 
-export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: CommandHeaderProps): ReactElement {
+function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: CommandHeaderProps): ReactElement {
     return (
         <div className="border-b border-border px-4 py-3">
             <div className="flex items-center gap-2 rounded-lg border border-(--border)/80 bg-(--surface-muted) px-3 py-2 transition focus-within:border-(--accent-b)/35 focus-within:bg-(--surface-muted)">
@@ -49,3 +49,5 @@ export function CommandHeader({ inputRef, onClose, onValueChange, searchValue }:
         </div>
     );
 }
+
+export default CommandHeader;

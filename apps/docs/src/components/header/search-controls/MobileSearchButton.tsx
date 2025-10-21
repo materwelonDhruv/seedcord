@@ -2,15 +2,14 @@
 
 import { Search } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
-import Icon from '@/components/ui/AnIcon';
-
 import { log } from '@lib/logger';
 import useUIStore from '@store/ui';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
 
 import type { ReactElement } from 'react';
 
-export function MobileSearchButton(): ReactElement {
+function MobileSearchButton(): ReactElement {
     const setCommandPaletteOpen = useUIStore((state) => state.setCommandPaletteOpen);
 
     return (
@@ -28,3 +27,5 @@ export function MobileSearchButton(): ReactElement {
         </Button>
     );
 }
+
+export default MobileSearchButton;

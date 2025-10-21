@@ -11,7 +11,7 @@ import { cn } from '@lib/utils';
 import type { SidebarItemProps } from './types';
 import type { ReactElement } from 'react';
 
-export function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactElement {
+function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactElement {
     const toneConfig = getToneConfig(tone);
     const ItemIcon = toneConfig.icon;
     const toneStyles = toneConfig.styles;

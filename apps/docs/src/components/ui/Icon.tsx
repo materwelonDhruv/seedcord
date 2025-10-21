@@ -13,7 +13,7 @@ interface IconProps {
     className?: string;
 }
 
-export function Icon({ icon: iconComponent, size = 18, title, className }: IconProps): ReactElement {
+function Icon({ icon: iconComponent, size = 18, title, className }: IconProps): ReactElement {
     const IconComponent: IconComponentType = iconComponent;
 
     if (title) {

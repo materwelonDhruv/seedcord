@@ -105,7 +105,7 @@ function PackageVersionOverview({
     );
 }
 
-export default async function PackageEntityPage({ params }: { params: Promise<PageParams> }): Promise<ReactElement> {
+async function PackageEntityPage({ params }: { params: Promise<PageParams> }): Promise<ReactElement> {
     const resolvedParams = await params;
     const { entry, version } = await getCatalogContext(resolvedParams);
 
@@ -138,3 +138,5 @@ export default async function PackageEntityPage({ params }: { params: Promise<Pa
 
     return <EntityContent model={entity} />;
 }
+
+export default PackageEntityPage;

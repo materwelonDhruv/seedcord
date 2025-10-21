@@ -1,10 +1,9 @@
 import { Code } from 'lucide-react';
 
-import { Icon } from '@/components/ui/AnIcon';
+import CopyAnchorButton from '@ui/CopyAnchorButton';
+import Icon from '@ui/Icon';
 
-import { CopyAnchorButton } from '@ui/CopyAnchorButton';
-
-import { CommentParagraphs } from '../comments/CommentParagraphs';
+import CommentParagraphs from '../comments/CommentParagraphs';
 import DeprecatedEntity from '../DeprecatedEntity';
 
 import type { DeprecationStatus, EnumMemberModel } from '@lib/docs/types';
@@ -80,7 +79,7 @@ function ActionsCell({
     );
 }
 
-export function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactElement {
+function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactElement {
     const anchorId = `enum-member-${member.id}`;
     const hasSummary = member.summary.length > 0;
 
@@ -115,3 +114,5 @@ export function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactEl
         </article>
     );
 }
+
+export default EnumMemberCard;

@@ -1,6 +1,6 @@
 import type { FunctionSignatureModel } from '@/lib/docs/types';
 
-import { SignatureCard } from '../signatures/SignatureCard';
+import SignatureCard from '../signatures/SignatureCard';
 import SignatureSelector from '../signatures/SignatureSelector';
 import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 
@@ -11,7 +11,7 @@ interface FunctionSignaturesSectionProps {
     signatures: readonly FunctionSignatureModel[];
 }
 
-export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSectionProps): ReactElement | null {
+function FunctionSignaturesSection({ signatures }: FunctionSignaturesSectionProps): ReactElement | null {
     const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
     const [activeSignatureId, setActiveSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
 
@@ -41,3 +41,5 @@ export function FunctionSignaturesSection({ signatures }: FunctionSignaturesSect
         </section>
     );
 }
+
+export default FunctionSignaturesSection;

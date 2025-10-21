@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-export default function NotFound(): ReactElement {
+function NotFound(): ReactElement {
     return (
         <div className="min-h-[60vh] flex items-center justify-center">
             <div className="text-center">
@@ -10,3 +10,5 @@ export default function NotFound(): ReactElement {
         </div>
     );
 }
+
+export default NotFound;

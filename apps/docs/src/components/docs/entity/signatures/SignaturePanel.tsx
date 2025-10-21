@@ -1,8 +1,8 @@
 import type { DeprecationStatus } from '@/lib/docs/types';
 
 import { cn } from '../../../../lib/utils';
-import { CommentExamples } from '../comments/CommentExamples';
-import { CommentParagraphs } from '../comments/CommentParagraphs';
+import CommentExamples from '../comments/CommentExamples';
+import CommentParagraphs from '../comments/CommentParagraphs';
 import DeprecatedEntity from '../DeprecatedEntity';
 
 import type { MemberSignatureDetail, WithParentDeprecationStatus } from '../types';
@@ -16,7 +16,7 @@ interface SignaturePanelProps extends WithParentDeprecationStatus {
     isActive: boolean;
 }
 
-export function SignaturePanel({ signature, isActive, parentDeprecationStatus }: SignaturePanelProps): ReactElement {
+function SignaturePanel({ signature, isActive, parentDeprecationStatus }: SignaturePanelProps): ReactElement {
     const section = (
         <section
             id={signature.anchor}
@@ -77,3 +77,5 @@ export function SignaturePanel({ signature, isActive, parentDeprecationStatus }:
 
     return section;
 }
+
+export default SignaturePanel;

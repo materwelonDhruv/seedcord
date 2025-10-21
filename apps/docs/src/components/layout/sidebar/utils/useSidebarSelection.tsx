@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 
 import type { PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';
 
-export const useSidebarSelection = (
+export function useSidebarSelection(
     catalog: readonly PackageCatalogEntry[],
     activePackageId: string,
     activeVersionId: string
@@ -12,7 +12,7 @@ export const useSidebarSelection = (
     activeVersion: PackageVersionCatalog | null;
     packageOptions: readonly PackageCatalogEntry[];
     versionOptions: readonly PackageVersionCatalog[];
-} => {
+} {
     const activePackage = useMemo(() => {
         if (!catalog.length) {
             return null;
@@ -39,4 +39,4 @@ export const useSidebarSelection = (
         packageOptions: catalog,
         versionOptions: activePackage?.versions ?? []
     };
-};
+}

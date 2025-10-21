@@ -8,7 +8,7 @@ import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 import type { ActiveSignatureListProps } from '../utils/useActiveSignatureList';
 import type { ReactElement } from 'react';
 
-export default function FunctionSignaturesInline({
+function FunctionSignaturesInline({
     signatures
 }: {
     signatures: readonly FunctionSignatureModel[];
@@ -27,3 +27,5 @@ export default function FunctionSignaturesInline({
         </div>
     );
 }
+
+export default FunctionSignaturesInline;

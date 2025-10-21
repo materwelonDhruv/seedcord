@@ -1,13 +1,14 @@
-import Button from '@/components/ui/AButton';
 import type { FunctionSignatureModel } from '@/lib/docs/types';
 
-import { CommentExamples } from '../comments/CommentExamples';
-import { CommentParagraphs } from '../comments/CommentParagraphs';
+import Button from '@ui/Button';
+
+import CommentExamples from '../comments/CommentExamples';
+import CommentParagraphs from '../comments/CommentParagraphs';
 import { renderParameterBadge } from '../utils/renderers/renderParameterBadge';
 
 import type { ReactElement } from 'react';
 
-export function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
+function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
     return (
         <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
             <header className="flex flex-wrap items-center justify-between gap-3">
@@ -84,3 +85,5 @@ export function SignatureCard({ signature }: { signature: FunctionSignatureModel
         </article>
     );
 }
+
+export default SignatureCard;

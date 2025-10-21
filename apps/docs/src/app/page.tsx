@@ -5,7 +5,7 @@ import type { ReactElement } from 'react';
 
 const GUIDE_URL = 'https://github.com/materwelonDhruv/seedcord-guide';
 
-export default function Home(): ReactElement {
+function Home(): ReactElement {
     return (
         <main id="main-content" className="bg-(--bg-dim)">
             <div className="mx-auto flex w-full max-w-5xl flex-col gap-12 px-4 py-16 md:px-6 lg:py-24">
@@ -53,3 +53,5 @@ export default function Home(): ReactElement {
         </main>
     );
 }
+
+export default Home;

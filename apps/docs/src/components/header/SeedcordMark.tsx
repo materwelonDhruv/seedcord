@@ -10,7 +10,7 @@ interface SeedcordMarkProps {
     showWordmark?: boolean;
 }
 
-export function SeedcordMark({ className, textClassName, showWordmark = true }: SeedcordMarkProps): ReactElement {
+function SeedcordMark({ className, textClassName, showWordmark = true }: SeedcordMarkProps): ReactElement {
     return (
         <span className={cn('flex select-none items-center gap-2', className)}>
             <Image src="/logo.svg" alt="Seedcord logo" width={36} height={36} priority className="h-9 w-9" />

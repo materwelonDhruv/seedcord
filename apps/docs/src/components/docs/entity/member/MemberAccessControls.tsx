@@ -10,7 +10,7 @@ import { useUIStore, type UIStore } from '@store/ui';
 
 import type { ReactElement } from 'react';
 
-export function MemberAccessControls({
+function MemberAccessControls({
     className,
     orientation = 'vertical',
     showLegend = true

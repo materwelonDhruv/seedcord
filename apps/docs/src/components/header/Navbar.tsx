@@ -3,13 +3,12 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Link from 'next/link';
 
-import Button from '@/components/ui/AButton';
-import { Icon } from '@/components/ui/AnIcon';
-
+import Button from '@ui/Button';
 import GithubIcon from '@ui/GithubIcon';
+import Icon from '@ui/Icon';
 
-import { HeaderSettingsPopover } from './HeaderSettingsPopover';
-import { HeaderSearchControls } from './search-controls/HeaderSearchControls';
+import HeaderSettingsPopover from './HeaderSettingsPopover';
+import HeaderSearchControls from './search-controls/HeaderSearchControls';
 import SeedcordMark from './SeedcordMark';
 
 import type { ReactElement } from 'react';

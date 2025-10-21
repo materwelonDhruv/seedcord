@@ -1,11 +1,10 @@
 import { Code } from 'lucide-react';
 
 // access label formatting is now shown in signatures; import removed
-import { Icon } from '@/components/ui/AnIcon';
+import CopyAnchorButton from '@ui/CopyAnchorButton';
+import Icon from '@ui/Icon';
 
-import { CopyAnchorButton } from '@ui/CopyAnchorButton';
-
-import { CommentParagraphs } from '../comments/CommentParagraphs';
+import CommentParagraphs from '../comments/CommentParagraphs';
 
 import type { EntityMemberSummary } from '../types';
 import type { ReactElement } from 'react';
@@ -17,7 +16,7 @@ export interface MemberCardHeaderProps {
     prefix?: 'property' | 'method' | 'constructor' | 'typeParameter';
 }
 
-export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderProps): ReactElement {
+function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderProps): ReactElement {
     return (
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
@@ -68,3 +67,5 @@ export function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardH
         </div>
     );
 }
+
+export default MemberCardHeader;

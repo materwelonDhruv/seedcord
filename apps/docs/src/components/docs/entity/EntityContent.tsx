@@ -6,7 +6,7 @@ import type { EntityModel, FunctionEntityModel } from '@/lib/docs/types';
 
 import { log } from '@lib/logger';
 
-import { EntityHeader } from './EntityHeader';
+import EntityHeader from './EntityHeader';
 import { renderEntityBody } from './utils/renderers/renderEntityBody';
 import { useEntityTone } from './utils/useEntityTone';
 
@@ -14,7 +14,7 @@ export interface EntityContentProps {
     model: EntityModel;
 }
 
-export default function EntityContent({ model }: EntityContentProps): ReactElement {
+function EntityContent({ model }: EntityContentProps): ReactElement {
     const { tone, badgeLabel } = useEntityTone(model.kind, model.name);
 
     useEffect(() => {
@@ -54,3 +54,5 @@ export default function EntityContent({ model }: EntityContentProps): ReactEleme
         </article>
     );
 }
+
+export default EntityContent;

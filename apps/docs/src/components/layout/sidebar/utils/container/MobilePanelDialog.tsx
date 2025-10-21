@@ -1,11 +1,11 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
+import Button from '@ui/Button';
 
 import type { ReactNode } from 'react';
 
-export function MobilePanelDialog({
+function MobilePanelDialog({
     open,
     onOpenChange,
     title,
@@ -42,3 +42,5 @@ export function MobilePanelDialog({
         </Dialog.Root>
     );
 }
+
+export default MobilePanelDialog;

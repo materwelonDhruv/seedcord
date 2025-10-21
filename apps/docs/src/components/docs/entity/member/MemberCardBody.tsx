@@ -1,9 +1,9 @@
 'use client';
 
 import SeeAlso from '../../ui/SeeAlso';
-import { CommentExamples } from '../comments/CommentExamples';
-import { CommentParagraphs } from '../comments/CommentParagraphs';
-import { SignaturePanel } from '../signatures/SignaturePanel';
+import CommentExamples from '../comments/CommentExamples';
+import CommentParagraphs from '../comments/CommentParagraphs';
+import SignaturePanel from '../signatures/SignaturePanel';
 import SignatureSelector from '../signatures/SignatureSelector';
 import { useActiveSignature } from '../utils/useActiveSignature';
 
@@ -16,7 +16,7 @@ interface MemberCardBodyProps extends WithParentDeprecationStatus {
     member: EntityMemberSummary;
 }
 
-export function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps): ReactElement {
+function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps): ReactElement {
     const [activeSignatureId, setActiveSignatureId] = useActiveSignature(member);
     const hasSharedDocumentation = member.sharedDocumentation.length > 0;
     const hasSharedExamples = member.sharedExamples.length > 0;
@@ -64,3 +64,5 @@ export function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBo
         </div>
     );
 }
+
+export default MemberCardBody;

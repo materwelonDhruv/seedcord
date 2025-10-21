@@ -10,7 +10,7 @@ import type {
     CodeRepresentation
 } from '@/lib/docs/types';
 
-import { MemberDetailGroup } from '../member/MemberDetailGroup';
+import MemberDetailGroup from '../member/MemberDetailGroup';
 import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 
 import type { EntityMemberSummary } from '../types';
@@ -76,7 +76,7 @@ function buildParamMember(p: FunctionSignatureParameterModel, index: number): En
     } as unknown as EntityMemberSummary;
 }
 
-export default function FunctionBody({ model }: { model: FunctionEntityModel }): ReactElement | null {
+function FunctionBody({ model }: { model: FunctionEntityModel }): ReactElement | null {
     const signatures = model.signatures;
     const mapped = signatures.map((s) => ({ id: s.id, anchor: (s as unknown as ActiveSignatureListProps).anchor }));
     const [activeSignatureId] = useActiveSignatureList(mapped as ActiveSignatureListProps[]);
@@ -104,3 +104,5 @@ export default function FunctionBody({ model }: { model: FunctionEntityModel }):
         </section>
     );
 }
+
+export default FunctionBody;

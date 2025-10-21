@@ -2,8 +2,8 @@ import type { DeprecationStatus } from '@/lib/docs/types';
 
 import { cn } from '@lib/utils';
 
-import { MemberCardBody } from './MemberCardBody';
-import { MemberCardHeader } from './MemberCardHeader';
+import MemberCardBody from './MemberCardBody';
+import MemberCardHeader from './MemberCardHeader';
 import DeprecatedEntity from '../DeprecatedEntity';
 import { buildTagList } from '../utils/buildTagList';
 
@@ -15,7 +15,7 @@ interface MemberCardProps extends WithParentDeprecationStatus {
     prefix: MemberPrefix;
     isLast: boolean;
 }
-export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: MemberCardProps): ReactElement {
+function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: MemberCardProps): ReactElement {
     const tags = buildTagList(member);
     const anchorId = `${prefix}-${member.id}`;
     const hasTags = tags.length > 0;
@@ -56,3 +56,5 @@ export function MemberCard({ member, prefix, isLast, parentDeprecationStatus }: 
         </article>
     );
 }
+
+export default MemberCard;

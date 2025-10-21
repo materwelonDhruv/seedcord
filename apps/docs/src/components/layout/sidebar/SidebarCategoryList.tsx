@@ -3,12 +3,11 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import Icon from '@/components/ui/AnIcon';
-
 import { getToneConfig } from '@lib/entityMetadata';
 import { cn } from '@lib/utils';
+import Icon from '@ui/Icon';
 
-import { SidebarItem } from './SidebarItem';
+import SidebarItem from './SidebarItem';
 
 import type { SidebarCategoryListProps } from './types';
 import type { ReactElement } from 'react';
@@ -67,7 +66,7 @@ function SidebarCategory({
     );
 }
 
-export function SidebarCategoryList({ categories, activeHref, storageKey }: SidebarCategoryListProps): ReactElement {
+function SidebarCategoryList({ categories, activeHref, storageKey }: SidebarCategoryListProps): ReactElement {
     // Start with an empty object so server and initial client render match.
     const [collapsedCategories, setCollapsedCategories] = useState<Record<string, boolean>>({});
 

@@ -1,4 +1,4 @@
-import { MemberDetailGroup } from '../../member/MemberDetailGroup';
+import MemberDetailGroup from '../../member/MemberDetailGroup';
 
 import type { TypeModel } from '../../types';
 import type { ReactElement } from 'react';

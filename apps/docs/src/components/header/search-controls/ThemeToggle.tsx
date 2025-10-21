@@ -2,14 +2,13 @@ import { MonitorSmartphone, Sun, MoonStar } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-import Button from '@/components/ui/AButton';
-import Icon from '@/components/ui/AnIcon';
-
 import { log } from '@lib/logger';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
 
 import type { ReactElement } from 'react';
 
-export function ThemeToggle(): ReactElement {
+function ThemeToggle(): ReactElement {
     const { resolvedTheme, setTheme } = useTheme();
 
     const [mounted, setMounted] = useState(false);
@@ -56,3 +55,5 @@ export function ThemeToggle(): ReactElement {
         </Button>
     );
 }
+
+export default ThemeToggle;

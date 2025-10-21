@@ -18,7 +18,7 @@ interface InstallCommandTabsProps {
     commands: readonly CommandTab[];
 }
 
-export function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement | null {
+function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement | null {
     const initialId = commands[0]?.id;
     const [activeId, setActiveId] = useState(initialId);
 

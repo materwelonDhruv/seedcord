@@ -8,7 +8,7 @@ interface ThemeProviderProps {
     children: ReactNode;
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
+function ThemeProvider({ children }: ThemeProviderProps): ReactElement {
     return (
         <NextThemesProvider attribute="data-theme" defaultTheme="system" enableSystem storageKey="theme">
             {children}

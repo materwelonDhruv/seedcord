@@ -21,7 +21,7 @@ interface SidebarSelectProps {
     onChange: (value: string) => void;
 }
 
-export function SidebarSelect({ id, label, value, options, onChange }: SidebarSelectProps): ReactElement {
+function SidebarSelect({ id, label, value, options, onChange }: SidebarSelectProps): ReactElement {
     const labelId = `${id}-label`;
     const [open, setOpen] = useState(false);
     const selectedLabel = useMemo(

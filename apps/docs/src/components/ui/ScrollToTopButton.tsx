@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import { cn } from '@lib/utils';
 
-import Button from './AButton';
+import Button from './Button';
 
 import type { ReactElement } from 'react';
 
@@ -17,7 +17,7 @@ const VIEWPORT_THRESHOLD_MULTIPLIER = 0.4;
 const MIN_SCROLL_THRESHOLD = 180;
 const MAX_SCROLL_THRESHOLD = 520;
 
-export function ScrollToTopButton({ className }: ScrollToTopButtonProps): ReactElement {
+function ScrollToTopButton({ className }: ScrollToTopButtonProps): ReactElement {
     const [visible, setVisible] = useState(false);
     const thresholdRef = useRef(0);
 

@@ -14,7 +14,7 @@ interface CodeBlockProps {
     label?: string;
 }
 
-export async function CodeBlock({
+async function CodeBlock({
     code,
     lang = 'ts',
     className,

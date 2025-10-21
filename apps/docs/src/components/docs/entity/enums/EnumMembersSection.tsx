@@ -2,7 +2,7 @@ import type { EnumMemberModel } from '@/lib/docs/types';
 
 import { cn } from '@lib/utils';
 
-import { EnumMemberCard } from './EnumMemberCard';
+import EnumMemberCard from './EnumMemberCard';
 
 import type { ReactElement } from 'react';
 
@@ -10,7 +10,7 @@ interface EnumMembersSectionProps {
     members: readonly EnumMemberModel[];
 }
 
-export function EnumMembersSection({ members }: EnumMembersSectionProps): ReactElement | null {
+function EnumMembersSection({ members }: EnumMembersSectionProps): ReactElement | null {
     if (!members.length) {
         return null;
     }
@@ -30,3 +30,5 @@ export function EnumMembersSection({ members }: EnumMembersSectionProps): ReactE
         </section>
     );
 }
+
+export default EnumMembersSection;

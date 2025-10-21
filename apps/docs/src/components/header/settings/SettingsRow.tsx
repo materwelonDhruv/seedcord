@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 
-export function SettingsRow({
+function SettingsRow({
     title,
     subtitle,
     children

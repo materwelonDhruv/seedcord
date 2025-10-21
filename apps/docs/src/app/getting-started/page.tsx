@@ -2,7 +2,7 @@ import type { ReactElement } from 'react';
 
 export const dynamic = 'force-static';
 
-export default function GettingStartedPage(): ReactElement {
+function GettingStartedPage(): ReactElement {
     return (
         <article className="space-y-5 rounded-2xl border border-border bg-surface p-5 shadow-soft">
             <header className="space-y-2">
@@ -28,3 +28,5 @@ export default function GettingStartedPage(): ReactElement {
         </article>
     );
 }
+
+export default GettingStartedPage;

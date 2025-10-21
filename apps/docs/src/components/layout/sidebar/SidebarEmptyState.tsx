@@ -2,7 +2,7 @@ import { cn } from '@lib/utils';
 
 import type { ReactElement } from 'react';
 
-export function SidebarEmptyState({ className }: { className?: string }): ReactElement {
+function SidebarEmptyState({ className }: { className?: string }): ReactElement {
     return (
         <nav
             aria-label="Library navigation"
@@ -15,3 +15,5 @@ export function SidebarEmptyState({ className }: { className?: string }): ReactE
         </nav>
     );
 }
+
+export default SidebarEmptyState;

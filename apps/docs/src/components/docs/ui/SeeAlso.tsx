@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-export default function SeeAlso({
+function SeeAlso({
     entries
 }: {
     entries?: readonly { name: string; href?: string }[] | undefined;
@@ -27,3 +27,5 @@ export default function SeeAlso({
         </p>
     );
 }
+
+export default SeeAlso;

@@ -10,11 +10,7 @@ interface CommentParagraphsProps {
     paragraphClassName?: string;
 }
 
-export function CommentParagraphs({
-    paragraphs,
-    className,
-    paragraphClassName
-}: CommentParagraphsProps): ReactElement | null {
+function CommentParagraphs({ paragraphs, className, paragraphClassName }: CommentParagraphsProps): ReactElement | null {
     const entries = paragraphs.filter((paragraph) => paragraph.html || paragraph.plain);
     if (entries.length === 0) {
         return null;
@@ -43,3 +39,5 @@ export function CommentParagraphs({
         </div>
     );
 }
+
+export default CommentParagraphs;

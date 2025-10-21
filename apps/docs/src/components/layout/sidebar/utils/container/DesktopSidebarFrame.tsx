@@ -1,6 +1,6 @@
 import type { ReactNode, ReactElement } from 'react';
 
-export function DesktopSidebarFrame({ sidebar }: { sidebar: ReactNode }): ReactElement {
+function DesktopSidebarFrame({ sidebar }: { sidebar: ReactNode }): ReactElement {
     return (
         <aside
             className="hidden lg:block lg:shrink-0"
@@ -24,3 +24,5 @@ export function DesktopSidebarFrame({ sidebar }: { sidebar: ReactNode }): ReactE
         </aside>
     );
 }
+
+export default DesktopSidebarFrame;

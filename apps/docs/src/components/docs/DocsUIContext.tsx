@@ -12,13 +12,7 @@ export interface DocsUISnapshot {
 
 export const DocsUIContext = React.createContext<DocsUISnapshot | undefined>(undefined);
 
-export function DocsUIProvider({
-    value,
-    children
-}: {
-    value: DocsUISnapshot;
-    children: React.ReactNode;
-}): React.ReactElement {
+function DocsUIProvider({ value, children }: { value: DocsUISnapshot; children: React.ReactNode }): React.ReactElement {
     return <DocsUIContext.Provider value={value}>{children}</DocsUIContext.Provider>;
 }
 

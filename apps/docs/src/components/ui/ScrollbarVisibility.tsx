@@ -11,7 +11,7 @@ interface Handlers {
 
 const HIDE_TIMEOUT_MS = 900;
 
-export default function ScrollbarVisibility(): null {
+function ScrollbarVisibility(): null {
     useEffect(() => {
         let globalHideTimer: number | null = null;
 
@@ -93,3 +93,5 @@ export default function ScrollbarVisibility(): null {
 
     return null;
 }
+
+export default ScrollbarVisibility;

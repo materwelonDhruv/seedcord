@@ -6,9 +6,9 @@ import { useMemo, useRef, useEffect } from 'react';
 import { cn } from '@lib/utils';
 import useUIStore from '@store/ui';
 
-import { SidebarCategoryList } from './SidebarCategoryList';
-import { SidebarEmptyState } from './SidebarEmptyState';
-import { SidebarHeader } from './SidebarHeader';
+import SidebarCategoryList from './SidebarCategoryList';
+import SidebarEmptyState from './SidebarEmptyState';
+import SidebarHeader from './SidebarHeader';
 import { getContainerStyles } from './utils/getContainerStyles';
 import { getListStyles } from './utils/getListStyles';
 import { resolveRestSegments } from './utils/resolveRestSegments';

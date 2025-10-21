@@ -4,8 +4,8 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Command } from 'cmdk';
 import { useMemo, useRef } from 'react';
 
-import { CommandHeader } from './CommandHeader';
-import { CommandListItem } from './CommandListItem';
+import CommandHeader from './CommandHeader';
+import CommandListItem from './CommandListItem';
 import { MIN_SEARCH_QUERY_LENGTH } from './constants';
 import { useCommandPaletteSearch } from './useCommandPaletteSearch';
 
@@ -67,7 +67,7 @@ function CommandListContent({
     );
 }
 
-export function CommandPaletteDialog({ controller }: { controller: CommandPaletteController }): ReactElement {
+function CommandPaletteDialog({ controller }: { controller: CommandPaletteController }): ReactElement {
     const {
         open,
         handleOpenChange,
@@ -143,3 +143,5 @@ export function CommandPaletteDialog({ controller }: { controller: CommandPalett
         </Dialog.Root>
     );
 }
+
+export default CommandPaletteDialog;

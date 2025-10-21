@@ -5,8 +5,8 @@ import { useCallback, useState } from 'react';
 
 import { cn } from '@lib/utils';
 
-import Button from './AButton';
-import { Icon } from './AnIcon';
+import Button from './Button';
+import Icon from './Icon';
 
 import type { ReactElement } from 'react';
 
@@ -20,7 +20,7 @@ interface CopyButtonProps {
 
 const COPY_RESET_DELAY_MS = 2000;
 
-export function CopyButton({
+function CopyButton({
     value,
     className,
     idleLabel = 'Copy',

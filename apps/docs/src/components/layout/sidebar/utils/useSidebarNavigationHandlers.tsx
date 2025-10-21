@@ -6,7 +6,7 @@ import { buildVersionPath } from './buildVersionPath';
 
 import type { PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';
 
-export const useSidebarNavigationHandlers = (
+export function useSidebarNavigationHandlers(
     catalog: readonly PackageCatalogEntry[],
     versionOptions: readonly PackageVersionCatalog[],
     restSegments: readonly string[],
@@ -14,7 +14,7 @@ export const useSidebarNavigationHandlers = (
 ): {
     handlePackageChange: (value: string) => void;
     handleVersionChange: (value: string) => void;
-} => {
+} {
     const router = useRouter();
     const pathname = usePathname();
     const handlePackageChange = useCallback(
@@ -55,4 +55,4 @@ export const useSidebarNavigationHandlers = (
         handlePackageChange,
         handleVersionChange
     };
-};
+}

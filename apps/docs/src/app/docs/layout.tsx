@@ -59,7 +59,7 @@ const resolveActiveSelection = (
     };
 };
 
-export default async function DocsLayout({ children, params }: DocsLayoutProps): Promise<ReactNode> {
+async function DocsLayout({ children, params }: DocsLayoutProps): Promise<ReactNode> {
     const catalog = await loadDocsCatalog();
     const resolvedParams = await params;
     const snapshot = {};
@@ -89,3 +89,5 @@ export default async function DocsLayout({ children, params }: DocsLayoutProps):
         </>
     );
 }
+
+export default DocsLayout;

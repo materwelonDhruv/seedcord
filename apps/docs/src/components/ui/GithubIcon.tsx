@@ -9,7 +9,7 @@ interface Props {
     [key: string]: unknown;
 }
 
-export default function GithubIcon({ size = 18, className, title, ...props }: Props): ReactElement {
+function GithubIcon({ size = 18, className, title, ...props }: Props): ReactElement {
     const DEFAULT_STROKE_WIDTH = 12;
     return (
         <svg
@@ -31,3 +31,5 @@ export default function GithubIcon({ size = 18, className, title, ...props }: Pr
         </svg>
     );
 }
+
+export default GithubIcon;

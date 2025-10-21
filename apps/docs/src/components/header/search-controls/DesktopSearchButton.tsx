@@ -2,15 +2,14 @@
 
 import { Search, Command } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
-import Icon from '@/components/ui/AnIcon';
-
 import { log } from '@lib/logger';
 import useUIStore from '@store/ui';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
 
 import type { ReactElement } from 'react';
 
-export function DesktopSearchButton(): ReactElement {
+function DesktopSearchButton(): ReactElement {
     const open = useUIStore((state) => state.isCommandPaletteOpen);
     const setCommandPaletteOpen = useUIStore((state) => state.setCommandPaletteOpen);
 
@@ -39,3 +38,5 @@ export function DesktopSearchButton(): ReactElement {
         </Button>
     );
 }
+
+export default DesktopSearchButton;

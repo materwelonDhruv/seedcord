@@ -3,11 +3,11 @@
 import { cloneElement, isValidElement, useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 import { cn } from '@lib/utils';
-import { ScrollToTopButton } from '@ui/ScrollToTopButton';
+import ScrollToTopButton from '@ui/ScrollToTopButton';
 
-import { DesktopSidebarFrame } from './DesktopSidebarFrame';
-import { MobileNavigationToggle } from './MobileNavigationToggle';
-import { MobilePanelDialog } from './MobilePanelDialog';
+import DesktopSidebarFrame from './DesktopSidebarFrame';
+import MobileNavigationToggle from './MobileNavigationToggle';
+import MobilePanelDialog from './MobilePanelDialog';
 import { SIDEBAR_WIDTH } from '../constants';
 
 import type { SidebarProps as SidebarComponentProps } from '../../types';
@@ -19,7 +19,7 @@ export interface ContainerProps {
     className?: string;
 }
 
-export function Container({ sidebar, children, className }: ContainerProps): ReactNode {
+function Container({ sidebar, children, className }: ContainerProps): ReactNode {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const [navigationOpen, setNavigationOpen] = useState(false);
     const sidebarVariants = useMemo<{ desktop: ReactNode; mobile: ReactNode }>(() => {

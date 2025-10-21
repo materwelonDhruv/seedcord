@@ -34,7 +34,7 @@ interface RootLayoutProps {
     children: ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps): ReactNode {
+function RootLayout({ children }: RootLayoutProps): ReactNode {
     return (
         <html lang="en" suppressHydrationWarning>
             <body
@@ -100,3 +100,5 @@ export default function RootLayout({ children }: RootLayoutProps): ReactNode {
         </html>
     );
 }
+
+export default RootLayout;

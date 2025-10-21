@@ -4,7 +4,7 @@ import type { ReactElement } from 'react';
 
 const OVERLOAD_LABEL_PREFIX = 'Overload';
 
-export default function SignatureSelector({
+function SignatureSelector({
     signatures,
     activeSignatureId,
     onChange,
@@ -53,3 +53,5 @@ export default function SignatureSelector({
         </fieldset>
     );
 }
+
+export default SignatureSelector;

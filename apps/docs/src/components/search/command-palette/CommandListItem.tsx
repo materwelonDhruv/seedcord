@@ -2,10 +2,10 @@
 
 import { Command } from 'cmdk';
 
-import { Icon } from '@/components/ui/AnIcon';
 import { getToneConfig, resolveEntityTone } from '@/lib/entityMetadata';
 
 import { cn } from '@lib/utils';
+import Icon from '@ui/Icon';
 
 import { SEARCH_KIND_ICONS } from './constants';
 
@@ -52,7 +52,7 @@ interface CommandListItemProps {
     onSelect: (action: CommandAction) => void;
 }
 
-export function CommandListItem({ action, onSelect }: CommandListItemProps): ReactElement {
+function CommandListItem({ action, onSelect }: CommandListItemProps): ReactElement {
     const ItemIcon = SEARCH_KIND_ICONS[action.kind];
     const isEntityResult = ENTITY_RESULT_KINDS.has(action.kind);
     const tone = isEntityResult ? resolveEntityTone(action.kind) : undefined;

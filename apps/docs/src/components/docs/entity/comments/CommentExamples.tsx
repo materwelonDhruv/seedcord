@@ -1,9 +1,9 @@
 import { ChevronDown } from 'lucide-react';
 
-import { Icon } from '@/components/ui/AnIcon';
 import type { CommentExample } from '@/lib/docs/types';
 
 import { cn } from '@lib/utils';
+import Icon from '@ui/Icon';
 
 import type { ReactElement } from 'react';
 
@@ -16,7 +16,7 @@ interface CommentExamplesProps {
 const codeContainerClass =
     'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-[var(--text)] sm:text-sm mb-2';
 
-export function CommentExamples({ examples, className, open = false }: CommentExamplesProps): ReactElement | null {
+function CommentExamples({ examples, className, open = false }: CommentExamplesProps): ReactElement | null {
     if (!examples.length) return null;
 
     return (
@@ -64,3 +64,5 @@ export function CommentExamples({ examples, className, open = false }: CommentEx
         </details>
     );
 }
+
+export default CommentExamples;

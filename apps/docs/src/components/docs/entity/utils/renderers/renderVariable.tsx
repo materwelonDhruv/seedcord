@@ -1,4 +1,4 @@
-import { CodePanel } from '@ui/CodePanel';
+import CodePanel from '@ui/CodePanel';
 
 import type { VariableModel } from '../../types';
 import type { ReactElement } from 'react';

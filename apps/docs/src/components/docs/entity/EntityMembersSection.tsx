@@ -7,8 +7,8 @@ import { DocsUIContext } from '@components/docs/DocsUIContext';
 import MemberAccessControls from '@components/docs/entity/member/MemberAccessControls';
 import { useUIStore, type UIStore } from '@store/ui';
 
-import { MemberDetailGroup } from './member/MemberDetailGroup';
-import { MemberList } from './member/MemberList';
+import MemberDetailGroup from './member/MemberDetailGroup';
+import MemberList from './member/MemberList';
 import { renderMemberOverview } from './utils/renderers/renderMemberOverview';
 import { shouldIncludeMember } from './utils/shouldIncludeMember';
 import { useMemberNavigation } from './utils/useMemberNavigation';
@@ -23,7 +23,7 @@ export interface EntityMembersSectionProps extends WithParentDeprecationStatus {
     showAccessControls?: boolean;
 }
 
-export default function EntityMembersSection({
+function EntityMembersSection({
     properties,
     methods,
     constructors = [],
@@ -92,3 +92,5 @@ export default function EntityMembersSection({
         </section>
     );
 }
+
+export default EntityMembersSection;

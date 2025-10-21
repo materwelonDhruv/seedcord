@@ -1,6 +1,6 @@
 'use client';
 
-import { SidebarSelect } from './SidebarSelect';
+import SidebarSelect from './SidebarSelect';
 
 import type { SidebarHeaderPackageOption, SidebarHeaderVersionOption } from './types';
 import type { ReactElement } from 'react';
@@ -14,7 +14,7 @@ interface SidebarHeaderProps {
     onVersionChange: (value: string) => void;
 }
 
-export function SidebarHeader({
+function SidebarHeader({
     packageOptions,
     versionOptions,
     activePackage,

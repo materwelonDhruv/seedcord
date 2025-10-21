@@ -1,7 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
-import { Icon } from '@/components/ui/AnIcon';
 import type {
     CodeRepresentation,
     CommentExample,
@@ -15,14 +13,17 @@ import { formatVersionLabel } from '@/lib/docs/version';
 import type { EntityTone, EntityToneStyle } from '@/lib/entityMetadata';
 import { getToneConfig } from '@/lib/entityMetadata';
 
-import { Pill } from '../ui/Pill';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
+
+import Pill from '../ui/Pill';
 import SeeAlso from '../ui/SeeAlso';
-import { TagPills } from '../ui/TagPills';
-import { CommentExamples } from './comments/CommentExamples';
-import { CommentParagraphs } from './comments/CommentParagraphs';
+import TagPills from '../ui/TagPills';
+import CommentExamples from './comments/CommentExamples';
+import CommentParagraphs from './comments/CommentParagraphs';
 import DeprecatedEntity from './DeprecatedEntity';
 import FunctionSignaturesInline from './functions/FunctionSignaturesInline';
-import { SignatureBlock } from './signatures/SignatureBlock';
+import SignatureBlock from './signatures/SignatureBlock';
 import { buildSummaryNodes } from './utils/buildSummaryNodes';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
@@ -146,7 +147,7 @@ function SignatureArea({
 }
 
 // eslint-disable-next-line complexity
-export function EntityHeader({
+function EntityHeader({
     badgeLabel,
     pkg,
     signature,
@@ -229,3 +230,5 @@ export function EntityHeader({
         </header>
     );
 }
+
+export default EntityHeader;

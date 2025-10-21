@@ -1,15 +1,14 @@
 import { Trash2 } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
-import { Icon } from '@/components/ui/AnIcon';
-
 import { clearDocsHistory } from '@lib/settings/clearHistory';
+import Button from '@ui/Button';
+import Icon from '@ui/Icon';
 
 import SettingsRow from './SettingsRow';
 
 import type { ReactElement } from 'react';
 
-export function ClearHistoryRow(): ReactElement {
+function ClearHistoryRow(): ReactElement {
     const handleClear = (): void => {
         clearDocsHistory();
     };

@@ -2,11 +2,11 @@
 
 import { Menu } from 'lucide-react';
 
-import Button from '@/components/ui/AButton';
+import Button from '@ui/Button';
 
 import type { ReactElement } from 'react';
 
-export function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): ReactElement {
+function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): ReactElement {
     return (
         <div className="flex flex-col gap-3 px-3 pt-5 md:px-5 lg:hidden">
             <div className="flex flex-wrap gap-2">
@@ -23,3 +23,5 @@ export function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): Reac
         </div>
     );
 }
+
+export default MobileNavigationToggle;

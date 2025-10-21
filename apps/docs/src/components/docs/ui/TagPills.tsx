@@ -1,8 +1,8 @@
-import { Pill } from './Pill';
+import Pill from './Pill';
 
 import type { ReactElement } from 'react';
 
-export const TagPills = ({ tags }: { tags: readonly string[] }): ReactElement | null => {
+function TagPills({ tags }: { tags: readonly string[] }): ReactElement | null {
     if (!tags.length) return null;
 
     return (
@@ -20,4 +20,6 @@ export const TagPills = ({ tags }: { tags: readonly string[] }): ReactElement | 
             ) : null}
         </>
     );
-};
+}
+
+export default TagPills;

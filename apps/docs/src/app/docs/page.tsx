@@ -23,7 +23,7 @@ const INSTALL_COMMANDS = [
     }
 ] as const;
 
-export default async function DocsIndexPage(): Promise<ReactElement> {
+async function DocsIndexPage(): Promise<ReactElement> {
     const highlightedCommands = await Promise.all(
         INSTALL_COMMANDS.map(async (command) => ({
             ...command,
@@ -44,3 +44,5 @@ export default async function DocsIndexPage(): Promise<ReactElement> {
         </section>
     );
 }
+
+export default DocsIndexPage;

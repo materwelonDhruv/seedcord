@@ -1,9 +1,10 @@
 import { AlertTriangle } from 'lucide-react';
 
-import { Icon } from '@/components/ui/AnIcon';
 import type { WithDeprecationStatus } from '@/lib/docs/types';
 
-import { CommentParagraphs } from './comments/CommentParagraphs';
+import Icon from '@ui/Icon';
+
+import CommentParagraphs from './comments/CommentParagraphs';
 
 import type { ReactElement, ReactNode } from 'react';
 
@@ -11,7 +12,7 @@ interface DeprecatedEntityProps extends WithDeprecationStatus {
     children: ReactNode;
 }
 
-export default function DeprecatedEntity({
+function DeprecatedEntity({
     deprecationStatus = { isDeprecated: false },
     children
 }: DeprecatedEntityProps): ReactElement {
@@ -37,3 +38,5 @@ export default function DeprecatedEntity({
         </div>
     );
 }
+
+export default DeprecatedEntity;

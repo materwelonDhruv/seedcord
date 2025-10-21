@@ -3,12 +3,11 @@
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
 
-import { Icon } from '@/components/ui/AnIcon';
-
 import { cn } from '@lib/utils';
+import Icon from '@ui/Icon';
 
 import { MEMBER_HEADER_ICONS, MEMBER_TITLES } from '../constants';
-import { MemberCard } from './MemberCard';
+import MemberCard from './MemberCard';
 
 import type { EntityMemberSummary, MemberPrefix, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
@@ -19,7 +18,7 @@ interface MemberDetailGroupProps extends WithParentDeprecationStatus {
     title?: string | undefined;
 }
 
-export function MemberDetailGroup({
+function MemberDetailGroup({
     items,
     prefix,
     title: titleProp,
@@ -80,3 +79,5 @@ export function MemberDetailGroup({
         </section>
     );
 }
+
+export default MemberDetailGroup;

@@ -1,6 +1,6 @@
 'use client';
 
-import { CommandPaletteDialog } from './CommandPaletteDialog';
+import CommandPaletteDialog from './CommandPaletteDialog';
 import { useCommandPaletteController } from './useCommandPaletteController';
 
 import type { ReactElement } from 'react';

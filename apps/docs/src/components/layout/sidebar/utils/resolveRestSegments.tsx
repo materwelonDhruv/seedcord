@@ -1,7 +1,7 @@
 'use client';
 import { ENTITY_SEGMENT_START_INDEX } from './constants';
 
-export const resolveRestSegments = (pathname: string): string[] => {
+export function resolveRestSegments(pathname: string): string[] {
     const segments = pathname.split('/').filter(Boolean);
 
     if (segments.length < ENTITY_SEGMENT_START_INDEX) {
@@ -9,4 +9,4 @@ export const resolveRestSegments = (pathname: string): string[] => {
     }
 
     return segments.slice(ENTITY_SEGMENT_START_INDEX);
-};
+}

@@ -4,7 +4,7 @@ import { renderParagraphNode } from './renderers/renderParagraphNode';
 
 import type { ReactElement } from 'react';
 
-export const buildSummaryNodes = (paragraphs: readonly CommentParagraph[], fallback: string): ReactElement[] => {
+export function buildSummaryNodes(paragraphs: readonly CommentParagraph[], fallback: string): ReactElement[] {
     const entries = paragraphs.filter((paragraph) => paragraph.html || paragraph.plain);
     const [lead, ...rest] = entries;
 
@@ -23,4 +23,4 @@ export const buildSummaryNodes = (paragraphs: readonly CommentParagraph[], fallb
     });
 
     return content;
-};
+}
