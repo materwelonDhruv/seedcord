@@ -18,7 +18,7 @@ function EnumMembersSection({ members }: EnumMembersSectionProps): ReactElement 
     return (
         <section className="space-y-4">
             <header className="space-y-1">
-                <h2 className="text-xl font-semibold text-[color-mix(in_srgb,var(--entity-enum-color)_72%,var(--text))]">
+                <h2 className="text-xl font-semibold text-[color-mix(in_oklab,var(--entity-enum-color)_72%,var(--text))]">
                     Members
                 </h2>
             </header>

@@ -40,7 +40,7 @@ function MemberDetailGroup({
                     onClick={() => {
                         setExpanded((previous) => !previous);
                     }}
-                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-2 text-left transition hover:border-border/60 hover:bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_48%,var(--text))]"
+                    className="flex w-full items-center justify-between gap-3 rounded-xl border border-transparent px-3 py-2 text-left transition hover:border-border/60 hover:bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_48%,var(--text))]"
                     aria-expanded={expanded}
                     aria-controls={panelId}
                 >

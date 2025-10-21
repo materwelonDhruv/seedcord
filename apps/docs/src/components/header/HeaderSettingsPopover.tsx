@@ -18,7 +18,7 @@ function HeaderSettingsPopover(): ReactElement {
                     variant="ghost"
                     size="icon"
                     aria-label="Open documentation settings"
-                    className="text-(--text) transition focus-visible:outline-2 focus-visible:outline-[color-mix(in_srgb,var(--accent-b)_42%,transparent)] focus-visible:outline-offset-2"
+                    className="text-(--text) transition focus-visible:outline-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_42%,transparent)] focus-visible:outline-offset-2"
                 >
                     <Icon icon={Settings} size={18} />
                 </Button>
@@ -27,13 +27,13 @@ function HeaderSettingsPopover(): ReactElement {
                 <Popover.Content
                     sideOffset={12}
                     align="end"
-                    className="w-64 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)] p-4 text-sm text-(--text) shadow-soft"
+                    className="w-64 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--bg)_98%,#070917_2%)] p-4 text-sm text-(--text) shadow-soft"
                 >
                     <div className="mt-2">
                         <ClearHistoryRow />
                     </div>
 
-                    <Popover.Arrow className="fill-[color-mix(in_srgb,var(--bg)_98%,#070917_2%)]" />
+                    <Popover.Arrow className="fill-[color-mix(in_oklab,var(--bg)_98%,#070917_2%)]" />
                 </Popover.Content>
             </Popover.Portal>
         </Popover.Root>

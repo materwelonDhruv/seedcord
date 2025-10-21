@@ -44,7 +44,7 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
                         className={cn(
                             'rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition',
                             command.id === activeCommand.id
-                                ? 'border-[color-mix(in_srgb,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_srgb,var(--accent-a)_18%,transparent)] text-(--text)'
+                                ? 'border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent-a)_18%,transparent)] text-(--text)'
                                 : 'border-(--border) bg-(--surface-muted) text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
                         )}
                     >
@@ -52,7 +52,7 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
                     </button>
                 ))}
             </div>
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_95%,transparent)] shadow-soft">
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] shadow-soft">
                 <CopyButton
                     value={activeCommand.code}
                     ariaLabel={`Copy ${activeCommand.label} install command`}

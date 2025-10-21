@@ -94,11 +94,11 @@ function HeaderTop({
                     <Icon icon={toneIcon} size={16} />
                     {badgeLabel}
                 </Pill>
-                <Pill className="border-border bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] text-subtle">
+                <Pill className="border-border bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] text-subtle">
                     {pkg}
                 </Pill>
                 {version ? (
-                    <Pill className="border-border/80 bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] text-subtle">
+                    <Pill className="border-border/80 bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] text-subtle">
                         {formatVersionLabel(version)}
                     </Pill>
                 ) : null}

@@ -17,7 +17,7 @@ function CodePanel({ representation, title, description, className }: CodePanelP
     return (
         <section
             className={cn(
-                'space-y-3 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_98%,transparent)] p-4 shadow-soft sm:p-5',
+                'space-y-3 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_98%,transparent)] p-4 shadow-soft sm:p-5',
                 className
             )}
         >

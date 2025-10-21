@@ -21,7 +21,7 @@ export function renderMemberOverview(
     return (
         <details
             open
-            className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
+            className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
         >
             <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-(--text)">
                 <span className="text-lg font-semibold">Member overview</span>

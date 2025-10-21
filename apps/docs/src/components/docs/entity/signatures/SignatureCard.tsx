@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 
 function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
     return (
-        <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_srgb,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
+        <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
             <header className="flex flex-wrap items-center justify-between gap-3">
                 {signature.sourceUrl ? (
                     <Button
@@ -45,15 +45,15 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                                     {renderParameterBadge(parameter)}
                                     {parameter.display?.html ? (
                                         <div
-                                            className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)"
+                                            className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)"
                                             dangerouslySetInnerHTML={{ __html: parameter.display.html }}
                                         />
                                     ) : parameter.display?.text ? (
-                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
+                                        <code className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.display.text}
                                         </code>
                                     ) : parameter.type ? (
-                                        <code className="rounded bg-[color-mix(in_srgb,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
+                                        <code className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.type}
                                         </code>
                                     ) : null}

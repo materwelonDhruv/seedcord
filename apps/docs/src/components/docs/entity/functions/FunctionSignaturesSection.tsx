@@ -23,7 +23,7 @@ function FunctionSignaturesSection({ signatures }: FunctionSignaturesSectionProp
     return (
         <section className="space-y-4">
             <header className="space-y-1">
-                <h2 className="text-xl font-semibold text-[color-mix(in_srgb,var(--entity-function-color)_72%,var(--text))]">
+                <h2 className="text-xl font-semibold text-[color-mix(in_oklab,var(--entity-function-color)_72%,var(--text))]">
                     {signatures.length === 1 ? 'Function Signature' : 'Function Signatures'}
                 </h2>
             </header>

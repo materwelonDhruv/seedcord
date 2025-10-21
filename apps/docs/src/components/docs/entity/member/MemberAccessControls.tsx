@@ -41,7 +41,7 @@ function MemberAccessControls({
             <div
                 role="radiogroup"
                 aria-label={showLegend ? undefined : 'Member access level'}
-                className="inline-flex overflow-hidden rounded-full border border-border/60 bg-[color-mix(in_srgb,var(--surface)_97%,transparent)]"
+                className="inline-flex overflow-hidden rounded-full border border-border/60 bg-[color-mix(in_oklab,var(--surface)_97%,transparent)]"
             >
                 {MEMBER_ACCESS_LEVELS.map((level, index) => {
                     const isActive = (initialLevel ?? memberAccessLevel) === level;
@@ -53,10 +53,10 @@ function MemberAccessControls({
                             aria-checked={isActive}
                             onClick={() => setMemberAccessLevel(level)}
                             className={cn(
-                                'relative px-3 py-1.5 text-xs font-medium transition-colors focus-visible:z-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color-mix(in_srgb,var(--accent-b)_35%,transparent)] focus-visible:ring-offset-1 focus-visible:ring-offset-[color-mix(in_srgb,var(--surface)_98%,transparent)]',
+                                'relative px-3 py-1.5 text-xs font-medium transition-colors focus-visible:z-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-[color-mix(in_oklab,var(--accent-b)_35%,transparent)] focus-visible:ring-offset-1 focus-visible:ring-offset-[color-mix(in_oklab,var(--surface)_98%,transparent)]',
                                 index > 0 && 'border-l border-border/50',
                                 isActive
-                                    ? 'bg-[color-mix(in_srgb,var(--accent-b)_14%,var(--surface)_86%)] text-[color-mix(in_srgb,var(--text)_92%,var(--accent-b)_8%)]'
+                                    ? 'bg-[color-mix(in_oklab,var(--accent-b)_14%,var(--surface)_86%)] text-[color-mix(in_oklab,var(--text)_92%,var(--accent-b)_8%)]'
                                     : 'text-subtle hover:text-(--text)'
                             )}
                         >

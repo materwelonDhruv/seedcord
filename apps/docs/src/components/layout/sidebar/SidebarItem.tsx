@@ -25,7 +25,7 @@ function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactElement {
                     'flex w-full items-center gap-2 rounded-lg border border-transparent bg-transparent px-3 py-2 text-left text-sm font-medium text-(--text) transition focus-visible:outline-2 focus-visible:outline-offset-2',
                     toneStyles.item,
                     isActive
-                        ? 'border-[color-mix(in_srgb,var(--accent-b)_45%,var(--border))] bg-[color-mix(in_srgb,var(--accent-b)_14%,var(--bg)_86%)]'
+                        ? 'border-[color-mix(in_oklab,var(--accent-b)_45%,var(--border))] bg-[color-mix(in_oklab,var(--accent-b)_14%,var(--bg)_86%)]'
                         : null
                 )}
                 onClick={() => {

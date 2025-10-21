@@ -53,7 +53,7 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
             <header className="flex items-center justify-between">
                 <div className="flex flex-col">
                     <span className="text-xs font-semibold uppercase tracking-wide text-subtle">{category.title}</span>
-                    <span className="text-xs text-[color-mix(in_srgb,var(--text)_65%,var(--accent-b)_35%)]">
+                    <span className="text-xs text-[color-mix(in_oklab,var(--text)_65%,var(--accent-b)_35%)]">
                         {category.items.length} item{category.items.length === 1 ? '' : 's'}
                     </span>
                 </div>
@@ -63,7 +63,7 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
                     <li key={item.id}>
                         <Link
                             href={item.href}
-                            className="flex items-center justify-between rounded-xl border border-transparent bg-[color-mix(in_srgb,var(--surface)_94%,transparent)] px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_srgb,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_srgb,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="flex items-center justify-between rounded-xl border border-transparent bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_oklab,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                             <span>{item.label}</span>
                             <span
