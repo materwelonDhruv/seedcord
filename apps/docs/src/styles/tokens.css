@@ -16,11 +16,11 @@
 
     --glow: radial-gradient(
         circle at center,
-        color-mix(in srgb, var(--color-text) 12%, var(--color-surface)) 0%,
+        color-mix(in oklab, var(--color-text) 12%, var(--color-surface)) 0%,
         transparent 70%
     );
-    --shadow-soft: 0 28px 60px -36px color-mix(in srgb, var(--color-text) 28%, transparent);
-    --shadow-outline: 0 0 0 4px color-mix(in srgb, var(--accent-b) 16%, transparent);
+    --shadow-soft: 0 28px 60px -36px color-mix(in oklab, var(--color-text) 28%, transparent);
+    --shadow-outline: 0 0 0 4px color-mix(in oklab, var(--accent-b) 16%, transparent);
 }
 
 [data-theme='dark'] {
@@ -38,72 +38,72 @@
 }
 
 :root {
-    --bg-dim: color-mix(in srgb, var(--color-bg) 94%, #050507 6%);
+    --bg-dim: color-mix(in oklab, var(--color-bg) 94%, #050507 6%);
 
-    --surface-muted: color-mix(in srgb, var(--color-surface) 96%, transparent);
+    --surface-muted: color-mix(in oklab, var(--color-surface) 96%, transparent);
 
-    --accent-a-hover: color-mix(in srgb, var(--accent-a) 88%, black);
-    --accent-b-hover: color-mix(in srgb, var(--accent-b) 92%, #000 8%);
+    --accent-a-hover: color-mix(in oklab, var(--accent-a) 88%, black);
+    --accent-b-hover: color-mix(in oklab, var(--accent-b) 92%, #000 8%);
 
-    --shadow-soft-token: 0 28px 60px -36px color-mix(in srgb, var(--color-text) 28%, transparent);
-    --focus-outline-b: color-mix(in srgb, var(--accent-b) 78%, transparent);
+    --shadow-soft-token: 0 28px 60px -36px color-mix(in oklab, var(--color-text) 28%, transparent);
+    --focus-outline-b: color-mix(in oklab, var(--accent-b) 78%, transparent);
 
-    --badge-package-border: color-mix(in srgb, var(--accent-b) 38%, var(--border));
-    --badge-package-bg: color-mix(in srgb, var(--accent-b) 16%, var(--surface));
-    --badge-package-text: color-mix(in srgb, var(--text) 88%, var(--accent-b) 12%);
+    --badge-package-border: color-mix(in oklab, var(--accent-b) 38%, var(--border));
+    --badge-package-bg: color-mix(in oklab, var(--accent-b) 16%, var(--surface));
+    --badge-package-text: color-mix(in oklab, var(--text) 88%, var(--accent-b) 12%);
 
-    --badge-page-border: color-mix(in srgb, var(--accent-a) 34%, var(--border));
-    --badge-page-bg: color-mix(in srgb, var(--accent-a) 14%, var(--surface));
-    --badge-page-text: color-mix(in srgb, var(--text) 90%, var(--accent-a) 10%);
+    --badge-page-border: color-mix(in oklab, var(--accent-a) 34%, var(--border));
+    --badge-page-bg: color-mix(in oklab, var(--accent-a) 14%, var(--surface));
+    --badge-page-text: color-mix(in oklab, var(--text) 90%, var(--accent-a) 10%);
 
-    --badge-resource-border: color-mix(in srgb, #8b90a7 46%, var(--border));
-    --badge-resource-bg: color-mix(in srgb, #8b90a7 18%, var(--surface));
-    --badge-resource-text: color-mix(in srgb, var(--text) 88%, #8b90a7 12%);
+    --badge-resource-border: color-mix(in oklab, #8b90a7 46%, var(--border));
+    --badge-resource-bg: color-mix(in oklab, #8b90a7 18%, var(--surface));
+    --badge-resource-text: color-mix(in oklab, var(--text) 88%, #8b90a7 12%);
 
-    --entity-tint-12: color-mix(in srgb, var(--entity-function) 12%, var(--surface));
-    --entity-tint-14: color-mix(in srgb, var(--entity-function) 14%, var(--surface));
+    --entity-tint-12: color-mix(in oklab, var(--entity-function) 12%, var(--surface));
+    --entity-tint-14: color-mix(in oklab, var(--entity-function) 14%, var(--surface));
 
-    --command-overlay: color-mix(in srgb, var(--bg) 55%, #070917 45%);
+    --command-overlay: color-mix(in oklab, var(--bg) 55%, #070917 45%);
 
-    --tone-class-heading: color-mix(in srgb, var(--entity-class) 80%, var(--color-text));
-    --tone-class-item-bg: color-mix(in srgb, var(--entity-class) 12%, transparent);
-    --tone-class-badge-bg: color-mix(in srgb, var(--entity-class) 18%, transparent);
-    --tone-class-badge-border: color-mix(in srgb, var(--entity-class) 35%, transparent);
-    --tone-class-tag-bg: color-mix(in srgb, var(--entity-class) 12%, transparent);
-    --tone-class-tag-text: color-mix(in srgb, var(--entity-class) 70%, var(--color-text));
+    --tone-class-heading: color-mix(in oklab, var(--entity-class) 80%, var(--color-text));
+    --tone-class-item-bg: color-mix(in oklab, var(--entity-class) 12%, transparent);
+    --tone-class-badge-bg: color-mix(in oklab, var(--entity-class) 18%, transparent);
+    --tone-class-badge-border: color-mix(in oklab, var(--entity-class) 35%, transparent);
+    --tone-class-tag-bg: color-mix(in oklab, var(--entity-class) 12%, transparent);
+    --tone-class-tag-text: color-mix(in oklab, var(--entity-class) 70%, var(--color-text));
 
-    --tone-interface-heading: color-mix(in srgb, var(--entity-interface) 80%, var(--color-text));
-    --tone-interface-item-bg: color-mix(in srgb, var(--entity-interface) 12%, transparent);
-    --tone-interface-badge-bg: color-mix(in srgb, var(--entity-interface) 18%, transparent);
-    --tone-interface-badge-border: color-mix(in srgb, var(--entity-interface) 35%, transparent);
-    --tone-interface-tag-bg: color-mix(in srgb, var(--entity-interface) 12%, transparent);
-    --tone-interface-tag-text: color-mix(in srgb, var(--entity-interface) 70%, var(--color-text));
+    --tone-interface-heading: color-mix(in oklab, var(--entity-interface) 80%, var(--color-text));
+    --tone-interface-item-bg: color-mix(in oklab, var(--entity-interface) 12%, transparent);
+    --tone-interface-badge-bg: color-mix(in oklab, var(--entity-interface) 18%, transparent);
+    --tone-interface-badge-border: color-mix(in oklab, var(--entity-interface) 35%, transparent);
+    --tone-interface-tag-bg: color-mix(in oklab, var(--entity-interface) 12%, transparent);
+    --tone-interface-tag-text: color-mix(in oklab, var(--entity-interface) 70%, var(--color-text));
 
-    --tone-type-heading: color-mix(in srgb, var(--entity-type) 80%, var(--color-text));
-    --tone-type-item-bg: color-mix(in srgb, var(--entity-type) 12%, transparent);
-    --tone-type-badge-bg: color-mix(in srgb, var(--entity-type) 18%, transparent);
-    --tone-type-badge-border: color-mix(in srgb, var(--entity-type) 35%, transparent);
-    --tone-type-tag-bg: color-mix(in srgb, var(--entity-type) 12%, transparent);
-    --tone-type-tag-text: color-mix(in srgb, var(--entity-type) 70%, var(--color-text));
+    --tone-type-heading: color-mix(in oklab, var(--entity-type) 80%, var(--color-text));
+    --tone-type-item-bg: color-mix(in oklab, var(--entity-type) 12%, transparent);
+    --tone-type-badge-bg: color-mix(in oklab, var(--entity-type) 18%, transparent);
+    --tone-type-badge-border: color-mix(in oklab, var(--entity-type) 35%, transparent);
+    --tone-type-tag-bg: color-mix(in oklab, var(--entity-type) 12%, transparent);
+    --tone-type-tag-text: color-mix(in oklab, var(--entity-type) 70%, var(--color-text));
 
-    --tone-func-heading: color-mix(in srgb, var(--entity-function) 80%, var(--color-text));
-    --tone-func-item-bg: color-mix(in srgb, var(--entity-function) 12%, transparent);
-    --tone-func-badge-bg: color-mix(in srgb, var(--entity-function) 18%, transparent);
-    --tone-func-badge-border: color-mix(in srgb, var(--entity-function) 35%, transparent);
-    --tone-func-tag-bg: color-mix(in srgb, var(--entity-function) 12%, transparent);
-    --tone-func-tag-text: color-mix(in srgb, var(--entity-function) 70%, var(--color-text));
+    --tone-func-heading: color-mix(in oklab, var(--entity-function) 80%, var(--color-text));
+    --tone-func-item-bg: color-mix(in oklab, var(--entity-function) 12%, transparent);
+    --tone-func-badge-bg: color-mix(in oklab, var(--entity-function) 18%, transparent);
+    --tone-func-badge-border: color-mix(in oklab, var(--entity-function) 35%, transparent);
+    --tone-func-tag-bg: color-mix(in oklab, var(--entity-function) 12%, transparent);
+    --tone-func-tag-text: color-mix(in oklab, var(--entity-function) 70%, var(--color-text));
 
-    --tone-enum-heading: color-mix(in srgb, var(--entity-enum) 80%, var(--color-text));
-    --tone-enum-item-bg: color-mix(in srgb, var(--entity-enum) 12%, transparent);
-    --tone-enum-badge-bg: color-mix(in srgb, var(--entity-enum) 18%, transparent);
-    --tone-enum-badge-border: color-mix(in srgb, var(--entity-enum) 35%, transparent);
-    --tone-enum-tag-bg: color-mix(in srgb, var(--entity-enum) 12%, transparent);
-    --tone-enum-tag-text: color-mix(in srgb, var(--entity-enum) 70%, var(--color-text));
+    --tone-enum-heading: color-mix(in oklab, var(--entity-enum) 80%, var(--color-text));
+    --tone-enum-item-bg: color-mix(in oklab, var(--entity-enum) 12%, transparent);
+    --tone-enum-badge-bg: color-mix(in oklab, var(--entity-enum) 18%, transparent);
+    --tone-enum-badge-border: color-mix(in oklab, var(--entity-enum) 35%, transparent);
+    --tone-enum-tag-bg: color-mix(in oklab, var(--entity-enum) 12%, transparent);
+    --tone-enum-tag-text: color-mix(in oklab, var(--entity-enum) 70%, var(--color-text));
 
-    --tone-var-heading: color-mix(in srgb, var(--entity-variable) 78%, var(--color-text));
-    --tone-var-item-bg: color-mix(in srgb, var(--entity-variable) 12%, transparent);
-    --tone-var-badge-bg: color-mix(in srgb, var(--entity-variable) 18%, transparent);
-    --tone-var-badge-border: color-mix(in srgb, var(--entity-variable) 35%, transparent);
-    --tone-var-tag-bg: color-mix(in srgb, var(--entity-variable) 12%, transparent);
-    --tone-var-tag-text: color-mix(in srgb, var(--entity-variable) 70%, var(--color-text));
+    --tone-var-heading: color-mix(in oklab, var(--entity-variable) 78%, var(--color-text));
+    --tone-var-item-bg: color-mix(in oklab, var(--entity-variable) 12%, transparent);
+    --tone-var-badge-bg: color-mix(in oklab, var(--entity-variable) 18%, transparent);
+    --tone-var-badge-border: color-mix(in oklab, var(--entity-variable) 35%, transparent);
+    --tone-var-tag-bg: color-mix(in oklab, var(--entity-variable) 12%, transparent);
+    --tone-var-tag-text: color-mix(in oklab, var(--entity-variable) 70%, var(--color-text));
 }
