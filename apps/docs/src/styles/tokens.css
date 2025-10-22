@@ -1,12 +1,16 @@
-/* This is for light theme */
+/* This is for the light theme */
 :root {
     --color-bg: #f8f6e8;
     --color-text: #070917;
     --color-surface: rgba(0, 0, 0, 0.02);
     --overlay: rgba(0, 0, 0, 0.6);
 
+    /* mater red */
     --accent-a: #f04e36;
+    /* welon green */
     --accent-b: #6fab49;
+    /* resource accent */
+    --accent-r: #8b90a7;
 
     --entity-class: #3956ff;
     --entity-interface: #b12bcf;
@@ -62,9 +66,9 @@
     --badge-page-bg: color-mix(in oklab, var(--accent-a) 14%, var(--surface));
     --badge-page-text: color-mix(in oklab, var(--text) 90%, var(--accent-a) 10%);
 
-    --badge-resource-border: color-mix(in oklab, #8b90a7 46%, var(--border));
-    --badge-resource-bg: color-mix(in oklab, #8b90a7 18%, var(--surface));
-    --badge-resource-text: color-mix(in oklab, var(--text) 88%, #8b90a7 12%);
+    --badge-resource-border: color-mix(in oklab, var(--accent-r) 46%, var(--border));
+    --badge-resource-bg: color-mix(in oklab, var(--accent-r) 18%, var(--surface));
+    --badge-resource-text: color-mix(in oklab, var(--text) 88%, var(--accent-r) 12%);
 
     --entity-tint-12: color-mix(in oklab, var(--entity-function) 12%, var(--surface));
     --entity-tint-14: color-mix(in oklab, var(--entity-function) 14%, var(--surface));
