@@ -10,17 +10,11 @@ interface CodePanelProps {
     className?: string;
 }
 
-const CODE_CONTAINER_CLASS =
-    'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-sm text-[var(--text)] sm:px-4 sm:py-3';
+const CODE_CONTAINER_CLASS = 'code-scroll-area panel px-3 py-2 text-sm text-(--text) sm:px-4 sm:py-3';
 
 function CodePanel({ representation, title, description, className }: CodePanelProps): ReactElement {
     return (
-        <section
-            className={cn(
-                'space-y-3 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_98%,transparent)] p-4 shadow-soft sm:p-5',
-                className
-            )}
-        >
+        <section className={cn('card bg-surface-98 p-4 shadow-soft sm:p-5 space-y-3', className)}>
             {title ? (
                 <header className="space-y-1">
                     <h2 className="text-lg font-semibold text-(--text)">{title}</h2>

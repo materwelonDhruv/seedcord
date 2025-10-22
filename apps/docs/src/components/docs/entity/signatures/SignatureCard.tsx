@@ -10,7 +10,7 @@ import type { ReactElement } from 'react';
 
 function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
     return (
-        <article className="space-y-3 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_97%,transparent)] p-4 shadow-soft sm:p-5">
+        <article className="card bg-surface-97 p-4 shadow-soft sm:p-5 space-y-3">
             <header className="flex flex-wrap items-center justify-between gap-3">
                 {signature.sourceUrl ? (
                     <Button
@@ -23,11 +23,11 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                 ) : null}
             </header>
             {signature.code.html ? (
-                <div className="code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-(--text) sm:text-sm">
+                <div className="code-scroll-area panel px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 </div>
             ) : (
-                <div className="code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-(--text) sm:text-sm">
+                <div className="code-scroll-area panel px-3 py-2 text-xs text-(--text) sm:text-sm">
                     <pre className="code-scroll-content whitespace-pre-wrap">{signature.code.text}</pre>
                 </div>
             )}
@@ -39,21 +39,21 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                         {signature.parameters.map((parameter) => (
                             <li
                                 key={parameter.name}
-                                className="rounded-lg border border-(--border)/60 bg-(--surface-muted) p-3 text-sm text-subtle"
+                                className="rounded-lg border border-(--border)/60 bg-surface-muted p-3 text-sm text-subtle"
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     {renderParameterBadge(parameter)}
                                     {parameter.display?.html ? (
                                         <div
-                                            className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)"
+                                            className="surface-chip px-2 py-0.5 text-xs text-(--text)"
                                             dangerouslySetInnerHTML={{ __html: parameter.display.html }}
                                         />
                                     ) : parameter.display?.text ? (
-                                        <code className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
+                                        <code className="surface-chip px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.display.text}
                                         </code>
                                     ) : parameter.type ? (
-                                        <code className="rounded bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] px-2 py-0.5 text-xs text-(--text)">
+                                        <code className="surface-chip px-2 py-0.5 text-xs text-(--text)">
                                             {parameter.type}
                                         </code>
                                     ) : null}

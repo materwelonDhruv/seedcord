@@ -109,7 +109,7 @@ export function Sidebar({
                 'flex h-full flex-col p-4',
                 isDesktop
                     ? 'rounded-none border-0 bg-[color-mix(in_oklab,var(--surface)_82%,transparent)] shadow-none'
-                    : 'rounded-2xl border border-border bg-surface shadow-soft',
+                    : 'card bg-surface shadow-soft',
                 className
             )}
             style={containerStyles}

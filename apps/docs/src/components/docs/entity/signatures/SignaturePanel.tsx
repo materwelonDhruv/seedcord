@@ -8,8 +8,7 @@ import DeprecatedEntity from '../DeprecatedEntity';
 import type { MemberSignatureDetail, WithParentDeprecationStatus } from '../types';
 import type { ReactElement } from 'react';
 
-export const SIGNATURE_CONTAINER_CLASS =
-    'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-2.5 py-2 text-[var(--text)] md:px-3 md:py-2.5';
+export const SIGNATURE_CONTAINER_CLASS = 'code-scroll-area panel px-2.5 py-2 text-(--text) md:px-3 md:py-2.5';
 
 interface SignaturePanelProps extends WithParentDeprecationStatus {
     signature: MemberSignatureDetail;

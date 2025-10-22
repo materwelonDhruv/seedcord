@@ -1,3 +1,4 @@
+/* This is for light theme */
 :root {
     --color-bg: #f8f6e8;
     --color-text: #070917;
@@ -38,9 +39,14 @@
 }
 
 :root {
-    --bg-dim: color-mix(in oklab, var(--color-bg) 94%, #050507 6%);
+    --bg-dim: color-mix(in oklab, var(--color-bg) 94%, black 6%);
 
-    --surface-muted: color-mix(in oklab, var(--color-surface) 96%, transparent);
+    --surface-98: color-mix(in oklab, var(--color-surface) 98%, transparent);
+    --surface-97: color-mix(in oklab, var(--color-surface) 97%, transparent);
+    --surface-96: color-mix(in oklab, var(--color-surface) 96%, transparent);
+    --surface-95: color-mix(in oklab, var(--color-surface) 95%, transparent);
+    --surface-94: color-mix(in oklab, var(--color-surface) 94%, transparent);
+    --surface-92: color-mix(in oklab, var(--color-surface) 92%, transparent);
 
     --accent-a-hover: color-mix(in oklab, var(--accent-a) 88%, black);
     --accent-b-hover: color-mix(in oklab, var(--accent-b) 92%, #000 8%);

@@ -20,7 +20,7 @@ function DeprecatedEntity({
 
     return (
         <div className="relative">
-            <div className="deprecated-card rounded-2xl p-4 shadow-soft sm:p-5">
+            <div className="deprecated-card p-4 shadow-soft sm:p-5">
                 {deprecationStatus.deprecationMessage ? (
                     <div className="mb-3 flex items-start gap-3 text-sm text-subtle">
                         <div className="mt-0.5 shrink-0 text-(--deprecated-dark)">

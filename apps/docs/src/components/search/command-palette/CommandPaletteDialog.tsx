@@ -120,7 +120,7 @@ function CommandPaletteDialog({ controller }: { controller: CommandPaletteContro
                 >
                     <Command
                         ref={commandRef}
-                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden rounded-2xl border border-(--border) bg-(--bg-dim) text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
+                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden card bg-(--bg-dim) text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >

@@ -41,7 +41,7 @@ function MemberAccessControls({
             <div
                 role="radiogroup"
                 aria-label={showLegend ? undefined : 'Member access level'}
-                className="inline-flex overflow-hidden rounded-full border border-border/60 bg-[color-mix(in_oklab,var(--surface)_97%,transparent)]"
+                className="inline-flex overflow-hidden rounded-full border border-border/60 bg-surface-97"
             >
                 {MEMBER_ACCESS_LEVELS.map((level, index) => {
                     const isActive = (initialLevel ?? memberAccessLevel) === level;

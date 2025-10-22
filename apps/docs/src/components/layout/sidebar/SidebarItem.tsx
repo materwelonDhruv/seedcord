@@ -45,7 +45,7 @@ function SidebarItem({ item, tone, isActive }: SidebarItemProps): ReactElement {
                     <Tooltip.Trigger asChild>
                         <span className="min-w-0 truncate">{label}</span>
                     </Tooltip.Trigger>
-                    <Tooltip.Content sideOffset={6} align="center" className="rounded-sm bg-(--surface) p-1 text-xs">
+                    <Tooltip.Content sideOffset={6} align="center" className="rounded-sm bg-surface p-1 text-xs">
                         {label}
                         <Tooltip.Arrow className="fill-(--surface)" />
                     </Tooltip.Content>

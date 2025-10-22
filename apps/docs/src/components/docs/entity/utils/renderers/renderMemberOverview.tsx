@@ -19,10 +19,7 @@ export function renderMemberOverview(
     const quickPanelGridColumns = columns.length === 2 ? 'lg:grid-cols-2' : undefined;
 
     return (
-        <details
-            open
-            className="group min-w-0 rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_97%,transparent)] p-4 shadow-soft md:p-5"
-        >
+        <details open className="group min-w-0 card bg-surface-97 p-4 shadow-soft md:p-5">
             <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-(--text)">
                 <span className="text-lg font-semibold">Member overview</span>
                 <Icon icon={ChevronDown} size={18} className="text-subtle transition-transform group-open:rotate-180" />

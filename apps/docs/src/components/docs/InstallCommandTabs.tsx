@@ -31,7 +31,7 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
         return null;
     }
 
-    const codeContainerClass = 'code-scroll-area px-4 py-4 text-sm leading-relaxed text-[var(--text)]';
+    const codeContainerClass = 'code-scroll-area px-4 py-4 text-sm leading-relaxed text-(--text)';
 
     return (
         <div className="space-y-3">
@@ -45,14 +45,14 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
                             'rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition',
                             command.id === activeCommand.id
                                 ? 'border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent-a)_18%,transparent)] text-(--text)'
-                                : 'border-(--border) bg-(--surface-muted) text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
+                                : 'border-(--border) bg-surface-muted text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
                         )}
                     >
                         {command.label}
                     </button>
                 ))}
             </div>
-            <div className="relative overflow-hidden rounded-2xl border border-border bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] shadow-soft">
+            <div className="relative overflow-hidden card bg-surface-95 shadow-soft">
                 <CopyButton
                     value={activeCommand.code}
                     ariaLabel={`Copy ${activeCommand.label} install command`}

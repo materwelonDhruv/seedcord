@@ -94,13 +94,9 @@ function HeaderTop({
                     <Icon icon={toneIcon} size={16} />
                     {badgeLabel}
                 </Pill>
-                <Pill className="border-border bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] text-subtle">
-                    {pkg}
-                </Pill>
+                <Pill className="border-border surface-pill text-subtle">{pkg}</Pill>
                 {version ? (
-                    <Pill className="border-border/80 bg-[color-mix(in_oklab,var(--surface)_92%,transparent)] text-subtle">
-                        {formatVersionLabel(version)}
-                    </Pill>
+                    <Pill className="border-border/80 bg-surface-92 text-subtle">{formatVersionLabel(version)}</Pill>
                 ) : null}
                 <TagPills tags={tags} />
             </div>
@@ -223,9 +219,7 @@ function EntityHeader({
     return (
         <header className="min-w-0">
             <DeprecatedEntity deprecationStatus={deprecationStatus}>
-                <div className="space-y-4 rounded-2xl border border-(--border) bg-(--surface-muted) p-4 shadow-soft sm:p-5">
-                    {headerContent}
-                </div>
+                <div className="card bg-surface-muted p-4 shadow-soft sm:p-5 space-y-4">{headerContent}</div>
             </DeprecatedEntity>
         </header>
     );

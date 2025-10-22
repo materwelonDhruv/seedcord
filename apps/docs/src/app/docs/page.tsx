@@ -38,7 +38,7 @@ async function DocsIndexPage(): Promise<ReactElement> {
                 <h1 className="text-3xl font-semibold text-(--text) sm:text-4xl">Install the package</h1>
             </header>
 
-            <article className="space-y-4 rounded-2xl border border-border bg-surface p-6 shadow-soft">
+            <article className="card bg-surface p-6 shadow-soft space-y-4">
                 <InstallCommandTabs commands={highlightedCommands} />
             </article>
         </section>

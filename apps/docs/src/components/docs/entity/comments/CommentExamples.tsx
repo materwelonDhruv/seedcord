@@ -13,8 +13,7 @@ interface CommentExamplesProps {
     open?: boolean;
 }
 
-const codeContainerClass =
-    'code-scroll-area rounded-xl border border-(--border) bg-(--surface-muted) px-3 py-2 text-xs text-[var(--text)] sm:text-sm mb-2';
+const codeContainerClass = 'code-scroll-area panel mb-2 px-3 py-2 text-xs text-(--text) sm:text-sm';
 
 function CommentExamples({ examples, className, open = false }: CommentExamplesProps): ReactElement | null {
     if (!examples.length) return null;

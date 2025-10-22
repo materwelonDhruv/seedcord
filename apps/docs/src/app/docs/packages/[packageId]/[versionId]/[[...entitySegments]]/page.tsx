@@ -63,7 +63,7 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
                     <li key={item.id}>
                         <Link
                             href={item.href}
-                            className="flex items-center justify-between rounded-xl border border-transparent bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_oklab,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
+                            className="flex items-center justify-between rounded-xl border border-transparent bg-surface-94 px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_oklab,var(--surface)_88%,var(--accent-b)_12%)] focus-visible:outline-2 focus-visible:outline-offset-2"
                         >
                             <span>{item.label}</span>
                             <span

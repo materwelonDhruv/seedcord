@@ -36,7 +36,7 @@
         background-color: var(--bg-dim);
     }
     .bg-surface-muted {
-        background-color: var(--surface-muted);
+        background-color: var(--surface-96);
     }
     .hover-bg-accent-a:hover {
         background-color: var(--accent-a-hover);
@@ -46,5 +46,47 @@
     }
     .shadow-soft-token {
         box-shadow: var(--shadow-soft-token, var(--shadow-soft));
+    }
+}
+
+@layer utilities {
+    .bg-surface-98 {
+        background-color: var(--surface-98);
+    }
+
+    .bg-surface-97 {
+        background-color: var(--surface-97);
+    }
+
+    .bg-surface-95 {
+        background-color: var(--surface-95);
+    }
+
+    .bg-surface-94 {
+        background-color: var(--surface-94);
+    }
+
+    .bg-surface-92 {
+        background-color: var(--surface-92);
+    }
+
+    .card {
+        border-radius: 1rem;
+        border: 1px solid var(--border);
+    }
+
+    .panel {
+        border-radius: 0.75rem;
+        border: 1px solid var(--border);
+        background-color: var(--surface-96);
+    }
+
+    .surface-pill {
+        background-color: var(--surface-94);
+    }
+
+    .surface-chip {
+        border-radius: 0.25rem;
+        background-color: var(--surface-92);
     }
 }

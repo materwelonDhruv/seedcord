@@ -25,7 +25,7 @@ function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderPr
                         {tags.map((tag) => (
                             <li
                                 key={tag}
-                                className="rounded-full border border-border bg-[color-mix(in_oklab,var(--surface)_94%,transparent)] px-3 py-0.5 font-semibold"
+                                className="rounded-full border border-border bg-surface-94 px-3 py-0.5 font-semibold"
                             >
                                 {tag}
                             </li>

@@ -30,7 +30,7 @@ function DesktopSearchButton(): ReactElement {
                 <span>Search docs</span>
             </span>
             <div className="flex items-center gap-2 text-[0.65rem] text-subtle">
-                <kbd className="inline-flex items-center gap-1 rounded-md border border-border bg-[color-mix(in_oklab,var(--surface)_95%,transparent)] px-2 py-1 font-semibold uppercase tracking-wide">
+                <kbd className="inline-flex items-center gap-1 rounded-md border border-border bg-surface-95 px-2 py-1 font-semibold uppercase tracking-wide">
                     <Icon icon={Command} size={11} />
                     <span className="text-[0.7rem] leading-none">K</span>
                 </kbd>

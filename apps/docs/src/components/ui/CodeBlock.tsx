@@ -27,9 +27,7 @@ async function CodeBlock({
     const showHeader = Boolean(label ?? !hideCopyButton);
 
     return (
-        <figure
-            className={cn('relative rounded-2xl border border-(--border) bg-(--surface-muted) shadow-soft', className)}
-        >
+        <figure className={cn('relative card bg-surface-muted shadow-soft', className)}>
             {showHeader ? (
                 <figcaption className="flex items-center justify-between gap-3 border-b border-border/70 bg-[color-mix(in_oklab,var(--surface)_90%,#ffffff_10%)] px-4 py-2 text-xs font-semibold uppercase tracking-wide text-subtle">
                     <span className="truncate">{label}</span>

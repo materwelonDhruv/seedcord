@@ -49,7 +49,7 @@ function CopyButton({
                 void handleCopy();
             }}
             className={cn(
-                'z-10 h-9 w-9 rounded-full border border-transparent bg-(--surface-muted) text-(--text) transition hover:border-(--accent-a)/45 hover:bg-(--surface-muted) ',
+                'z-10 h-9 w-9 rounded-full border border-transparent bg-surface-muted text-(--text) transition hover:border-(--accent-a)/45 hover:bg-surface-muted ',
                 copied ? 'text-(--accent-a)' : null,
                 className
             )}

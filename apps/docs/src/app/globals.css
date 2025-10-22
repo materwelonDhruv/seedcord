@@ -187,6 +187,7 @@
 .deprecated-card {
     position: relative;
     border: 3px solid var(--deprecated-dark);
+    border-radius: 1rem;
 }
 
 .deprecated-card::before {
