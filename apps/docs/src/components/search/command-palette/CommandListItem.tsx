@@ -41,9 +41,7 @@ const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
 };
 
 const BASE_ICON_CLASSES = [
-    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150',
-    'group-hover/item:shadow-[var(--shadow-outline)]',
-    'group-data-[selected=true]/item:shadow-[var(--shadow-outline)]'
+    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150'
 ].join(' ');
 
 interface CommandListItemProps {
@@ -73,9 +71,7 @@ function CommandListItem({ action, onSelect }: CommandListItemProps): ReactEleme
             title={action.path}
             className={cn(
                 'group/item mt-1 flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-(--text) outline-none transition first:mt-0',
-                'hover:border-(--accent-b)/24 hover:bg-(--accent-b)/10',
-                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--focus-outline-b) focus-visible:ring-offset-2 focus-visible:ring-offset-(--bg-dim)',
-                'data-[selected=true]:border-(--accent-b)/38 data-[selected=true]:bg-(--accent-b)/16 data-[selected=true]:shadow-(--shadow-outline)'
+                'data-[selected=true]:border-(--accent-b)/38 data-[selected=true]:bg-(--accent-b)/16'
             )}
             aria-label={action.label}
             keywords={keywords}
@@ -85,7 +81,7 @@ function CommandListItem({ action, onSelect }: CommandListItemProps): ReactEleme
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="truncate font-medium transition-colors group-hover/item:text-[color-mix(in_oklab,var(--text)_88%,var(--accent-b)_12%)] group-data-[selected=true]/item:text-[color-mix(in_oklab,var(--text)_85%,var(--accent-b)_15%)]">
+                    <span className="truncate font-medium transition-colors group-data-[selected=true]/item:text-[color-mix(in_oklab,var(--text)_75%,var(--accent-b)_25%)]">
                         {action.label}
                     </span>
                 </div>
