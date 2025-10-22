@@ -104,7 +104,7 @@ function CommandPaletteDialog({ controller }: { controller: CommandPaletteContro
             <Dialog.Portal>
                 <Dialog.Overlay
                     data-command-overlay
-                    className="fixed inset-0 bg-(--command-overlay)/70 backdrop-blur-sm"
+                    className="fixed inset-0 z-60 bg-(--command-overlay)/70 backdrop-blur-sm"
                 />
                 <Dialog.Content
                     data-command-content

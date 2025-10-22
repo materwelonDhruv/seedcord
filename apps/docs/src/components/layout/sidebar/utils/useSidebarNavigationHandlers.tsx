@@ -9,8 +9,7 @@ import type { PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types
 export function useSidebarNavigationHandlers(
     catalog: readonly PackageCatalogEntry[],
     versionOptions: readonly PackageVersionCatalog[],
-    restSegments: readonly string[],
-    sidebarPackageId: string
+    restSegments: readonly string[]
 ): {
     handlePackageChange: (value: string) => void;
     handleVersionChange: (value: string) => void;
@@ -41,14 +40,15 @@ export function useSidebarNavigationHandlers(
                 return;
             }
 
-            const segments = (pathname ?? '').split('/').filter(Boolean);
-            const currentPackageFromPath = segments[2] ?? '';
+            const currentSegments = (pathname ?? '').split('/').filter(Boolean);
+            const targetSegments = targetVersion.basePath.split('/').filter(Boolean);
+            const currentPackageSegment = currentSegments[2] ?? '';
+            const targetPackageSegment = targetSegments[2] ?? '';
+            const shouldPreserveRest = restSegments.length > 0 && currentPackageSegment === targetPackageSegment;
 
-            if (currentPackageFromPath && sidebarPackageId && currentPackageFromPath === sidebarPackageId) {
-                router.push(buildVersionPath(targetVersion, restSegments));
-            }
+            router.push(shouldPreserveRest ? buildVersionPath(targetVersion, restSegments) : targetVersion.basePath);
         },
-        [restSegments, router, versionOptions, sidebarPackageId, pathname]
+        [restSegments, router, versionOptions, pathname]
     );
 
     return {

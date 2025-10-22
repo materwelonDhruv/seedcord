@@ -21,7 +21,7 @@ function DesktopSearchButton(): ReactElement {
     return (
         <Button
             variant="ghost"
-            className="group hidden w-full max-w-[280px] items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--border)_88%,var(--accent-a)_12%)] bg-[color-mix(in_oklab,var(--surface)_90%,#ffffff_6%)] px-3 py-2 text-sm text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-a)_38%,var(--border))] hover:bg-[color-mix(in_oklab,var(--surface)_86%,var(--accent-a)_10%)] focus:border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_oklab,var(--accent-a)_52%,transparent)] focus:ring-offset-2 focus:ring-offset-[color-mix(in_oklab,var(--surface)_94%,transparent)] sm:flex"
+            className="group w-full max-w-[280px] items-center justify-between rounded-xl border border-[color-mix(in_oklab,var(--border)_88%,var(--accent-a)_12%)] bg-[color-mix(in_oklab,var(--surface)_90%,#ffffff_6%)] px-3 py-2 text-sm text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-a)_38%,var(--border))] hover:bg-[color-mix(in_oklab,var(--surface)_86%,var(--accent-a)_10%)] focus:border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] focus:outline-none focus:ring-2 focus:ring-[color-mix(in_oklab,var(--accent-a)_52%,transparent)] focus:ring-offset-2 focus:ring-offset-[color-mix(in_oklab,var(--surface)_94%,transparent)]"
             onClick={handleClick}
             aria-label="Search documentation"
         >

@@ -1,6 +1,5 @@
 'use client';
 
-import * as Tooltip from '@radix-ui/react-tooltip';
 import Link from 'next/link';
 
 import Button from '@ui/Button';
@@ -36,27 +35,25 @@ function Navbar(): ReactElement {
                         </nav>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Tooltip.Provider>
-                            <div className="flex items-center gap-2">
-                                <HeaderSearchControls />
-                                <HeaderSettingsPopover />
-                                <Button
-                                    asChild
-                                    variant="ghost"
-                                    size="icon"
-                                    aria-label="Open GitHub repository"
-                                    className="text-(--text)"
+                        <div className="flex items-center gap-2">
+                            <HeaderSearchControls />
+                            <HeaderSettingsPopover />
+                            <Button
+                                asChild
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Open GitHub repository"
+                                className="text-(--text)"
+                            >
+                                <Link
+                                    href="https://github.com/materwelondhruv/seedcord"
+                                    target="_blank"
+                                    rel="noreferrer"
                                 >
-                                    <Link
-                                        href="https://github.com/materwelondhruv/seedcord"
-                                        target="_blank"
-                                        rel="noreferrer"
-                                    >
-                                        <Icon icon={GithubIcon} size={20} />
-                                    </Link>
-                                </Button>
-                            </div>
-                        </Tooltip.Provider>
+                                    <Icon icon={GithubIcon} size={20} />
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,6 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
-import { useMemo, useRef, useEffect } from 'react';
 
 import { cn } from '@lib/utils';
 import useUIStore from '@store/ui';
@@ -11,53 +10,16 @@ import SidebarEmptyState from './SidebarEmptyState';
 import SidebarHeader from './SidebarHeader';
 import { getContainerStyles } from './utils/getContainerStyles';
 import { getListStyles } from './utils/getListStyles';
-import { resolveRestSegments } from './utils/resolveRestSegments';
 import { useSidebarNavigationHandlers } from './utils/useSidebarNavigationHandlers';
+import { useSidebarPersistence } from './utils/useSidebarPersistence';
 import { useSidebarScrollGuards } from './utils/useSidebarScrollGuards';
 import { useSidebarSelection } from './utils/useSidebarSelection';
+import { useSidebarSelectionState } from './utils/useSidebarSelectionState';
 
 import type { SidebarProps } from './types';
 import type { ReactElement } from 'react';
 
-/* eslint-disable max-lines-per-function */
-
-function useSidebarPersistence(
-    localPackageId: string,
-    localVersionId: string,
-    handleScroll: (e: React.UIEvent<HTMLDivElement>) => void
-): {
-    scrollRef: React.RefObject<HTMLDivElement | null>;
-    collapsedStorageKey: string;
-    composedHandleScroll: (e: React.UIEvent<HTMLDivElement>) => void;
-} {
-    const scrollRef = useRef<HTMLDivElement | null>(null);
-    const collapsedStorageKey = `docs.sidebar.collapsed:${localPackageId}:${localVersionId}`;
-    const scrollStorageKey = `docs.sidebar.scroll:${localPackageId}:${localVersionId}`;
-
-    useEffect(() => {
-        const ls = typeof window !== 'undefined' ? window.localStorage : null;
-        const el = scrollRef.current;
-        if (el && ls) {
-            const saved = ls.getItem(scrollStorageKey);
-            if (saved) {
-                const n = Number(saved);
-                if (!Number.isNaN(n)) el.scrollTop = n;
-            }
-        }
-    }, [localPackageId, localVersionId, scrollStorageKey]);
-
-    const composedHandleScroll = (e: React.UIEvent<HTMLDivElement>): void => {
-        handleScroll(e);
-        const ls = typeof window !== 'undefined' ? window.localStorage : null;
-        const el = scrollRef.current;
-        if (el && ls) {
-            ls.setItem(scrollStorageKey, String(el.scrollTop));
-        }
-    };
-
-    return { scrollRef, collapsedStorageKey, composedHandleScroll };
-}
-
+// eslint-disable-next-line max-lines-per-function
 export function Sidebar({
     catalog,
     activePackageId,
@@ -70,47 +32,67 @@ export function Sidebar({
     const listStyles = getListStyles(variant);
     const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
 
-    const restSegments = useMemo(() => resolveRestSegments(pathname), [pathname]);
-    const localPackageId = activePackageId;
-    const localVersionId = activeVersionId;
+    const {
+        restSegments,
+        fallbackPackageId,
+        fallbackVersionId,
+        effectivePackageId,
+        effectiveVersionId,
+        setPendingSelection
+    } = useSidebarSelectionState(catalog, pathname, activePackageId, activeVersionId);
 
     const { scrollRef, collapsedStorageKey, composedHandleScroll } = useSidebarPersistence(
-        localPackageId,
-        localVersionId,
+        fallbackPackageId,
+        fallbackVersionId,
         handleScroll
     );
 
     const { activePackage, activeVersion, packageOptions, versionOptions } = useSidebarSelection(
         catalog,
-        localPackageId,
-        localVersionId
+        effectivePackageId,
+        effectiveVersionId
     );
 
     const { handlePackageChange, handleVersionChange } = useSidebarNavigationHandlers(
         catalog,
         versionOptions,
-        restSegments,
-        localPackageId
+        restSegments
     );
 
     const setSelectedPackage = useUIStore((s) => s.setSelectedPackage);
     const setSelectedVersion = useUIStore((s) => s.setSelectedVersion);
 
     const onPackageChange = (value: string): void => {
+        const nextPackage = catalog.find((entry) => entry.id === value) ?? null;
+        const nextVersionId = nextPackage?.versions[0]?.id ?? null;
+
+        setPendingSelection({ packageId: value, versionId: nextVersionId });
+
         try {
             setSelectedPackage(value);
+            if (nextVersionId) {
+                setSelectedVersion(nextVersionId);
+            }
         } catch {
             // ignore
         }
+
         handlePackageChange(value);
     };
 
     const onVersionChange = (value: string): void => {
+        const targetPackageId = effectivePackageId || fallbackPackageId;
+
+        if (targetPackageId) {
+            setPendingSelection({ packageId: targetPackageId, versionId: value });
+        }
+
         try {
             setSelectedVersion(value);
         } catch {
             // ignore
         }
+
         handleVersionChange(value);
     };
 

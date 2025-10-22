@@ -8,23 +8,7 @@
     --surface: var(--color-surface);
     --border: rgba(0, 0, 0, 0.12);
 
-    --radius-sm: 0.375rem;
-    --radius-md: 0.625rem;
-    --radius-lg: 1rem;
-
-    --entity-class-color: var(--entity-class);
-    --entity-interface-color: var(--entity-interface);
-    --entity-type-color: var(--entity-type);
-    --entity-function-color: var(--entity-function);
-    --entity-enum-color: var(--entity-enum);
-    --entity-variable-color: var(--entity-variable);
-
     --deprecated-dark: #cf3234;
-    --deprecated-light: #801f20;
-
-    --mark-circle-a: color-mix(in srgb, var(--accent-a) 65%, white);
-    --mark-circle-b: color-mix(in srgb, var(--accent-b) 55%, white);
-    --mark-circle-c: color-mix(in srgb, var(--text) 30%, white);
 
     color-scheme: light;
 }
@@ -35,18 +19,7 @@
     --surface: var(--color-surface);
     --border: rgba(255, 255, 255, 0.16);
 
-    --entity-class-color: var(--entity-class);
-    --entity-interface-color: var(--entity-interface);
-    --entity-type-color: var(--entity-type);
-    --entity-function-color: var(--entity-function);
-    --entity-enum-color: var(--entity-enum);
-    --entity-variable-color: var(--entity-variable);
-
     --deprecated-dark: #cf3234;
-
-    --mark-circle-a: color-mix(in srgb, var(--accent-a) 78%, transparent);
-    --mark-circle-b: color-mix(in srgb, var(--accent-b) 82%, transparent);
-    --mark-circle-c: color-mix(in srgb, var(--accent-b) 45%, white);
 
     color-scheme: dark;
 }

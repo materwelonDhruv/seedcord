@@ -9,7 +9,9 @@ import type { ReactElement } from 'react';
 function HeaderSearchControls(): ReactElement {
     return (
         <div className="flex items-center gap-2">
-            <DesktopSearchButton />
+            <div className="hidden sm:flex sm:w-full sm:max-w-[280px]">
+                <DesktopSearchButton />
+            </div>
             <MobileSearchButton />
             <ThemeToggle />
         </div>
