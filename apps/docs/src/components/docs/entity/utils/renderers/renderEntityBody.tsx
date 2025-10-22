@@ -1,12 +1,11 @@
-import type { EntityModel } from '@/lib/docs/types';
-
 import { renderClassLike } from './renderClassLike';
 import { renderEnum } from './renderEnum';
 import { renderFunction } from './renderFunction';
 import { renderType } from './renderType';
-// import { renderVariable } from './renderVariable';
 
+import type { EntityModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
+// import { renderVariable } from './renderVariable';
 
 export function renderEntityBody(model: EntityModel): ReactElement | null {
     switch (model.kind) {

@@ -1,6 +1,6 @@
 import { kindName, type DocReference, type DocsEngine, type DocNode } from '@seedcord/docs-engine';
 
-import { resolveEntityTone } from '@/lib/entityMetadata';
+import { resolveEntityTone } from '@lib/entityMetadata';
 
 import { resolveExternalPackageUrl } from './packages';
 import { buildEntityHref } from './routes';

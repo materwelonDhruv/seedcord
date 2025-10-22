@@ -1,11 +1,10 @@
-import type { FunctionSignatureModel } from '@/lib/docs/types';
-
 import Button from '@ui/Button';
 
 import CommentExamples from '../comments/CommentExamples';
 import CommentParagraphs from '../comments/CommentParagraphs';
 import { renderParameterBadge } from '../utils/renderers/renderParameterBadge';
 
+import type { FunctionSignatureModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {

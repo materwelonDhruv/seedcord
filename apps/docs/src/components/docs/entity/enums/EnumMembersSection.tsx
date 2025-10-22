@@ -1,9 +1,8 @@
-import type { EnumMemberModel } from '@/lib/docs/types';
-
 import { cn } from '@lib/utils';
 
 import EnumMemberCard from './EnumMemberCard';
 
+import type { EnumMemberModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 interface EnumMembersSectionProps {

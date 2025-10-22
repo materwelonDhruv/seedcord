@@ -1,5 +1,4 @@
-import type { FunctionSignatureModel } from '@/lib/docs/types';
-
+import type { FunctionSignatureModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 export function renderParameterBadge(parameter: FunctionSignatureModel['parameters'][number]): ReactElement {

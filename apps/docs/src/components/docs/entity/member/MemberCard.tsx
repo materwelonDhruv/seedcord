@@ -1,5 +1,3 @@
-import type { DeprecationStatus } from '@/lib/docs/types';
-
 import { cn } from '@lib/utils';
 
 import MemberCardBody from './MemberCardBody';
@@ -8,6 +6,7 @@ import DeprecatedEntity from '../DeprecatedEntity';
 import { buildTagList } from '../utils/buildTagList';
 
 import type { EntityMemberSummary, MemberPrefix, WithParentDeprecationStatus } from '../types';
+import type { DeprecationStatus } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 interface MemberCardProps extends WithParentDeprecationStatus {

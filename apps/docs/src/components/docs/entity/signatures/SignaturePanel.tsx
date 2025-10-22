@@ -1,11 +1,10 @@
-import type { DeprecationStatus } from '@/lib/docs/types';
-
 import { cn } from '../../../../lib/utils';
 import CommentExamples from '../comments/CommentExamples';
 import CommentParagraphs from '../comments/CommentParagraphs';
 import DeprecatedEntity from '../DeprecatedEntity';
 
 import type { MemberSignatureDetail, WithParentDeprecationStatus } from '../types';
+import type { DeprecationStatus } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 export const SIGNATURE_CONTAINER_CLASS = 'code-scroll-area panel px-2.5 py-2 text-(--text) md:px-3 md:py-2.5';

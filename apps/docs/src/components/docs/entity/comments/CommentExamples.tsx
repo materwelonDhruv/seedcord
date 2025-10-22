@@ -1,10 +1,9 @@
 import { ChevronDown } from 'lucide-react';
 
-import type { CommentExample } from '@/lib/docs/types';
-
 import { cn } from '@lib/utils';
 import Icon from '@ui/Icon';
 
+import type { CommentExample } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 interface CommentExamplesProps {

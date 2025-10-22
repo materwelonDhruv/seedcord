@@ -1,11 +1,10 @@
 'use client';
 
-import type { FunctionSignatureModel } from '@/lib/docs/types';
-
 import SignatureSelector from '../signatures/SignatureSelector';
 import { useActiveSignatureList } from '../utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from '../utils/useActiveSignatureList';
+import type { FunctionSignatureModel } from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 function FunctionSignaturesInline({

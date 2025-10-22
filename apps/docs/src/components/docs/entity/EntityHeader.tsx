@@ -1,18 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import type {
-    CodeRepresentation,
-    CommentExample,
-    CommentParagraph,
-    FunctionSignatureModel,
-    WithDeprecationStatus,
-    WithSeeAlso,
-    WithThrows
-} from '@/lib/docs/types';
-import { formatVersionLabel } from '@/lib/docs/version';
-import type { EntityTone, EntityToneStyle } from '@/lib/entityMetadata';
-import { getToneConfig } from '@/lib/entityMetadata';
-
+import { formatVersionLabel } from '@lib/docs/version';
+import { getToneConfig } from '@lib/entityMetadata';
 import Button from '@ui/Button';
 import Icon from '@ui/Icon';
 
@@ -28,6 +17,16 @@ import { buildSummaryNodes } from './utils/buildSummaryNodes';
 import { useActiveSignatureList } from './utils/useActiveSignatureList';
 
 import type { ActiveSignatureListProps } from './utils/useActiveSignatureList';
+import type {
+    CodeRepresentation,
+    CommentExample,
+    CommentParagraph,
+    FunctionSignatureModel,
+    WithDeprecationStatus,
+    WithSeeAlso,
+    WithThrows
+} from '@lib/docs/types';
+import type { EntityTone, EntityToneStyle } from '@lib/entityMetadata';
 import type { ReactElement } from 'react';
 
 function getHeaderExamples(

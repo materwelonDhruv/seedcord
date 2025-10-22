@@ -2,19 +2,18 @@
 
 import { useMemo } from 'react';
 
+import MemberDetailGroup from '../member/MemberDetailGroup';
+import { useActiveSignatureList } from '../utils/useActiveSignatureList';
+
+import type { EntityMemberSummary } from '../types';
+import type { ActiveSignatureListProps } from '../utils/useActiveSignatureList';
 import type {
     FunctionEntityModel,
     FunctionSignatureModel,
     FunctionTypeParameterModel,
     FunctionSignatureParameterModel,
     CodeRepresentation
-} from '@/lib/docs/types';
-
-import MemberDetailGroup from '../member/MemberDetailGroup';
-import { useActiveSignatureList } from '../utils/useActiveSignatureList';
-
-import type { EntityMemberSummary } from '../types';
-import type { ActiveSignatureListProps } from '../utils/useActiveSignatureList';
+} from '@lib/docs/types';
 import type { ReactElement } from 'react';
 
 function buildTypeParamMember(tp: FunctionTypeParameterModel, index: number): EntityMemberSummary {
