@@ -166,6 +166,20 @@ export abstract class InteractionMiddleware<Repliable extends Repliables>
 }
 
 /**
+ * Base class for Discord event middleware
+ *
+ * Middleware runs before event handlers and can modify behavior or block execution.
+ */
+export abstract class EventMiddleware<EventName extends keyof ClientEvents>
+    extends BaseHandler<ClientEvents[EventName]>
+    implements Handler
+{
+    constructor(event: ClientEvents[EventName], core: Core, args?: string[]) {
+        super(event, core, args);
+    }
+}
+
+/**
  * Handler for Discord autocomplete interactions
  *
  * Extend this class to provide autocomplete suggestions for slash command options.
@@ -202,8 +216,19 @@ export abstract class EventHandler<Repliable extends keyof ClientEvents>
 export type HandlerConstructor = TypedConstructor<typeof InteractionHandler | typeof AutocompleteHandler>;
 
 /** Constructor type for interaction middleware */
-export type MiddlewareConstructor = TypedConstructor<typeof InteractionMiddleware> &
+export type InteractionMiddlewareConstructor = TypedConstructor<typeof InteractionMiddleware> &
     (new (event: Repliables, core: Core, args?: string[]) => InteractionMiddleware<Repliables>);
+
+/** Constructor type for legacy interaction middleware */
+export type MiddlewareConstructor = InteractionMiddlewareConstructor;
+
+/** Constructor type for event middleware */
+export type EventMiddlewareConstructor = TypedConstructor<typeof EventMiddleware> &
+    (new <EventName extends keyof ClientEvents>(
+        event: ClientEvents[EventName],
+        core: Core,
+        args?: string[]
+    ) => EventMiddleware<EventName>);
 
 /** Constructor type for autocomplete handlers */
 export type AutocompleteHandlerConstructor = TypedConstructor<typeof AutocompleteHandler> &

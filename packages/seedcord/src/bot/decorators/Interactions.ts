@@ -1,3 +1,5 @@
+import { areRoutes } from '../../miscellaneous/areRoutes';
+
 import type { Constructor } from 'type-fest';
 
 /**
@@ -153,7 +155,16 @@ export function AutocompleteRoute(commandRoutes: string | string[], focusedField
  *
  * @param type - Select menu type from {@link SelectMenuType}
  * @param routeOrRoutes - CustomId prefix(es) to handle
+ *
  * @decorator
+ *
+ * @example
+ * ```typescript
+ * \@SelectMenuRoute(SelectMenuType.String, 'fruits')
+ * class RoleSelectHandler extends InteractionHandler {
+ *   // handles string select menus with customId starting with 'fruits'
+ * }
+ * ```
  */
 export function SelectMenuRoute(type: SelectMenuType, routeOrRoutes: string | string[]) {
     return function (constructor: Constructor<unknown>): void {
@@ -173,10 +184,6 @@ export function SelectMenuRoute(type: SelectMenuType, routeOrRoutes: string | st
  * Helper to store route(s) in an array on reflect metadata.
  */
 function storeMetadata(symbol: InteractionRoutes, routes: string | string[], constructor: Constructor<unknown>): void {
-    const areRoutes = (routes: unknown): routes is string[] => {
-        return Array.isArray(routes) && routes.every((r) => typeof r === 'string');
-    };
-
     const savedRoutes: unknown = Reflect.getMetadata(symbol, constructor);
     const existing: string[] = areRoutes(savedRoutes) ? savedRoutes : [];
 

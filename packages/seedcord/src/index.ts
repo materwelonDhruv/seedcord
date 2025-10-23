@@ -9,10 +9,11 @@ export * from './bot/Bot';
 // Bot decorators exports
 export * from './bot/decorators/Checkable';
 export * from './bot/decorators/Catchable';
-export * from './bot/decorators/CommandRegisterable';
+export * from './bot/decorators/Command';
 export * from './bot/decorators/EventCatchable';
-export * from './bot/decorators/EventRegisterable';
-export * from './bot/decorators/InteractionConfigurable';
+export * from './bot/decorators/Events';
+export * from './bot/decorators/Interactions';
+export * from './bot/decorators/Middlewares';
 
 // Bot Controller Exports
 export * from './bot/controllers/CommandRegistry';

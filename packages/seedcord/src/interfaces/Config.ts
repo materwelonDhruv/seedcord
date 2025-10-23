@@ -12,6 +12,10 @@ export interface InteractionsConfig {
      */
     path: string;
     ignoreCustomIds?: string[];
+    /**
+     * Optional path to interaction middleware directory
+     */
+    middlewares?: string;
 }
 
 /**
@@ -22,6 +26,10 @@ export interface EventsConfig {
      * Path to dir containing event handlers.
      */
     path: string;
+    /**
+     * Optional path to event middleware directory
+     */
+    middlewares?: string;
 }
 
 /**
