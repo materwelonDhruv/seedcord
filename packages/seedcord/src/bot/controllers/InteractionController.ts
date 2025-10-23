@@ -6,6 +6,7 @@ import { Collection, Events } from 'discord.js';
 import { AutocompleteHandler, InteractionHandler } from '../../interfaces/Handler';
 import { InteractionMetadataKey, InteractionRoutes } from '../decorators/InteractionConfigurable';
 import { UnhandledEvent } from '../defaults/UnhandledEvent';
+import { buildSlashRoute } from '../utilities/miscellaneous/buildSlashRoute';
 
 import type { Core } from '../../interfaces/Core';
 import type { HandlerConstructor, MiddlewareConstructor, Repliables } from '../../interfaces/Handler';
@@ -245,7 +246,7 @@ export class InteractionController implements Initializeable {
     }
 
     private async handleSlashCommand(interaction: ChatInputCommandInteraction): Promise<void> {
-        const route = this.buildSlashRoute(interaction);
+        const route = buildSlashRoute(interaction);
         await this.processInteraction(
             interaction,
             () => route,
@@ -298,7 +299,7 @@ export class InteractionController implements Initializeable {
     }
 
     private async handleAutocomplete(interaction: AutocompleteInteraction): Promise<void> {
-        const route = this.buildSlashRoute(interaction);
+        const route = buildSlashRoute(interaction);
         const focused = interaction.options.getFocused(true);
         const autocompleteKey = `${route}:${focused.name}`;
 
@@ -307,22 +308,5 @@ export class InteractionController implements Initializeable {
             () => autocompleteKey,
             (key) => this.autocompleteMap.get(key)
         );
-    }
-
-    // Build the route from commandName, subcommandGroup, subcommand
-    private buildSlashRoute(interaction: ChatInputCommandInteraction | AutocompleteInteraction): string {
-        const command = interaction.commandName;
-        const group = interaction.options.getSubcommandGroup(false);
-        const sub = interaction.options.getSubcommand(false);
-
-        let route = command;
-        if (group && sub) {
-            route = `${route}/${group}/${sub}`;
-        } else if (group) {
-            route = `${route}/${group}`;
-        } else if (sub) {
-            route = `${route}/${sub}`;
-        }
-        return route;
     }
 }

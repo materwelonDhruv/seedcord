@@ -39,6 +39,9 @@ export * from './bot/utilities/errors/throwCustomError';
 // Bot Utilities Messages Exports
 export * from './bot/utilities/messages/attemptSendDM';
 
+// Bot Utilities Miscellaneous Exports
+export * from './bot/utilities/miscellaneous/buildSlashRoute';
+
 // Bot Utilities Permissions Exports
 export * from './bot/utilities/roles/checkBotPermissions';
 export * from './bot/utilities/roles/checkPermissions';

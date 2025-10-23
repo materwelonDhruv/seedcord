@@ -1,5 +1,10 @@
 import { type ColorResolvable, Colors } from 'discord.js';
 
+/**
+ * Converts a color to ColorResolvable if possible.
+ *
+ * @internal
+ */
 export function parseEnvColor(raw: string | undefined | null, fallback: ColorResolvable): ColorResolvable {
     if (!raw) return fallback;
 
