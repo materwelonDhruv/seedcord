@@ -1,6 +1,6 @@
 import { kindName } from '@seedcord/docs-engine';
 
-import { resolveEntityTone } from '@/lib/entity_Metadata';
+import { resolveEntityTone } from '@lib/entityMetadata';
 
 import type { EntityKind } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';

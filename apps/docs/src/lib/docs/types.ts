@@ -1,4 +1,4 @@
-import type { EntityTone } from '../entity_Metadata';
+import type { EntityTone } from '../entityMetadata';
 import type { DocsEngine } from './engine';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
 import type {

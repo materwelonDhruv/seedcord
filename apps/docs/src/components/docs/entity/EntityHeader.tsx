@@ -1,9 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 
-import type { EntityTone, EntityToneStyle } from '@/lib/entity_Metadata';
-import { getToneConfig } from '@/lib/entity_Metadata';
-
 import { formatVersionLabel } from '@lib/docs/version';
+import { getToneConfig } from '@lib/entityMetadata';
 import Button from '@ui/Button';
 import Icon from '@ui/Icon';
 
@@ -28,6 +26,7 @@ import type {
     WithSeeAlso,
     WithThrows
 } from '@lib/docs/types';
+import type { EntityTone, EntityToneStyle } from '@lib/entityMetadata';
 import type { ReactElement } from 'react';
 
 function getHeaderExamples(
