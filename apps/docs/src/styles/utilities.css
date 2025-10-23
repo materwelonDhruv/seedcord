@@ -1,6 +1,6 @@
 @layer utilities {
     .text-subtle {
-        color: color-mix(in oklab, var(--color-text) 70%, transparent);
+        @apply text-[color-mix(in_oklab,var(--color-text)_70%,transparent)];
     }
 
     .bg-page {
