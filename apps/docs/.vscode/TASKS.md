@@ -1,3 +1,15 @@
+[ ] 50. The panel dropdowns for the constructor, or props, or methods for example, don't have a hover effect anymore and don't show a pointer cursor on hover.
+
+[ ] 51. Settings clear doesn't have feedback on click. Maybe make a timed feedback button component.
+
+[ ] 53. Scrollbar for the sidebar is perma-visible by default
+
+[ ] 54. public abstract abstract public logger: Logger; - double abstract keyword in signature
+
+[ ] 55. In the sidebar, when hovering over a package name, the tooltip shows the full package name but it has weird line breaks in it. It should be a single line with no breaks.
+
+[ ] 56. Refactor all renaming styling across the project to use latest Tailwind features and reduce redundancy. Make
+
 [ ] 42. Render @throws comment similar to Inherits from and See also sections. This is mostly done because we have a bunch of code and the types etc to handle it, but I don't see it rendered on the website. Also, please check kind-function-haspermstoassign.txt. You can see that it has an array for throws. Use the type from docs-engine package that's exported and access this array instead of looking for `@throws` tags.
 
 [ ] 37. In type param rendered comments on entity pages, the type param comment duplicates itself above and below the signature.
@@ -10,8 +22,6 @@
 
 [ ] 41. Custom scroll bar that matches the seedcord theme for dark and light. Is sleek. And has transition when it appears/disappears. This should also be used in code blocks when overflowing for horizontal scroll.
 
-[ ] 43. local storage is saving the selectedPackage. But it's not being used on reload. On reload, it goes back to default package.
-
 [ ] 44. In tsdoc comments, if there are bullet points or numbered lists, (-, •, 1., 2., etc.), render them as actual lists in the rendered comments. Not just plain text with those characters.
 
 [ ] 45. If a text is specifically a string (inside "" or '') in the signature of any entity, don't attempt to hyperlink it. Because right now for example, `type LifecycleAction = "start" | "complete" | "error"`, the "error" is hyperlinked to the mdn Error page.
@@ -23,9 +33,3 @@
 [ ] 48. Rendering for virtual and remarks.
 
 [ ] 49. Render markdown in comments.
-
-[ ] 50. Sidebar dropdowns don't update on package change. And neither does their content. Please fix.
-
-[ ] 52. Sidebar dropdowns styling. The selection item's border radius is too round.
-
-[ ] 53. Command palette: when I'm focused on the input box, there's a harsh outline around the entire box. What happened to the previous styling that matched the rest of the project?
