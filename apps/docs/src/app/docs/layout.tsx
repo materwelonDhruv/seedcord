@@ -1,6 +1,7 @@
+import Container from '@/components/layout/sidebar/utils/container/_Container';
+
 import DocsUIProvider from '@components/docs/DocsUIContext';
 import Sidebar from '@components/layout/sidebar/Sidebar';
-import Container from '@components/layout/sidebar/utils/container/Container';
 import { findCatalogEntry, findCatalogVersion, loadDocsCatalog } from '@lib/docs/catalog';
 
 import type { DocsCatalog, PackageCatalogEntry, PackageVersionCatalog } from '@lib/docs/types';

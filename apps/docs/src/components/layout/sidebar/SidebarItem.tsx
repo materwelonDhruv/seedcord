@@ -3,7 +3,8 @@
 import * as Tooltip from '@radix-ui/react-tooltip';
 import Link from 'next/link';
 
-import { getToneConfig } from '@lib/entityMetadata';
+import { getToneConfig } from '@/lib/entity_Metadata';
+
 import { log } from '@lib/logger';
 import { cn } from '@lib/utils';
 

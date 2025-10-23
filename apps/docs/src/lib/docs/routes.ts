@@ -1,4 +1,4 @@
-import { resolveEntityTone, toneToDirectory, type EntityTone } from '@lib/entityMetadata';
+import { resolveEntityTone, toneToDirectory, type EntityTone } from '@/lib/entity_Metadata';
 
 import { formatDisplayPackageName } from './packages';
 

@@ -2,9 +2,8 @@
 
 import { useMemo } from 'react';
 
-import { formatEntityKindLabel, resolveEntityTone } from '@lib/entityMetadata';
-
-import type { EntityTone } from '@lib/entityMetadata';
+import type { EntityTone } from '@/lib/entity_Metadata';
+import { formatEntityKindLabel, resolveEntityTone } from '@/lib/entity_Metadata';
 
 function inferToneFromSymbol(symbolName?: string | null): EntityTone | null {
     if (!symbolName) {

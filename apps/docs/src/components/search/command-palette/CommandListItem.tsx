@@ -2,7 +2,8 @@
 
 import { Command } from 'cmdk';
 
-import { getToneConfig, resolveEntityTone } from '@lib/entityMetadata';
+import { getToneConfig, resolveEntityTone } from '@/lib/entity_Metadata';
+
 import { cn } from '@lib/utils';
 import Icon from '@ui/Icon';
 

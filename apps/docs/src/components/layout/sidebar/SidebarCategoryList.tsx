@@ -3,7 +3,8 @@
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-import { getToneConfig } from '@lib/entityMetadata';
+import { getToneConfig } from '@/lib/entity_Metadata';
+
 import { cn } from '@lib/utils';
 import Icon from '@ui/Icon';
 

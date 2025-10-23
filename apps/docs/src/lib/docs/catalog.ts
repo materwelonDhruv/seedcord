@@ -1,5 +1,7 @@
 import { cache } from 'react';
 
+import type { EntityTone } from '@/lib/entity_Metadata';
+
 import { getDocsEngine } from './engine';
 import { DEFAULT_MANIFEST_PACKAGE, DEFAULT_VERSION, formatDisplayPackageName } from './packages';
 import { buildEntityHref, buildPackageBasePath } from './routes';
@@ -14,7 +16,6 @@ import type {
     PackageCatalogEntry,
     PackageVersionCatalog
 } from './types';
-import type { EntityTone } from '@lib/entityMetadata';
 
 type GetPackageDirectoryReturn = ReturnType<DocsEngine['getPackageDirectory']>;
 
