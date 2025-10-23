@@ -8,7 +8,9 @@
 
 [ ] 55. In the sidebar, when hovering over a package name, the tooltip shows the full package name but it has weird line breaks in it. It should be a single line with no breaks.
 
-[ ] 56. Refactor all renaming styling across the project to use latest Tailwind features and reduce redundancy. Make
+[ ] 56. Refactor all renaming styling across the project to use latest Tailwind features and reduce redundancy. Also, use more consistent styling with color mixing instead of the arbitrary percentages.
+
+[ ] 57. Update pre-rendering to not load the documentation jsons during build time, but instead load them on-demand at runtime with caching.
 
 [ ] 42. Render @throws comment similar to Inherits from and See also sections. This is mostly done because we have a bunch of code and the types etc to handle it, but I don't see it rendered on the website. Also, please check kind-function-haspermstoassign.txt. You can see that it has an array for throws. Use the type from docs-engine package that's exported and access this array instead of looking for `@throws` tags.
 
