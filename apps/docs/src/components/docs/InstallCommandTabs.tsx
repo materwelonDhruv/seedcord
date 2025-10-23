@@ -45,7 +45,7 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
                             'rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition',
                             command.id === activeCommand.id
                                 ? 'border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent-a)_18%,transparent)] text-(--text)'
-                                : 'border-(--border) bg-surface-muted text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
+                                : 'border-(--border) bg-surface-96 text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
                         )}
                     >
                         {command.label}

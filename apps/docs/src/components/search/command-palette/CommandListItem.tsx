@@ -81,13 +81,11 @@ function CommandListItem({ action, onSelect }: CommandListItemProps): ReactEleme
             </span>
             <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <div className="flex flex-wrap items-center gap-2">
-                    <span className="truncate font-medium transition-colors group-data-[selected=true]/item:text-[color-mix(in_oklab,var(--text)_75%,var(--accent-b)_25%)]">
+                    <span className="truncate font-medium transition-colors group-data-[selected=true]/item:text-[color-mix(in_oklab,var(--text)_85%,var(--accent-b)_15%)]">
                         {action.label}
                     </span>
                 </div>
-                <span className="truncate font-mono text-xs text-subtle transition-colors group-hover/item:text-[color-mix(in_oklab,var(--text)_70%,var(--accent-b)_30%)] group-data-[selected=true]/item:text-[color-mix(in_oklab,var(--text)_68%,var(--accent-b)_32%)]">
-                    {action.path}
-                </span>
+                <span className="truncate font-mono text-xs text-subtle transition-colors ">{action.path}</span>
                 {action.description ? <span className="text-xs text-subtle">{action.description}</span> : null}
             </div>
             {action.isExternal ? (

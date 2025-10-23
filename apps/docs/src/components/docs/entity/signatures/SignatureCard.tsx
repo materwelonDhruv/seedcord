@@ -38,7 +38,7 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                         {signature.parameters.map((parameter) => (
                             <li
                                 key={parameter.name}
-                                className="rounded-lg border border-(--border)/60 bg-surface-muted p-3 text-sm text-subtle"
+                                className="rounded-lg border border-(--border)/60 bg-surface-96 p-3 text-sm text-subtle"
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     {renderParameterBadge(parameter)}

@@ -59,8 +59,7 @@ function CopyAnchorButton({
             type="button"
             onClick={handleCopyLink}
             className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-subtle transition duration-150 hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_55%,var(--text))]',
-                copied ? 'text-[color-mix(in_oklab,var(--accent-b)_68%,var(--text))]' : undefined,
+                'flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-subtle transition duration-150 hover:text-(--text) cursor-pointer',
                 className
             )}
             aria-label={copied ? `Copied link to ${label}` : `Copy link to ${label}`}

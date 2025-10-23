@@ -218,7 +218,7 @@ function EntityHeader({
     return (
         <header className="min-w-0">
             <DeprecatedEntity deprecationStatus={deprecationStatus}>
-                <div className="card bg-surface-muted p-4 shadow-soft sm:p-5 space-y-4">{headerContent}</div>
+                <div className="card bg-surface-96 p-4 shadow-soft sm:p-5 space-y-4">{headerContent}</div>
             </DeprecatedEntity>
         </header>
     );

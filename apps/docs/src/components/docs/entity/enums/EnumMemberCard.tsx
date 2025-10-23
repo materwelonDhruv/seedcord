@@ -69,7 +69,7 @@ function ActionsCell({
                     href={sourceUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_48%,var(--text))]"
+                    className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text)"
                     aria-label={`Open source for ${label} in a new tab`}
                 >
                     <Icon icon={Code} size={16} />

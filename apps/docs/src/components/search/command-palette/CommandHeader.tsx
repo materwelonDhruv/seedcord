@@ -22,7 +22,7 @@ function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: Comman
                 className="
                     flex items-center gap-2 rounded-lg
                     border border-(--border)/80
-                    bg-surface-muted
+                    bg-surface-96
                     px-3 py-2 transition
                     focus-within:border-[color-mix(in_oklab,var(--accent-b)_35%,var(--border))]
                     focus-within:bg-[color-mix(in_oklab,var(--surface)_96%,var(--accent-b)_4%)]
@@ -59,7 +59,7 @@ function CommandHeader({ inputRef, onClose, onValueChange, searchValue }: Comman
                     className="
                         hidden sm:inline-flex items-center gap-1
                         rounded-md border border-(--border)/70
-                        bg-surface-muted px-2 py-1
+                        bg-surface-96 px-2 py-1
                         text-[0.7rem] font-semibold uppercase tracking-wide
                         text-subtle transition
                         hover:text-[color-mix(in_oklab,var(--text)_85%,transparent)]

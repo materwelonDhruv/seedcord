@@ -37,7 +37,7 @@ function MemberList({ items, prefix, onNavigate }: MemberListProps): ReactElemen
                                 onNavigate(`${prefix}-${item.id}`);
                             }}
                             className={cn(
-                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-(--border)/70 bg-surface-muted px-3.5 py-2 text-sm text-(--text) transition',
+                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-(--border)/70 bg-surface-96 px-3.5 py-2 text-sm text-(--text) transition',
                                 'hover:border-[color-mix(in_oklab,var(--accent-b)_34%,var(--border))] hover:bg-[color-mix(in_oklab,var(--accent-b)_12%,var(--surface)_88%)]'
                             )}
                         >
