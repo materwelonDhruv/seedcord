@@ -68,6 +68,21 @@ export interface FilterCircularsOptions<Marker extends string = '[Circular]'> {
  * @param options - Optional configuration.
  *
  * @returns A JSON safe structure with circular references replaced by the marker.
+ *
+ * @example
+ * ```ts
+ * interface Test {
+ *   name: string;
+ *   self?: Test;
+ * }
+ *
+ * const obj: Test = { name: 'seedcord' };
+ * obj.self = obj;
+ *
+ * const clean = filterCirculars(obj);
+ * //     ^? { name: string; self?: "[Circular]" | { ... } }
+ * console.log(clean.self); // "[Circular]"
+ * ```
  */
 export function filterCirculars<ObjType, Marker extends string = '[Circular]'>(
     value: ObjType,

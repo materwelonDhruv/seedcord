@@ -47,7 +47,13 @@ export function EventCatchable(log?: boolean) {
                 const eventArgs = Array.isArray(this.getEvent()) ? (this.getEvent() as unknown[]) : [this.getEvent()];
                 const msg = eventArgs.find((x): x is Message => x instanceof Message);
 
-                const { response } = extractErrorResponse(err, this.core, msg?.guild ?? null, msg?.author ?? null);
+                const { response } = extractErrorResponse(
+                    err,
+                    this.core,
+                    msg?.guild ?? null,
+                    msg?.author ?? null,
+                    eventArgs
+                );
 
                 if (!msg) return;
 

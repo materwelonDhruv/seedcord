@@ -39,13 +39,14 @@ export function extractErrorResponse(
     error: Error,
     core: Core,
     guild: Nullable<Guild>,
-    user: Nullable<User>
+    user: Nullable<User>,
+    metadata?: unknown
 ): ExtractedErrorResponse {
     const uuid = crypto.randomUUID();
 
     if (error instanceof CustomError) {
         if (error instanceof DatabaseError) {
-            core.effects.emit('unknownException', { uuid, error, guild, user });
+            core.effects.emit('unknownException', { uuid, error, guild, user, metadata });
 
             logger.error(`DatabaseError: ${error.uuid}`);
         } else if (error.emit) {
@@ -62,7 +63,7 @@ export function extractErrorResponse(
     if (showStack) logger.error(uuid, error);
     else logger.error(`${uuid} | ${error.message}`);
 
-    core.effects.emit('unknownException', { uuid, error, guild, user });
+    core.effects.emit('unknownException', { uuid, error, guild, user, metadata });
 
     return {
         uuid,

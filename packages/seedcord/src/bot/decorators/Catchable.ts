@@ -58,7 +58,13 @@ export function Catchable(options?: CatchableOptions) {
                 // eslint-disable-next-line no-console
                 if (log) console.error(error);
 
-                const { response } = extractErrorResponse(error, this.core, interaction.guild, interaction.user);
+                const { response } = extractErrorResponse(
+                    error,
+                    this.core,
+                    interaction.guild,
+                    interaction.user,
+                    interaction
+                );
 
                 const res = {
                     embeds: [response],

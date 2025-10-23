@@ -1,3 +1,4 @@
+import { hexToNumber } from '@seedcord/utils';
 import {
     ActionRowBuilder,
     ButtonBuilder,
@@ -24,6 +25,8 @@ import {
     UserSelectMenuBuilder
 } from 'discord.js';
 import { Envapt } from 'envapt';
+
+import { parseEnvColor } from '../miscellaneous/parseEnvColor';
 
 import type { ColorResolvable } from 'discord.js';
 
@@ -178,8 +181,11 @@ export abstract class BuilderComponent<BuilderKey extends BuilderType> extends B
      *
      * Set DEFAULT_BOT_COLOR to a hex code in your `.env` file to customize.
      */
-    @Envapt<ColorResolvable>('DEFAULT_BOT_COLOR', { fallback: 'Default' })
-    declare private readonly botColor: ColorResolvable;
+    @Envapt<ColorResolvable>('DEFAULT_BOT_COLOR', {
+        fallback: 'Default',
+        converter: (raw, fallback) => parseEnvColor(raw, fallback)
+    })
+    declare public readonly botColor: ColorResolvable;
 
     protected constructor(type: BuilderKey) {
         const ComponentClass = BuilderTypes[type] as unknown;
@@ -187,6 +193,13 @@ export abstract class BuilderComponent<BuilderKey extends BuilderType> extends B
 
         // Override in builders
         if (this.instance instanceof EmbedBuilder) this.instance.setColor(this.botColor);
+
+        // Override in builders
+        if (this.instance instanceof ContainerBuilder) {
+            this.instance.setAccentColor(
+                this.botColor === 'Default' ? undefined : hexToNumber(this.botColor.toString())
+            );
+        }
 
         // Override in builders
         if (this.instance instanceof SlashCommandBuilder || this.instance instanceof ContextMenuCommandBuilder) {
