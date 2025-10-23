@@ -12,6 +12,8 @@
 
 [ ] 57. Update pre-rendering to not load the documentation jsons during build time, but instead load them on-demand at runtime with caching.
 
+[ ] 58. Make hyperlinking in code signatures case-sensitive IF a ref isn't found in internal documentation.
+
 [ ] 42. Render @throws comment similar to Inherits from and See also sections. This is mostly done because we have a bunch of code and the types etc to handle it, but I don't see it rendered on the website. Also, please check kind-function-haspermstoassign.txt. You can see that it has an array for throws. Use the type from docs-engine package that's exported and access this array instead of looking for `@throws` tags.
 
 [ ] 37. In type param rendered comments on entity pages, the type param comment duplicates itself above and below the signature.
