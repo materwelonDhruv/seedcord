@@ -75,8 +75,9 @@ export function filterCirculars<ObjType, Marker extends string = '[Circular]'>(
 ): JsonifyWithCirculars<ObjType, Marker> {
     const logger = options?.logger;
     const marker = (options?.marker ?? '[Circular]') as Marker;
+    const mode = options?.mode ?? 'decycle';
 
-    if (options?.mode === 'json') return json(value, marker, logger);
+    if (mode === 'json') return json(value, marker, logger);
 
     try {
         return decycle(value, marker);
