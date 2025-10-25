@@ -1,6 +1,3 @@
-import { cloneCommentParagraphs } from '../comments/creators';
-import { formatCommentRich } from '../comments/formatter';
-import { formatSignature, highlightCode } from '../formatting';
 import {
     ensureSlug,
     stripDuplicateDescription,
@@ -8,6 +5,9 @@ import {
     ensureSignatureAnchor,
     buildDeprecationStatusFromNodeLike
 } from './utils';
+import { cloneCommentParagraphs } from '../comments/creators';
+import { formatCommentRich } from '../comments/formatter';
+import { formatSignature, highlightCode } from '../formatting';
 
 import type { CodeRepresentation, CommentExample, CommentParagraph, FormatContext, FormattedComment } from '../types';
 import type { EntityMemberSummary } from '@components/docs/entity/types';
