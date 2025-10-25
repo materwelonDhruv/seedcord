@@ -1,7 +1,7 @@
+import { ensureSlug, collectMemberTags, buildDeprecationStatusFromNodeLike } from './utils';
 import { cloneCommentParagraphs } from '../comments/creators';
 import { formatCommentRich } from '../comments/formatter';
 import { highlightCode } from '../formatting';
-import { ensureSlug, collectMemberTags, buildDeprecationStatusFromNodeLike } from './utils';
 
 import type { EnumMemberModel, FormatContext } from '../types';
 import type { DocNode } from '@seedcord/docs-engine';

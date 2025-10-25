@@ -2,10 +2,9 @@
 
 import { create } from 'zustand';
 
+import { DEFAULT_MANIFEST_PACKAGE, DEFAULT_VERSION } from '@lib/docs/packages';
 import { log } from '@lib/logger';
 import { formatMemberAccessLabel, type MemberAccessLevel } from '@lib/memberAccess';
-
-import { DEFAULT_MANIFEST_PACKAGE, DEFAULT_VERSION } from '../lib/docs/packages';
 
 interface UIState {
     isCommandPaletteOpen: boolean;
