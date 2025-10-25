@@ -27,7 +27,7 @@ export function Sidebar({
     variant = 'desktop',
     className
 }: SidebarProps): ReactElement {
-    const pathname = usePathname() ?? '';
+    const pathname = usePathname();
     const containerStyles = getContainerStyles(variant);
     const listStyles = getListStyles(variant);
     const { handleWheel, handleScroll, handleTouchStart, handleTouchMove, handleTouchEnd } = useSidebarScrollGuards();
@@ -126,7 +126,7 @@ export function Sidebar({
             </div>
             <div
                 ref={scrollRef}
-                className="relative mt-4 flex-1 min-h-0 overflow-y-auto pe-1 overscroll-contain"
+                className="relative mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pe-1"
                 style={listStyles}
                 onWheel={handleWheel}
                 onScroll={composedHandleScroll}

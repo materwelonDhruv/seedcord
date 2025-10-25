@@ -78,16 +78,16 @@ function Container({ sidebar, children, className }: ContainerProps): ReactNode 
                 {mobileSidebar}
             </MobilePanelDialog>
 
-            <div className="flex w-full flex-1 min-w-0">
+            <div className="flex w-full min-w-0 flex-1">
                 <DesktopSidebarFrame sidebar={desktopSidebar} />
                 <div className="flex min-h-0 min-w-0 flex-1 flex-col">
-                    <div className="mx-auto w-full max-w-none min-w-0 px-3 pb-12 pt-6 md:px-7 md:pt-8 lg:px-10 lg:pt-10">
+                    <div className="mx-auto w-full max-w-none min-w-0 px-3 pt-6 pb-12 md:px-7 md:pt-8 lg:px-10 lg:pt-10">
                         {children}
                     </div>
                 </div>
             </div>
 
-            <ScrollToTopButton className="fixed bottom-10 right-6" />
+            <ScrollToTopButton className="fixed right-6 bottom-10" />
         </div>
     );
 }

@@ -15,7 +15,7 @@ function SignatureBlock({ signature }: { signature: CodeRepresentation }): React
 
     return (
         <div className={containerClassName}>
-            <pre className="code-scroll-content whitespace-pre-wrap text-sm text-(--text)">
+            <pre className="code-scroll-content text-sm whitespace-pre-wrap text-(--text)">
                 <code>{signature.text}</code>
             </pre>
         </div>

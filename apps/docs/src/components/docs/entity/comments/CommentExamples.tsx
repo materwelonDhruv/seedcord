@@ -18,8 +18,8 @@ function CommentExamples({ examples, className, open = false }: CommentExamplesP
     if (!examples.length) return null;
 
     return (
-        <details className={cn('space-y-3 group', className)} open={open}>
-            <summary className="cursor-pointer flex items-center gap-2 text-sm font-semibold text-(--text)">
+        <details className={cn('group space-y-3', className)} open={open}>
+            <summary className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-(--text)">
                 <span className="flex items-center">
                     <Icon
                         icon={ChevronDown}
@@ -39,7 +39,7 @@ function CommentExamples({ examples, className, open = false }: CommentExamplesP
                     return (
                         <figure key={key} className="space-y-1">
                             {example.caption ? (
-                                <figcaption className="text-xs font-semibold uppercase tracking-[0.08em] text-subtle">
+                                <figcaption className="text-subtle text-xs font-semibold tracking-[0.08em] uppercase">
                                     {example.caption}
                                 </figcaption>
                             ) : null}
@@ -50,7 +50,7 @@ function CommentExamples({ examples, className, open = false }: CommentExamplesP
                                         dangerouslySetInnerHTML={{ __html: representation.html }}
                                     />
                                 ) : (
-                                    <pre className="code-scroll-content whitespace-pre leading-relaxed">
+                                    <pre className="code-scroll-content leading-relaxed whitespace-pre">
                                         <code>{representation.text}</code>
                                     </pre>
                                 )}

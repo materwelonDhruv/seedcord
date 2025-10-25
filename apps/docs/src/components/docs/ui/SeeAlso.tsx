@@ -8,7 +8,7 @@ function SeeAlso({
     if (!entries || entries.length === 0) return null;
 
     return (
-        <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+        <p className="text-subtle flex flex-wrap items-baseline gap-2">
             <span className="font-semibold text-(--text)">See also:</span>
             <span className="min-w-0">
                 {entries.map((s, i) => (

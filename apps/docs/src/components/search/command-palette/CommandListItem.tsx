@@ -3,7 +3,7 @@
 import { Command } from 'cmdk';
 
 import { getToneConfig, resolveEntityTone } from '@lib/entityMetadata';
-import { cn } from '@lib/utils';
+import { cn, tw } from '@lib/utils';
 import Icon from '@ui/Icon';
 
 import { SEARCH_KIND_ICONS } from './constants';
@@ -40,9 +40,7 @@ const NON_ENTITY_BADGES: Record<NonEntityResultKind, string> = {
     enumMember: ['border-(--entity-enum)/34', 'bg-(--entity-tint-14)', 'text-(--entity-enum)'].join(' ')
 };
 
-const BASE_ICON_CLASSES = [
-    'flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150'
-].join(' ');
+const BASE_ICON_CLASSES = tw`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border transition duration-150`;
 
 interface CommandListItemProps {
     action: CommandAction;
@@ -70,7 +68,7 @@ function CommandListItem({ action, onSelect }: CommandListItemProps): ReactEleme
             data-command-id={action.id}
             title={action.path}
             className={cn(
-                'group/item mt-1 flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-(--text) outline-none transition first:mt-0',
+                'group/item mt-1 flex cursor-pointer items-start gap-3 rounded-xl border border-transparent bg-transparent px-3 py-3 text-sm text-(--text) transition outline-none first:mt-0',
                 'data-[selected=true]:border-(--accent-b)/38 data-[selected=true]:bg-(--accent-b)/16'
             )}
             aria-label={action.label}
@@ -85,11 +83,11 @@ function CommandListItem({ action, onSelect }: CommandListItemProps): ReactEleme
                         {action.label}
                     </span>
                 </div>
-                <span className="truncate font-mono text-xs text-subtle transition-colors ">{action.path}</span>
-                {action.description ? <span className="text-xs text-subtle">{action.description}</span> : null}
+                <span className="text-subtle truncate font-mono text-xs transition-colors">{action.path}</span>
+                {action.description ? <span className="text-subtle text-xs">{action.description}</span> : null}
             </div>
             {action.isExternal ? (
-                <Icon icon={SEARCH_KIND_ICONS.resource} size={16} className="mt-1 text-subtle" aria-hidden />
+                <Icon icon={SEARCH_KIND_ICONS.resource} size={16} className="text-subtle mt-1" aria-hidden />
             ) : null}
         </Command.Item>
     );

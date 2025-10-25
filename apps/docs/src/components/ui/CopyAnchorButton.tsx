@@ -59,7 +59,7 @@ function CopyAnchorButton({
             type="button"
             onClick={handleCopyLink}
             className={cn(
-                'flex h-8 w-8 items-center justify-center rounded-md border border-transparent text-subtle transition duration-150 hover:text-(--text) cursor-pointer',
+                'text-subtle flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-transparent transition duration-150 hover:text-(--text)',
                 className
             )}
             aria-label={copied ? `Copied link to ${label}` : `Copy link to ${label}`}

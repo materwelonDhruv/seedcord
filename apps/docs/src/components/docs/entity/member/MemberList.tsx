@@ -25,7 +25,7 @@ function MemberList({ items, prefix, onNavigate }: MemberListProps): ReactElemen
 
     return (
         <section className="min-w-0 space-y-2.5" aria-labelledby={`${prefix}-list-heading`}>
-            <h2 id={`${prefix}-list-heading`} className="text-xs font-semibold uppercase tracking-widest text-subtle">
+            <h2 id={`${prefix}-list-heading`} className="text-subtle text-xs font-semibold tracking-widest uppercase">
                 {title}
             </h2>
             <ul className="space-y-2">
@@ -37,7 +37,7 @@ function MemberList({ items, prefix, onNavigate }: MemberListProps): ReactElemen
                                 onNavigate(`${prefix}-${item.id}`);
                             }}
                             className={cn(
-                                'group flex w-full min-w-0 items-center justify-between rounded-lg border border-(--border)/70 bg-surface-96 px-3.5 py-2 text-sm text-(--text) transition',
+                                'group bg-surface-96 flex w-full min-w-0 items-center justify-between rounded-lg border border-(--border)/70 px-3.5 py-2 text-sm text-(--text) transition',
                                 'hover:border-[color-mix(in_oklab,var(--accent-b)_34%,var(--border))] hover:bg-[color-mix(in_oklab,var(--accent-b)_12%,var(--surface)_88%)]'
                             )}
                         >

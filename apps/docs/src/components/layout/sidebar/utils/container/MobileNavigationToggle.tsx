@@ -12,7 +12,7 @@ function MobileNavigationToggle({ onOpen }: { onOpen: () => void }): ReactElemen
             <div className="flex flex-wrap gap-2">
                 <Button
                     variant="outline"
-                    className="flex-1 min-w-[150px] justify-center gap-2 bg-surface text-sm text-(--text)"
+                    className="bg-surface min-w-[150px] flex-1 justify-center gap-2 text-sm text-(--text)"
                     onClick={onOpen}
                     aria-label="Open navigation menu"
                 >

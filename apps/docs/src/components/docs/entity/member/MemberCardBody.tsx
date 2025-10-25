@@ -22,7 +22,7 @@ function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps
     const hasSharedExamples = member.sharedExamples.length > 0;
 
     return (
-        <div className="mt-4 min-w-0 space-y-4 text-sm text-subtle">
+        <div className="text-subtle mt-4 min-w-0 space-y-4 text-sm">
             <SignatureSelector
                 signatures={member.signatures}
                 activeSignatureId={activeSignatureId}
@@ -39,7 +39,7 @@ function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps
             ))}
             {hasSharedExamples ? <CommentExamples examples={member.sharedExamples} /> : null}
             {member.inheritedFrom ? (
-                <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                <p className="text-subtle flex flex-wrap items-baseline gap-2">
                     <span className="font-semibold text-(--text)">Inherited from:</span>
                     {typeof member.inheritedFrom === 'string' ? (
                         <span>{member.inheritedFrom}</span>
@@ -54,7 +54,7 @@ function MemberCardBody({ member, parentDeprecationStatus }: MemberCardBodyProps
             ) : null}
             {member.throws?.length ? (
                 <div>
-                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                    <p className="text-subtle flex flex-wrap items-baseline gap-2">
                         <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={member.throws} />

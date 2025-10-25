@@ -21,7 +21,7 @@ function SignatureSelector({
 
     return (
         <fieldset className="space-y-2">
-            <legend className="text-xs font-semibold uppercase tracking-widest text-subtle">{legend}</legend>
+            <legend className="text-subtle text-xs font-semibold tracking-widest uppercase">{legend}</legend>
             <div className="flex flex-wrap gap-2">
                 {signatures.map((signature, index) => {
                     const checked = signature.id === activeSignatureId;

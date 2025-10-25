@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 
-import { cn } from '@lib/utils';
+import { cn, tw } from '@lib/utils';
 import CopyButton from '@ui/CopyButton';
 
 import type { ReactElement } from 'react';
@@ -31,7 +31,7 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
         return null;
     }
 
-    const codeContainerClass = 'code-scroll-area px-4 py-4 text-sm leading-relaxed text-(--text)';
+    const codeContainerClass = tw`code-scroll-area px-4 py-4 text-sm leading-relaxed text-(--text)`;
 
     return (
         <div className="space-y-3">
@@ -42,21 +42,21 @@ function InstallCommandTabs({ commands }: InstallCommandTabsProps): ReactElement
                         type="button"
                         onClick={() => setActiveId(command.id)}
                         className={cn(
-                            'rounded-full border px-3 py-1.5 text-xs font-semibold uppercase tracking-wide transition',
+                            'rounded-full border px-3 py-1.5 text-xs font-semibold tracking-wide uppercase transition',
                             command.id === activeCommand.id
                                 ? 'border-[color-mix(in_oklab,var(--accent-a)_55%,var(--border))] bg-[color-mix(in_oklab,var(--accent-a)_18%,transparent)] text-(--text)'
-                                : 'border-(--border) bg-surface-96 text-subtle hover:border-(--accent-a)/30 hover:text-(--text)'
+                                : 'bg-surface-96 text-subtle border-(--border) hover:border-(--accent-a)/30 hover:text-(--text)'
                         )}
                     >
                         {command.label}
                     </button>
                 ))}
             </div>
-            <div className="relative overflow-hidden card bg-surface-95 shadow-soft">
+            <div className="card bg-surface-95 shadow-soft relative overflow-hidden">
                 <CopyButton
                     value={activeCommand.code}
                     ariaLabel={`Copy ${activeCommand.label} install command`}
-                    className="absolute right-3 top-3 z-10"
+                    className="absolute top-3 right-3 z-10"
                 />
                 {activeCommand.html ? (
                     <div className={codeContainerClass}>
