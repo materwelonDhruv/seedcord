@@ -19,14 +19,14 @@ export function renderMemberOverview(
     const quickPanelGridColumns = columns.length === 2 ? 'lg:grid-cols-2' : undefined;
 
     return (
-        <details open className="group min-w-0 card bg-surface-97 p-4 shadow-soft md:p-5">
+        <details open className="group card bg-surface-97 shadow-soft min-w-0 p-4 md:p-5">
             <summary className="flex cursor-pointer items-center justify-between gap-3 text-left text-(--text)">
                 <span className="text-lg font-semibold">Member overview</span>
                 <Icon icon={ChevronDown} size={18} className="text-subtle transition-transform group-open:rotate-180" />
             </summary>
             <div className="mt-3 space-y-4">
                 {showAccessControls ? (
-                    <p className="text-xs text-subtle">
+                    <p className="text-subtle text-xs">
                         Showing members with{' '}
                         <span className="font-semibold text-(--text)">
                             {formatMemberAccessLabel(memberAccessLevel)}

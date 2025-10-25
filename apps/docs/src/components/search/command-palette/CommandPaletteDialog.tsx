@@ -36,7 +36,7 @@ function CommandListContent({
 
     if (showInitialHint) {
         emptyContent = (
-            <div className="px-4 py-12 text-center text-sm text-subtle">
+            <div className="text-subtle px-4 py-12 text-center text-sm">
                 Type at least {MIN_SEARCH_QUERY_LENGTH} characters to explore the documentation index.
             </div>
         );
@@ -48,7 +48,7 @@ function CommandListContent({
         );
     } else if (shouldShowFallback) {
         emptyContent = (
-            <div className="px-3 py-8 text-center text-sm text-subtle">No results found. Try refining your search.</div>
+            <div className="text-subtle px-3 py-8 text-center text-sm">No results found. Try refining your search.</div>
         );
     }
 
@@ -57,7 +57,7 @@ function CommandListContent({
             {emptyContent ? <Command.Empty>{emptyContent}</Command.Empty> : null}
             {isSearching ? (
                 <Command.Loading>
-                    <div className="px-2 py-6 text-center text-sm text-subtle">Searching documentation…</div>
+                    <div className="text-subtle px-2 py-6 text-center text-sm">Searching documentation…</div>
                 </Command.Loading>
             ) : null}
             {shouldShowItems
@@ -120,7 +120,7 @@ function CommandPaletteDialog({ controller }: { controller: CommandPaletteContro
                 >
                     <Command
                         ref={commandRef}
-                        className="mx-auto w-full max-h-[78vh] max-w-xl overflow-hidden card bg-(--bg-dim) text-(--text) shadow-soft transition sm:max-w-2xl md:max-w-3xl"
+                        className="card shadow-soft mx-auto max-h-[78vh] w-full max-w-xl overflow-hidden bg-(--bg-dim) text-(--text) transition sm:max-w-2xl md:max-w-3xl"
                         label="Documentation search"
                         onKeyDown={handleKeyDown}
                     >

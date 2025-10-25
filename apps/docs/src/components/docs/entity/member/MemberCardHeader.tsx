@@ -21,11 +21,11 @@ function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderPr
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div className="min-w-0 flex-1 space-y-3">
                 {tags.length ? (
-                    <ul className="flex flex-wrap items-center gap-1 text-[0.55rem] uppercase tracking-widest text-subtle">
+                    <ul className="text-subtle flex flex-wrap items-center gap-1 text-[0.55rem] tracking-widest uppercase">
                         {tags.map((tag) => (
                             <li
                                 key={tag}
-                                className="rounded-full border border-border bg-surface-94 px-3 py-0.5 font-semibold"
+                                className="border-border bg-surface-94 rounded-full border px-3 py-0.5 font-semibold"
                             >
                                 {tag}
                             </li>
@@ -38,8 +38,8 @@ function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderPr
                             anchorId={anchorId}
                             label={member.label}
                             className={
-                                'absolute -left-8 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center opacity-0 transition-opacity ' +
-                                'group-hover/name:opacity-100 group-focus-within/name:opacity-100 group-active/name:opacity-100 text-subtle hover:text-(--text)'
+                                'absolute top-1/2 -left-8 flex h-8 w-8 -translate-y-1/2 items-center justify-center opacity-0 transition-opacity ' +
+                                'text-subtle group-focus-within/name:opacity-100 group-hover/name:opacity-100 group-active/name:opacity-100 hover:text-(--text)'
                             }
                         />
                         <h3 className="truncate text-base font-semibold text-(--text) sm:text-lg">
@@ -52,7 +52,7 @@ function MemberCardHeader({ member, anchorId, tags, prefix }: MemberCardHeaderPr
                                 href={member.sourceUrl}
                                 target="_blank"
                                 rel="noreferrer noopener"
-                                className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_48%,var(--text))]"
+                                className="text-subtle inline-flex h-8 w-8 items-center justify-center transition hover:text-(--text) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[color-mix(in_oklab,var(--accent-b)_48%,var(--text))]"
                                 aria-label={`Open source for ${member.label} in a new tab`}
                             >
                                 <Icon icon={Code} size={16} />

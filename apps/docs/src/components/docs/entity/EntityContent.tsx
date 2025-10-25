@@ -33,7 +33,7 @@ function EntityContent({ model }: EntityContentProps): ReactElement {
     }
 
     return (
-        <article className="min-w-0 w-full space-y-6 lg:space-y-8">
+        <article className="w-full min-w-0 space-y-6 lg:space-y-8">
             <EntityHeader
                 badgeLabel={badgeLabel}
                 pkg={model.displayPackage}

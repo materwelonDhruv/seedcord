@@ -16,7 +16,7 @@ function CommentParagraphs({ paragraphs, className, paragraphClassName }: Commen
     }
 
     return (
-        <div className={cn('space-y-2 text-sm leading-relaxed text-subtle', className)}>
+        <div className={cn('text-subtle space-y-2 text-sm leading-relaxed', className)}>
             {entries.map((paragraph, index) => {
                 const key = paragraph.html || paragraph.plain || `paragraph-${index}`;
                 if (paragraph.html) {

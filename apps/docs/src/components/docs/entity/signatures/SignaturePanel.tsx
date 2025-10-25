@@ -25,7 +25,7 @@ function SignaturePanel({ signature, isActive, parentDeprecationStatus }: Signat
                 {signature.code.html ? (
                     <div className="code-scroll-content" dangerouslySetInnerHTML={{ __html: signature.code.html }} />
                 ) : (
-                    <pre className="code-scroll-content whitespace-pre text-sm text-(--text)">
+                    <pre className="code-scroll-content text-sm whitespace-pre text-(--text)">
                         <code>{signature.code.text}</code>
                     </pre>
                 )}
@@ -34,7 +34,7 @@ function SignaturePanel({ signature, isActive, parentDeprecationStatus }: Signat
             {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
             {signature.throws?.length ? (
                 <div>
-                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                    <p className="text-subtle flex flex-wrap items-baseline gap-2">
                         <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={signature.throws} />

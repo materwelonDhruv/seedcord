@@ -23,23 +23,23 @@ function SignatureCell({
     showValueAfterSignature: boolean;
 }): ReactElement {
     const withHtml = (
-        <div className="text-sm text-subtle flex items-center gap-2">
+        <div className="text-subtle flex items-center gap-2 text-sm">
             <div className="shiki-inline-wrapper truncate" dangerouslySetInnerHTML={{ __html: signatureHtml ?? '' }} />
-            {showValueAfterSignature ? <code className="font-mono truncate">= {value}</code> : null}
+            {showValueAfterSignature ? <code className="truncate font-mono">= {value}</code> : null}
         </div>
     );
 
     const withValue = (
-        <div className="truncate text-sm text-subtle">
-            <code className="font-mono truncate">
+        <div className="text-subtle truncate text-sm">
+            <code className="truncate font-mono">
                 {label} = {value}
             </code>
         </div>
     );
 
     const plain = (
-        <div className="truncate text-sm text-subtle">
-            <code className="font-mono truncate">{label}</code>
+        <div className="text-subtle truncate text-sm">
+            <code className="truncate font-mono">{label}</code>
         </div>
     );
 
@@ -69,7 +69,7 @@ function ActionsCell({
                     href={sourceUrl}
                     target="_blank"
                     rel="noreferrer noopener"
-                    className="inline-flex h-8 w-8 items-center justify-center text-subtle transition hover:text-(--text)"
+                    className="text-subtle inline-flex h-8 w-8 items-center justify-center transition hover:text-(--text)"
                     aria-label={`Open source for ${label} in a new tab`}
                 >
                     <Icon icon={Code} size={16} />
@@ -88,7 +88,7 @@ function EnumMemberCard({ member }: { member: EnumMemberModel }): ReactElement {
     return (
         <article id={anchorId} className="group/name relative min-w-0">
             <DeprecatedEntity deprecationStatus={deprecationStatus}>
-                <div className="group/name relative min-w-0 card bg-surface-97 p-4 shadow-soft sm:p-5">
+                <div className="group/name card bg-surface-97 shadow-soft relative min-w-0 p-4 sm:p-5">
                     <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
                         <div className="min-w-0 flex-1 space-y-3">
                             <div className="group/name relative flex min-w-0 items-center">

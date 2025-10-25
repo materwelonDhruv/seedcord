@@ -59,8 +59,8 @@ function EntityMembersSection({
             {showAccessControls ? (
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="space-y-0.5">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-subtle">Member visibility</p>
-                        <p className="text-xs text-subtle/80">Filter class members by access level.</p>
+                        <p className="text-subtle text-xs font-semibold tracking-widest uppercase">Member visibility</p>
+                        <p className="text-subtle/80 text-xs">Filter class members by access level.</p>
                     </div>
                     <MemberAccessControls orientation="horizontal" showLegend={false} className="shrink-0" />
                 </div>

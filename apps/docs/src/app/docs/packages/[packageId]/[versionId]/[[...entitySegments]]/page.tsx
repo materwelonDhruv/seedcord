@@ -51,7 +51,7 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
         <div key={category.id} className="space-y-3">
             <header className="flex items-center justify-between">
                 <div className="flex flex-col">
-                    <span className="text-xs font-semibold uppercase tracking-wide text-subtle">{category.title}</span>
+                    <span className="text-subtle text-xs font-semibold tracking-wide uppercase">{category.title}</span>
                     <span className="text-xs text-[color-mix(in_oklab,var(--text)_65%,var(--accent-b)_35%)]">
                         {category.items.length} item{category.items.length === 1 ? '' : 's'}
                     </span>
@@ -62,11 +62,11 @@ const renderCategory = (category: NavigationCategory): ReactElement => {
                     <li key={item.id}>
                         <Link
                             href={item.href}
-                            className="flex items-center justify-between rounded-xl border border-transparent bg-surface-94 px-3 py-2 text-sm font-medium text-(--text) shadow-soft transition hover:border-[color-mix(in_oklab,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_oklab,var(--surface)_85%,var(--accent-b)_15%)]"
+                            className="bg-surface-94 shadow-soft flex items-center justify-between rounded-xl border border-transparent px-3 py-2 text-sm font-medium text-(--text) transition hover:border-[color-mix(in_oklab,var(--accent-b)_45%,transparent)] hover:bg-[color-mix(in_oklab,var(--surface)_85%,var(--accent-b)_15%)]"
                         >
                             <span>{item.label}</span>
                             <span
-                                className={`${toneStyles.badge} inline-flex h-6 min-w-9 items-center justify-center rounded-full border text-xs font-semibold px-2 py-1`}
+                                className={`${toneStyles.badge} inline-flex h-6 min-w-9 items-center justify-center rounded-full border px-2 py-1 text-xs font-semibold`}
                             >
                                 {category.tone}
                             </span>
@@ -88,7 +88,7 @@ function PackageVersionOverview({
     return (
         <section className="space-y-8">
             <header className="space-y-3">
-                <p className="text-xs font-semibold uppercase tracking-[0.35em] text-subtle">Reference overview</p>
+                <p className="text-subtle text-xs font-semibold tracking-[0.35em] uppercase">Reference overview</p>
                 <h1 className="text-3xl font-semibold text-(--text) sm:text-4xl">
                     {entry.label} · {version.label}
                 </h1>
@@ -97,7 +97,7 @@ function PackageVersionOverview({
                 {version.categories.length ? (
                     version.categories.map(renderCategory)
                 ) : (
-                    <p className="text-sm text-subtle">No reference entries are available for this version yet.</p>
+                    <p className="text-subtle text-sm">No reference entries are available for this version yet.</p>
                 )}
             </div>
         </section>

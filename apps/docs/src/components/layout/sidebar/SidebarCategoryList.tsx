@@ -38,7 +38,7 @@ function SidebarCategory({
                 aria-expanded={!isCollapsed}
                 onClick={() => onToggle(categoryKey)}
                 className={cn(
-                    'flex w-full items-center px-1 text-left text-xs font-semibold uppercase tracking-wide',
+                    'flex w-full items-center px-1 text-left text-xs font-semibold tracking-wide uppercase',
                     toneStyles.heading
                 )}
             >
@@ -100,7 +100,7 @@ function SidebarCategoryList({ categories, activeHref, storageKey }: SidebarCate
     };
 
     return (
-        <div className="flex flex-col gap-6 pb-2 pr-1">
+        <div className="flex flex-col gap-6 pr-1 pb-2">
             {categories.map((category) => (
                 <SidebarCategory
                     key={`${category.title}-${category.tone}`}

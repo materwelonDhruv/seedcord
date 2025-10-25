@@ -9,14 +9,14 @@ import type { ReactElement } from 'react';
 
 function SignatureCard({ signature }: { signature: FunctionSignatureModel }): ReactElement {
     return (
-        <article className="card bg-surface-97 p-4 shadow-soft sm:p-5 space-y-3">
+        <article className="card bg-surface-97 shadow-soft space-y-3 p-4 sm:p-5">
             <header className="flex flex-wrap items-center justify-between gap-3">
                 {signature.sourceUrl ? (
                     <Button
                         asChild
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-(--text)"
+                        className="border-border/80 text-subtle h-10 w-10 shrink-0 rounded-xl border transition hover:text-(--text)"
                         aria-label="Open source in a new tab"
                     ></Button>
                 ) : null}
@@ -38,7 +38,7 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                         {signature.parameters.map((parameter) => (
                             <li
                                 key={parameter.name}
-                                className="rounded-lg border border-(--border)/60 bg-surface-96 p-3 text-sm text-subtle"
+                                className="bg-surface-96 text-subtle rounded-lg border border-(--border)/60 p-3 text-sm"
                             >
                                 <div className="flex flex-wrap items-start justify-between gap-2">
                                     {renderParameterBadge(parameter)}
@@ -58,12 +58,12 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
                                     ) : null}
                                 </div>
                                 {parameter.defaultValue ? (
-                                    <p className="mt-2 text-xs text-subtle">
+                                    <p className="text-subtle mt-2 text-xs">
                                         Default value: <span className="font-mono">{parameter.defaultValue}</span>
                                     </p>
                                 ) : null}
                                 {parameter.documentation.length ? (
-                                    <div className="mt-2 text-sm text-subtle">
+                                    <div className="text-subtle mt-2 text-sm">
                                         <CommentParagraphs paragraphs={parameter.documentation} />
                                     </div>
                                 ) : null}
@@ -75,7 +75,7 @@ function SignatureCard({ signature }: { signature: FunctionSignatureModel }): Re
             {signature.examples.length ? <CommentExamples examples={signature.examples} /> : null}
             {signature.throws?.length ? (
                 <div>
-                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                    <p className="text-subtle flex flex-wrap items-baseline gap-2">
                         <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={signature.throws} />

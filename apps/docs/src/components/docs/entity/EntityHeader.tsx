@@ -56,7 +56,7 @@ const SourceButton = ({ href }: { href: string }): ReactElement => (
         asChild
         variant="ghost"
         size="icon"
-        className="h-10 w-10 shrink-0 rounded-xl border border-border/80 text-subtle transition hover:text-(--text)"
+        className="border-border/80 text-subtle h-10 w-10 shrink-0 rounded-xl border transition hover:text-(--text)"
         aria-label="Open source in a new tab"
     >
         <a href={href} target="_blank" rel="noreferrer noopener">
@@ -103,7 +103,7 @@ function HeaderTop({
             <div className="flex items-start gap-3 sm:gap-4">
                 <div className="min-w-0 flex-1 space-y-2.5">
                     <h1 className="text-2xl font-bold text-(--text) sm:text-3xl lg:text-4xl">{symbolName}</h1>
-                    <div className="space-y-2 text-sm leading-relaxed text-subtle">{summaryNodes}</div>
+                    <div className="text-subtle space-y-2 text-sm leading-relaxed">{summaryNodes}</div>
                 </div>
                 {sourceUrl ? <SourceButton href={sourceUrl} /> : null}
             </div>
@@ -190,7 +190,7 @@ function EntityHeader({
 
             {throws?.length ? (
                 <div>
-                    <p className="flex flex-wrap items-baseline gap-2 text-subtle">
+                    <p className="text-subtle flex flex-wrap items-baseline gap-2">
                         <span className="font-semibold text-(--text)">Throws:</span>
                     </p>
                     <CommentParagraphs paragraphs={throws} />
@@ -218,7 +218,7 @@ function EntityHeader({
     return (
         <header className="min-w-0">
             <DeprecatedEntity deprecationStatus={deprecationStatus}>
-                <div className="card bg-surface-96 p-4 shadow-soft sm:p-5 space-y-4">{headerContent}</div>
+                <div className="card bg-surface-96 shadow-soft space-y-4 p-4 sm:p-5">{headerContent}</div>
             </DeprecatedEntity>
         </header>
     );
