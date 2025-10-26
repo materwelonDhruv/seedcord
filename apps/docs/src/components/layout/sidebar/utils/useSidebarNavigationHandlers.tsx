@@ -40,7 +40,7 @@ export function useSidebarNavigationHandlers(
                 return;
             }
 
-            const currentSegments = (pathname ?? '').split('/').filter(Boolean);
+            const currentSegments = pathname.split('/').filter(Boolean);
             const targetSegments = targetVersion.basePath.split('/').filter(Boolean);
             const currentPackageSegment = currentSegments[2] ?? '';
             const targetPackageSegment = targetSegments[2] ?? '';
