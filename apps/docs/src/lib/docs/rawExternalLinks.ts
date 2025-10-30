@@ -111,5 +111,7 @@ export const rawExternalLinks = {
     mongoose: 'https://mongoosejs.com/docs/guide.html',
     prettier: 'https://prettier.io/docs/api',
     'prettier.io': 'https://prettier.io/docs/api',
-    'type-fest': 'https://github.com/sindresorhus/type-fest'
+    'type-fest': 'https://github.com/sindresorhus/type-fest',
+    kysely: 'https://kysely.dev/docs/intro',
+    pg: 'https://node-postgres.com'
 } as const;
