@@ -1,4 +1,5 @@
 import type { EffectKeys } from '../types/Effects';
+import type { EventFrequency } from '@miscellaneous/types';
 import type { Constructor } from 'type-fest';
 
 /**
@@ -9,6 +10,26 @@ import type { Constructor } from 'type-fest';
 export const EffectMetadataKey = Symbol('effect:metadata');
 
 /**
+ * Options accepted by the `@RegisterEffect` decorator.
+ */
+export interface RegisterEffectOptions {
+    /** Frequency: `'once'` or `'on'`. Defaults to `'on'`. */
+    readonly frequency?: EventFrequency | undefined;
+}
+
+/**
+ * Metadata entry representing a registered effect handler.
+ *
+ * @internal
+ */
+export interface RegisterEffectMetadataEntry {
+    /** The effect event name to register for. */
+    readonly effect: EffectKeys;
+    /** Frequency: `'once'` or `'on'`. Defaults to `'on'`. */
+    readonly frequency?: EventFrequency | undefined;
+}
+
+/**
  * Registers a side effect handler class with a specific side effect event.
  *
  * Associates the decorated class with a side effect event type for automatic
@@ -16,6 +37,7 @@ export const EffectMetadataKey = Symbol('effect:metadata');
  *
  * @typeParam TEffect - The side effect event name to register for
  * @param effect - The side effect event name to register for
+ * @param options - Options to configure the effect handler registration.
  * @decorator
  * @example
  * ```typescript
@@ -26,9 +48,20 @@ export const EffectMetadataKey = Symbol('effect:metadata');
  *   }
  * }
  * ```
+ * @example
+ * ```ts
+ * \@RegisterEffect('userJoin', { frequency: 'once' })
+ * // or
+ * \@RegisterEffect('userJoin')
+ * ```
  */
-export function RegisterEffect<TEffect extends EffectKeys>(effect: TEffect) {
+export function RegisterEffect<TEffect extends EffectKeys>(effect: TEffect, options?: RegisterEffectOptions) {
     return function (constructor: Constructor<unknown>): void {
-        Reflect.defineMetadata(EffectMetadataKey, effect, constructor);
+        const meta: RegisterEffectMetadataEntry = {
+            effect,
+            frequency: options?.frequency
+        };
+
+        Reflect.defineMetadata(EffectMetadataKey, meta, constructor);
     };
 }

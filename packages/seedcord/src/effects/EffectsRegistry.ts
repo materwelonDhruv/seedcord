@@ -3,17 +3,24 @@ import { traverseDirectory } from '@seedcord/utils';
 import chalk from 'chalk';
 import { Collection } from 'discord.js';
 
-import { Plugin } from '../interfaces/Plugin';
+import { Plugin } from '@interfaces/Plugin';
+
 import { EffectMetadataKey } from './decorators/RegisterEffect';
 import { UnknownException } from './default/UnknownException';
 import { EffectsEmitter } from './EffectsEmitter';
-import { EffectsHandler } from './interfaces/EffectsHandler';
+import { EffectsHandler } from './EffectsHandler';
 
-import type { Core } from '../interfaces/Core';
+import type { RegisterEffectMetadataEntry } from './decorators/RegisterEffect';
 import type { AllEffects, EffectKeys } from './types/Effects';
+import type { Core } from '@interfaces/Core';
+import type { EventFrequency } from '@miscellaneous/types';
 import type { TypedConstructor } from '@seedcord/types';
 
 type EffectConstructor = TypedConstructor<typeof EffectsHandler>;
+interface RegisteredEffectHandlerEntry {
+    ctor: EffectConstructor;
+    frequency: EventFrequency;
+}
 
 /**
  * Manages application effects and event handling
@@ -27,7 +34,7 @@ type EffectConstructor = TypedConstructor<typeof EffectsHandler>;
 export class EffectsRegistry extends Plugin {
     public readonly logger = new Logger('Effects');
     private isInitialized = false;
-    private readonly effectsMap = new Collection<EffectKeys, EffectConstructor[]>();
+    private readonly effectsMap = new Collection<EffectKeys, RegisteredEffectHandlerEntry[]>();
     private readonly emitter = new EffectsEmitter();
 
     constructor(protected core: Core) {
@@ -42,7 +49,7 @@ export class EffectsRegistry extends Plugin {
         const effectsDir = this.core.config.effects.path;
         this.logger.info(chalk.bold(effectsDir));
 
-        this.registerEffect('unknownException', UnknownException);
+        this.registerEffect(UnknownException, { effect: 'unknownException', frequency: 'on' });
 
         await this.loadEffects(effectsDir);
 
@@ -59,13 +66,11 @@ export class EffectsRegistry extends Plugin {
                 for (const exportName of Object.keys(imported)) {
                     const val = imported[exportName];
                     if (this.isEffectHandler(val)) {
-                        const effectName = Reflect.getMetadata(EffectMetadataKey, val) as EffectKeys | undefined;
-                        if (effectName) {
-                            this.registerEffect(effectName, val);
-                            this.logger.info(
-                                `${chalk.italic('Registered')} ${chalk.bold.yellow(val.name)} from ${chalk.gray(relativePath)}`
-                            );
-                        }
+                        const meta = Reflect.getMetadata(EffectMetadataKey, val) as RegisterEffectMetadataEntry;
+                        this.registerEffect(val, meta);
+                        this.logger.info(
+                            `${chalk.italic('Registered')} ${chalk.bold.yellow(val.name)} from ${chalk.gray(relativePath)}`
+                        );
                     }
                 }
             },
@@ -73,35 +78,39 @@ export class EffectsRegistry extends Plugin {
         );
     }
 
-    private registerEffect(effectName: EffectKeys, handler: EffectConstructor): void {
-        let handlers = this.effectsMap.get(effectName);
+    private registerEffect(handler: EffectConstructor, options: RegisterEffectMetadataEntry): void {
+        let handlers = this.effectsMap.get(options.effect);
         if (!handlers) {
             handlers = [];
-            this.effectsMap.set(effectName, handlers);
+            this.effectsMap.set(options.effect, handlers);
         }
-        handlers.push(handler);
+        handlers.push({ ctor: handler, frequency: options.frequency ?? 'on' });
     }
 
     private isEffectHandler(obj: unknown): obj is EffectConstructor {
         if (typeof obj !== 'function') return false;
-        return obj.prototype instanceof EffectsHandler;
+        return obj.prototype instanceof EffectsHandler && Reflect.hasMetadata(EffectMetadataKey, obj);
     }
 
     private attachEffects(): void {
-        for (const [effectName, handlerCtors] of this.effectsMap) {
-            this.emitter.on(effectName, (data) => {
-                for (const HandlerCtor of handlerCtors) {
+        for (const [effectName, handlerEntries] of this.effectsMap) {
+            for (const entry of handlerEntries) {
+                const register =
+                    entry.frequency === 'once'
+                        ? this.emitter.once.bind(this.emitter)
+                        : this.emitter.on.bind(this.emitter);
+                register(effectName, (data) => {
                     try {
-                        const instance = new HandlerCtor(data, this.core);
+                        const instance = new entry.ctor(data, this.core);
                         void instance.execute();
                     } catch (err) {
                         this.logger.error(
-                            `Error in side effect ${String(effectName)} handler ${HandlerCtor.name}:`,
+                            `Error in side effect ${String(effectName)} handler ${entry.ctor.name}:`,
                             err
                         );
                     }
-                }
-            });
+                });
+            }
         }
     }
 

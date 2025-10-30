@@ -1,5 +1,5 @@
-import type { Core } from '../../interfaces/Core';
-import type { AllEffects, EffectKeys } from '../types/Effects';
+import type { EffectKeys, AllEffects } from './types/Effects';
+import type { Core } from '@interfaces/Core';
 
 /**
  * Abstract base class for handling application side effects.
