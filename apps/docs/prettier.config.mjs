@@ -6,7 +6,8 @@ const config = {
     plugins: [...(base.plugins ?? []), 'prettier-plugin-tailwindcss'],
     tailwindStylesheet: './src/app/globals.css',
     tailwindFunctions: ['cn', 'clsx', 'cva', 'tw', 'tw\\.[a-zA-Z]+'],
-    tailwindAttributes: ['myClassList', '/data-.*/']
+    tailwindAttributes: ['myClassList', '/data-.*/'],
+    tailwindPreserveDuplicates: false
 };
 
 export default config;
