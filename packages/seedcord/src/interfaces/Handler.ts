@@ -92,6 +92,8 @@ export abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements
         this.event = event;
         this.args = args ?? [];
         this.logger = new Logger(this.constructor.name);
+
+        this.populate();
     }
 
     /**
@@ -99,6 +101,11 @@ export abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements
      * @virtual Override this method in your handler classes
      */
     abstract execute(): Promise<void>;
+
+    /**
+     * Populates the handler with necessary data before execution. Override this method in your handler classes to customize population logic. This method is called at the end of the constructor before all async operations.
+     */
+    protected populate(): void {}
 
     public hasChecks(): this is HandlerWithChecks {
         return this.checkable;
