@@ -1,3 +1,5 @@
+import { Logger } from '@seedcord/services';
+
 import type { Core } from './Core';
 import type { TypedConstructor } from '@seedcord/types';
 import type {
@@ -80,6 +82,7 @@ export abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements
     protected errored = false;
     protected event: ValidEvent;
     protected args: string[] = [];
+    protected logger: Logger;
 
     protected constructor(
         event: ValidEvent,
@@ -88,6 +91,7 @@ export abstract class BaseHandler<ValidEvent extends ValidEventTypes> implements
     ) {
         this.event = event;
         this.args = args ?? [];
+        this.logger = new Logger(this.constructor.name);
     }
 
     /**
