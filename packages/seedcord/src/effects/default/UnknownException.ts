@@ -9,6 +9,29 @@ import { WebhookLog } from '../bases/WebhookLog';
 import { RegisterEffect } from '../decorators/RegisterEffect';
 import { AllEffects } from '../types/Effects';
 
+function webhookUrlValidator(raw: unknown, _fallback: unknown): string {
+    if (raw === null) {
+        throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookMissing);
+    }
+    if (typeof raw !== 'string') {
+        throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookInvalid);
+    }
+
+    const value = raw.trim();
+    if (value === '') {
+        throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookMissing);
+    }
+
+    const pattern = String.raw`^https?:\/\/(?:canary\.|ptb\.)?discord(?:app)?\.com\/api\/webhooks\/\d+\/[\w$-]+$`;
+    const discordWebhookRegex = new RegExp(pattern);
+
+    if (!URL.canParse(value) || !discordWebhookRegex.test(value)) {
+        throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookInvalid);
+    }
+
+    return value;
+}
+
 /**
  * Default effect to log unhandled exceptions via webhook. It provides basic information about the error:
  * - Error stack trace
@@ -27,16 +50,7 @@ export class UnknownException extends WebhookLog<'unknownException'> {
     private static readonly logger = new Logger('Effect: UnknownException');
 
     @Envapt('UNKNOWN_EXCEPTION_WEBHOOK_URL', {
-        converter(raw, _fallback) {
-            if (!raw) {
-                throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookMissing);
-            }
-            if (!URL.canParse(String(raw))) {
-                throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookInvalid);
-            }
-
-            return raw;
-        }
+        converter: (raw, fallback) => webhookUrlValidator(raw, fallback)
     })
     declare static readonly unknownExceptionWebhookUrl: string;
 
