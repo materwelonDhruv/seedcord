@@ -82,12 +82,31 @@ export function RegisterCommand(scope: 'guild', guilds: string[]): (ctor: Comman
  * Registers a command with Discord's application command system.
  *
  * @param scope - Registration scope: 'global' or 'guild'
- * @param guilds - Guild IDs for guild-scoped registration
+ * @param guilds - Guild IDs for guild-scoped registration if applicable
  * @decorator
  */
 export function RegisterCommand(scope: CommandScope, guilds: string[] = []) {
     return (ctor: CommandCtor): void => {
         const meta: GlobalMeta | GuildMeta = scope === 'global' ? { scope } : { scope, guilds };
+
+        // Make sure command is EITHER global or guild-scoped.
+        const existingMeta = Reflect.getOwnMetadata(CommandMetadataKey, ctor) as CommandMeta | undefined;
+        if (existingMeta) {
+            throw new Error(
+                `Command "${ctor.name}" is already registered as a "${existingMeta.scope}" command and cannot be re-registered as a "${scope}" command.`
+            );
+        }
+
+        // Also make sure guilds aren't provided for global scope
+        if (scope === 'global' && guilds.length > 0) {
+            throw new Error(`RegisterCommand('global') cannot have guilds specified.`);
+        }
+
+        // Also make sure guilds are provided for guild scope
+        if (scope === 'guild' && (!Array.isArray(guilds) || guilds.length === 0)) {
+            throw new Error(`RegisterCommand('guild') requires a non-empty guilds array.`);
+        }
+
         Reflect.defineMetadata(CommandMetadataKey, meta, ctor);
     };
 }
