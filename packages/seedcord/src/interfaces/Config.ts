@@ -11,7 +11,10 @@ export interface InteractionsConfig {
      * Path to dir containing interaction handlers.
      */
     path: string;
-    ignoreCustomIds?: string[];
+    /**
+     * Optional array of custom IDs or regex patterns to ignore in interaction handling
+     */
+    ignoreCustomIds?: (string | RegExp)[];
     /**
      * Optional path to interaction middleware directory
      */

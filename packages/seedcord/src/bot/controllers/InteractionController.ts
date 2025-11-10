@@ -61,7 +61,7 @@ export class InteractionController implements Initializeable {
     private readonly userContextMenuMap = new Collection<string, HandlerConstructor>();
     private readonly autocompleteMap = new Collection<string, HandlerConstructor>();
 
-    private readonly keysToIgnore = new Set<string>();
+    private readonly keysToIgnore = new Set<string | RegExp>();
 
     private readonly middlewares: RegisteredMiddleware[] = [];
 
@@ -229,7 +229,14 @@ export class InteractionController implements Initializeable {
         args?: string[]
     ): Promise<void> {
         const key = extractKey(interaction);
-        if (this.keysToIgnore.has(key)) return;
+        // Check if the key is in the ignore list
+        if (
+            [...this.keysToIgnore].some((pattern) =>
+                typeof pattern === 'string' ? pattern === key : pattern.test(key)
+            )
+        ) {
+            return;
+        }
 
         // Run middlewares first
         for (const { ctor } of this.middlewares) {
