@@ -1,4 +1,4 @@
-import { Logger } from '@seedcord/services';
+import { Logger, SeedcordError, SeedcordErrorCode } from '@seedcord/services';
 import { filterCirculars } from '@seedcord/utils';
 import { WebhookClient, AttachmentBuilder, SeparatorSpacingSize, DiscordAPIError, SnowflakeUtil } from 'discord.js';
 import { Envapt } from 'envapt';
@@ -28,8 +28,12 @@ export class UnknownException extends WebhookLog<'unknownException'> {
 
     @Envapt('UNKNOWN_EXCEPTION_WEBHOOK_URL', {
         converter(raw, _fallback) {
-            if (!raw) throw new Error('Missing UNKNOWN_EXCEPTION_WEBHOOK_URL');
-            if (!URL.canParse(String(raw))) throw new Error('Invalid UNKNOWN_EXCEPTION_WEBHOOK_URL');
+            if (!raw) {
+                throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookMissing);
+            }
+            if (!URL.canParse(String(raw))) {
+                throw new SeedcordError(SeedcordErrorCode.ConfigUnknownExceptionWebhookInvalid);
+            }
 
             return raw;
         }

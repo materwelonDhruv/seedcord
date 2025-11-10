@@ -1,4 +1,11 @@
-import { HealthCheck, CoordinatedShutdown, CoordinatedStartup, StartupPhase } from '@seedcord/services';
+import {
+    HealthCheck,
+    CoordinatedShutdown,
+    CoordinatedStartup,
+    SeedcordError,
+    SeedcordErrorCode,
+    StartupPhase
+} from '@seedcord/services';
 import chalk from 'chalk';
 
 import { Bot } from './bot/Bot';
@@ -50,7 +57,7 @@ export class Seedcord extends Pluggable implements Core {
         this.startup = startup;
 
         if (Seedcord.isInstantiated) {
-            throw new Error('Seedcord can only be instantiated once. Use the existing instance instead.');
+            throw new SeedcordError(SeedcordErrorCode.CoreSingletonViolation);
         }
         Seedcord.isInstantiated = true;
 

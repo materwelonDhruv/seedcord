@@ -1,4 +1,4 @@
-import { Logger, ShutdownPhase } from '@seedcord/services';
+import { Logger, SeedcordError, SeedcordErrorCode, ShutdownPhase } from '@seedcord/services';
 import chalk from 'chalk';
 import { Client } from 'discord.js';
 import { Envapt } from 'envapt';
@@ -19,7 +19,9 @@ import type { Core } from '@interfaces/Core';
 export class Bot extends Plugin {
     @Envapt<string>('DISCORD_BOT_TOKEN', {
         converter(raw, _fallback) {
-            if (typeof raw !== 'string') throw new Error('Missing DISCORD_BOT_TOKEN');
+            if (typeof raw !== 'string') {
+                throw new SeedcordError(SeedcordErrorCode.ConfigMissingDiscordToken);
+            }
             return raw;
         }
     })

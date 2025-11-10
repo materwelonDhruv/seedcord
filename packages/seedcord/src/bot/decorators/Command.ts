@@ -1,3 +1,5 @@
+import { SeedcordError, SeedcordErrorCode } from '@seedcord/services';
+
 import type { BuilderComponent } from '@interfaces/Components';
 
 /**
@@ -92,19 +94,21 @@ export function RegisterCommand(scope: CommandScope, guilds: string[] = []) {
         // Make sure command is EITHER global or guild-scoped.
         const existingMeta = Reflect.getOwnMetadata(CommandMetadataKey, ctor) as CommandMeta | undefined;
         if (existingMeta) {
-            throw new Error(
-                `Command "${ctor.name}" is already registered as a "${existingMeta.scope}" command and cannot be re-registered as a "${scope}" command.`
-            );
+            throw new SeedcordError(SeedcordErrorCode.DecoratorCommandAlreadyRegistered, [
+                ctor.name,
+                existingMeta.scope,
+                scope
+            ]);
         }
 
         // Also make sure guilds aren't provided for global scope
         if (scope === 'global' && guilds.length > 0) {
-            throw new Error(`RegisterCommand('global') cannot have guilds specified.`);
+            throw new SeedcordError(SeedcordErrorCode.DecoratorCommandGlobalWithGuilds);
         }
 
         // Also make sure guilds are provided for guild scope
         if (scope === 'guild' && (!Array.isArray(guilds) || guilds.length === 0)) {
-            throw new Error(`RegisterCommand('guild') requires a non-empty guilds array.`);
+            throw new SeedcordError(SeedcordErrorCode.DecoratorCommandGuildWithoutGuilds);
         }
 
         Reflect.defineMetadata(CommandMetadataKey, meta, ctor);

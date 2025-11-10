@@ -1,3 +1,5 @@
+import { SeedcordError, SeedcordErrorCode } from '@seedcord/services';
+
 import type { Client, Guild, Role } from 'discord.js';
 
 /**
@@ -9,10 +11,14 @@ import type { Client, Guild, Role } from 'discord.js';
  * @throws An {@link Error} When the bot is not in the guild
  */
 export function getBotRole(client: Client, guild: Guild): Role {
-    if (!client.user) throw new Error('Client user is not available'); // TODO: Use custom error
+    if (!client.user) {
+        throw new SeedcordError(SeedcordErrorCode.CoreClientUserUnavailable);
+    }
 
     const botRole = guild.roles.botRoleFor(client.user);
-    if (!botRole) throw new Error('Bot role not found in guild'); // TODO: Use custom error
+    if (!botRole) {
+        throw new SeedcordError(SeedcordErrorCode.CoreBotRoleMissing, [guild.id]);
+    }
 
     return botRole;
 }

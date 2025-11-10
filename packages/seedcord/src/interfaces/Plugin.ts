@@ -1,7 +1,14 @@
+import {
+    SeedcordError,
+    SeedcordErrorCode,
+    type CoordinatedShutdown,
+    type CoordinatedStartup,
+    type StartupPhase,
+    type Logger
+} from '@seedcord/services';
 import chalk from 'chalk';
 
 import type { Core } from './Core';
-import type { CoordinatedShutdown, CoordinatedStartup, StartupPhase, Logger } from '@seedcord/services';
 import type { Tail } from '@seedcord/types';
 
 /** Interface for objects that can be initialized asynchronously */
@@ -96,8 +103,12 @@ export class Pluggable {
         startupPhase: StartupPhase,
         ...args: PluginArgs<Ctor>
     ): this & Record<Key, InstanceType<Ctor>> {
-        if (this.isInitialized) throw new Error('Cannot attach a plugin after initialization.');
-        if ((this as Record<string, unknown>)[key]) throw new Error(`Plugin with key "${key}" already exists.`);
+        if (this.isInitialized) {
+            throw new SeedcordError(SeedcordErrorCode.CorePluginAfterInit);
+        }
+        if ((this as Record<string, unknown>)[key]) {
+            throw new SeedcordError(SeedcordErrorCode.CorePluginKeyExists, [key]);
+        }
 
         const instance = new Plugin(this as unknown as Core, ...args);
 

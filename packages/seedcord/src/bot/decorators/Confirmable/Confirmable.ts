@@ -1,3 +1,4 @@
+import { SeedcordError, SeedcordErrorCode } from '@seedcord/services';
 import { ComponentType } from 'discord.js';
 
 import type {
@@ -238,7 +239,7 @@ export function Confirmable<TComponent extends MessageComponentType = ComponentT
         const original = descriptor.value;
 
         descriptor.value = async function (this: RepliableInteractionHandler, ...args: unknown[]): Promise<void> {
-            if (!original) throw new Error('Method not found');
+            if (!original) throw new SeedcordError(SeedcordErrorCode.DecoratorMethodNotFound);
 
             const ix = this.getEvent();
             const isSlash = ix.isChatInputCommand();

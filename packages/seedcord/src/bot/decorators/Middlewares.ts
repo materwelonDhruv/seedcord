@@ -1,3 +1,5 @@
+import { SeedcordError, SeedcordErrorCode, SeedcordTypeError } from '@seedcord/services';
+
 import type {
     EventMiddleware,
     InteractionMiddleware,
@@ -84,11 +86,11 @@ export function Middleware<MType extends MiddlewareType>(
     ): void => {
         const normalizedPriority = Number(priority);
         if (!Number.isFinite(normalizedPriority)) {
-            throw new TypeError('Middleware priority must be a finite number');
+            throw new SeedcordTypeError(SeedcordErrorCode.DecoratorInvalidMiddlewarePriority);
         }
 
-        if (type === MiddlewareType.Interaction && options.events?.length) {
-            throw new Error('Interaction middleware cannot specify event filters');
+        if (type === MiddlewareType.Interaction && Array.isArray(options.events) && options.events.length > 0) {
+            throw new SeedcordError(SeedcordErrorCode.DecoratorInteractionEventFilter);
         }
 
         const metadata: MiddlewareMetadata = {
