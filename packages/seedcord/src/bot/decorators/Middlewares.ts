@@ -1,4 +1,10 @@
-import type { ClientEvents } from 'discord.js';
+import type {
+    EventMiddleware,
+    InteractionMiddleware,
+    Repliables,
+    ValidNonInteractionKeys
+} from '../../interfaces/Handler';
+import type { Constructor } from 'type-fest';
 
 /**
  * Middleware types supported by Seedcord
@@ -17,12 +23,14 @@ export const MiddlewareMetadataKey = Symbol('middleware:metadata');
 
 /**
  * Additional middleware registration options
+ *
+ * @typeParam MType - The type of middleware being registered
  */
-export interface MiddlewareOptions {
+export interface MiddlewareOptions<MType extends MiddlewareType> {
     /**
      * Restrict event middleware execution to specific Discord client events
      */
-    readonly events?: readonly (keyof ClientEvents)[];
+    readonly events?: MType extends MiddlewareType.Event ? readonly ValidNonInteractionKeys[] : never;
 }
 
 /**
@@ -40,7 +48,7 @@ export interface MiddlewareMetadata {
     /**
      * Optional list of Discord client events to target
      */
-    events?: readonly (keyof ClientEvents)[];
+    events?: readonly ValidNonInteractionKeys[];
 }
 
 /**
@@ -62,8 +70,18 @@ export interface MiddlewareMetadata {
  * @throws A {@link TypeError} If priority is not a finite number
  * @throws An {@link Error} If interaction middleware specifies event filters
  */
-export function Middleware(type: MiddlewareType, priority = 0, options: MiddlewareOptions = {}): ClassDecorator {
-    return (ctor) => {
+export function Middleware<MType extends MiddlewareType>(
+    type: MType,
+    priority = 0,
+    options: MiddlewareOptions<MType> = {}
+) {
+    return (
+        ctor: Constructor<
+            MType extends MiddlewareType.Interaction
+                ? InteractionMiddleware<Repliables>
+                : EventMiddleware<ValidNonInteractionKeys>
+        >
+    ): void => {
         const normalizedPriority = Number(priority);
         if (!Number.isFinite(normalizedPriority)) {
             throw new TypeError('Middleware priority must be a finite number');

@@ -11,14 +11,14 @@ import { areRoutes } from '@miscellaneous/areRoutes';
 import type { RegisterEventMetadataEntry } from '@bDecorators/Events';
 import type { MiddlewareMetadata } from '@bDecorators/Middlewares';
 import type { Core } from '@interfaces/Core';
-import type { EventHandlerConstructor, EventMiddlewareConstructor } from '@interfaces/Handler';
+import type { EventHandlerConstructor, EventMiddlewareConstructor, ValidNonInteractionKeys } from '@interfaces/Handler';
 import type { Initializeable } from '@interfaces/Plugin';
 import type { EventFrequency } from '@miscellaneous/types';
 
 interface RegisteredEventMiddleware {
     readonly ctor: EventMiddlewareConstructor;
     readonly priority: number;
-    readonly events?: readonly (keyof ClientEvents)[];
+    readonly events?: readonly ValidNonInteractionKeys[];
 }
 
 interface RegisteredEventHandlerEntry {

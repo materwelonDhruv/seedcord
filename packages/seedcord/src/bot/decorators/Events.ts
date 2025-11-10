@@ -1,3 +1,4 @@
+import type { EventHandler } from '../../interfaces/Handler';
 import type { EventFrequency } from '@miscellaneous/types';
 import type { ClientEvents } from 'discord.js';
 import type { Constructor } from 'type-fest';
@@ -70,7 +71,7 @@ export function RegisterEvent<KeyofEvents extends keyof ClientEvents>(
     events: KeyofEvents | KeyofEvents[],
     options?: RegisterEventOptions
 ) {
-    return function (constructor: Constructor<unknown>): void {
+    return function (constructor: Constructor<EventHandler<KeyofEvents>>): void {
         const saved = Reflect.getMetadata(EventMetadataKey, constructor) as
             | RegisterEventMetadataEntry<KeyofEvents>[]
             | undefined;

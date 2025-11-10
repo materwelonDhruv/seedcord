@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 
 import { extractErrorResponse } from '@bUtilities/errors/extractErrorResponse';
 
-import type { EventHandler } from '@interfaces/Handler';
+import type { EventHandler, RepliableEventHandler } from '@interfaces/Handler';
 import type { ClientEvents } from 'discord.js';
 
 /**
@@ -25,7 +25,7 @@ import type { ClientEvents } from 'discord.js';
  */
 export function EventCatchable(log?: boolean) {
     return function (
-        _target: EventHandler<keyof ClientEvents>,
+        _target: RepliableEventHandler,
         _prop: string,
         descriptor: TypedPropertyDescriptor<(...args: any[]) => Promise<void>>
     ): void {
