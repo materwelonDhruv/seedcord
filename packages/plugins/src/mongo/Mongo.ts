@@ -29,7 +29,7 @@ import type { Core } from 'seedcord';
  * access to database services through service registration decorators.
  */
 export class Mongo extends Plugin {
-    public readonly logger = new Logger('MongoDB');
+    public readonly logger = new Logger('Mongo');
     private isInitialised = false;
     private readonly uri: string;
 

@@ -1,6 +1,6 @@
 import { areRoutes } from '@miscellaneous/areRoutes';
 
-import type { AutocompleteHandler, InteractionHandler, Repliables } from '../../interfaces/Handler';
+import type { AutocompleteHandler, InteractionHandler, Repliables } from '@interfaces/Handler';
 import type {
     AnySelectMenuInteraction,
     ButtonInteraction,
