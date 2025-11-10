@@ -1,3 +1,4 @@
+import type { EmojiMap } from '@bot/injectors/EmojiInjector';
 import type { ClientOptions } from 'discord.js';
 
 // interactions, events, commands, services, effects
@@ -75,6 +76,9 @@ export interface BotConfig {
      *
      * Value: The emoji identifier used in Discord
      *
+     * @see {@link EmojiMap}
+     * @see {@link Emojis}
+     *
      * @example
      * ```ts
      * // This map's values...
@@ -97,7 +101,7 @@ export interface BotConfig {
      * };
      * ```
      */
-    emojis?: Record<string, string>;
+    emojis?: Partial<EmojiMap>;
 
     /**
      * Whether to show the error stack trace in the terminal in errors caught by the `@Catchable` decorator

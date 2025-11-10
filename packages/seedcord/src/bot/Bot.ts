@@ -8,7 +8,7 @@ import { EventController } from '@bControllers/EventController';
 import { InteractionController } from '@bControllers/InteractionController';
 import { Plugin } from '@interfaces/Plugin';
 
-import { EmojiInjector } from './injectors/EmojiInjector';
+import { EmojiInjector, Emojis, type EmojiMap } from './injectors/EmojiInjector';
 
 import type { Core } from '@interfaces/Core';
 
@@ -33,6 +33,7 @@ export class Bot extends Plugin {
     private readonly events: EventController;
     public readonly commands: CommandRegistry;
     private readonly emojiInjector: EmojiInjector;
+    public readonly emojis: EmojiMap = Emojis;
 
     constructor(protected core: Core) {
         super(core);
