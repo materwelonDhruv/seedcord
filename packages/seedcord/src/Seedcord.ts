@@ -42,7 +42,7 @@ export class Seedcord extends Pluggable implements Core {
      * Creates a new Seedcord instance
      *
      * @param config - Bot configuration including paths and Discord client options
-     * @throws An {@link Error} When attempting to create multiple instances (singleton)
+     * @throws An {@link SeedcordError} When attempting to create multiple instances (singleton)
      */
     constructor(public readonly config: Config) {
         // Create lifecycle instances

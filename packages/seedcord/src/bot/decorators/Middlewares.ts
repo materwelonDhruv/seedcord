@@ -64,8 +64,8 @@ export interface MiddlewareMetadata {
  * \@Middleware(MiddlewareType.Event, 10, { events: [Events.MessageCreate, Events.MessageUpdate] })
  * class MyEventMiddleware extends EventMiddleware {}
  * ```
- * @throws A {@link TypeError} If priority is not a finite number
- * @throws An {@link Error} If interaction middleware specifies event filters
+ * @throws A {@link SeedcordTypeError} If priority is not a finite number
+ * @throws A {@link SeedcordError} If interaction middleware specifies event filters
  */
 export function Middleware<MType extends MiddlewareType>(
     type: MType,
