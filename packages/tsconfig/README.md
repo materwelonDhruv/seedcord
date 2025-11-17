@@ -2,47 +2,12 @@
   <img src="../../assets/banner.png" alt="seedcord" width="100%" />
 </p>
 
-# @seedcord/tsconfig
+---
 
-Some very strict tsconfigs
+_This repository is a work in progress._
 
-## Presets
+- There are no stable releases yet but changes are being made actively.
+- Till a major v1.0.0 release for seedcord, expect breaking changes in minor versions.
+- Documentation will come soon as well!
 
-| name                      | target use case                                                                        |
-| ------------------------- | -------------------------------------------------------------------------------------- |
-| `@seedcord/tsconfig/base` | strict defaults for libraries and tooling (ESNext + bundler resolution, emit disabled) |
-| `@seedcord/tsconfig/node` | runtime projects that need Node-friendly module resolution and ES2024 output           |
-
-## Install
-
-```bash
-pnpm add -D @seedcord/tsconfig
-```
-
-## Usage
-
-```jsonc
-// tsconfig.json
-{
-    "extends": "@seedcord/tsconfig/base",
-    "compilerOptions": {
-        "outDir": "./dist",
-        "rootDir": "./src"
-    },
-    "include": ["src"]
-}
-```
-
-For Node services, extend the `node` preset instead:
-
-```jsonc
-{
-    "extends": "@seedcord/tsconfig/node",
-    "include": ["src", "tests"],
-    "compilerOptions": {
-        "outDir": "./dist"
-    }
-}
-```
-
-That's it—no build step required because the presets are plain JSON files.
+I'm planning to release the first major version by the end of 2025, or Jan 2026. But till then, if you'd like to try using it, you can check out the code in `packages/mock`
