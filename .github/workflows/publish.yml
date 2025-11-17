@@ -20,7 +20,7 @@ jobs:
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v5
               with:
                   fetch-depth: 0
             - uses: pnpm/action-setup@v4
@@ -37,7 +37,7 @@ jobs:
             id-token: write
             pull-requests: write
         steps:
-            - uses: actions/checkout@v4
+            - uses: actions/checkout@v5
               with:
                   fetch-depth: 0
             - name: Turbo cache
@@ -47,15 +47,15 @@ jobs:
                   turbo_team: ${{ vars.TURBO_TEAM }}
                   enable_fallback_cache: 'true'
             - uses: pnpm/action-setup@v4
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 22.20.0
+                  node-version: 24
                   cache: pnpm
                   registry-url: https://registry.npmjs.org
             - uses: pnpm/action-setup@v4
-            - uses: actions/setup-node@v4
+            - uses: actions/setup-node@v6
               with:
-                  node-version: 22.20.0
+                  node-version: 24
                   cache: pnpm
                   registry-url: https://registry.npmjs.org
             - run: npm i -g npm@latest
@@ -63,12 +63,17 @@ jobs:
             - run: npm config get registry && npm ping
             - run: pnpm install --frozen-lockfile
             - run: pnpm run prepublishOnly
-            - uses: changesets/action@v1
+            - name: Determine release metadata
+              id: release_meta
+              uses: ./.github/actions/release-metadata
+
+            - id: changesets
+              uses: changesets/action@v1
               if: ${{ github.event.workflow_run.event == 'push' && github.event.workflow_run.head_repository.full_name == github.repository }}
               with:
                   publish: pnpm run release
                   commit: 'chore(release): version packages'
-                  title: 'chore(release): version packages'
+                  title: 'chore: release packages'
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   HUSKY: 0

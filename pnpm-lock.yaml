@@ -41,6 +41,68 @@ overrides:
   '@eslint/js': 9.38.0
 
 importers:
+    .:
+        devDependencies:
+            '@changesets/cli':
+                specifier: ^2.29.7
+                version: 2.29.7(@types/node@24.9.2)
+            '@commitlint/cli':
+                specifier: ^20.1.0
+                version: 20.1.0(@types/node@24.9.2)(typescript@5.9.3)
+            '@commitlint/config-conventional':
+                specifier: ^20.0.0
+                version: 20.0.0
+            '@seedcord/eslint-config':
+                specifier: workspace:^
+                version: link:packages/eslint-config
+            '@seedcord/tsconfig':
+                specifier: workspace:^
+                version: link:packages/tsconfig
+            '@swc/core':
+                specifier: ^1.14.0
+                version: 1.14.0
+            '@types/chai':
+                specifier: ^5.2.3
+                version: 5.2.3
+            '@types/node':
+                specifier: ^24.9.2
+                version: 24.9.2
+            '@vitest/coverage-v8':
+                specifier: ^4.0.6
+                version: 4.0.6(vitest@4.0.6(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1))
+            chai:
+                specifier: ^6.2.0
+                version: 6.2.0
+            eslint:
+                specifier: 9.38.0
+                version: 9.38.0(jiti@2.6.1)
+            husky:
+                specifier: ^9.1.7
+                version: 9.1.7
+            lint-staged:
+                specifier: ^16.2.6
+                version: 16.2.6
+            nodemon:
+                specifier: ^3.1.10
+                version: 3.1.10
+            prettier:
+                specifier: catalog:deps
+                version: 3.6.2
+            tsup:
+                specifier: ^8.5.0
+                version: 8.5.0(@swc/core@1.14.0)(jiti@2.6.1)(postcss@8.5.6)(tsx@4.20.6)(typescript@5.9.3)(yaml@2.8.1)
+            tsx:
+                specifier: ^4.20.6
+                version: 4.20.6
+            turbo:
+                specifier: ^2.6.0
+                version: 2.6.0
+            typescript:
+                specifier: catalog:peer
+                version: 5.9.3
+            vitest:
+                specifier: ^4.0.6
+                version: 4.0.6(@types/node@24.9.2)(jiti@2.6.1)(lightningcss@1.30.2)(tsx@4.20.6)(yaml@2.8.1)
 
   .:
     devDependencies:
@@ -381,45 +443,7 @@ importers:
         specifier: ^8.15.6
         version: 8.15.6
 
-  packages/seedcord:
-    dependencies:
-      '@seedcord/services':
-        specifier: workspace:*
-        version: link:../services
-      '@seedcord/types':
-        specifier: workspace:^
-        version: link:../types
-      '@seedcord/utils':
-        specifier: workspace:*
-        version: link:../utils
-      chalk:
-        specifier: catalog:deps
-        version: 5.6.2
-      discord.js:
-        specifier: catalog:deps
-        version: 14.24.1
-      envapt:
-        specifier: catalog:deps
-        version: 4.0.0
-      reflect-metadata:
-        specifier: catalog:deps
-        version: 0.2.2
-      type-fest:
-        specifier: catalog:deps
-        version: 5.1.0
-      typescript:
-        specifier: catalog:peer
-        version: 5.9.3
-    devDependencies:
-      '@seedcord/eslint-config':
-        specifier: workspace:^
-        version: link:../eslint-config
-      '@seedcord/tsconfig':
-        specifier: workspace:^
-        version: link:../tsconfig
-      '@seedcord/tsup-config':
-        specifier: workspace:^
-        version: link:../tsup-config
+    packages/tsconfig: {}
 
   packages/services:
     dependencies:
