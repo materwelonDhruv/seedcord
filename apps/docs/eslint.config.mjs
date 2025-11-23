@@ -1,11 +1,11 @@
 import createConfig from '@seedcord/eslint-config';
-// eslint-disable-next-line import/no-unresolved
 import nextVitals from 'eslint-config-next/core-web-vitals';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 
 export default createConfig({
     tsconfigRootDir: import.meta.dirname,
     registerImportPlugin: false,
+    registerTypescriptConfigs: false,
     userConfigs: [
         // Next core with Web Vitals. Includes react, hooks, import, jsx-a11y, and @next already.
         ...nextVitals,
@@ -14,10 +14,7 @@ export default createConfig({
         {
             rules: {
                 ...jsxA11y.flatConfigs.strict.rules,
-
-                // Keep your Image mapping
                 'jsx-a11y/alt-text': ['error', { elements: ['img'], img: ['Image'] }],
-
                 // Hardening
                 'react/jsx-no-target-blank': 'error',
                 'react-hooks/exhaustive-deps': 'error',
