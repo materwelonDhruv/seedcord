@@ -1,5 +1,18 @@
 # seedcord
 
+## 0.10.7
+
+### Patch Changes
+
+- ab879f1: discord.js was bumped a patch version
+- ab879f1: bump general dependencies
+- Updated dependencies [ab879f1]
+- Updated dependencies [ab879f1]
+- Updated dependencies [ab879f1]
+    - @seedcord/services@0.7.0
+    - @seedcord/types@0.3.6
+    - @seedcord/utils@0.3.9
+
 ## 0.10.6
 
 ### Patch Changes

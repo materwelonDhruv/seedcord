@@ -1,5 +1,11 @@
 # @seedcord/docs-generator
 
+## 0.2.3
+
+### Patch Changes
+
+- ab879f1: bump general dependencies
+
 ## 0.2.2
 
 ### Patch Changes

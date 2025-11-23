@@ -1,5 +1,11 @@
 # @seedcord/tsup-config
 
+## 1.1.3
+
+### Patch Changes
+
+- ab879f1: bump general dependencies
+
 ## 1.1.2
 
 ### Patch Changes

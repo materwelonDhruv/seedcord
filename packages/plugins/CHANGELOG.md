@@ -1,5 +1,20 @@
 # @seedcord/plugins
 
+## 0.6.0
+
+### Minor Changes
+
+- ab879f1: mongoose was bumped a major version
+
+### Patch Changes
+
+- ab879f1: bump general dependencies
+- Updated dependencies [ab879f1]
+- Updated dependencies [ab879f1]
+    - seedcord@0.10.7
+    - @seedcord/types@0.3.6
+    - @seedcord/utils@0.3.9
+
 ## 0.5.0
 
 ### Minor Changes

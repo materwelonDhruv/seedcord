@@ -1,5 +1,18 @@
 # @seedcord/services
 
+## 0.7.0
+
+### Minor Changes
+
+- ab879f1: coordinated shutdown will now be enabled by default. set the env var to false to turn it off
+
+### Patch Changes
+
+- ab879f1: discord.js was bumped a patch version
+- ab879f1: bump general dependencies
+- Updated dependencies [ab879f1]
+    - @seedcord/types@0.3.6
+
 ## 0.6.0
 
 ### Minor Changes
