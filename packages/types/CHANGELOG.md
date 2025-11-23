@@ -1,5 +1,17 @@
 # @seedcord/types
 
+## 0.3.5
+
+### Patch Changes
+
+- f8fbe70: bump general dependencies
+
+## 0.3.4
+
+### Patch Changes
+
+- 1d8986b: bump deps
+
 ## 0.3.3
 
 ### Patch Changes

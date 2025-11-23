@@ -1,6 +1,6 @@
 {
     "name": "@seedcord/docs-engine",
-    "version": "0.2.0",
+    "version": "0.2.2",
     "private": true,
     "description": "Documentation parser, renderer, and explorer for Seedcord",
     "type": "module",
@@ -40,7 +40,7 @@
     ],
     "dependencies": {
         "typedoc": "catalog:deps",
-        "typedoc-plugin-dt-links": "^2.0.26",
+        "typedoc-plugin-dt-links": "^2.0.30",
         "typedoc-plugin-mdn-links": "^5.0.10"
     },
     "devDependencies": {

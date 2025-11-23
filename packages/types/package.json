@@ -1,7 +1,7 @@
 {
     "name": "@seedcord/types",
     "type": "module",
-    "version": "0.3.3",
+    "version": "0.3.5",
     "description": "Types for Seedcord packages",
     "repository": {
         "type": "git",
@@ -39,7 +39,6 @@
         "typescript": "catalog:peer"
     },
     "dependencies": {
-        "discord.js": "catalog:deps",
         "type-fest": "catalog:deps"
     },
     "devDependencies": {

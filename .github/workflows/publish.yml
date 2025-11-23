@@ -5,6 +5,7 @@ on:
         workflows: ['tests']
         types: [completed]
         branches: [main]
+    workflow_dispatch: {}
 
 permissions:
     contents: write
@@ -25,7 +26,7 @@ jobs:
                   fetch-depth: 0
             - uses: pnpm/action-setup@v4
             - run: pnpm install --frozen-lockfile
-            - run: pnpm publish --dry-run --workspace-root
+            - run: pnpm publish --dry-run --workspace-root --no-git-checks
 
     npm-publish:
         if: ${{ github.event.workflow_run.conclusion == 'success' }}
@@ -63,9 +64,6 @@ jobs:
             - run: npm config get registry && npm ping
             - run: pnpm install --frozen-lockfile
             - run: pnpm run prepublishOnly
-            - name: Determine release metadata
-              id: release_meta
-              uses: ./.github/actions/release-metadata
 
             - id: changesets
               uses: changesets/action@v1
@@ -74,6 +72,7 @@ jobs:
                   publish: pnpm run release
                   commit: 'chore(release): version packages'
                   title: 'chore: release packages'
+                  branch: 'main'
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                   HUSKY: 0

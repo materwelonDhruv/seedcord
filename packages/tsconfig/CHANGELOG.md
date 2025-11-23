@@ -1,5 +1,23 @@
 # @seedcord/tsconfig
 
+## 1.1.2
+
+### Patch Changes
+
+- f8fbe70: bump general dependencies
+
+## 1.1.1
+
+### Patch Changes
+
+- 1d8986b: bump deps
+
+## 1.1.0
+
+### Minor Changes
+
+- ec50439: make package public
+
 ## 1.0.6
 
 ### Patch Changes

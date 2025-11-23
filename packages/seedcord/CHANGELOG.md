@@ -1,5 +1,30 @@
 # seedcord
 
+## 0.10.6
+
+### Patch Changes
+
+- f8fbe70: discord.js was bumped a patch version
+- f8fbe70: bump general dependencies
+- Updated dependencies [f354d30]
+- Updated dependencies [f8fbe70]
+- Updated dependencies [f8fbe70]
+    - @seedcord/services@0.6.0
+    - @seedcord/types@0.3.5
+    - @seedcord/utils@0.3.8
+
+## 0.10.5
+
+### Patch Changes
+
+- 1d8986b: bump deps
+- 1d8986b: bump djs to 14.25.0
+- Updated dependencies [1d8986b]
+- Updated dependencies [1d8986b]
+    - @seedcord/types@0.3.4
+    - @seedcord/utils@0.3.7
+    - @seedcord/services@0.5.1
+
 ## 0.10.4
 
 ### Patch Changes
