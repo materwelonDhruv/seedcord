@@ -140,6 +140,8 @@ export enum SeedcordErrorCode {
     CustomIdWireStale = 1620,
     /** A customId wire is corrupt, truncated, or was minted by a different definition. */
     CustomIdWireInvalid = 1621,
+    /** `dispatch.require()` was called for a key nothing wrote on this dispatch. */
+    DispatchStateMissing = 1622,
 
     /** A Cooldown gate was given a duration string that is not a well-formed positive duration. */
     GateInvalidCooldownDuration = 1701,
