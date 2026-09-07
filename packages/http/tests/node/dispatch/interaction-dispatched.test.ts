@@ -137,8 +137,33 @@ describe('interactionDispatched from the http dispatcher', () => {
             interactionId: 'int-1',
             kind: 'slash',
             outcome: 'handled',
-            fallback: false
+            fallback: false,
+            userId: 'u1',
+            guildId: null
         });
+    });
+
+    it('reads the actor off member.user in a guild', async () => {
+        Envapter.useSource(new PortableSource({}));
+        const core = createCore(nullPathConfig, VALID_TOKEN);
+        const published: SubscriptionData<'interactionDispatched'>[] = [];
+        core.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+        const payload = {
+            ...slashPayload('ok'),
+            user: undefined,
+            member: { user: { id: 'guild-user', username: 'tester' } },
+            guild_id: 'g1'
+        } as unknown as ValidInteractionTypes;
+
+        const execute = await dispatchInteraction({
+            match: routeFor('slash:ok', () => Promise.resolve(OkHandler)),
+            payload,
+            core
+        });
+        await execute?.();
+
+        expect(published[0]).toMatchObject({ userId: 'guild-user', guildId: 'g1' });
     });
 
     // an unmatched route carries no routeId, so the handler's own sender has none from the dispatch

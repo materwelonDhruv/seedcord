@@ -207,6 +207,9 @@ function dispatchReporter(
             kind: match.kind,
             outcome,
             fallback: match.routeId === null,
+            // discord sends member.user in a guild and user in a dm
+            userId: (payload.member?.user ?? payload.user)?.id ?? null,
+            guildId: payload.guild_id ?? null,
             startedAt,
             queuedMs
         });

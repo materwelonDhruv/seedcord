@@ -403,6 +403,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
                 outcome,
                 startedAt,
                 fallback: !matched,
+                userId: interaction.user.id,
+                guildId: interaction.guildId,
                 queuedMs
             });
         };

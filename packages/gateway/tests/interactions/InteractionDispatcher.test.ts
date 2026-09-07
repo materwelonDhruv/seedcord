@@ -1017,8 +1017,32 @@ describe('InteractionDispatcher Integration', () => {
                 interactionId: 'i1',
                 kind: 'slash',
                 outcome: 'handled',
-                fallback: false
+                fallback: false,
+                userId: 'u1',
+                guildId: 'g1'
             });
+        });
+
+        it('reports a null guildId for a dispatch outside a guild', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ok')
+                export class OkHandler extends SlashHandler<'ok'> {
+                    public async execute() {
+                        await this.event.reply('done');
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            await controller.handleSlashCommand({ ...fakeSlash('ok'), guildId: null });
+
+            expect(published[0]).toMatchObject({ userId: 'u1', guildId: null });
         });
 
         it('reports refused when a gate stops the handler', async () => {

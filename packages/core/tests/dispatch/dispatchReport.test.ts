@@ -33,6 +33,8 @@ function reportFor(queuedMs = 0): Parameters<typeof reportDispatch>[1] {
         kind: InteractionKind.Slash,
         outcome: 'handled',
         fallback: false,
+        userId: 'u0',
+        guildId: null,
         startedAt: performance.now(),
         queuedMs
     };
@@ -108,6 +110,19 @@ describe('reportDispatch', () => {
         expect(payload.queuedMs).toBe(1234);
         expect(payload.routeId).toBe('slash:ping');
         expect(payload.kind).toBe('slash');
+    });
+
+    it('forwards the actor so an audit line can name who ran the route', () => {
+        const payload = publishedFor({ ...reportFor(), userId: 'u1', guildId: 'g1' });
+
+        expect(payload.userId).toBe('u1');
+        expect(payload.guildId).toBe('g1');
+    });
+
+    it('publishes a null guildId outside a guild', () => {
+        const payload = publishedFor({ ...reportFor(), userId: 'u1', guildId: null });
+
+        expect(payload.guildId).toBeNull();
     });
 });
 
