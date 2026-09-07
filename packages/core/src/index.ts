@@ -33,6 +33,7 @@ export { InteractionKind } from '#src/metadataKeys';
 
 export { DispatchContext } from '#src/dispatch/DispatchContext';
 export type { DispatchState } from '#src/dispatch/DispatchContext';
+export type { DispatchResult, EventDispatchResult, HandlerResult } from '#src/dispatch/dispatchResult';
 
 export { BaseHandler } from '#src/handlers/BaseHandler';
 export { RepliableHandler } from '#src/handlers/RepliableHandler';
