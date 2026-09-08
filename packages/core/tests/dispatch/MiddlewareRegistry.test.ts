@@ -2,7 +2,7 @@ import { SeedcordErrorCode } from '@seedcord/errors';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { RegisterInteractionMiddleware } from '#decorators/middleware';
-import { MiddlewareRegistry } from '#src/dispatch/middlewareRegistry';
+import { MiddlewareRegistry } from '#src/dispatch/MiddlewareRegistry';
 import { InteractionKind } from '#src/metadataKeys';
 
 import type { MiddlewareKind } from '#src/metadataKeys';

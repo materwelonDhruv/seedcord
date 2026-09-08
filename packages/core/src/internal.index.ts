@@ -10,7 +10,7 @@ export {
 } from '#decorators/brands';
 export { interactionMiddlewareMetaOf } from '#decorators/middleware';
 export type { InteractionMiddlewareMetadata } from '#decorators/middleware';
-export { MiddlewareRegistry } from '#src/dispatch/middlewareRegistry';
+export { MiddlewareRegistry } from '#src/dispatch/MiddlewareRegistry';
 export { setBotColor } from '#components/botColorHolder';
 
 export type { PluginArgs, PluginCtor } from '#src/plugin/Plugin';
