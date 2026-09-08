@@ -7,6 +7,7 @@ import { busLoggerOf, getDevChannel, HmrManager, setBotColor } from '@seedcord/c
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
+    DRAIN_WINDOW_MS,
     ShutdownPhase,
     shutdownOf,
     StartupPhase,
@@ -39,7 +40,6 @@ import type { AddressInfo } from 'node:net';
 
 const DEFAULT_PORT = 3000;
 const SERVER_SHUTDOWN_TIMEOUT_MS = 5000;
-const DRAIN_TIMEOUT_MS = 10_000;
 
 type RuntimeOfConfig<Cfg extends HttpConfig> = Cfg extends { runtime: 'edge' } ? 'edge' : 'server';
 
@@ -239,7 +239,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
             async () => {
                 await Promise.allSettled(inFlight);
             },
-            DRAIN_TIMEOUT_MS
+            DRAIN_WINDOW_MS
         );
     }
 

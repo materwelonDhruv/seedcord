@@ -1,4 +1,4 @@
-import { CommandRegistry, ShutdownPhase } from '@seedcord/core/node/internal';
+import { CommandRegistry, DRAIN_WINDOW_MS, ShutdownPhase } from '@seedcord/core/node/internal';
 import { SeedcordErrorCode, paint } from '@seedcord/errors';
 import { SeedcordError, validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
@@ -15,10 +15,9 @@ import type { Core } from '#interfaces/Core';
 import type { HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type { BitFieldResolvable, GatewayIntentsString } from 'discord.js';
 
-const DISPATCH_DRAIN_TIMEOUT_MS = 5000;
 // leaves room for each dispatcher's own timer to settle before the outer timeout fires
 const DRAIN_HEADROOM_MS = 1000;
-const DRAIN_TASK_TIMEOUT_MS = DISPATCH_DRAIN_TIMEOUT_MS + DRAIN_HEADROOM_MS;
+const DRAIN_TASK_TIMEOUT_MS = DRAIN_WINDOW_MS + DRAIN_HEADROOM_MS;
 const UNBIND_TIMEOUT_MS = 2000;
 const LOGOUT_TIMEOUT_MS = 2000;
 
@@ -113,10 +112,7 @@ export class Bot implements HmrAware {
 
     async #drain(): Promise<void> {
         // runs through allSettled since a rejecting drain must not abort the other dispatcher's drain
-        await Promise.allSettled([
-            this.#interactions?.drain(DISPATCH_DRAIN_TIMEOUT_MS),
-            this.#events?.drain(DISPATCH_DRAIN_TIMEOUT_MS)
-        ]);
+        await Promise.allSettled([this.#interactions?.drain(DRAIN_WINDOW_MS), this.#events?.drain(DRAIN_WINDOW_MS)]);
     }
 
     /** @internal */
