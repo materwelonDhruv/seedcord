@@ -139,6 +139,27 @@ describe('a plugin whose init outlasts its timeout', () => {
         expect(logged).toBe(true);
     });
 
+    it('stays quiet when a late init fulfils on a plugin that declares no dispose', async () => {
+        class NoDisposeSlow extends Plugin {
+            constructor(core: CoreBase) {
+                super(core, { init: { timeout: INIT_TIMEOUT_MS } });
+            }
+
+            public async init(): Promise<void> {
+                await delay(CONNECT_MS);
+            }
+        }
+
+        const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+        const host = makeHost();
+        host.attach('db', NoDisposeSlow);
+
+        await expect(host.run()).rejects.toThrow();
+        await delay(SETTLE_MS);
+
+        expect(warn).not.toHaveBeenCalled();
+    });
+
     it('disposes each plugin once across the rollback, the late init, and a shutdown', async () => {
         class QuickConnect extends SlowConnect {
             public override init(): Promise<void> {
