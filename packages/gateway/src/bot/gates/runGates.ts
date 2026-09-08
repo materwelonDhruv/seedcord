@@ -5,9 +5,14 @@ import { deriveEventActor } from '#miscellaneous/deriveEventActor';
 import type { Core } from '#interfaces/Core';
 import type { Repliables, ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { EventGateContext, InteractionGateContext } from './Gate';
+import type { DispatchContext } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 
-export function interactionGateContext(interaction: Repliables, core: Core): InteractionGateContext {
+export function interactionGateContext(
+    interaction: Repliables,
+    core: Core,
+    dispatch: DispatchContext
+): InteractionGateContext {
     const rawMember = interaction.member;
     // an uncached member's roles arrive as plain ids already, and the cached everyone role's id equals
     // the guildId
@@ -20,6 +25,7 @@ export function interactionGateContext(interaction: Repliables, core: Core): Int
         kind: 'interaction',
         interaction,
         core,
+        dispatch,
         user: interaction.user,
         guild: interaction.guild,
         member: rawMember instanceof GuildMember ? rawMember : null,
@@ -39,12 +45,14 @@ export function interactionGateContext(interaction: Repliables, core: Core): Int
 export function eventGateContext(
     eventName: ValidNonInteractionKeys,
     args: ClientEvents[ValidNonInteractionKeys],
-    core: Core
+    core: Core,
+    dispatch: DispatchContext
 ): EventGateContext {
     const actor = deriveEventActor(args);
     return {
         kind: 'event',
         core,
+        dispatch,
         eventName,
         payload: args,
         user: actor.user,

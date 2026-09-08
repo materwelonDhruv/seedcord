@@ -1,12 +1,14 @@
 import type { Core } from '#interfaces/Core';
 import type { Repliables } from '#src/handlers/interactionTypes';
 import type { InteractionGateContext } from './Gate';
+import type { DispatchContext } from '@seedcord/core';
 import type { APIUser } from 'discord-api-types/v10';
 
 // autocomplete is skipped before gates run, so the payload here always carries a reply target
 export function interactionGateContext(
     payload: Repliables,
     core: Core,
+    dispatch: DispatchContext,
     routeId: string | null
 ): InteractionGateContext {
     const member = payload.member ?? null;
@@ -16,6 +18,7 @@ export function interactionGateContext(
     return {
         kind: 'interaction',
         core,
+        dispatch,
         interaction: payload,
         // justified: every repliable interaction Discord delivers carries a user, the wrapper types don't say so
         user: resolved as APIUser,

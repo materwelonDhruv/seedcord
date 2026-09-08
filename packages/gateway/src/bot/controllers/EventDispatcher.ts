@@ -388,7 +388,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
         try {
             this.logger.debug(`Processing ${paint.sky.bold(eventName)} with ${paint.mute(Ctor.name)}`);
             const handler = new Ctor(args, this.core, dispatch, eventName); // event name so match can route by it
-            const eventCtx = eventGateContext(eventName, args, this.core);
+            const eventCtx = eventGateContext(eventName, args, this.core, dispatch);
             await runHandlerGates(Ctor, eventCtx);
             await handler.execute();
             return { handler: Ctor.name, outcome: 'handled' };

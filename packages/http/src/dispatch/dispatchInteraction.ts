@@ -282,7 +282,7 @@ async function runMiddlewares(step: BeforeHandler, sender: ReplySender): Promise
 
 // a returned value is the throw that stops the dispatch before the handler runs
 async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unknown } | null> {
-    const { args, Handler, scope } = step;
+    const { args, scope } = step;
 
     // the chain shares the handler's sender
     if (args.match.kind !== InteractionKind.Autocomplete && scope.sender) {
@@ -293,7 +293,7 @@ async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unkn
         }
     }
 
-    return gateRefusal(Handler, args.match, args.payload, args.core);
+    return gateRefusal(step);
 }
 
 // a null return means the refusal is already sent
@@ -346,12 +346,9 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
 }
 
 // autocomplete has no reply target. @Gated rejects it at compile time and this is the runtime backstop
-async function gateRefusal(
-    ctor: HandlerConstructor,
-    match: ResolvedRoute,
-    payload: ValidInteractionTypes,
-    core: Core
-): Promise<{ caught: unknown } | null> {
+async function gateRefusal(step: BeforeHandler): Promise<{ caught: unknown } | null> {
+    const { Handler, dispatch } = step;
+    const { match, payload, core } = step.args;
     // match.kind comes from payload.type in the router. the second clause narrows the union to
     // Repliables for interactionGateContext
     if (match.kind === InteractionKind.Autocomplete || payload.type === InteractionType.ApplicationCommandAutocomplete)
@@ -359,8 +356,8 @@ async function gateRefusal(
     const monitor = slowGateMonitor();
     try {
         await runHandlerGates(
-            ctor,
-            interactionGateContext(payload, core, match.routeId),
+            Handler,
+            interactionGateContext(payload, core, dispatch, match.routeId),
             match.routeId ?? undefined,
             monitor?.observe
         );

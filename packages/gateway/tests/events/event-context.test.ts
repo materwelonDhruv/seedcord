@@ -87,6 +87,41 @@ describe('the per-fire event context', () => {
         expect(fireCalls()).toEqual(['handler:from-middleware', 'routeId:event:messageCreate']);
     });
 
+    it('hands a gate the same context the chain wrote to', async () => {
+        const events = await boot(
+            `
+            import { defineGate, Gated, EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            const ReadsDispatch = defineGate('ReadsDispatch', (ctx) => {
+                globalThis.fireCalls.push('gate:' + ctx.dispatch.get('tag'));
+            });
+
+            @Gated(ReadsDispatch)
+            @RegisterEvent(['messageCreate'])
+            export class Guarded extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler');
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';
+
+            @RegisterEventMiddleware()
+            export class Tagger extends EventMiddleware {
+                public async execute() {
+                    this.dispatch.set('tag', 'from-middleware');
+                }
+            }
+            `
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual(['gate:from-middleware', 'handler']);
+    });
+
     // a global is the only channel back to the test, since the fixture compiles into a temp dir
     const AFTER_PAIR = `
         import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';

@@ -868,6 +868,55 @@ describe('InteractionDispatcher Integration', () => {
             expect(interaction.reply).toHaveBeenCalledTimes(1);
         });
 
+        it('hands a gate the same dispatch context a middleware wrote to', async () => {
+            await testEnv.createFile(
+                'interactions/GateReads.ts',
+                `
+                import { defineGate, Gated, SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                const ReadsDispatch = defineGate('ReadsDispatch', (ctx) => {
+                    globalThis.gateSaw.push(ctx.dispatch.get('actor'));
+                });
+
+                @Gated(ReadsDispatch)
+                @SlashRoute('gatereads')
+                export class GateReadsHandler extends SlashHandler<'gatereads'> {
+                    public async execute() {
+                        await this.event.reply('done');
+                    }
+                }
+                `
+            );
+            await testEnv.createFile(
+                'interaction-mw/Tagger.ts',
+                `
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware()
+                export class Tagger extends InteractionMiddleware {
+                    public async execute() {
+                        this.dispatch.set('actor', 'from-middleware');
+                    }
+                }
+                `
+            );
+
+            (globalThis as { gateSaw?: unknown[] }).gateSaw = [];
+
+            seedcord = new Seedcord(
+                testConfig({
+                    interactions: testEnv.resolvePath('interactions'),
+                    interactionMiddlewares: testEnv.resolvePath('interaction-mw')
+                })
+            );
+            const controller = controllerOf(seedcord);
+            await controller.init();
+
+            await controller.handleSlashCommand(fakeSlash('gatereads'));
+
+            expect((globalThis as { gateSaw?: unknown[] }).gateSaw).toEqual(['from-middleware']);
+        });
+
         it('a real OwnerOnly catalog gate passes a configured owner through the dispatcher', async () => {
             await testEnv.createFile(
                 'interactions/Owner.ts',

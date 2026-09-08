@@ -414,7 +414,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         try {
             const HandlerCtor = matched ?? fallback;
             const dispatch = new DispatchContext(routeIdOf(HandlerCtor) ?? routeId);
-            routeId = dispatch.routeId ?? routeId;
+            routeId = dispatch.routeId;
 
             const handler = this.buildHandler(HandlerCtor, interaction as Repliables, dispatch, key, !matched);
             if (handler instanceof RepliableHandler) sender = handler.sender;
@@ -499,7 +499,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
         // @Gated rejects autocomplete at compile time, since it has no reply target. this is the backstop
         if (interaction.isAutocomplete()) return null;
-        return this.gateRefusal(HandlerCtor, interaction as Repliables, dispatch.routeId);
+        return this.gateRefusal(HandlerCtor, interaction as Repliables, dispatch);
     }
 
     private async runMiddlewares(
@@ -522,14 +522,14 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private async gateRefusal(
         HandlerCtor: HandlerConstructor,
         interaction: Repliables,
-        routeId: string | null
+        dispatch: DispatchContext
     ): Promise<{ caught: unknown } | null> {
         const monitor = slowGateMonitor();
         try {
             await runHandlerGates(
                 HandlerCtor,
-                interactionGateContext(interaction, this.core),
-                routeId ?? undefined,
+                interactionGateContext(interaction, this.core, dispatch),
+                dispatch.routeId,
                 monitor?.observe
             );
             return null;
@@ -537,7 +537,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             return { caught };
         } finally {
             // a refusing gate spent budget too
-            monitor?.report(routeId);
+            monitor?.report(dispatch.routeId);
         }
     }
 

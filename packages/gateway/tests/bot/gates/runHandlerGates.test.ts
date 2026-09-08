@@ -1,4 +1,4 @@
-import { Notice, defineGate } from '@seedcord/core';
+import { DispatchContext, Notice, defineGate } from '@seedcord/core';
 import { runHandlerGates } from '@seedcord/core/internal';
 import { describe, expect, it } from 'vitest';
 
@@ -32,6 +32,7 @@ const fakeInteraction = (): Repliables =>
 describe('runHandlerGates', () => {
     // gates under test never read core
     const core = {} as unknown as Core;
+    const dispatch = new DispatchContext('slash:runprobe');
 
     it("runs a handler's gates and propagates a refusal", async () => {
         const Refusing = defineGate('refuse', () => {
@@ -45,9 +46,9 @@ describe('runHandlerGates', () => {
             }
         }
 
-        await expect(runHandlerGates(Handler, interactionGateContext(fakeInteraction(), core))).rejects.toBeInstanceOf(
-            Notice
-        );
+        await expect(
+            runHandlerGates(Handler, interactionGateContext(fakeInteraction(), core, dispatch))
+        ).rejects.toBeInstanceOf(Notice);
     });
 
     it('resolves when the handler has no gates', async () => {
@@ -58,7 +59,7 @@ describe('runHandlerGates', () => {
         }
 
         await expect(
-            runHandlerGates(Handler, interactionGateContext(fakeInteraction(), core))
+            runHandlerGates(Handler, interactionGateContext(fakeInteraction(), core, dispatch))
         ).resolves.toBeUndefined();
     });
 
@@ -76,9 +77,9 @@ describe('runHandlerGates', () => {
 
         // empty payload, the gate refuses regardless of the derived actor
         const payload = [] as unknown as Parameters<typeof eventGateContext>[1];
-        await expect(runHandlerGates(Handler, eventGateContext('messageCreate', payload, core))).rejects.toBeInstanceOf(
-            Notice
-        );
+        await expect(
+            runHandlerGates(Handler, eventGateContext('messageCreate', payload, core, dispatch))
+        ).rejects.toBeInstanceOf(Notice);
     });
 
     it('resolves when the event handler has no gates', async () => {
@@ -90,7 +91,7 @@ describe('runHandlerGates', () => {
 
         const payload = [] as unknown as Parameters<typeof eventGateContext>[1];
         await expect(
-            runHandlerGates(Handler, eventGateContext('messageCreate', payload, core))
+            runHandlerGates(Handler, eventGateContext('messageCreate', payload, core, dispatch))
         ).resolves.toBeUndefined();
     });
 });
