@@ -6,6 +6,8 @@ import {
     queuedMsFor,
     reportDispatch,
     reportedWrite,
+    resultFor,
+    runAfter,
     runHandlerGates,
     slowGateMonitor
 } from '@seedcord/core/internal';
@@ -28,7 +30,7 @@ import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { HttpConfig } from '#interfaces/Config';
 import type { Core } from '#interfaces/Core';
 import type { ResolvedRoute } from './resolve';
-import type { DispatchOutcome, MiddlewareKind } from '@seedcord/core';
+import type { DispatchOutcome, DispatchResult, MiddlewareKind } from '@seedcord/core';
 import type { MiddlewareRegistry } from '@seedcord/core/internal';
 import type { CoordinatedShutdown, CoordinatedStartup } from '@seedcord/core/node';
 import type { IRateLimiter, RenderContext, TypedConstructor, TypedOmit } from '@seedcord/types';
@@ -257,24 +259,46 @@ async function loadHandlerCtor(
     return null;
 }
 
-async function runMiddlewares(
-    chain: readonly InteractionMiddlewareConstructor[],
-    payload: ValidInteractionTypes,
-    core: Core,
-    dispatch: DispatchContext,
-    sender: ReplySender
-): Promise<void> {
-    for (const middleware of chain) {
+interface BeforeHandler {
+    readonly args: DispatchArgs;
+    readonly Handler: HandlerConstructor;
+    readonly dispatch: DispatchContext;
+    readonly scope: FaultScope;
+    readonly ran: InteractionMiddleware[];
+}
+
+async function runMiddlewares(step: BeforeHandler, sender: ReplySender): Promise<void> {
+    const { args, dispatch, ran } = step;
+    for (const middleware of args.middlewares.chainFor(args.match.kind as MiddlewareKind)) {
         const Middleware = middleware as TypedConstructor<typeof InteractionMiddleware>;
-        // the caller picked the chain for this kind. the payload is the one the class declares.
-        const event = payload as InteractionOf<MiddlewareKind>;
-        await new Middleware(event, core, dispatch, sender).execute();
+        // chainFor picked this kind. the payload is the one the class declares.
+        const event = args.payload as InteractionOf<MiddlewareKind>;
+        const instance = new Middleware(event, args.core, dispatch, sender);
+        // pushed before the await because a middleware that throws still gets its after()
+        ran.push(instance);
+        await instance.execute();
     }
+}
+
+// a returned value is the throw that stops the dispatch before the handler runs
+async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unknown } | null> {
+    const { args, Handler, scope } = step;
+
+    // the chain shares the handler's sender
+    if (args.match.kind !== InteractionKind.Autocomplete && scope.sender) {
+        try {
+            await runMiddlewares(step, scope.sender);
+        } catch (caught) {
+            return { caught };
+        }
+    }
+
+    return gateRefusal(Handler, args.match, args.payload, args.core);
 }
 
 // a null return means the refusal is already sent
 export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Promise<void>) | null> {
-    const { match, payload, core, middlewares } = args;
+    const { match, payload, core } = args;
     const report = dispatchReporter(match, payload, core);
 
     const Handler = await loadHandlerCtor(match, payload, core, report);
@@ -299,28 +323,24 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
         sender: handler instanceof RepliableHandler ? handler.sender : null
     };
 
-    // the chain shares the handler's sender
-    if (match.kind !== InteractionKind.Autocomplete && scope.sender) {
-        try {
-            await runMiddlewares(middlewares.chainFor(match.kind), payload, core, dispatch, scope.sender);
-        } catch (caught) {
-            await answer(caught, scope, report);
-            return null;
-        }
-    }
-
-    const refusal = await gateRefusal(Handler, match, payload, core);
+    const ran: InteractionMiddleware[] = [];
+    const refusal = await refusalBeforeHandler({ args, Handler, dispatch, scope, ran });
     if (refusal) {
         await answer(refusal.caught, scope, report);
+        await runAfter(ran, resultFor(refusal.caught), logger());
         return null;
     }
 
     return async () => {
+        let result: DispatchResult = { outcome: 'handled' };
         try {
             await handler.execute();
             report('handled');
         } catch (caught) {
+            result = resultFor(caught);
             await answer(caught, scope, report);
+        } finally {
+            await runAfter(ran, result, logger());
         }
     };
 }

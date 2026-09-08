@@ -3,7 +3,7 @@ import { RepliableHandler } from '#src/handlers/RepliableHandler';
 import type { ReplySender } from '#bot/ReplySender';
 import type { Core } from '#interfaces/Core';
 import type { InteractionOf } from './middlewareKinds';
-import type { DispatchContext, MiddlewareKind } from '@seedcord/core';
+import type { DispatchContext, DispatchResult, MiddlewareKind } from '@seedcord/core';
 import type { MiddlewareKindsBrand } from '@seedcord/core/internal';
 
 /**
@@ -35,4 +35,21 @@ export abstract class InteractionMiddleware<
     public constructor(event: InteractionOf<Kind>, core: Core, dispatch: DispatchContext, sender: ReplySender) {
         super(event, core, dispatch, sender);
     }
+
+    /**
+     * Runs once the handler settles, newest middleware first. Implement it to release something this
+     * middleware took in `execute()`, such as a lock or an open span. A throw in here is logged and
+     * goes no further.
+     *
+     * @param result - How the dispatch ended. Either failure state carries the thrown value on `caught`.
+     *
+     * @example
+     * ```ts
+     * // the base declares it. an implementation carries `override`.
+     * override async after(result: DispatchResult) {
+     *     this.lock.release();
+     * }
+     * ```
+     */
+    public after?(result: DispatchResult): Promise<void>;
 }
