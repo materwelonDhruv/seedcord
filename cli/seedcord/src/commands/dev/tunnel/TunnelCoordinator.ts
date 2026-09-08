@@ -101,7 +101,6 @@ export class TunnelCoordinator {
         try {
             await this.deps.endpoint.clear();
         } catch (error: unknown) {
-            // a failed clear must not reject the quit path
             this.deps.logger.warn('Could not clear the interactions endpoint', error);
         }
     }

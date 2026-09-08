@@ -1,15 +1,16 @@
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
 
+// calling start() in here turns its synchronous throw into a rejection.
 async function raceTimer(
-    work: Promise<unknown>,
+    start: () => Promise<unknown>,
     timeoutMs: number,
     onTimeout: (resolve: () => void, reject: (error: unknown) => void) => void
 ): Promise<void> {
     let timer: NodeJS.Timeout | undefined;
     try {
         await Promise.race([
-            work,
+            start(),
             new Promise<void>((resolve, reject) => {
                 timer = setTimeout(() => onTimeout(resolve, reject), timeoutMs);
             })
@@ -21,12 +22,20 @@ async function raceTimer(
 
 // rejects with a LifecycleTaskTimeout when run outlasts the bound
 export function withTimeout(name: string, run: () => Promise<void>, timeoutMs: number): Promise<void> {
-    return raceTimer(run(), timeoutMs, (_, reject) => {
+    return raceTimer(run, timeoutMs, (_, reject) => {
         reject(new SeedcordError(SeedcordErrorCode.LifecycleTaskTimeout, [name, timeoutMs]));
     });
 }
 
-// resolves when work settles or the bound elapses, whichever is first
+// resolves when work settles or the bound elapses. a rejection resolves too.
 export function settleWithin(work: Promise<unknown>, timeoutMs: number): Promise<void> {
-    return raceTimer(work, timeoutMs, (resolve) => resolve());
+    return raceTimer(
+        () =>
+            work.then(
+                () => undefined,
+                () => undefined
+            ),
+        timeoutMs,
+        (resolve) => resolve()
+    );
 }
