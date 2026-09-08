@@ -93,8 +93,9 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
         this.hmrManager = new HmrManager();
         this.hmrManager.init();
 
-        if (this.config.bot.interactions.path) {
-            this.interactions = new InteractionDispatcher(this.config.bot.interactions.path);
+        const interactions = this.config.bot.interactions;
+        if (interactions.path) {
+            this.interactions = new InteractionDispatcher(interactions.path, interactions.middlewares);
         }
 
         if (this.config.bot.commands.path) this.commandRegistry = new CommandRegistry(this);
@@ -206,8 +207,8 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
 
     private async listen(): Promise<void> {
         const maps = this.interactions?.maps ?? buildRouteMaps(EMPTY_MANIFEST);
-        // no loader walks a middlewares directory yet
-        const { handle, inFlight } = buildEngine(this, maps, new MiddlewareRegistry());
+        const middlewares = this.interactions?.middlewares ?? new MiddlewareRegistry();
+        const { handle, inFlight } = buildEngine(this, maps, middlewares);
 
         const server = createServer((incoming, outgoing) => {
             void (async () => {

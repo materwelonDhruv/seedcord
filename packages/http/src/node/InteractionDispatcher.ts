@@ -1,6 +1,11 @@
 import { InteractionKind } from '@seedcord/core';
 import { HmrModuleHandler } from '@seedcord/core/hmr';
-import { interactionRoutesOf, InteractionMetadataKey } from '@seedcord/core/internal';
+import {
+    interactionRoutesOf,
+    InteractionMetadataKey,
+    InteractionMiddlewareMetadataKey,
+    MiddlewareRegistry
+} from '@seedcord/core/internal';
 import { SeedcordErrorCode, paint } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
@@ -10,10 +15,11 @@ import { Envapter } from 'envapt';
 
 import { AutocompleteHandler } from '#handlers/interaction/AutocompleteHandler';
 import { InteractionHandler } from '#handlers/interaction/InteractionHandler';
+import { InteractionMiddleware } from '#handlers/interaction/InteractionMiddleware';
 import { buildRouteMaps } from '#src/dispatch/resolve';
 import { EMPTY_MANIFEST } from '#src/manifest/RouteManifest';
 
-import type { HandlerConstructor } from '#handlers/constructors';
+import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { RouteMap, RouteMaps } from '#src/dispatch/resolve';
 import type { Initializeable, ContextMenuLeaves } from '@seedcord/core/internal';
 import type { HmrAware, HmrUpdateEvent } from '@seedcord/types';
@@ -23,10 +29,13 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     public readonly maps: RouteMaps;
 
     /** @internal */
+    public readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+
+    /** @internal */
     public readonly logger = new Logger('Interactions', { channel: 'interactions' });
 
     private isInitialized = false;
-    private readonly hmrHandler?: HmrModuleHandler<HandlerConstructor, void, string[]>;
+    private readonly hmrHandler?: HmrModuleHandler<HandlerConstructor, InteractionMiddlewareConstructor, string[]>;
     // routeId -> owner row, the duplicate guard and the hmr unregister index
     private readonly rowOwners = new Map<
         string,
@@ -35,16 +44,24 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
     private loading = false;
     private readonly loadedHandlers: { name: string; from: string }[] = [];
+    private readonly loadedMiddlewares: { name: string; from: string }[] = [];
 
-    constructor(private readonly handlersDir: string) {
+    constructor(
+        private readonly handlersDir: string,
+        private readonly middlewaresDir?: string
+    ) {
         this.maps = buildRouteMaps(EMPTY_MANIFEST);
 
         if (!Envapter.isDevelopment && !Envapter.isTest) return;
         this.hmrHandler = new HmrModuleHandler({
             handlersDir,
+            ...(middlewaresDir && { middlewaresDir }),
             isHandler: this.isHandler.bind(this),
+            isMiddleware: this.isMiddleware.bind(this),
             registerHandler: this.registerHandler.bind(this),
+            registerMiddleware: this.registerMiddleware.bind(this),
             unregisterHandler: this.unregisterHandler.bind(this),
+            unregisterMiddleware: this.unregisterMiddleware.bind(this),
             getArtifacts: this.getArtifacts.bind(this),
             logger: this.logger
         });
@@ -57,24 +74,47 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
         this.loading = true;
         this.loadedHandlers.length = 0;
+        this.loadedMiddlewares.length = 0;
         try {
-            await traverseDirectory(this.handlersDir, (fullPath, relativePath, imported) => {
-                for (const value of Object.values(imported)) {
-                    if (!this.isHandler(value)) continue;
-                    this.registerHandler(value, relativePath);
-                    this.hmrHandler?.trackHandler(fullPath, value);
-                }
-            });
+            if (this.middlewaresDir) await this.loadMiddlewares(this.middlewaresDir);
+            await this.loadHandlers(this.handlersDir);
         } finally {
             this.loading = false;
         }
 
-        this.logger.utils.block(
+        this.reportLoad();
+    }
+
+    private async loadHandlers(dir: string): Promise<void> {
+        await traverseDirectory(dir, (fullPath, relativePath, imported) => {
+            for (const value of Object.values(imported)) {
+                if (!this.isHandler(value)) continue;
+                this.registerHandler(value, relativePath);
+                this.hmrHandler?.trackHandler(fullPath, value);
+            }
+        });
+    }
+
+    private async loadMiddlewares(dir: string): Promise<void> {
+        await traverseDirectory(dir, (fullPath, relativePath, imported) => {
+            for (const value of Object.values(imported)) {
+                if (!this.isMiddleware(value)) continue;
+                this.registerMiddleware(value, relativePath);
+                this.hmrHandler?.trackMiddleware(fullPath, value);
+            }
+        });
+    }
+
+    private reportLoad(): void {
+        const { utils } = this.logger;
+
+        if (this.loadedMiddlewares.length > 0) {
+            utils.block('Loaded middlewares', utils.entries(this.loadedMiddlewares), 'debug');
+        }
+
+        utils.block(
             'Loaded handlers',
-            [
-                ...this.logger.utils.entries(this.loadedHandlers),
-                ...this.logger.utils.counts({ routes: this.rowOwners.size })
-            ],
+            [...utils.entries(this.loadedHandlers), ...utils.counts({ routes: this.rowOwners.size })],
             'debug'
         );
     }
@@ -109,6 +149,30 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             (value.prototype instanceof InteractionHandler || value.prototype instanceof AutocompleteHandler) &&
             Reflect.hasMetadata(InteractionMetadataKey, value)
         );
+    }
+
+    private isMiddleware(value: unknown): value is InteractionMiddlewareConstructor {
+        if (typeof value !== 'function') return false;
+        return (
+            value.prototype instanceof InteractionMiddleware &&
+            Reflect.hasMetadata(InteractionMiddlewareMetadataKey, value)
+        );
+    }
+
+    private registerMiddleware(ctor: InteractionMiddlewareConstructor, relativePath: string): void {
+        const metadata = this.middlewares.register(ctor);
+        if (!metadata || !this.loading) return;
+
+        // the kinds are the only place a dev sees that a middleware is scoped
+        const scope = metadata.kinds ? `${metadata.priority}, ${metadata.kinds.join(', ')}` : metadata.priority;
+        this.loadedMiddlewares.push({
+            name: `${ctor.name} (${String(scope)})`,
+            from: formatFilePath(relativePath)
+        });
+    }
+
+    private unregisterMiddleware(ctor: InteractionMiddlewareConstructor): void {
+        this.middlewares.unregister(ctor);
     }
 
     private getArtifacts(ctor: HandlerConstructor): string[] {
