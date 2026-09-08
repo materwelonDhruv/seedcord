@@ -457,8 +457,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             this.logger.warn(`No handler found for key ${paint.sky.bold(key)}. Falling back to ${HandlerCtor.name}.`);
         }
         this.logger.debug(`Processing ${paint.sky.bold(key)} with ${paint.mute(HandlerCtor.name)}`);
-        // @ts-expect-error TS can't infer the type of interaction here
-        return new HandlerCtor(interaction, this.core, dispatch);
+        // in a union of both handler bases, the event parameter is never. the maps pair each kind with its class.
+        return new HandlerCtor(interaction as never, this.core, dispatch);
     }
 
     private async runMiddlewares(interaction: Repliables): Promise<void> {

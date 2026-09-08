@@ -21,6 +21,7 @@ import { interactionGateContext } from '#src/gates/context';
 
 import { reportFault } from './reportFault';
 
+import type { HandlerConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { HttpConfig } from '#interfaces/Config';
 import type { Core } from '#interfaces/Core';
@@ -35,12 +36,6 @@ function logger(): Logger {
     dispatchLogger ??= new Logger('Dispatcher', { channel: 'interactions' });
     return dispatchLogger;
 }
-
-interface HttpHandler {
-    execute(): Promise<void>;
-}
-
-type HandlerCtor = new (event: ValidInteractionTypes, core: Core, dispatch?: DispatchContext) => HttpHandler;
 
 type CoreDraft = TypedOmit<Core, 'bus'> & { bus: Bus };
 
@@ -68,7 +63,7 @@ export function createCore(config: HttpConfig, token: string): Core {
     return draft;
 }
 
-function isHandlerCtor(value: unknown): value is HandlerCtor {
+function isHandlerCtor(value: unknown): value is HandlerConstructor {
     return typeof value === 'function' && value.prototype instanceof BaseHandler;
 }
 
@@ -236,7 +231,7 @@ async function loadHandlerCtor(
     payload: ValidInteractionTypes,
     core: Core,
     report: (outcome: DispatchOutcome) => void
-): Promise<HandlerCtor | null> {
+): Promise<HandlerConstructor | null> {
     const routeId = unhandledRouteId(match);
     let exported: unknown;
     try {
@@ -267,9 +262,10 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
     logger().debug(`Processing ${paint.sky.bold(routeId)} with ${paint.mute(Handler.name)}`);
 
     const dispatch = new DispatchContext(routeId);
-    let handler: HttpHandler;
+    let handler: InstanceType<HandlerConstructor>;
     try {
-        handler = new Handler(payload, core, dispatch);
+        // in a union of both handler bases, the event parameter is never. the route pairs each kind with its class.
+        handler = new Handler(payload as never, core, dispatch);
     } catch (caught) {
         await answer(caught, freshScope(match, payload, core), report);
         return null;
@@ -299,7 +295,7 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
 
 // autocomplete has no reply target. @Gated rejects it at compile time and this is the runtime backstop
 async function gateRefusal(
-    ctor: HandlerCtor,
+    ctor: HandlerConstructor,
     match: ResolvedRoute,
     payload: ValidInteractionTypes,
     core: Core
