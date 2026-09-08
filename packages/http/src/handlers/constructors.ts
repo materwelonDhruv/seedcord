@@ -5,7 +5,5 @@ import type { TypedConstructor } from '@seedcord/types';
 
 export type HandlerConstructor = TypedConstructor<typeof InteractionHandler | typeof AutocompleteHandler>;
 
-// gateway names the payload here. discord sends one component payload covering buttons and every select,
-// which no single kind's middleware accepts.
 /** @internal */
-export type InteractionMiddlewareConstructor = new (...args: never[]) => InteractionMiddleware;
+export type InteractionMiddlewareConstructor = TypedConstructor<typeof InteractionMiddleware>;

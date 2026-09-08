@@ -53,16 +53,6 @@ ruleTester.run('no-raw-interaction-acks', rule, {
                 }
             }
         `,
-        // middleware replies through thrown stops, raw acks there are out of scope
-        dedent`
-            import { InteractionMiddleware } from 'seedcord';
-            import { ChatInputCommandInteraction } from 'discord.js';
-            export class Auth extends InteractionMiddleware<ChatInputCommandInteraction> {
-                async execute() {
-                    await this.event.reply('denied');
-                }
-            }
-        `,
         // a non-ack method on the interaction is untouched
         dedent`
             import { SlashHandler } from 'seedcord';
@@ -100,6 +90,19 @@ ruleTester.run('no-raw-interaction-acks', rule, {
                 }
             `,
             errors: [{ messageId: 'replyMember' }]
+        },
+        // the sender reads its ack state once, when the dispatcher builds the handler ahead of the chain
+        {
+            code: dedent`
+                import { InteractionMiddleware } from 'seedcord';
+                import { ChatInputCommandInteraction } from 'discord.js';
+                export class Auth extends InteractionMiddleware<ChatInputCommandInteraction> {
+                    async execute() {
+                        await this.event.deferReply();
+                    }
+                }
+            `,
+            errors: [{ messageId: 'deferMember' }]
         },
         {
             code: dedent`

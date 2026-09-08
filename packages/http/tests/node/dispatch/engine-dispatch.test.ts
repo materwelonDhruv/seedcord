@@ -123,7 +123,7 @@ describe('createSeedcord dispatch', () => {
         let seenRouteId: string | undefined;
         class Track extends SlashHandler<never> {
             async execute(): Promise<void> {
-                seenRouteId = this.dispatch?.routeId ?? undefined;
+                seenRouteId = this.dispatch.routeId;
                 await this.reply('ok');
             }
         }

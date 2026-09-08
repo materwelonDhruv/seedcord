@@ -138,7 +138,7 @@ const messages = {
     [SeedcordErrorCode.ModalFieldChannelType]: (customId: string, picked: string, allowed: string) =>
         `Modal field ${JSON.stringify(customId)} picked a ${picked} channel. This read allows ${allowed}.`,
     [SeedcordErrorCode.DispatchStateMissing]: (key: string) =>
-        `Nothing set \`${key}\` on this dispatch. Check that the middleware writing it is registered, and that its kinds filter covers this interaction.`,
+        `Nothing set \`${key}\` on this dispatch. Check that the middleware writing it is registered and that its filter covers this dispatch.`,
 
     [SeedcordErrorCode.GateInvalidCooldownDuration]: (input: string) =>
         `Cooldown duration ${JSON.stringify(input)} is not valid. Pass a number of seconds or a duration string like '30m', '24h', or '500ms'.`,

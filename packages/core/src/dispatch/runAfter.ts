@@ -26,8 +26,7 @@ export function eventResultFor(
     handlers: readonly HandlerResult[]
 ): EventDispatchResult {
     if (!stopped) return { outcome: 'handled', handlers };
-    const result = resultFor(stopped.caught);
-    return result.outcome === 'handled' ? { outcome: 'handled', handlers } : { ...result, handlers: [] };
+    return { ...resultFor(stopped.caught), handlers: [] };
 }
 
 /**

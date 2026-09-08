@@ -208,7 +208,8 @@ describe('interactionDispatched from the http dispatcher', () => {
     });
 
     it('skips a middleware whose kinds omit the dispatched kind', async () => {
-        const { execute } = await dispatchedThrough(ButtonOnly);
+        // justified: the chain only builds a kind-filtered middleware for the kind its ctor accepts
+        const { execute } = await dispatchedThrough(ButtonOnly as InteractionMiddlewareConstructor);
         await execute?.();
 
         expect(ran).toEqual([]);

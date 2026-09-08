@@ -78,7 +78,9 @@ abstract class BaseHandler<Event> {
     abstract execute(): Promise<void>;
 }
 
-export abstract class InteractionHandler<Event extends Repliable> extends BaseHandler<Event> {}
+abstract class RepliableHandler<Event> extends BaseHandler<Event> {}
+
+export abstract class InteractionHandler<Event extends Repliable> extends RepliableHandler<Event> {}
 
 export abstract class SlashHandler<Route extends string> extends InteractionHandler<ChatInputCommandInteraction> {
     declare protected readonly route: Route;
@@ -120,8 +122,7 @@ export abstract class AutocompleteHandler<Route extends string> extends BaseHand
     }
 }
 
-// sits beside InteractionHandler, never under it
-export abstract class InteractionMiddleware<Event extends Repliable = Repliable> extends BaseHandler<Event> {}
+export abstract class InteractionMiddleware<Event extends Repliable = Repliable> extends RepliableHandler<Event> {}
 
 export abstract class EventMiddleware<Event = unknown> extends BaseHandler<Event> {}
 

@@ -33,7 +33,7 @@ import type { ResolvedRoute } from './resolve';
 import type { DispatchOutcome, DispatchResult, MiddlewareKind } from '@seedcord/core';
 import type { MiddlewareRegistry } from '@seedcord/core/internal';
 import type { CoordinatedShutdown, CoordinatedStartup } from '@seedcord/core/node';
-import type { IRateLimiter, RenderContext, TypedConstructor, TypedOmit } from '@seedcord/types';
+import type { IRateLimiter, RenderContext, TypedOmit } from '@seedcord/types';
 
 // lazy, env binds after this module loads
 let dispatchLogger: Logger | undefined;
@@ -276,10 +276,9 @@ interface BeforeHandler {
     readonly ran: InteractionMiddleware[];
 }
 
-async function runMiddlewares(step: BeforeHandler, sender: ReplySender): Promise<void> {
+async function runMiddlewares(step: BeforeHandler, kind: MiddlewareKind, sender: ReplySender): Promise<void> {
     const { args, dispatch, ran } = step;
-    for (const middleware of args.middlewares.chainFor(args.match.kind as MiddlewareKind)) {
-        const Middleware = middleware as TypedConstructor<typeof InteractionMiddleware>;
+    for (const Middleware of args.middlewares.chainFor(kind)) {
         // chainFor picked this kind. the payload is the one the class declares.
         const event = args.payload as InteractionOf<MiddlewareKind>;
         const instance = new Middleware(event, args.core, dispatch, sender);
@@ -292,11 +291,12 @@ async function runMiddlewares(step: BeforeHandler, sender: ReplySender): Promise
 // a returned value is the throw that stops the dispatch before the handler runs
 async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unknown } | null> {
     const { args, scope } = step;
+    const { kind } = args.match;
 
     // the chain shares the handler's sender
-    if (args.match.kind !== InteractionKind.Autocomplete && scope.sender) {
+    if (kind !== InteractionKind.Autocomplete && scope.sender) {
         try {
-            await runMiddlewares(step, scope.sender);
+            await runMiddlewares(step, kind, scope.sender);
         } catch (caught) {
             return { caught };
         }

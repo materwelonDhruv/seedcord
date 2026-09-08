@@ -5,12 +5,12 @@ import { createRule } from '../createRule';
 
 import type { TSESTree } from '@typescript-eslint/utils';
 
-// a middleware that acks is the author's call. keep InteractionMiddleware out of this gate.
-const HANDLER_GATES = ['InteractionHandler', 'AutocompleteHandler'];
+const HANDLER_GATES = ['InteractionHandler', 'AutocompleteHandler', 'InteractionMiddleware'];
 
 const HANDLER_BASE_NAMES = new Set([
     'InteractionHandler',
     'AutocompleteHandler',
+    'InteractionMiddleware',
     'ComponentHandler',
     'SlashHandler',
     'ButtonHandler',

@@ -28,7 +28,7 @@ function rollLine(actor: string, sides: number): TextDisplayBuilder {
 export class RollSlash extends SlashHandler<'roll'> {
     public async execute(): Promise<void> {
         const sides = this.options.getInteger('sides') ?? DEFAULT_SIDES;
-        const actor = this.dispatch?.require('actor') ?? 'someone';
+        const actor = this.dispatch.require('actor');
 
         await this.reply({ components: [rollLine(actor, sides), new RerollRow(sides).component] });
     }
@@ -38,7 +38,7 @@ export class RollSlash extends SlashHandler<'roll'> {
 export class RerollButton extends ButtonHandler<[typeof RerollId]> {
     public async execute(): Promise<void> {
         const { sides } = this.params;
-        const actor = this.dispatch?.require('actor') ?? 'someone';
+        const actor = this.dispatch.require('actor');
 
         await this.update({ components: [rollLine(actor, sides), new RerollRow(sides).component] });
     }
