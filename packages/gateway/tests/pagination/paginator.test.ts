@@ -1,4 +1,4 @@
-import { ButtonRoute, InteractionKind } from '@seedcord/core';
+import { DispatchContext, ButtonRoute, InteractionKind } from '@seedcord/core';
 import {
     ComponentDefsKey,
     InteractionMetadataKey,
@@ -22,6 +22,8 @@ import type { PageSource } from '#pagination/sources';
 import type { Repliables } from '#src/handlers/interactionTypes';
 import type { PageView } from '@seedcord/core';
 import type { APIContainerComponent, ButtonInteraction, Guild } from 'discord.js';
+
+const dispatch = new DispatchContext('test:probe');
 
 // justified: the paginator reads the interaction and the bus every write reports on
 const core = { bus: stubBus() } as unknown as Core;
@@ -223,7 +225,7 @@ describe('Paginator nav handler', () => {
 
     it('acks, decodes the target page off the wire, and edits @original in place', async () => {
         const event = navEvent(pager.cursor.encode({ page: 2, slot: 0 }));
-        await new BansNav(asButton(event), core).execute();
+        await new BansNav(asButton(event), core, dispatch).execute();
 
         expect(event.deferUpdate).toHaveBeenCalledOnce();
         // the bare edit rewrites @original (the source message) via editReply in the deferred-update state
@@ -250,7 +252,7 @@ describe('Paginator context', () => {
     it('threads the interaction user and guild (DM null) into the PageContext it builds', async () => {
         seenContexts.length = 0;
         const event = navEvent(Reminders.cursor.encode({ page: 0, slot: 0 }));
-        await new RemindersNav(asButton(event), core).execute();
+        await new RemindersNav(asButton(event), core, dispatch).execute();
 
         const ctx = seenContexts[0];
         expect(ctx?.interaction).toBe(event);

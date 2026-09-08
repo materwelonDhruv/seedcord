@@ -52,7 +52,7 @@ export abstract class AutocompleteHandler<
 
     // keep this ctor. it gives typeof AutocompleteHandler a public construct signature that HandlerConstructor
     // needs, and dropping it (inheriting BaseHandler's protected ctor) collapses HandlerConstructor to never.
-    constructor(event: AutocompleteInteraction<Cache>, core: Core, dispatch?: DispatchContext) {
+    constructor(event: AutocompleteInteraction<Cache>, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch, 'interactions');
     }
 
@@ -112,11 +112,13 @@ export abstract class AutocompleteHandler<
 
     /** Send autocomplete suggestions, callback type 8. Prefer {@link match}, which restricts each field's choices to its declared type. */
     protected async respond(choices: readonly ApplicationCommandOptionChoiceData[]): Promise<void> {
-        // a hand-built handler outside a dispatch carries no route id
-        const routeId = this.dispatch?.routeId ?? 'autocomplete';
-        await reportedWrite({ bus: this.core.bus, interactionId: this.event.id }, routeId, 'respond', () =>
-            // eslint-disable-next-line @seedcord/no-raw-interaction-acks -- this is the base respond and calls djs directly
-            this.event.respond(choices)
+        await reportedWrite(
+            { bus: this.core.bus, interactionId: this.event.id },
+            this.dispatch.routeId,
+            'respond',
+            () =>
+                // eslint-disable-next-line @seedcord/no-raw-interaction-acks -- this is the base respond and calls djs directly
+                this.event.respond(choices)
         );
     }
 

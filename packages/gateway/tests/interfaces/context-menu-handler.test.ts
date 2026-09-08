@@ -1,4 +1,4 @@
-import { UserContextMenuRoute, MessageContextMenuRoute } from '@seedcord/core';
+import { DispatchContext, UserContextMenuRoute, MessageContextMenuRoute } from '@seedcord/core';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
 import { UserContextMenuHandler, MessageContextMenuHandler } from '#handlers/interaction/ContextMenuHandler';
@@ -11,6 +11,8 @@ import type {
     User,
     UserContextMenuCommandInteraction
 } from 'discord.js';
+
+const dispatch = new DispatchContext('test:probe');
 
 // The execute() bodies are typechecked and never run. Discord allows a user command and a message command
 // to share a name, which is what the two `Report` rows below stand in for.
@@ -116,12 +118,12 @@ describe('ContextMenuHandler', () => {
     it('reads the right target member per kind', () => {
         const user = { id: 'u1' } as unknown as User;
         const member = { id: 'm1' } as unknown as GuildMember;
-        const handler = new ViewProfile(userMenu(user, member), core);
+        const handler = new ViewProfile(userMenu(user, member), core, dispatch);
         expect(handler.readTarget()).toBe(user);
         expect(handler.readMember()).toBe(member);
 
         const message = { id: 'msg1' } as unknown as Message<true>;
-        expect(new ReportMessage(messageMenu(message), core).readTarget()).toBe(message);
+        expect(new ReportMessage(messageMenu(message), core, dispatch).readTarget()).toBe(message);
     });
 
     it('rejects an unregistered or wrong-kind name', () => {

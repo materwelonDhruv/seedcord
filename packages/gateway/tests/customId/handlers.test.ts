@@ -1,4 +1,4 @@
-import { Notice, CustomId, ButtonRoute, ModalRoute, UserMenuRoute } from '@seedcord/core';
+import { DispatchContext, Notice, CustomId, ButtonRoute, ModalRoute, UserMenuRoute } from '@seedcord/core';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { describe, expect, it } from 'vitest';
 
@@ -7,6 +7,8 @@ import { ButtonHandler, ModalHandler, UserMenuHandler } from '#handlers/interact
 import type { Core } from '#interfaces/Core';
 import type { MatchArms } from '@seedcord/core/internal';
 import type { ButtonInteraction, ModalSubmitInteraction, UserSelectMenuInteraction } from 'discord.js';
+
+const dispatch = new DispatchContext('test:probe');
 
 const USER = '853472916483920128';
 const GUILD = '697894561234567890';
@@ -114,7 +116,7 @@ class AssignSelect extends UserMenuHandler<[typeof Assign]> {
 describe('this.params on a single-route handler', () => {
     it('decodes every field kind off the wire', () => {
         const wire = Approve.encode({ userId: USER, caseId: 42, urgent: true, action: 'deny', note: 'spam reports' });
-        const handler = new ApproveButton(button(wire), core);
+        const handler = new ApproveButton(button(wire), core, dispatch);
         expect(handler.read()).toEqual({
             userId: USER,
             caseId: 42,
@@ -126,20 +128,20 @@ describe('this.params on a single-route handler', () => {
 
     it('decodes once and reuses the cached result', () => {
         const wire = Approve.encode({ userId: USER, caseId: 1, urgent: false, action: 'approve', note: '' });
-        const handler = new ApproveButton(button(wire), core);
+        const handler = new ApproveButton(button(wire), core, dispatch);
         expect(handler.read()).toBe(handler.read()); // same cached object across reads
     });
 
     it('throws StaleCustomId when the shape changed since the wire was minted', () => {
         const older = new CustomId('approve').snowflake('userId');
-        const handler = new ApproveButton(button(older.encode({ userId: USER })), core);
+        const handler = new ApproveButton(button(older.encode({ userId: USER })), core, dispatch);
         expect(denialNameFrom(() => handler.read())).toBe('StaleCustomId');
     });
 
     it('throws InvalidCustomId on a corrupt wire', () => {
         // appending a delimited piece pushes the field count past what the shape expects
         const wire = Approve.encode({ userId: USER, caseId: 1, urgent: false, action: 'approve', note: '' });
-        const handler = new ApproveButton(button(`${wire}\u{1F}JUNK`), core);
+        const handler = new ApproveButton(button(`${wire}\u{1F}JUNK`), core, dispatch);
         expect(denialNameFrom(() => handler.read())).toBe('InvalidCustomId');
     });
 
@@ -152,33 +154,33 @@ describe('this.params on a single-route handler', () => {
                 await this.match({} as unknown as MatchArms<[typeof Ctor], undefined>);
             }
         }
-        const handler = new WeirdButton(button(Ctor.encode({ userId: USER })), core);
+        const handler = new WeirdButton(button(Ctor.encode({ userId: USER })), core, dispatch);
         await expect(handler.execute()).rejects.toMatchObject({
             code: SeedcordErrorCode.CustomIdMatchArmMissing
         });
     });
 
     it('throws when the handler has no route decorator', () => {
-        const handler = new Undecorated(button('approveXyz:'), core);
+        const handler = new Undecorated(button('approveXyz:'), core, dispatch);
         expect(() => handler.read()).toThrow(/route decorator/);
     });
 
     it('throws InvalidCustomId when no registered route owns the wire', () => {
         const stranger = new CustomId('stranger').snowflake('x');
-        const handler = new ApproveButton(button(stranger.encode({ x: USER })), core);
+        const handler = new ApproveButton(button(stranger.encode({ x: USER })), core, dispatch);
         expect(denialNameFrom(() => handler.read())).toBe('InvalidCustomId');
     });
 });
 
 describe('this.match on a multi-route handler', () => {
     it('runs the sync arm of the route the wire was minted from', async () => {
-        const handler = new NavButtons(button(Page.encode({ index: 7 })), core);
+        const handler = new NavButtons(button(Page.encode({ index: 7 })), core, dispatch);
         await handler.execute();
         expect(handler.log).toBe('page 7');
     });
 
     it('runs the async arm of the other route', async () => {
-        const handler = new NavButtons(button(Jump.encode({ messageId: MSG })), core);
+        const handler = new NavButtons(button(Jump.encode({ messageId: MSG })), core, dispatch);
         await handler.execute();
         expect(handler.log).toBe(`jump ${MSG}`);
     });
@@ -186,13 +188,17 @@ describe('this.match on a multi-route handler', () => {
 
 describe('modal and select handlers decode this.params alongside their event data', () => {
     it('modal reads this.params and the submitted inputs', async () => {
-        const handler = new ConfigModal(modal(Config.encode({ guildId: GUILD }), { name: 'My Server' }), core);
+        const handler = new ConfigModal(
+            modal(Config.encode({ guildId: GUILD }), { name: 'My Server' }),
+            core,
+            dispatch
+        );
         await handler.execute();
         expect(handler.saved).toBe(`My Server@${GUILD}`);
     });
 
     it('select reads this.params and the chosen values', async () => {
-        const handler = new AssignSelect(userSelect(Assign.encode({ roleId: ROLE }), ['1', '2', '3']), core);
+        const handler = new AssignSelect(userSelect(Assign.encode({ roleId: ROLE }), ['1', '2', '3']), core, dispatch);
         await handler.execute();
         expect(handler.summary).toBe(`3->${ROLE}`);
     });

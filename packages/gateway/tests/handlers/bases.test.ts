@@ -1,4 +1,5 @@
 import { TextDisplayBuilder } from '@discordjs/builders';
+import { DispatchContext } from '@seedcord/core';
 import { isSeedcordError, SeedcordErrorCode } from '@seedcord/errors';
 import { MessageFlags } from 'discord.js';
 import { describe, expect, it } from 'vitest';
@@ -14,6 +15,8 @@ import type { SentMessage } from '#bot/ReplySender';
 import type { Core } from '#interfaces/Core';
 import type { ModalLike } from '@seedcord/core';
 import type { ButtonInteraction, ChatInputCommandInteraction, ModalSubmitInteraction } from 'discord.js';
+
+const dispatch = new DispatchContext('test:probe');
 
 // a handler naming no route carries no guild guarantee
 type Slash = ChatInputCommandInteraction<undefined>;
@@ -65,7 +68,7 @@ describe('SlashHandler base', () => {
 
     it('routes reply through the sender to a type 4 reply with withResponse', async () => {
         const mock = mockInteraction(commandFlags);
-        await new Ban(asSlash(mock), core).execute();
+        await new Ban(asSlash(mock), core, dispatch).execute();
 
         const options = mock.reply.mock.calls[0]?.[0] as { withResponse?: boolean; flags?: number };
         expect(mock.reply).toHaveBeenCalledOnce();
@@ -80,7 +83,7 @@ describe('SlashHandler base', () => {
             }
         }
         const mock = mockInteraction(commandFlags);
-        await new Open(asSlash(mock), core).execute();
+        await new Open(asSlash(mock), core, dispatch).execute();
 
         expect(mock.showModal).toHaveBeenCalledWith({ title: 'x', custom_id: 'y', components: [] });
     });
@@ -95,7 +98,7 @@ describe('ButtonHandler base', () => {
 
     it('routes update through the sender to interaction.update', async () => {
         const mock = mockInteraction();
-        await new Page(asButton(mock), core).execute();
+        await new Page(asButton(mock), core, dispatch).execute();
 
         const options = mock.update.mock.calls[0]?.[0] as { components?: unknown[]; withResponse?: boolean };
         expect(mock.update).toHaveBeenCalledOnce();
@@ -110,7 +113,7 @@ describe('ButtonHandler base', () => {
             }
         }
         const mock = mockInteraction();
-        await new Opens(asButton(mock), core).execute();
+        await new Opens(asButton(mock), core, dispatch).execute();
         expect(mock.showModal).toHaveBeenCalledOnce();
     });
 });
@@ -125,7 +128,7 @@ describe('ModalHandler base', () => {
     it('rejects update on a command-opened modal before any djs call', async () => {
         const mock = mockInteraction({ isMessageComponent: false, isModalSubmit: true, isFromMessage: false });
 
-        await expect(new Save(asModal(mock), core).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Save(asModal(mock), core, dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyUpdateWithoutSource)
         );
         expect(mock.update).not.toHaveBeenCalled();
@@ -133,7 +136,7 @@ describe('ModalHandler base', () => {
 
     it('updates a message-opened modal through the sender', async () => {
         const mock = mockInteraction({ isMessageComponent: false, isModalSubmit: true, isFromMessage: true });
-        await new Save(asModal(mock), core).execute();
+        await new Save(asModal(mock), core, dispatch).execute();
         expect(mock.update).toHaveBeenCalledOnce();
     });
 
@@ -145,7 +148,7 @@ describe('ModalHandler base', () => {
         }
         const mock = mockInteraction({ isMessageComponent: false, isModalSubmit: true, isFromMessage: false });
 
-        await expect(new Ack(asModal(mock), core).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Ack(asModal(mock), core, dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyUpdateWithoutSource)
         );
         expect(mock.deferUpdate).not.toHaveBeenCalled();
@@ -160,7 +163,7 @@ describe('ModalHandler base', () => {
             replied: true
         });
 
-        await expect(new Save(asModal(mock), core).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Save(asModal(mock), core, dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyUpdateWithoutSource)
         );
     });
@@ -175,7 +178,7 @@ describe('reply returns', () => {
             }
         }
         const mock = mockInteraction(commandFlags);
-        await new Ban(asSlash(mock), core).execute();
+        await new Ban(asSlash(mock), core, dispatch).execute();
     });
 });
 
@@ -187,7 +190,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction(commandFlags);
-        await new Wait(asSlash(mock), core).execute();
+        await new Wait(asSlash(mock), core, dispatch).execute();
         expect(mock.deferReply).toHaveBeenCalledOnce();
     });
 
@@ -198,7 +201,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction({ ...commandFlags, replied: true });
-        await new After(asSlash(mock), core).execute();
+        await new After(asSlash(mock), core, dispatch).execute();
         expect(mock.followUp).toHaveBeenCalledOnce();
     });
 
@@ -209,7 +212,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction({ ...commandFlags, deferred: true, ephemeral: false });
-        await new Fill(asSlash(mock), core).execute();
+        await new Fill(asSlash(mock), core, dispatch).execute();
         expect(mock.editReply).toHaveBeenCalledOnce();
     });
 
@@ -222,7 +225,7 @@ describe('base member delegation', () => {
         }
         const mock = mockInteraction({ ...commandFlags, replied: true });
         mock.followUp.mockResolvedValueOnce({ id: 'earlier-1' });
-        await new Rewrite(asSlash(mock), core).execute();
+        await new Rewrite(asSlash(mock), core, dispatch).execute();
         expect(mock.webhook.editMessage).toHaveBeenCalledWith('earlier-1', expect.anything());
     });
 
@@ -234,7 +237,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction({ ...commandFlags, replied: true });
-        await expect(new Rewrite(asSlash(mock), core).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Rewrite(asSlash(mock), core, dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyForeignEditTarget)
         );
         expect(mock.webhook.editMessage).not.toHaveBeenCalled();
@@ -247,7 +250,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction(commandFlags);
-        await new Show(asSlash(mock), core).execute();
+        await new Show(asSlash(mock), core, dispatch).execute();
         expect(mock.reply).toHaveBeenCalledOnce();
     });
 
@@ -258,7 +261,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction();
-        await new Ack(asButton(mock), core).execute();
+        await new Ack(asButton(mock), core, dispatch).execute();
         expect(mock.deferUpdate).toHaveBeenCalledOnce();
     });
 
@@ -269,7 +272,7 @@ describe('base member delegation', () => {
             }
         }
         const mock = mockInteraction({ ...commandFlags, replied: true });
-        await new Remove(asSlash(mock), core).execute();
+        await new Remove(asSlash(mock), core, dispatch).execute();
         expect(mock.deleteReply).toHaveBeenCalledWith();
     });
 
@@ -282,7 +285,7 @@ describe('base member delegation', () => {
         }
         const mock = mockInteraction({ ...commandFlags, replied: true });
         mock.followUp.mockResolvedValueOnce({ id: 'earlier-1' });
-        await new Remove(asSlash(mock), core).execute();
+        await new Remove(asSlash(mock), core, dispatch).execute();
         expect(mock.deleteReply).toHaveBeenCalledWith('earlier-1');
     });
 });

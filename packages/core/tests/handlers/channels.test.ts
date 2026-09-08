@@ -1,6 +1,7 @@
 import { LoggerChannelRegistry } from '@seedcord/logger';
 import { beforeEach, describe, expect, it } from 'vitest';
 
+import { DispatchContext } from '#src/dispatch/DispatchContext';
 import { BaseHandler } from '#src/handlers/BaseHandler';
 import { Subscriber } from '#subscribers/Subscriber';
 
@@ -26,10 +27,11 @@ beforeEach(() => {
 
 // justified: the bases reach nothing on core in these probes
 const core = {} as CoreBase;
+const dispatch = new DispatchContext('probe:channels');
 
 class Eventish extends BaseHandler<string, CoreBase> {
     constructor(event: string) {
-        super(event, core, undefined, 'events');
+        super(event, core, dispatch, 'events');
     }
     public execute(): Promise<void> {
         this.logger.info('ran');
@@ -39,7 +41,7 @@ class Eventish extends BaseHandler<string, CoreBase> {
 
 class Interactionish extends BaseHandler<string, CoreBase> {
     constructor(event: string) {
-        super(event, core, undefined, 'interactions');
+        super(event, core, dispatch, 'interactions');
     }
     public execute(): Promise<void> {
         this.logger.info('ran');
@@ -49,7 +51,7 @@ class Interactionish extends BaseHandler<string, CoreBase> {
 
 class Unchanneled extends BaseHandler<string, CoreBase> {
     constructor(event: string) {
-        super(event, core);
+        super(event, core, dispatch);
     }
     public execute(): Promise<void> {
         this.logger.info('ran');

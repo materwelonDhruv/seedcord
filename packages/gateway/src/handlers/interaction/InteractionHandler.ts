@@ -16,7 +16,7 @@ import type { DispatchContext, ModalLike } from '@seedcord/core';
 export abstract class InteractionHandler<Repliable extends Repliables> extends RepliableHandler<Repliable> {
     // keep this ctor. it gives typeof InteractionHandler a public construct signature that HandlerConstructor
     // needs, and dropping it (inheriting RepliableHandler's protected ctor) collapses HandlerConstructor to never.
-    constructor(event: Repliable, core: Core, dispatch?: DispatchContext) {
+    constructor(event: Repliable, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch);
     }
 

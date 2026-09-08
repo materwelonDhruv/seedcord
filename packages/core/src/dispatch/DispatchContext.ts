@@ -16,7 +16,7 @@ export interface DispatchState {}
 export class DispatchContext {
     private readonly state: Partial<DispatchState> = {};
 
-    constructor(public readonly routeId: string | null) {}
+    constructor(public readonly routeId: string) {}
 
     set<Key extends keyof DispatchState>(key: Key, value: DispatchState[Key]): void {
         this.state[key] = value;

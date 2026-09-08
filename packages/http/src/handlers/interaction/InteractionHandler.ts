@@ -16,7 +16,7 @@ import type { APIModalSubmitInteraction } from 'discord-api-types/v10';
  */
 export abstract class InteractionHandler<Event extends Repliables> extends RepliableHandler<Event> {
     // the dispatcher needs a public construct signature, but RepliableHandler's ctor is protected
-    constructor(event: Event, core: Core, dispatch?: DispatchContext) {
+    constructor(event: Event, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch);
     }
 

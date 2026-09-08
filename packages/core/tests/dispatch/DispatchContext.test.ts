@@ -16,37 +16,37 @@ function bagOf(ctx: DispatchContext): LooseBag {
 
 describe('DispatchContext', () => {
     it('round-trips a value through set and get', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         bag.set('locale', 'en');
         expect(bag.get('locale')).toBe('en');
     });
 
     it('returns a set value through require', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         bag.set('locale', 'en');
         expect(bag.require('locale')).toBe('en');
     });
 
     it('throws DispatchStateMissing when nothing set the key', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         expect(() => bag.require('locale')).toThrow(
             expect.objectContaining({ code: SeedcordErrorCode.DispatchStateMissing })
         );
     });
 
     it('names the missing key in the message', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         expect(() => bag.require('locale')).toThrow(/locale/);
     });
 
     it('returns a key set to null', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         bag.set('locale', null);
         expect(bag.require('locale')).toBeNull();
     });
 
     it('treats a key set to undefined as missing', () => {
-        const bag = bagOf(new DispatchContext(null));
+        const bag = bagOf(new DispatchContext('slash:test'));
         bag.set('locale', undefined);
         expect(() => bag.require('locale')).toThrow(
             expect.objectContaining({ code: SeedcordErrorCode.DispatchStateMissing })

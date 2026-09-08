@@ -16,6 +16,8 @@ import type { InteractionKind } from '@seedcord/core';
 import type { ILogSink, LogRecord } from '@seedcord/types';
 import type { AutocompleteInteraction, ChatInputCommandInteraction, ClientEvents } from 'discord.js';
 
+const dispatch = new DispatchContext('test:probe');
+
 class FakeSink implements ILogSink {
     public readonly records: LogRecord[] = [];
     public readonly kind = 'console';
@@ -92,8 +94,8 @@ describe('gateway handler log channels', () => {
             // justified: this probe only reads the logger channel, no reply member runs
             {} as ReplySender
         ).execute();
-        await new Suggest(interaction as unknown as AutocompleteInteraction<undefined>, core).execute();
-        await new Ban(interaction as unknown as ChatInputCommandInteraction<undefined>, core).execute();
+        await new Suggest(interaction as unknown as AutocompleteInteraction<undefined>, core, dispatch).execute();
+        await new Ban(interaction as unknown as ChatInputCommandInteraction<undefined>, core, dispatch).execute();
 
         expect(sink.records.map((record) => record.channel)).toEqual(['interactions', 'interactions', 'interactions']);
     });
