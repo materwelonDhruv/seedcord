@@ -70,8 +70,8 @@ const messages = {
 
     [SeedcordErrorCode.InteractionDuplicateRoute]: (route: string, first: string, second: string) =>
         `Two interaction handlers resolve to the same route \`${route}\`. Registered by ${first} and ${second}. Rename one.`,
-    [SeedcordErrorCode.InteractionDuplicateMiddleware]: (name: string) =>
-        `Two different interaction middleware classes share the name \`${name}\`. Rename one so they do not collide.`,
+    [SeedcordErrorCode.DuplicateMiddleware]: (name: string) =>
+        `Two different middleware classes share the name \`${name}\`. Rename one so they do not collide.`,
     [SeedcordErrorCode.InteractionRouteExportMissing]: (route: string, exportName: string, from: string) =>
         `Route \`${route}\` loads \`${exportName}\` from ${from}, which exports no such name.`,
     [SeedcordErrorCode.SubscriberRouteNotASubscriber]: (keys: string, exportName: string, from: string) =>

@@ -2,7 +2,7 @@ import { SeedcordErrorCode } from '@seedcord/errors';
 import { beforeEach, describe, expect, it } from 'vitest';
 
 import { RegisterInteractionMiddleware } from '#decorators/middleware';
-import { MiddlewareRegistry } from '#src/dispatch/MiddlewareRegistry';
+import { interactionMiddleware, MiddlewareRegistry } from '#src/dispatch/MiddlewareRegistry';
 import { InteractionKind } from '#src/metadataKeys';
 
 import type { MiddlewareKind } from '#src/metadataKeys';
@@ -30,7 +30,7 @@ function names(chain: readonly Probe[]): string[] {
 let registry: MiddlewareRegistry<Probe>;
 
 beforeEach(() => {
-    registry = new MiddlewareRegistry<Probe>();
+    registry = new MiddlewareRegistry<Probe>(interactionMiddleware);
 });
 
 describe('MiddlewareRegistry', () => {
@@ -53,7 +53,7 @@ describe('MiddlewareRegistry', () => {
         registry.register(middleware('Audit'));
 
         expect(() => registry.register(middleware('Audit'))).toThrow(
-            expect.objectContaining({ code: SeedcordErrorCode.InteractionDuplicateMiddleware })
+            expect.objectContaining({ code: SeedcordErrorCode.DuplicateMiddleware })
         );
     });
 

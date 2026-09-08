@@ -2,65 +2,82 @@ import { SeedcordErrorCode } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
 
 import { interactionMiddlewareMetaOf } from '#decorators/middleware';
-import { InteractionKind } from '#src/metadataKeys';
 
-import type { InteractionMiddlewareMetadata } from '#decorators/middleware';
+import type { AnyMiddlewareCtor } from '#decorators/middleware';
 import type { MiddlewareKind } from '#src/metadataKeys';
 
-/** The ten kinds a middleware can run on, derived so a kind added to the enum joins on its own. */
-const MIDDLEWARE_KINDS: readonly MiddlewareKind[] = Object.values(InteractionKind).filter(
-    (kind): kind is MiddlewareKind => kind !== InteractionKind.Autocomplete
-);
-
-type AnyMiddlewareCtor = new (...args: never[]) => unknown;
-
-interface Entry<Ctor> {
-    readonly ctor: Ctor;
-    readonly priority: number;
-    readonly kinds?: ReadonlySet<MiddlewareKind>;
-}
-
-function emptyChains<Ctor>(): Record<MiddlewareKind, Ctor[]> {
-    const chains = {} as Record<MiddlewareKind, Ctor[]>;
-    for (const kind of MIDDLEWARE_KINDS) chains[kind] = [];
-    return chains;
-}
-
 /**
- * Holds the interaction middleware a transport loaded and keeps one chain per kind. Both transports
- * register through this. Priority and the kinds filter behave the same on each.
- *
- * @typeParam Ctor - The transport's middleware constructor type.
+ * A decorated middleware reduced to what the registry orders and filters on. An absent `keys` puts the
+ * middleware in every chain.
  *
  * @internal
  */
-export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor> {
-    private readonly entries: Entry<Ctor>[] = [];
-    private chains = emptyChains<Ctor>();
+export interface MiddlewareRegistration<Key extends string> {
+    readonly priority: number;
+    readonly keys?: readonly Key[];
+}
+
+/**
+ * Reads a transport's decorator metadata off a class. Returns `undefined` for an undecorated one.
+ *
+ * @internal
+ */
+export type MiddlewareRegistrationOf<Ctor, Key extends string> = (
+    ctor: Ctor
+) => MiddlewareRegistration<Key> | undefined;
+
+/** @internal */
+export function interactionMiddleware(ctor: AnyMiddlewareCtor): MiddlewareRegistration<MiddlewareKind> | undefined {
+    const metadata = interactionMiddlewareMetaOf(ctor);
+    if (!metadata) return undefined;
+    return { priority: metadata.priority, ...(metadata.kinds && { keys: metadata.kinds }) };
+}
+
+interface Entry<Ctor, Key extends string> {
+    readonly ctor: Ctor;
+    readonly priority: number;
+    readonly keys?: ReadonlySet<Key>;
+}
+
+/**
+ * Holds the middleware a transport loaded and keeps one chain per key. An interaction keys on its kind
+ * and an event on its name. Priority and the key filter behave the same on each.
+ *
+ * @typeParam Ctor - The transport's middleware constructor type.
+ * @typeParam Key - The chain lookup key.
+ *
+ * @internal
+ */
+export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor, Key extends string = MiddlewareKind> {
+    private readonly entries: Entry<Ctor, Key>[] = [];
+    // a rebuild replaces this map. mutating it in place would break a chain mid-dispatch.
+    private chains = new Map<Key, readonly Ctor[]>();
+
+    public constructor(private readonly registrationOf: MiddlewareRegistrationOf<Ctor, Key>) {}
 
     /**
-     * Adds a decorated middleware class and returns its metadata. Returns `undefined` for an undecorated
-     * class or one already registered.
+     * Adds a decorated middleware class and returns what it registered with. Returns `undefined` for an
+     * undecorated class or one already registered.
      *
      * @throws A **SeedcordError** If another class with the same name is registered.
      */
-    public register(ctor: Ctor): InteractionMiddlewareMetadata | undefined {
-        const metadata = interactionMiddlewareMetaOf(ctor);
-        if (!metadata) return undefined;
+    public register(ctor: Ctor): MiddlewareRegistration<Key> | undefined {
+        const registration = this.registrationOf(ctor);
+        if (!registration) return undefined;
 
         // a double import or an hmr re-scan hands us the same class again
         if (this.entries.some((entry) => entry.ctor === ctor)) return undefined;
         if (this.entries.some((entry) => entry.ctor.name === ctor.name)) {
-            throw new SeedcordError(SeedcordErrorCode.InteractionDuplicateMiddleware, [ctor.name]);
+            throw new SeedcordError(SeedcordErrorCode.DuplicateMiddleware, [ctor.name]);
         }
 
         this.entries.push({
             ctor,
-            priority: metadata.priority,
-            ...(metadata.kinds && { kinds: new Set(metadata.kinds) })
+            priority: registration.priority,
+            ...(registration.keys && { keys: new Set(registration.keys) })
         });
         this.rebuild();
-        return metadata;
+        return registration;
     }
 
     public unregister(ctor: Ctor): void {
@@ -70,20 +87,18 @@ export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor> {
         this.rebuild();
     }
 
-    public chainFor(kind: MiddlewareKind): readonly Ctor[] {
-        return this.chains[kind];
+    public chainFor(key: Key): readonly Ctor[] {
+        const built = this.chains.get(key);
+        if (built) return built;
+
+        const chain = this.entries.filter((entry) => !entry.keys || entry.keys.has(key)).map((entry) => entry.ctor);
+        this.chains.set(key, chain);
+        return chain;
     }
 
     private rebuild(): void {
         // a stable sort keeps ties in registration order
         this.entries.sort((a, b) => a.priority - b.priority);
-
-        const chains = emptyChains<Ctor>();
-        for (const entry of this.entries) {
-            for (const kind of MIDDLEWARE_KINDS) {
-                if (!entry.kinds || entry.kinds.has(kind)) chains[kind].push(entry.ctor);
-            }
-        }
-        this.chains = chains;
+        this.chains = new Map();
     }
 }

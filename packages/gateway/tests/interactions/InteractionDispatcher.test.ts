@@ -253,7 +253,7 @@ describe('InteractionDispatcher Integration', () => {
             () => null,
             (caught: unknown) => caught
         );
-        expect(error).toMatchObject({ code: SeedcordErrorCode.InteractionDuplicateMiddleware });
+        expect(error).toMatchObject({ code: SeedcordErrorCode.DuplicateMiddleware });
         const message = Error.isError(error) ? error.message : String(error);
         expect(message).toContain('RateLimit');
     });

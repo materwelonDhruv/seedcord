@@ -3,7 +3,14 @@ import { createServer } from 'node:http';
 
 import { REST } from '@discordjs/rest';
 import { Bus } from '@seedcord/core';
-import { busLoggerOf, getDevChannel, HmrManager, MiddlewareRegistry, setBotColor } from '@seedcord/core/internal';
+import {
+    busLoggerOf,
+    getDevChannel,
+    HmrManager,
+    interactionMiddleware,
+    MiddlewareRegistry,
+    setBotColor
+} from '@seedcord/core/internal';
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
@@ -30,6 +37,7 @@ import { InteractionDispatcher } from './InteractionDispatcher';
 import { toWebRequest, writeWebResponse } from './webBridge';
 import { version as packageVersion } from '../version';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { HttpConfig } from '#interfaces/Config';
 import type { Core } from '#interfaces/Core';
 import type { IRateLimiter } from '@seedcord/types';
@@ -207,7 +215,9 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
 
     private async listen(): Promise<void> {
         const maps = this.interactions?.maps ?? buildRouteMaps(EMPTY_MANIFEST);
-        const middlewares = this.interactions?.middlewares ?? new MiddlewareRegistry();
+        const middlewares =
+            this.interactions?.middlewares ??
+            new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
         const { handle, inFlight } = buildEngine(this, maps, middlewares);
 
         const server = createServer((incoming, outgoing) => {

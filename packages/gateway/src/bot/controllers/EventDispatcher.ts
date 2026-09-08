@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- one handler method per event type keeps the router in one file */
 import { DispatchContext } from '@seedcord/core';
 import { HmrModuleHandler } from '@seedcord/core/hmr';
 import {
@@ -7,6 +6,7 @@ import {
     EventMetadataKey,
     EventMiddlewareMetadataKey,
     eventResultFor,
+    MiddlewareRegistry,
     PublishDefault,
     resultFor,
     runAfter,
@@ -28,17 +28,16 @@ import { EventHandler, EventMiddleware } from '#handlers/event';
 import type { RegisterEventMetadataEntry } from '#bDecorators/Events';
 import type { EventHandlerConstructor, EventMiddlewareConstructor } from '#handlers/constructors';
 import type { Core } from '#interfaces/Core';
-import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { HandlerResult, SubscriptionData } from '@seedcord/core';
-import type { Initializeable } from '@seedcord/core/internal';
+import type { Initializeable, MiddlewareRegistrationOf } from '@seedcord/core/internal';
 import type { EventFrequency, HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
 
-interface RegisteredEventMiddleware {
-    readonly ctor: EventMiddlewareConstructor;
-    readonly priority: number;
-    readonly events?: readonly ValidNonInteractionKeys[];
-}
+const eventMiddleware: MiddlewareRegistrationOf<EventMiddlewareConstructor, keyof ClientEvents> = (ctor) => {
+    const metadata = eventMiddlewareMetaOf(ctor);
+    if (!metadata) return undefined;
+    return { priority: metadata.priority, ...(metadata.events && { keys: metadata.events }) };
+};
 
 interface RegisteredEventHandlerEntry {
     readonly ctor: EventHandlerConstructor;
@@ -57,7 +56,9 @@ export class EventDispatcher implements Initializeable, HmrAware {
     private isInitialized = false;
 
     private readonly eventMap = new Map<keyof ClientEvents, RegisteredEventHandlerEntry[]>();
-    private readonly middlewares: RegisteredEventMiddleware[] = [];
+    private readonly middlewares = new MiddlewareRegistry<EventMiddlewareConstructor, keyof ClientEvents>(
+        eventMiddleware
+    );
     private readonly executedOnceHandlers = new Set<EventHandlerConstructor>();
     private readonly attachedEvents = new Set<keyof ClientEvents>();
 
@@ -203,44 +204,31 @@ export class EventDispatcher implements Initializeable, HmrAware {
     }
 
     private unregisterMiddleware(middlewareCtor: EventMiddlewareConstructor): void {
-        const index = this.middlewares.findIndex((entry) => entry.ctor === middlewareCtor);
-        if (index !== -1) {
-            this.middlewares.splice(index, 1);
-        }
+        this.middlewares.unregister(middlewareCtor);
     }
 
     private registerMiddleware(middlewareCtor: EventMiddlewareConstructor, relativePath: string): void {
-        const metadata = eventMiddlewareMetaOf(middlewareCtor);
-        if (!metadata) return;
+        const registration = this.middlewares.register(middlewareCtor);
+        if (!registration || !this.loading) return;
 
-        const alreadyRegistered = this.middlewares.some((entry) => entry.ctor === middlewareCtor);
-        if (alreadyRegistered) return;
-
-        this.middlewares.push({
-            ctor: middlewareCtor,
-            priority: metadata.priority,
-            ...(metadata.events && { events: metadata.events })
+        // the events are the only place a dev sees that a middleware is scoped
+        const scope = registration.keys
+            ? `${registration.priority}, ${registration.keys.join(', ')}`
+            : registration.priority;
+        this.loadedMiddlewares.push({
+            name: `${middlewareCtor.name} (${String(scope)})`,
+            from: formatFilePath(relativePath)
         });
-        this.middlewares.sort((a, b) => a.priority - b.priority);
-
-        if (this.loading) {
-            this.loadedMiddlewares.push({
-                name: `${middlewareCtor.name} (${metadata.priority})`,
-                from: formatFilePath(relativePath)
-            });
-        }
     }
 
-    // a returned value is the throw that stopped the fire before any handler ran
+    // a returned value is the throw that stopped the event before any handler ran
     private async runMiddlewares<KeyOfEvents extends keyof ClientEvents>(
         eventName: KeyOfEvents,
         args: ClientEvents[KeyOfEvents],
         dispatch: DispatchContext,
         ran: EventMiddleware[]
     ): Promise<{ caught: unknown } | null> {
-        for (const { ctor: Middleware, events } of this.middlewares) {
-            if (events && !events.includes(eventName)) continue;
-
+        for (const Middleware of this.middlewares.chainFor(eventName)) {
             // event name so a catchall/multi middleware can read this.eventName
             const middleware = new Middleware(args, this.core, dispatch, eventName);
             // pushed before the await because a middleware that throws still gets its after()

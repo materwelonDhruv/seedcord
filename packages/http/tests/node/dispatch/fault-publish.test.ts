@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { InteractionKind, Notice } from '@seedcord/core';
-import { MiddlewareRegistry } from '@seedcord/core/internal';
+import { interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -11,6 +11,7 @@ import { createCore, dispatchInteraction } from '#src/dispatch/dispatchInteracti
 import { slashPayload } from './harness';
 import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { Core } from '#interfaces/Core';
 import type { ResolvedRoute } from '#src/dispatch/resolve';
@@ -89,7 +90,7 @@ async function dispatchThrough(core: Core, handler: unknown): Promise<void> {
         match,
         payload: slashPayload('ok') as ValidInteractionTypes,
         core,
-        middlewares: new MiddlewareRegistry()
+        middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
     });
     await execute?.();
 }

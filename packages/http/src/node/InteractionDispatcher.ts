@@ -1,6 +1,7 @@
 import { InteractionKind } from '@seedcord/core';
 import { HmrModuleHandler } from '@seedcord/core/hmr';
 import {
+    interactionMiddleware,
     interactionRoutesOf,
     InteractionMetadataKey,
     InteractionMiddlewareMetadataKey,
@@ -29,7 +30,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     public readonly maps: RouteMaps;
 
     /** @internal */
-    public readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+    public readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
 
     /** @internal */
     public readonly logger = new Logger('Interactions', { channel: 'interactions' });
@@ -164,7 +165,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         if (!metadata || !this.loading) return;
 
         // the kinds are the only place a dev sees that a middleware is scoped
-        const scope = metadata.kinds ? `${metadata.priority}, ${metadata.kinds.join(', ')}` : metadata.priority;
+        const scope = metadata.keys ? `${metadata.priority}, ${metadata.keys.join(', ')}` : metadata.priority;
         this.loadedMiddlewares.push({
             name: `${ctor.name} (${String(scope)})`,
             from: formatFilePath(relativePath)

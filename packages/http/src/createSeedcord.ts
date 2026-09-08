@@ -1,4 +1,4 @@
-import { MiddlewareRegistry, RegisterDefaults } from '@seedcord/core/internal';
+import { interactionMiddleware, MiddlewareRegistry, RegisterDefaults } from '@seedcord/core/internal';
 import { validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
 import { Envapter } from 'envapt';
@@ -8,6 +8,7 @@ import { registerSubscribers } from './dispatch/registerSubscribers';
 import { buildRouteMaps } from './dispatch/resolve';
 import { buildEngine } from './engine';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { HttpConfig } from '#interfaces/Config';
 import type { RouteManifest } from '#src/manifest/RouteManifest';
 import type { EngineContext } from './engine';
@@ -41,5 +42,9 @@ export function createSeedcord(
     core.bus[RegisterDefaults]();
     registerSubscribers(core.bus, manifest);
     // the manifest carries no middleware rows yet
-    return buildEngine(core, buildRouteMaps(manifest), new MiddlewareRegistry()).handle;
+    return buildEngine(
+        core,
+        buildRouteMaps(manifest),
+        new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
+    ).handle;
 }

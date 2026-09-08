@@ -8,6 +8,7 @@ import {
     outcomeFor,
     queuedMsFor,
     reportDispatch,
+    interactionMiddleware,
     InteractionMiddlewareMetadataKey,
     MiddlewareRegistry,
     PublishDefault,
@@ -108,7 +109,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private readonly handlerFiles = new Map<HandlerConstructor, string>();
 
     private readonly keysToIgnore = new Set<CustomIdMatcher>();
-    private readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+    private readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
 
     private readonly inFlight = new Set<Promise<void>>();
     private draining = false;
@@ -281,7 +282,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
         if (this.loading) {
             // the kinds are the only place a dev sees that a middleware is scoped
-            const scope = metadata.kinds ? `${metadata.priority}, ${metadata.kinds.join(', ')}` : metadata.priority;
+            const scope = metadata.keys ? `${metadata.priority}, ${metadata.keys.join(', ')}` : metadata.priority;
             this.loadedMiddlewares.push({
                 name: `${middlewareCtor.name} (${String(scope)})`,
                 from: formatFilePath(relativePath)

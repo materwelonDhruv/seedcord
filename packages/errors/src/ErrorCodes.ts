@@ -76,8 +76,8 @@ export enum SeedcordErrorCode {
 
     /** Two interaction handlers registered the same route within a scope. */
     InteractionDuplicateRoute = 1401,
-    /** Two different interaction middleware classes share a class name. */
-    InteractionDuplicateMiddleware = 1402,
+    /** Two different middleware classes share a class name. */
+    DuplicateMiddleware = 1402,
     /** A route manifest row gives an export name its module does not have. */
     InteractionRouteExportMissing = 1403,
     /** A subscriber manifest row specifies an export that does not extend `Subscriber`. */

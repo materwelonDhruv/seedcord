@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { TextDisplayBuilder } from '@discordjs/builders';
 import { defineGate, InteractionKind, Notice, RegisterInteractionMiddleware } from '@seedcord/core';
-import { GatedMetadataKey, MiddlewareRegistry } from '@seedcord/core/internal';
+import { GatedMetadataKey, interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -86,7 +86,7 @@ async function dispatchThrough(
     ...ctors: InteractionMiddlewareConstructor[]
 ): Promise<void> {
     Envapter.useSource(new PortableSource({}));
-    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
     for (const ctor of ctors) middlewares.register(ctor);
 
     const execute = await dispatchInteraction({
@@ -149,7 +149,7 @@ describe('the dispatch context on a rendered notice', () => {
             },
             payload: slashPayload('guarded') as ValidInteractionTypes,
             core: createCore({ ...nullPathConfig, errors: { defaultError: RecordingCard } }, VALID_TOKEN),
-            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>()
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
 
         expect(routes).toEqual(['slash:guarded']);

@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
 import { defineGate, Fault, InteractionKind, RegisterInteractionMiddleware, Silence } from '@seedcord/core';
-import { GatedMetadataKey, MiddlewareRegistry } from '@seedcord/core/internal';
+import { GatedMetadataKey, interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -145,7 +145,12 @@ async function dispatchedFor(route: ResolvedRoute): Promise<SubscriptionData<'in
     core.bus.on('interactionDispatched', (payload) => published.push(payload));
 
     const payload = slashPayload('ok') as ValidInteractionTypes;
-    const execute = await dispatchInteraction({ match: route, payload, core, middlewares: new MiddlewareRegistry() });
+    const execute = await dispatchInteraction({
+        match: route,
+        payload,
+        core,
+        middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
+    });
     await execute?.();
     return published;
 }
@@ -159,7 +164,7 @@ async function dispatchedThrough(middleware: InteractionMiddlewareConstructor): 
     const published: SubscriptionData<'interactionDispatched'>[] = [];
     core.bus.on('interactionDispatched', (payload) => published.push(payload));
 
-    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
     middlewares.register(middleware);
 
     const execute = await dispatchInteraction({
@@ -232,7 +237,7 @@ describe('interactionDispatched from the http dispatcher', () => {
             match: routeFor('slash:ok', () => Promise.resolve(OkHandler)),
             payload,
             core,
-            middlewares: new MiddlewareRegistry()
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
@@ -258,7 +263,7 @@ describe('interactionDispatched from the http dispatcher', () => {
             match,
             payload: slashPayload('ok') as ValidInteractionTypes,
             core,
-            middlewares: new MiddlewareRegistry()
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
@@ -362,7 +367,7 @@ describe('interactionDispatched from the http dispatcher', () => {
             match,
             payload: slashPayload('ok') as ValidInteractionTypes,
             core,
-            middlewares: new MiddlewareRegistry()
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
@@ -391,7 +396,7 @@ describe('interactionDispatched from the http dispatcher', () => {
             match,
             payload: autocompletePayload() as ValidInteractionTypes,
             core,
-            middlewares: new MiddlewareRegistry()
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
