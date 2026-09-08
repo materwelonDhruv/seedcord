@@ -8,7 +8,7 @@
  */
 export interface CustomIdField<Decoded> {
     /** Which wire encoding this field uses. */
-    readonly kind: 'snowflake' | 'uuid' | 'int' | 'bool' | 'oneOf' | 'string';
+    readonly kind: 'snowflake' | 'uuid' | 'int' | 'bool' | 'oneOf' | 'someOf' | 'string';
     /** Lower bound, for a bounded int field. */
     readonly min?: number;
     /** Upper bound, for a bounded int field. */

@@ -23,7 +23,7 @@ export const TicketAction = new CustomId('ticket')
                         │
                  encode │
                         ▼
-              ticketF3A:o_DDcBfgAB
+              ticketuFh:o_DDcBfgAB
               └──┬─┘└┬┘ └────┬───┘
                  │   │       └ the three values
                  │   └ shape hash
@@ -108,6 +108,7 @@ TicketAction.encode({ ownerId: '123', action: 'archive' });
 | `int(name)` | `number` | its own token |
 | `bool(name)` | `boolean` | packs |
 | `oneOf(name, choices)` | the literal union | packs |
+| `someOf(name, choices)` | an array of the literal union | packs |
 | `str(name)` | `string` | its own token |
 
 {/* prettier-ignore-end */}
@@ -123,6 +124,21 @@ const Vote = new CustomId('vote')
     .int('weight', 1, 10);
 
 const { choice } = Vote.decode('...');
+//      ^?
+```
+
+`someOf` carries any subset of its list, which suits a select menu that allows several picks. A repeat collapses into one entry, and decode returns the picks in the order you declared them.
+
+```ts twoslash
+import { CustomId } from '@seedcord/gateway';
+// ---cut---
+const Assign = new CustomId('assign').someOf('roles', [
+    'reader',
+    'artist',
+    'vip'
+]);
+
+const { roles } = Assign.decode('...');
 //      ^?
 ```
 
@@ -174,7 +190,7 @@ Once a wire runs past 100, `encode` throws `CustomIdWireTooLong`. That happens w
 
 <Callout type="tip">
 
-Bound an integer whenever you know its range. `int('page')` writes its own token. `int('page', 0, 500)` folds into the shared number with everything else and results in a shorter wire. `oneOf` is the same, and `bool` is the cheapest of all.
+Bound an integer whenever you know its range. `int('page')` writes its own token. `int('page', 0, 500)` folds into the shared number with everything else and results in a shorter wire. `oneOf` and `someOf` do the same, and `bool` is the cheapest of all.
 
 </Callout>
 

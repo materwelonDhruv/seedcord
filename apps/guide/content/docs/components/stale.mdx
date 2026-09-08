@@ -13,21 +13,21 @@ export const TicketAction = new CustomId('ticket')
     .oneOf('action', ['close', 'reopen']);
 ```
 
-`TicketAction.routeKey` reads `ticketMXf`, the prefix `ticket` followed by the hash `MXf`. Every id [`encode`](ref:custom-id/CustomId.encode) mints starts with it.
+`TicketAction.routeKey` reads `ticketVrl`, the prefix `ticket` followed by the hash `Vrl`. Every id [`encode`](ref:custom-id/CustomId.encode) mints starts with it.
 
 ## What changes the hash
 
-The hash covers each field's name, its position in the chain, its kind, a `oneOf`'s choices, and an `int`'s bounds. Change any one of those and every id already in Discord belongs to the old shape.
+The hash covers each field's name, its position in the chain, its kind, the choices on a `oneOf` or a `someOf`, and an `int`'s bounds. Change any one of those and every id already in Discord belongs to the old shape.
 
 {/* prettier-ignore-start */}
 
 | the edit | new routeKey |
 | --- | --- |
-| the shape above | `ticketMXf` |
-| rename `ownerId` to `userId` | `ticketk8r` |
-| add `'escalate'` to the choices | `ticketXWL` |
-| swap the two fields around | `ticketEjh` |
-| append `.bool('notify')` | `ticketF3A` |
+| the shape above | `ticketVrl` |
+| rename `ownerId` to `userId` | `ticketbdx` |
+| add `'escalate'` to the choices | `ticketY1t` |
+| swap the two fields around | `ticketpXF` |
+| append `.bool('notify')` | `ticketuFh` |
 
 {/* prettier-ignore-end */}
 
@@ -53,7 +53,7 @@ A modal and a select menu route by prefix the same way, so both go stale on the 
 [`decode`](ref:custom-id/CustomId.decode) separates two failures. A matching prefix with a different hash is the stale case above. A wire minted by some other `CustomId` refuses with a message naming both route keys.
 
 ```txt output
-Invalid customId. routeKey "pollM4x" is not "ticketF3A"
+Invalid customId. routeKey "pollM4x" is not "ticketVrl"
 ```
 
 That one does report, so seedcord logs it and publishes it to the `handledException` bus, where the report carries the name `InvalidCustomId`. The user sees the generic card.

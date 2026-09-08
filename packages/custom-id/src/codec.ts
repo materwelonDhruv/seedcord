@@ -1,9 +1,7 @@
 /* eslint-disable no-magic-numbers -- lots of bigints */
 
-import { SeedcordErrorCode } from '@seedcord/errors';
-import { SeedcordRangeError } from '@seedcord/errors/internal';
-
 import { invalidError } from './errors';
+import { bigintToBoundedValue, boundedToBigint, isBounded, radixOf, reject } from './values';
 
 import type { CustomIdField, CustomIdShape } from './Field';
 
@@ -93,131 +91,6 @@ function splitTokens(body: string): string[] {
     return pieces;
 }
 
-// bounded means the full range is known. those fold into the shared packed integer.
-function isBounded(field: CustomIdField<unknown>): boolean {
-    if (field.kind === 'int') return field.min !== undefined && field.max !== undefined;
-    return field.kind === 'snowflake' || field.kind === 'uuid' || field.kind === 'bool' || field.kind === 'oneOf';
-}
-
-// slot 0 is the null on a nullable field. every other value shifts up one.
-function radixOf(field: CustomIdField<unknown>): bigint {
-    return kindRadix(field) + (field.nullable === true ? 1n : 0n);
-}
-
-function kindRadix(field: CustomIdField<unknown>): bigint {
-    switch (field.kind) {
-        case 'snowflake': {
-            return 1n << 64n;
-        }
-        case 'uuid': {
-            return 1n << 128n;
-        }
-        case 'bool': {
-            return 2n;
-        }
-        case 'oneOf': {
-            // oneOf() rejects an empty list at define time, so an empty one here came from a
-            // hand-built shape.
-            if (!field.choices?.length) throw invalidError('oneOf field has no choices');
-            return BigInt(field.choices.length);
-        }
-        case 'int': {
-            // isBounded only lets a min-and-max int through. a missing bound means the shape is corrupt.
-            if (field.min === undefined || field.max === undefined)
-                throw invalidError('bounded int field is missing a bound');
-            // bigint before the math, max - min + 1 in float64 drops the +1 at 2^53.
-            return BigInt(field.max) - BigInt(field.min) + 1n;
-        }
-        default: {
-            throw invalidError(`field kind ${field.kind} has no radix`);
-        }
-    }
-}
-
-function boundedToBigint(field: CustomIdField<unknown>, name: string, value: unknown): bigint {
-    if (field.nullable === true) {
-        if (value === null) return 0n;
-        return boundedToBigint({ ...field, nullable: false }, name, value) + 1n;
-    }
-    const slot = boundedSlot(field, name, value);
-    // out of range would carry into the neighbouring field on decode.
-    if (slot < 0n || slot >= radixOf(field)) outOfRange(name, value);
-    return slot;
-}
-
-// a slot is the value as an integer in [0, radix).
-function boundedSlot(field: CustomIdField<unknown>, name: string, value: unknown): bigint {
-    switch (field.kind) {
-        case 'snowflake': {
-            // a bad value makes BigInt() throw a bare TypeError or SyntaxError. the guard gets
-            // ahead of it with the branded error.
-            if (typeof value !== 'string' || !/^\d+$/.test(value)) return outOfRange(name, value);
-            return BigInt(value);
-        }
-        case 'uuid': {
-            if (typeof value !== 'string') return outOfRange(name, value);
-            const hex = value.replaceAll('-', '');
-            if (!/^[0-9a-fA-F]{32}$/.test(hex)) return outOfRange(name, value);
-            return BigInt(`0x${hex}`);
-        }
-        case 'bool': {
-            return value ? 1n : 0n;
-        }
-        case 'oneOf': {
-            const index = (field.choices ?? []).indexOf(value as string);
-            return index === -1 ? outOfRange(name, value) : BigInt(index);
-        }
-        case 'int': {
-            // eslint-disable-next-line unicorn/prefer-number-is-safe-integer -- a bounded int field may declare max up to 2**53 exactly (a power of two, exact in float64)
-            if (!Number.isInteger(value)) return outOfRange(name, value);
-            return BigInt((value as number) - (field.min ?? 0));
-        }
-        default: {
-            return outOfRange(name, value);
-        }
-    }
-}
-
-function outOfRange(name: string, value: unknown): never {
-    throw new SeedcordRangeError(SeedcordErrorCode.CustomIdValueOutOfRange, [name, String(value)]);
-}
-
-// inverse of boundedSlot.
-function bigintToBoundedValue(field: CustomIdField<unknown>, slot: bigint): unknown {
-    if (field.nullable === true) {
-        return slot === 0n ? null : bigintToBoundedValue({ ...field, nullable: false }, slot - 1n);
-    }
-    return kindValue(field, slot);
-}
-
-function kindValue(field: CustomIdField<unknown>, slot: bigint): unknown {
-    switch (field.kind) {
-        case 'snowflake': {
-            return slot.toString();
-        }
-        case 'uuid': {
-            return bigintToUuid(slot);
-        }
-        case 'bool': {
-            return slot === 1n;
-        }
-        case 'oneOf': {
-            return (field.choices ?? [])[Number(slot)];
-        }
-        case 'int': {
-            return Number(slot) + (field.min ?? 0);
-        }
-        default: {
-            throw invalidError(`field kind ${field.kind} is not bounded`);
-        }
-    }
-}
-
-function bigintToUuid(value: bigint): string {
-    const hex = value.toString(16).padStart(32, '0');
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
-}
-
 // an unbounded field trails as its own token, where an empty string is already a legal str value. a
 // nullable one carries one leading char to tell the two apart.
 const ABSENT = '0';
@@ -229,10 +102,11 @@ function encodeUnboundedToken(field: CustomIdField<unknown>, name: string, value
         return PRESENT + encodeUnboundedToken({ ...field, nullable: false }, name, value);
     }
     if (field.kind === 'int') {
-        if (!Number.isSafeInteger(value)) outOfRange(name, value);
+        if (!Number.isSafeInteger(value)) reject(field, name, value);
         return bigintToBase64(zigzagEncode(value as number));
     }
-    return escapeToken(value as string);
+    if (typeof value !== 'string') return reject(field, name, value);
+    return escapeToken(value);
 }
 function decodeUnboundedToken(field: CustomIdField<unknown>, piece: string): unknown {
     if (field.nullable === true) {
@@ -259,13 +133,14 @@ export function computeLayoutHash(shape: CustomIdShape): string {
             field.kind,
             isBounded(field),
             field.nullable === true,
-            field.kind === 'oneOf' ? (field.choices ?? []) : null,
+            field.choices ?? null,
             field.kind === 'int' ? [field.min ?? null, field.max ?? null] : null
         ])
     );
     const modulus = BASE ** BigInt(HASH_LENGTH);
     let hash = 0n;
-    for (const char of signature) hash = (hash * 131n + BigInt(char.charCodeAt(0))) % modulus;
+    // js stores an emoji as two halves. reading only the first half hashes 1024 emoji to one value.
+    for (let i = 0; i < signature.length; i++) hash = (hash * 131n + BigInt(signature.charCodeAt(i))) % modulus;
 
     let text = '';
     for (let i = 0; i < HASH_LENGTH; i++) {

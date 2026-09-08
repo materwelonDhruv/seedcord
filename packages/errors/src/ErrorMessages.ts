@@ -100,12 +100,12 @@ const messages = {
         `customId prefix ${JSON.stringify(prefix)} must be a non-empty string without a colon or control character.`,
     [SeedcordErrorCode.CustomIdReservedFieldName]: (field: string) =>
         `customId field name ${JSON.stringify(field)} is integer-like, which JS reorders. Use a non-numeric name.`,
-    [SeedcordErrorCode.CustomIdEmptyChoices]: (field: string) =>
-        `customId field ${JSON.stringify(field)} uses oneOf() with no choices.`,
+    [SeedcordErrorCode.CustomIdEmptyChoices]: (field: string, method: string) =>
+        `customId field ${JSON.stringify(field)} uses ${method}() with no choices. Make the field nullable or provide at least one choice.`,
     [SeedcordErrorCode.CustomIdInvalidBounds]: (field: string, min: number, max: number) =>
         `customId field ${JSON.stringify(field)} has min ${min} greater than max ${max}.`,
-    [SeedcordErrorCode.CustomIdValueOutOfRange]: (field: string, value: string) =>
-        `customId field ${JSON.stringify(field)} got value ${value} outside its allowed range.`,
+    [SeedcordErrorCode.CustomIdValueRejected]: (field: string, expected: string, value: string) =>
+        `customId field ${JSON.stringify(field)} expects ${expected}, got ${value}.`,
     [SeedcordErrorCode.CustomIdWireTooLong]: (length: number) =>
         `Encoded customId is ${length} characters, Discord allows at most 100.`,
     [SeedcordErrorCode.CustomIdDuplicateFieldName]: (field: string) =>
