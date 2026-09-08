@@ -9,7 +9,7 @@ import {
     CommandRegistry,
     DRAIN_TASK_TIMEOUT_MS,
     DRAIN_WINDOW_MS,
-    settleWithin,
+    drainInFlight,
     ShutdownPhase,
     shutdownOf,
     StartupPhase,
@@ -238,7 +238,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
         this.shutdown.addTask(
             ShutdownPhase.Drain,
             'drain-inflight',
-            () => settleWithin(Promise.allSettled(inFlight), DRAIN_WINDOW_MS),
+            () => drainInFlight(inFlight, DRAIN_WINDOW_MS, this.logger, 'Interactions'),
             DRAIN_TASK_TIMEOUT_MS
         );
     }

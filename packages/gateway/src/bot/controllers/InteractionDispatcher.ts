@@ -14,7 +14,7 @@ import {
     runHandlerGates,
     slowGateMonitor
 } from '@seedcord/core/internal';
-import { settleWithin } from '@seedcord/core/node/internal';
+import { drainInFlight } from '@seedcord/core/node/internal';
 import { prefixOf } from '@seedcord/custom-id';
 import { SeedcordErrorCode, paint } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
@@ -359,7 +359,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     public drain(timeoutMs: number): Promise<void> {
-        return settleWithin(Promise.allSettled(this.inFlight), timeoutMs);
+        return drainInFlight(this.inFlight, timeoutMs, this.logger, 'Interactions');
     }
 
     private async handleCustomIdInteraction<TInteraction extends Interaction & { customId: string }>(

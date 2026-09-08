@@ -90,8 +90,9 @@ describe('http Seedcord shutdown', () => {
         await closing;
     });
 
-    it('completes the shutdown when a handler outlives the drain window', async () => {
+    it('completes the shutdown when a handler outlives the drain window, and says how many it left', async () => {
         const errors = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+        const warns = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const { signer, url, host } = await readyHost(DRAIN_HANDLERS_DIR);
         const body = encoder.encode(
             JSON.stringify({
@@ -111,5 +112,8 @@ describe('http Seedcord shutdown', () => {
 
         const failed = errors.mock.calls.some((call) => call.some((arg) => String(arg).includes('shutdown failed')));
         expect(failed).toBe(false);
+
+        const counted = warns.mock.calls.some((call) => call.some((arg) => String(arg).includes('1 still running')));
+        expect(counted).toBe(true);
     });
 });

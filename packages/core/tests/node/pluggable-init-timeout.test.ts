@@ -13,13 +13,13 @@ import type { CoreBase } from '#interfaces/CoreBase';
 import type { Config, IRateLimiter } from '@seedcord/types';
 
 const INIT_TIMEOUT_MS = 10;
-const CONNECT_MS = 40;
+const CLAIM_MS = 40;
 const SETTLE_MS = 90;
 
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-class SlowConnect extends Plugin {
-    public connectionOpen = false;
+class SlowClaim extends Plugin {
+    public claimHeld = false;
     public disposeCalls = 0;
 
     constructor(core: CoreBase) {
@@ -27,13 +27,13 @@ class SlowConnect extends Plugin {
     }
 
     public async init(): Promise<void> {
-        await delay(CONNECT_MS);
-        this.connectionOpen = true;
+        await delay(CLAIM_MS);
+        this.claimHeld = true;
     }
 
     public override dispose(): Promise<void> {
         this.disposeCalls++;
-        this.connectionOpen = false;
+        this.claimHeld = false;
         return Promise.resolve();
     }
 }
@@ -71,26 +71,26 @@ describe('a plugin whose init outlasts its timeout', () => {
 
     it('disposes what init opened once init resolves', async () => {
         const host = makeHost();
-        const plugin = host.attach('db', SlowConnect).db;
+        const plugin = host.attach('slow', SlowClaim).slow;
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
 
         expect(plugin.disposeCalls).toBe(1);
-        expect(plugin.connectionOpen).toBe(false);
+        expect(plugin.claimHeld).toBe(false);
     });
 
     it('logs the error a late init rejects with', async () => {
-        class SlowFailure extends SlowConnect {
+        class SlowFailure extends SlowClaim {
             public override async init(): Promise<void> {
-                await delay(CONNECT_MS);
+                await delay(CLAIM_MS);
                 throw new Error('late failure');
             }
         }
 
         const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const host = makeHost();
-        host.attach('db', SlowFailure);
+        host.attach('slow', SlowFailure);
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
@@ -100,7 +100,7 @@ describe('a plugin whose init outlasts its timeout', () => {
     });
 
     it('calls an immediate init rejection a failure, never a timeout', async () => {
-        class FastFailure extends SlowConnect {
+        class FastFailure extends SlowClaim {
             public override init(): Promise<void> {
                 return Promise.reject(new Error('immediate failure'));
             }
@@ -108,7 +108,7 @@ describe('a plugin whose init outlasts its timeout', () => {
 
         const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const host = makeHost();
-        host.attach('db', FastFailure);
+        host.attach('slow', FastFailure);
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
@@ -123,14 +123,14 @@ describe('a plugin whose init outlasts its timeout', () => {
             }
 
             public async init(): Promise<void> {
-                await delay(CONNECT_MS);
+                await delay(CLAIM_MS);
                 throw new Error('late failure');
             }
         }
 
         const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const host = makeHost();
-        host.attach('db', NoDispose);
+        host.attach('slow', NoDispose);
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
@@ -146,13 +146,13 @@ describe('a plugin whose init outlasts its timeout', () => {
             }
 
             public async init(): Promise<void> {
-                await delay(CONNECT_MS);
+                await delay(CLAIM_MS);
             }
         }
 
         const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const host = makeHost();
-        host.attach('db', NoDisposeSlow);
+        host.attach('slow', NoDisposeSlow);
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
@@ -161,9 +161,9 @@ describe('a plugin whose init outlasts its timeout', () => {
     });
 
     it('disposes each plugin once across the rollback, the late init, and a shutdown', async () => {
-        class QuickConnect extends SlowConnect {
+        class QuickClaim extends SlowClaim {
             public override init(): Promise<void> {
-                this.connectionOpen = true;
+                this.claimHeld = true;
                 return Promise.resolve();
             }
         }
@@ -171,8 +171,8 @@ describe('a plugin whose init outlasts its timeout', () => {
         const shutdown = new CoordinatedShutdown();
         const host = new TestHost(shutdown, new CoordinatedStartup());
         // this plugin finishes init and registers a real shutdown task while the timed out plugin does not
-        const healthy = host.attach('healthy', QuickConnect).healthy;
-        const late = host.attach('db', SlowConnect).db;
+        const healthy = host.attach('healthy', QuickClaim).healthy;
+        const late = host.attach('slow', SlowClaim).slow;
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
