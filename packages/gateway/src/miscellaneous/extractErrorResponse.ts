@@ -51,8 +51,8 @@ export function extractErrorResponse(error: Error, core: Core, origin: ErrorOrig
 
     reportRawFault(error, core, origin, uuid);
 
-    const override = core.config.errors?.defaultError;
-    const response = override ? new override(uuid).render(ctx) : new Fault().render(ctx);
+    const Override = core.config.errors?.defaultError;
+    const response = Override ? new Override(uuid).render(ctx) : new Fault().render(ctx);
 
     return { uuid, response };
 }

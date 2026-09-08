@@ -156,13 +156,14 @@ export class CodegenRunner {
         // the commands directory holds helpers and constants too
         if (!isCommandClass(exported)) return undefined;
 
+        const Command = exported;
         let json: unknown;
         try {
-            json = new exported().component.toJSON();
+            json = new Command().component.toJSON();
         } catch (error: unknown) {
             const reason = Error.isError(error) ? error.message : 'Unknown error';
             throw new SeedcordError(SeedcordErrorCode.CliCodegenCommandConstructorThrew, [
-                exported.name,
+                Command.name,
                 sourceFile,
                 reason
             ]);

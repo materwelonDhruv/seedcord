@@ -462,8 +462,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     private async runMiddlewares(interaction: Repliables): Promise<void> {
-        for (const { ctor } of this.middlewares) {
-            const middleware = new ctor(interaction, this.core);
+        for (const { ctor: Middleware } of this.middlewares) {
+            const middleware = new Middleware(interaction, this.core);
             await middleware.execute();
         }
     }

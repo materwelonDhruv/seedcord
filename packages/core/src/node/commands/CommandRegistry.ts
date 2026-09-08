@@ -169,12 +169,12 @@ export class CommandRegistry implements Initializeable, HmrAware {
         });
     }
 
-    private registerCommand(ctor: CommandCtor, rel: string): void {
-        const meta = Reflect.getMetadata(CommandMetadataKey, ctor) as CommandMeta | undefined;
+    private registerCommand(Ctor: CommandCtor, rel: string): void {
+        const meta = Reflect.getMetadata(CommandMetadataKey, Ctor) as CommandMeta | undefined;
 
         if (!meta) return;
 
-        const instance = new ctor();
+        const instance = new Ctor();
         const comp = instance.component;
         const kind = comp instanceof SlashCommandBuilder ? 'slash command' : 'context menu';
 
@@ -188,7 +188,7 @@ export class CommandRegistry implements Initializeable, HmrAware {
             }
         }
 
-        this.ctorToCommand.set(ctor, {
+        this.ctorToCommand.set(Ctor, {
             name: comp.name,
             scope: meta.scope,
             ...(meta.scope === 'guild' && { guilds: meta.guilds })

@@ -51,6 +51,8 @@ export const GENERAL_RULES: Linter.RulesRecord = {
         }
     ],
     'no-multi-spaces': 'error',
+    // capIsNew off because the decorator factories are PascalCase and called without new
+    'new-cap': ['error', { newIsCap: true, capIsNew: false, properties: true }],
     'no-new': 'error',
     'no-new-wrappers': 'error',
     'no-octal-escape': 'error',
