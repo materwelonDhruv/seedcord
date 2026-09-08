@@ -113,10 +113,7 @@ describe('a plugin whose init outlasts its timeout', () => {
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
 
-        const blamedTheTimeout = warn.mock.calls.some((call) =>
-            call.some((arg) => String(arg).includes('after its timeout'))
-        );
-        expect(blamedTheTimeout).toBe(false);
+        expect(warn).not.toHaveBeenCalled();
     });
 
     it('logs a late rejection from a plugin that declares no dispose', async () => {
@@ -142,15 +139,25 @@ describe('a plugin whose init outlasts its timeout', () => {
         expect(logged).toBe(true);
     });
 
-    it('disposes once when a shutdown follows', async () => {
+    it('disposes each plugin once across the rollback, the late init, and a shutdown', async () => {
+        class QuickConnect extends SlowConnect {
+            public override init(): Promise<void> {
+                this.connectionOpen = true;
+                return Promise.resolve();
+            }
+        }
+
         const shutdown = new CoordinatedShutdown();
         const host = new TestHost(shutdown, new CoordinatedStartup());
-        const plugin = host.attach('db', SlowConnect).db;
+        // this plugin finishes init and registers a real shutdown task while the timed out plugin does not
+        const healthy = host.attach('healthy', QuickConnect).healthy;
+        const late = host.attach('db', SlowConnect).db;
 
         await expect(host.run()).rejects.toThrow();
         await delay(SETTLE_MS);
         await shutdown.run(1, false);
 
-        expect(plugin.disposeCalls).toBe(1);
+        expect(healthy.disposeCalls).toBe(1);
+        expect(late.disposeCalls).toBe(1);
     });
 });

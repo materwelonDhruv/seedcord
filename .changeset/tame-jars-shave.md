@@ -4,6 +4,6 @@
 '@seedcord/errors': minor
 ---
 
-**BREAKING:** A shutdown that used to run past 25 seconds now stops there and skips the remaining phases. This will probably affect no one.
+**BREAKING:** A shutdown that used to spend more than 25 seconds in its phases now stops there and skips the rest. This will most likely affect no one.
 
-Added `lifecycle.shutdownDeadline`, a cap on the whole coordinated shutdown, 25000ms by default. A deadline that is zero, negative, or not finite throws `LifecycleInvalidShutdownDeadline`.
+Added `lifecycle.shutdownDeadline`, a cap on the shutdown phases, 25000ms by default. A deadline that is zero, negative, or not finite throws `LifecycleInvalidShutdownDeadline`.

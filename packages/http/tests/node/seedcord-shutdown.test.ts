@@ -1,8 +1,9 @@
 import path from 'node:path';
 
 import { shutdownOf } from '@seedcord/core/node/internal';
+import { Logger } from '@seedcord/logger';
 import { Envapter, merge, PortableSource } from 'envapt';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { Seedcord } from '#src/node/Seedcord';
 
@@ -12,10 +13,11 @@ import { VALID_TOKEN } from '../helpers/fixtures';
 import type { HttpConfig } from '#src/interfaces/Config';
 
 const HANDLERS_DIR = path.resolve(__dirname, './discovery/fixtures/handlers');
+const DRAIN_HANDLERS_DIR = path.resolve(__dirname, './fixtures/drain-handlers');
 
-function config(): HttpConfig {
+function config(handlers: string = HANDLERS_DIR): HttpConfig {
     return {
-        bot: { interactions: { path: HANDLERS_DIR }, commands: { path: null } },
+        bot: { interactions: { path: handlers }, commands: { path: null } },
         subscribers: { path: null },
         port: 0
     };
@@ -28,7 +30,7 @@ function reset(): void {
 
 let live: Seedcord | undefined;
 
-async function readyHost(): Promise<{ signer: Signer; url: string; host: Seedcord }> {
+async function readyHost(handlers?: string): Promise<{ signer: Signer; url: string; host: Seedcord }> {
     const signer = await createSigner();
     Envapter.useSource(
         merge(
@@ -36,7 +38,7 @@ async function readyHost(): Promise<{ signer: Signer; url: string; host: Seedcor
             new PortableSource({ DISCORD_PUBLIC_KEY: signer.publicKeyHex, DISCORD_BOT_TOKEN: VALID_TOKEN })
         )
     );
-    const host = new Seedcord(config());
+    const host = new Seedcord(config(handlers));
     live = host;
     await host.start();
     return { signer, url: `http://127.0.0.1:${String(host.port)}`, host };
@@ -59,6 +61,7 @@ describe('http Seedcord shutdown', () => {
         if (live) await shutdownOf(live).run(0, false);
         live = undefined;
         reset();
+        vi.restoreAllMocks();
     });
 
     it('a request awaiting its ack survives a shutdown started mid-flight', async () => {
@@ -85,5 +88,28 @@ describe('http Seedcord shutdown', () => {
         // the gate held the ack past the shutdown start. A fast 202 would prove nothing
         expect(Date.now() - started).toBeGreaterThan(250);
         await closing;
+    });
+
+    it('completes the shutdown when a handler outlives the drain window', async () => {
+        const errors = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+        const { signer, url, host } = await readyHost(DRAIN_HANDLERS_DIR);
+        const body = encoder.encode(
+            JSON.stringify({
+                type: 2,
+                id: '1',
+                token: 'interaction-token',
+                application_id: '2',
+                app_permissions: '0',
+                data: { type: 1, name: 'drainhang', options: [] }
+            })
+        );
+
+        const response = await fetch(url, { method: 'POST', headers: await signedHeaders(signer, body), body });
+        expect(response.status).toBe(202);
+
+        await shutdownOf(host).run(0, false);
+
+        const failed = errors.mock.calls.some((call) => call.some((arg) => String(arg).includes('shutdown failed')));
+        expect(failed).toBe(false);
     });
 });

@@ -1,4 +1,4 @@
-import { CommandRegistry, DRAIN_WINDOW_MS, ShutdownPhase } from '@seedcord/core/node/internal';
+import { CommandRegistry, DRAIN_TASK_TIMEOUT_MS, DRAIN_WINDOW_MS, ShutdownPhase } from '@seedcord/core/node/internal';
 import { SeedcordErrorCode, paint } from '@seedcord/errors';
 import { SeedcordError, validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
@@ -15,9 +15,6 @@ import type { Core } from '#interfaces/Core';
 import type { HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type { BitFieldResolvable, GatewayIntentsString } from 'discord.js';
 
-// leaves room for each dispatcher's own timer to settle before the outer timeout fires
-const DRAIN_HEADROOM_MS = 1000;
-const DRAIN_TASK_TIMEOUT_MS = DRAIN_WINDOW_MS + DRAIN_HEADROOM_MS;
 const UNBIND_TIMEOUT_MS = 2000;
 const LOGOUT_TIMEOUT_MS = 2000;
 

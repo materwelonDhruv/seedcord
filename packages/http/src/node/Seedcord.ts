@@ -7,7 +7,9 @@ import { busLoggerOf, getDevChannel, HmrManager, setBotColor } from '@seedcord/c
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
+    DRAIN_TASK_TIMEOUT_MS,
     DRAIN_WINDOW_MS,
+    settleWithin,
     ShutdownPhase,
     shutdownOf,
     StartupPhase,
@@ -236,10 +238,8 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
         this.shutdown.addTask(
             ShutdownPhase.Drain,
             'drain-inflight',
-            async () => {
-                await Promise.allSettled(inFlight);
-            },
-            DRAIN_WINDOW_MS
+            () => settleWithin(Promise.allSettled(inFlight), DRAIN_WINDOW_MS),
+            DRAIN_TASK_TIMEOUT_MS
         );
     }
 
