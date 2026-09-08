@@ -461,6 +461,72 @@ describe('InteractionDispatcher Integration', () => {
         expect(controller.maps[InteractionKind.Slash].has('ping')).toBe(true);
     });
 
+    it('rebuilds the kind chains when a middleware reloads', async () => {
+        const interactionsDir = 'interactions';
+        const middlewaresDir = 'interaction-mw';
+        await testEnv.createFile(
+            `${interactionsDir}/Ok.ts`,
+            `
+            import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+            @SlashRoute('ok')
+            export class OkHandler extends SlashHandler<'ok'> {
+                public async execute() {
+                    await this.send('done');
+                }
+            }
+            `
+        );
+
+        // the first version skips slash, so the chain leaves the dispatch alone
+        const mwPath = await testEnv.createFile(
+            `${middlewaresDir}/Audit.ts`,
+            `
+            import { InteractionKind, InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+            @RegisterInteractionMiddleware({ kinds: [InteractionKind.Button] })
+            export class Audit extends InteractionMiddleware<InteractionKind.Button> {
+                public async execute() {
+                    await this.defer();
+                }
+            }
+            `
+        );
+
+        seedcord = new Seedcord(
+            testConfig({
+                interactions: testEnv.resolvePath(interactionsDir),
+                interactionMiddlewares: testEnv.resolvePath(middlewaresDir)
+            })
+        );
+        const controller = controllerOf(seedcord);
+        await controller.init();
+
+        const before = fakeSlash('ok');
+        await controller.handleSlashCommand(before);
+        expect(before.deferReply).not.toHaveBeenCalled();
+
+        // the same class widens to a catchall, so the reload has to reach the slash chain
+        await testEnv.createFile(
+            `${middlewaresDir}/Audit.ts`,
+            `
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+            @RegisterInteractionMiddleware()
+            export class Audit extends InteractionMiddleware {
+                public async execute() {
+                    await this.defer();
+                }
+            }
+            `
+        );
+        await controller.onHmr({ file: mwPath, type: 'update' });
+
+        const after = fakeSlash('ok');
+        await controller.handleSlashCommand(after);
+        expect(after.deferReply).toHaveBeenCalledTimes(1);
+    });
+
     it('rolls back both handlers when a reload introduces a duplicate route in one file', async () => {
         const interactionsDir = 'interactions';
         const filePath = await testEnv.createFile(
@@ -1205,6 +1271,41 @@ describe('InteractionDispatcher Integration', () => {
             expect(interaction.deferReply).toHaveBeenCalledTimes(1);
             expect(interaction.editReply).toHaveBeenCalledTimes(1);
             expect(interaction.reply).not.toHaveBeenCalled();
+        });
+
+        it('skips a middleware whose kinds omit the dispatched kind', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ok')
+                export class OkHandler extends SlashHandler<'ok'> {
+                    public async execute() {
+                        await this.send('done');
+                    }
+                }
+                `,
+                `
+                import { InteractionKind, InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware({ kinds: [InteractionKind.Button] })
+                export class ButtonOnly extends InteractionMiddleware<InteractionKind.Button> {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            const interaction = fakeSlash('ok');
+            await controller.handleSlashCommand(interaction);
+
+            // the outcome proves the slash dispatch ran
+            expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'handled' });
+            expect(interaction.deferReply).not.toHaveBeenCalled();
         });
 
         it('skips the chain when the handler constructor throws', async () => {

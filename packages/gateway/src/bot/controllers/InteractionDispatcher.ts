@@ -9,7 +9,7 @@ import {
     queuedMsFor,
     reportDispatch,
     InteractionMiddlewareMetadataKey,
-    interactionMiddlewareMetaOf,
+    MiddlewareRegistry,
     PublishDefault,
     routeIdOf,
     runHandlerGates,
@@ -36,9 +36,10 @@ import { RepliableHandler } from '#handlers/RepliableHandler';
 
 import type { ReplySender } from '#bot/ReplySender';
 import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
+import type { InteractionOf } from '#handlers/interaction/middlewareKinds';
 import type { Core } from '#interfaces/Core';
 import type { Repliables, ValidInteractionTypes } from '#src/handlers/interactionTypes';
-import type { DispatchOutcome } from '@seedcord/core';
+import type { DispatchOutcome, MiddlewareKind } from '@seedcord/core';
 import type { Initializeable, ContextMenuLeaves } from '@seedcord/core/internal';
 import type { CustomIdMatcher, HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type {
@@ -59,11 +60,6 @@ import type {
 interface InteractionArtifact {
     routeType: InteractionKind;
     routes: string[];
-}
-
-interface RegisteredMiddleware {
-    readonly ctor: InteractionMiddlewareConstructor;
-    readonly priority: number;
 }
 
 interface DispatchedHandler {
@@ -91,7 +87,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private readonly handlerFiles = new Map<HandlerConstructor, string>();
 
     private readonly keysToIgnore = new Set<CustomIdMatcher>();
-    private readonly middlewares: RegisteredMiddleware[] = [];
+    private readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
 
     private readonly inFlight = new Set<Promise<void>>();
     private draining = false;
@@ -259,22 +255,14 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     private registerMiddleware(middlewareCtor: InteractionMiddlewareConstructor, relativePath: string): void {
-        const metadata = interactionMiddlewareMetaOf(middlewareCtor);
+        const metadata = this.middlewares.register(middlewareCtor);
         if (!metadata) return;
 
-        // same class re-registered (double import or an HMR re-scan) is idempotent, matching event middleware
-        if (this.middlewares.some((entry) => entry.ctor === middlewareCtor)) return;
-
-        if (this.middlewares.some((entry) => entry.ctor.name === middlewareCtor.name)) {
-            throw new SeedcordError(SeedcordErrorCode.InteractionDuplicateMiddleware, [middlewareCtor.name]);
-        }
-
-        this.middlewares.push({ ctor: middlewareCtor, priority: metadata.priority });
-        this.middlewares.sort((a, b) => a.priority - b.priority);
-
         if (this.loading) {
+            // the kinds are the only place a dev sees that a middleware is scoped
+            const scope = metadata.kinds ? `${metadata.priority}, ${metadata.kinds.join(', ')}` : metadata.priority;
             this.loadedMiddlewares.push({
-                name: `${middlewareCtor.name} (${metadata.priority})`,
+                name: `${middlewareCtor.name} (${String(scope)})`,
                 from: formatFilePath(relativePath)
             });
         }
@@ -335,10 +323,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     private unregisterMiddleware(middlewareCtor: InteractionMiddlewareConstructor): void {
-        const index = this.middlewares.findIndex((entry) => entry.ctor === middlewareCtor);
-        if (index !== -1) {
-            this.middlewares.splice(index, 1);
-        }
+        this.middlewares.unregister(middlewareCtor);
     }
 
     private attachToClient(): void {
@@ -421,8 +406,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             if (handler instanceof RepliableHandler) sender = handler.sender;
 
             // the chain shares the handler's sender
-            if (!interaction.isAutocomplete() && sender) {
-                await this.runMiddlewares(interaction as Repliables, dispatch, sender);
+            if (kind !== InteractionKind.Autocomplete && sender) {
+                await this.runMiddlewares(kind, interaction as Repliables, dispatch, sender);
             }
 
             // @Gated rejects autocomplete at compile time, since it has no reply target. this is the backstop
@@ -470,13 +455,15 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     private async runMiddlewares(
+        kind: MiddlewareKind,
         interaction: Repliables,
         dispatch: DispatchContext,
         sender: ReplySender
     ): Promise<void> {
-        for (const { ctor: Middleware } of this.middlewares) {
-            const middleware = new Middleware(interaction, this.core, dispatch, sender);
-            await middleware.execute();
+        for (const Middleware of this.middlewares.chainFor(kind)) {
+            // chainFor picked this kind. the interaction is the one the class declares.
+            const event = interaction as InteractionOf<MiddlewareKind>;
+            await new Middleware(event, this.core, dispatch, sender).execute();
         }
     }
 
