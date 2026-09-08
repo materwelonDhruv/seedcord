@@ -1,6 +1,7 @@
 import { REST } from '@discordjs/rest';
+import { Logger } from '@seedcord/logger';
 import { MemoryRateLimiter } from '@seedcord/rate-limiter';
-import { describe, it, expect, afterEach } from 'vitest';
+import { describe, it, expect, afterEach, vi } from 'vitest';
 
 import { CoordinatedShutdown } from '#node/Lifecycle/CoordinatedShutdown';
 import { CoordinatedStartup } from '#node/Lifecycle/CoordinatedStartup';
@@ -65,6 +66,7 @@ function makeHost(): TestHost {
 describe('a plugin whose init outlasts its timeout', () => {
     afterEach(() => {
         TestHost.resetHost();
+        vi.restoreAllMocks();
     });
 
     it('disposes what init opened once init resolves', async () => {
@@ -76,6 +78,25 @@ describe('a plugin whose init outlasts its timeout', () => {
 
         expect(plugin.disposeCalls).toBe(1);
         expect(plugin.connectionOpen).toBe(false);
+    });
+
+    it('logs the error a late init rejects with', async () => {
+        class SlowFailure extends SlowConnect {
+            public override async init(): Promise<void> {
+                await delay(CONNECT_MS);
+                throw new Error('late failure');
+            }
+        }
+
+        const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+        const host = makeHost();
+        host.attach('db', SlowFailure);
+
+        await expect(host.run()).rejects.toThrow();
+        await delay(SETTLE_MS);
+
+        const logged = warn.mock.calls.some((call) => call.some((arg) => String(arg).includes('late failure')));
+        expect(logged).toBe(true);
     });
 
     it('disposes once when a shutdown follows', async () => {
