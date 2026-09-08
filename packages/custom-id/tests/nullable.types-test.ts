@@ -42,3 +42,30 @@ Plain.encode({
     // @ts-expect-error null reaches encode only on a nullable field
     userId: null
 });
+
+const Assign = new CustomId('assign').someOf('roles', ['reader', 'artist', 'vip']);
+type AssignParams = ReturnType<typeof Assign.decode>;
+
+const picked: AssignParams['roles'] = ['reader', 'vip'];
+void picked;
+
+// @ts-expect-error someOf decodes to an array of the literal union
+const unlisted: AssignParams['roles'] = ['admin'];
+void unlisted;
+
+// @ts-expect-error a someOf with no options stays non-null
+const rolesAreNotNullable: AssignParams['roles'] = null;
+void rolesAreNotNullable;
+
+const Optional = new CustomId('optional').someOf('roles', ['reader', 'artist'], { nullable: true });
+type OptionalParams = ReturnType<typeof Optional.decode>;
+
+const noRoles: OptionalParams['roles'] = null;
+void noRoles;
+
+Optional.encode({ roles: null });
+
+Assign.encode({
+    // @ts-expect-error an unlisted choice never reaches encode
+    roles: ['admin']
+});

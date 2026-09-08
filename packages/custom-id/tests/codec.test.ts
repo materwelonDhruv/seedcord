@@ -298,6 +298,25 @@ describe('CustomId stale detection', () => {
     });
 });
 
+describe('routeKey stability', () => {
+    // the guide prints these in components/custom-ids.mdx and components/stale.mdx. a hash change edits both.
+    const Ticket = new CustomId('ticket').snowflake('ownerId').oneOf('action', ['close', 'reopen']);
+
+    it('pins the routeKeys the guide documents', () => {
+        expect(Ticket.routeKey).toBe('ticketVrl');
+        expect(new CustomId('ticket').snowflake('userId').oneOf('action', ['close', 'reopen']).routeKey).toBe(
+            'ticketbdx'
+        );
+        expect(
+            new CustomId('ticket').snowflake('ownerId').oneOf('action', ['close', 'reopen', 'escalate']).routeKey
+        ).toBe('ticketY1t');
+        expect(new CustomId('ticket').oneOf('action', ['close', 'reopen']).snowflake('ownerId').routeKey).toBe(
+            'ticketpXF'
+        );
+        expect(Ticket.bool('notify').routeKey).toBe('ticketuFh');
+    });
+});
+
 describe('CustomId corruption is rejected', () => {
     it('rejects an appended junk piece', () => {
         const Tag = new CustomId('tag').str('label');
