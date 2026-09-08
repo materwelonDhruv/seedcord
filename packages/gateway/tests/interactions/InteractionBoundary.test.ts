@@ -1,4 +1,4 @@
-import { Silence, Fault } from '@seedcord/core';
+import { DispatchContext, Notice, Silence, Fault } from '@seedcord/core';
 import { PublishDefault } from '@seedcord/core/internal';
 import { Logger } from '@seedcord/logger';
 import { MessageFlags, RESTJSONErrorCodes } from 'discord.js';
@@ -14,6 +14,7 @@ import { TestNotice } from '../utils/TestNotice';
 import type { Core } from '#interfaces/Core';
 import type { Repliables, ValidInteractionTypes } from '#src/handlers/interactionTypes';
 import type { SubscriptionData } from '@seedcord/core';
+import type { RenderContext, ReplyResponse } from '@seedcord/types';
 
 const withResponse = { resource: { message: { id: 'sent' } } };
 
@@ -57,15 +58,15 @@ function asInteraction(mock: ReturnType<typeof mockInteraction>): ValidInteracti
     return mock as unknown as ValidInteractionTypes;
 }
 
-// the dispatcher supplies the route id
+// the dispatcher supplies the per-dispatch context
 function handleInteractionFault(
     caught: unknown,
     interaction: ValidInteractionTypes,
     core: Core,
     sender?: ReplySender,
-    routeId = 'slash:test'
+    dispatch = new DispatchContext('slash:test')
 ): Promise<void> {
-    return boundary(caught, interaction, core, routeId, sender);
+    return boundary(caught, interaction, core, dispatch, sender);
 }
 
 function senderFor(mock: ReturnType<typeof mockInteraction>, routeId: string): ReplySender {
@@ -98,6 +99,27 @@ describe('handleInteractionFault', () => {
 
         const [, payload] = publish.mock.calls[0] as [string, SubscriptionData<'unknownException'>];
         expect(payload.metadata).toBe(interaction);
+    });
+
+    it('renders a notice against the dispatch context the caller passed', async () => {
+        const dispatch = new DispatchContext('slash:test');
+        dispatch.set('actor', 'from-middleware');
+        let saw: string | undefined;
+
+        class ReadingNotice extends Notice {
+            public constructor() {
+                super('reads the bag');
+            }
+
+            public render(ctx: RenderContext): ReplyResponse {
+                saw = ctx.dispatch.get('actor');
+                return { components: [] };
+            }
+        }
+
+        await handleInteractionFault(new ReadingNotice(), asInteraction(mock), mockCore(publish), undefined, dispatch);
+
+        expect(saw).toBe('from-middleware');
     });
 
     it('makes no reply and no report for a Silence', async () => {

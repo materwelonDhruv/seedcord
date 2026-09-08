@@ -8,7 +8,7 @@ import { slashRouteOf } from '#bot/utilities/miscellaneous/slashRouteOf';
 
 import type { Core } from '#interfaces/Core';
 import type { Repliables } from '#src/handlers/interactionTypes';
-import type { FaultSource, SubscriptionData } from '@seedcord/core';
+import type { DispatchContext, FaultSource, SubscriptionData } from '@seedcord/core';
 import type { RenderContext, ReplyResponse, Nullable } from '@seedcord/types';
 import type { Guild, User } from 'discord.js';
 import type { UUID } from 'node:crypto';
@@ -29,6 +29,7 @@ export interface ErrorOrigin {
     interaction?: Repliables;
     event?: EventOrigin;
     routeId: string;
+    dispatch: DispatchContext;
     guild: Nullable<Guild>;
     user: Nullable<User>;
     metadata?: unknown;
@@ -41,8 +42,10 @@ export interface ExtractedErrorResponse {
 
 export function extractErrorResponse(error: Error, core: Core, origin: ErrorOrigin): ExtractedErrorResponse {
     const uuid = crypto.randomUUID();
+    const { dispatch } = origin;
     const developerUsername = core.config.notifications?.developerUsername;
-    const ctx: RenderContext = developerUsername === undefined ? { uuid } : { uuid, developerUsername };
+    const ctx: RenderContext =
+        developerUsername === undefined ? { uuid, dispatch } : { uuid, developerUsername, dispatch };
 
     if (error instanceof Notice) {
         if (error.report) reportFault(error, core, origin, uuid);

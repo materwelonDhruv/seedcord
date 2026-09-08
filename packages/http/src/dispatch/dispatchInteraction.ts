@@ -76,6 +76,7 @@ interface FaultScope {
     readonly core: Core;
     readonly payload: ValidInteractionTypes;
     readonly routeId: string;
+    readonly dispatch: DispatchContext;
     // null on autocomplete, whose only legal refusal is an empty type 8
     readonly sender: ReplySender | null;
 }
@@ -109,9 +110,10 @@ async function respondEmptyChoices(scope: FaultScope): Promise<void> {
     );
 }
 
-function renderContext(core: Core, uuid: RenderContext['uuid']): RenderContext {
-    const developerUsername = core.config.notifications?.developerUsername;
-    return developerUsername === undefined ? { uuid } : { uuid, developerUsername };
+function renderContext(scope: FaultScope, uuid: RenderContext['uuid']): RenderContext {
+    const { dispatch } = scope;
+    const developerUsername = scope.core.config.notifications?.developerUsername;
+    return developerUsername === undefined ? { uuid, dispatch } : { uuid, developerUsername, dispatch };
 }
 
 async function handleNotice(notice: Notice, uuid: RenderContext['uuid'], scope: FaultScope): Promise<void> {
@@ -124,7 +126,7 @@ async function handleNotice(notice: Notice, uuid: RenderContext['uuid'], scope: 
         await sendGuarded(scope.routeId, () => respondEmptyChoices(scope));
         return;
     }
-    const response = notice.render(renderContext(scope.core, uuid));
+    const response = notice.render(renderContext(scope, uuid));
     await sendGuarded(scope.routeId, () => sender.send(response, { ephemeral: notice.ephemeral }));
 }
 
@@ -143,7 +145,7 @@ async function handleRawFault(error: Error, uuid: RenderContext['uuid'], scope: 
 
     const Override = core.config.errors?.defaultError;
     const card = Override ? new Override(uuid) : new Fault();
-    const response = card.render(renderContext(core, uuid));
+    const response = card.render(renderContext(scope, uuid));
     await sendGuarded(scope.routeId, () => sender.send(response, { ephemeral: true }));
 }
 
@@ -187,13 +189,19 @@ function unhandledRouteId(match: ResolvedRoute): string {
 }
 
 // nothing is acked yet here, so a fresh sender can reply the card
-function freshScope(match: ResolvedRoute, payload: ValidInteractionTypes, core: Core): FaultScope {
+function freshScope(
+    match: ResolvedRoute,
+    payload: ValidInteractionTypes,
+    core: Core,
+    dispatch: DispatchContext
+): FaultScope {
     const ref = { application_id: payload.application_id, id: payload.id, token: payload.token };
     const routeId = unhandledRouteId(match);
     return {
         core,
         payload,
         routeId,
+        dispatch,
         sender: match.kind === InteractionKind.Autocomplete ? null : new ReplySender(ref, core.rest, routeId, core.bus)
     };
 }
@@ -239,6 +247,7 @@ async function loadHandlerCtor(
     match: ResolvedRoute,
     payload: ValidInteractionTypes,
     core: Core,
+    dispatch: DispatchContext,
     report: (outcome: DispatchOutcome) => void
 ): Promise<HandlerConstructor | null> {
     const routeId = unhandledRouteId(match);
@@ -247,7 +256,7 @@ async function loadHandlerCtor(
         exported = await match.load();
     } catch (caught) {
         logger().error(`Route ${paint.sky.bold(routeId)} failed to load its handler.`, caught);
-        await answer(caught, freshScope(match, payload, core), report, 'failed');
+        await answer(caught, freshScope(match, payload, core, dispatch), report, 'failed');
         return null;
     }
 
@@ -255,7 +264,7 @@ async function loadHandlerCtor(
 
     logger().error(`Route ${paint.sky.bold(routeId)} loaded an export that is not a handler class.`);
     const wrong = new Error(`route ${routeId} loaded an export that is not a handler class`);
-    await answer(wrong, freshScope(match, payload, core), report, 'failed');
+    await answer(wrong, freshScope(match, payload, core, dispatch), report, 'failed');
     return null;
 }
 
@@ -301,25 +310,28 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
     const { match, payload, core } = args;
     const report = dispatchReporter(match, payload, core);
 
-    const Handler = await loadHandlerCtor(match, payload, core, report);
+    const routeId = unhandledRouteId(match);
+    // allocated before the load so every fault path below can render against the same bag
+    const dispatch = new DispatchContext(routeId);
+
+    const Handler = await loadHandlerCtor(match, payload, core, dispatch, report);
     if (!Handler) return null;
 
-    const routeId = unhandledRouteId(match);
     logger().debug(`Processing ${paint.sky.bold(routeId)} with ${paint.mute(Handler.name)}`);
 
-    const dispatch = new DispatchContext(routeId);
     let handler: InstanceType<HandlerConstructor>;
     try {
         // in a union of both handler bases, the event parameter is never. the route pairs each kind with its class.
         handler = new Handler(payload as never, core, dispatch);
     } catch (caught) {
-        await answer(caught, freshScope(match, payload, core), report);
+        await answer(caught, freshScope(match, payload, core, dispatch), report);
         return null;
     }
     const scope: FaultScope = {
         core,
         payload,
         routeId,
+        dispatch,
         sender: handler instanceof RepliableHandler ? handler.sender : null
     };
 

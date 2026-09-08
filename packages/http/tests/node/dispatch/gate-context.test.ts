@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
-import { defineGate, InteractionKind, RegisterInteractionMiddleware } from '@seedcord/core';
+import { TextDisplayBuilder } from '@discordjs/builders';
+import { defineGate, InteractionKind, Notice, RegisterInteractionMiddleware } from '@seedcord/core';
 import { GatedMetadataKey, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -14,6 +15,7 @@ import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
 import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
+import type { RenderableNotice, RenderContext, ReplyResponse } from '@seedcord/types';
 
 vi.mock('@discordjs/rest', async (importOriginal) => {
     class FakeRest {
@@ -27,8 +29,8 @@ vi.mock('@discordjs/rest', async (importOriginal) => {
     return { ...(await importOriginal<object>()), REST: FakeRest };
 });
 
-// a bot declares its own keys this way. the gate below reads one back through the context
-declare module '@seedcord/core' {
+// a bot names its own transport package here. both re-export the interface from @seedcord/types
+declare module '@seedcord/types' {
     interface DispatchState {
         actor: string;
     }
@@ -55,7 +57,34 @@ class GuardedHandler extends SlashHandler<never> {
 }
 Reflect.defineMetadata(GatedMetadataKey, [ReadsDispatch], GuardedHandler);
 
-async function dispatchThrough(...ctors: InteractionMiddlewareConstructor[]): Promise<void> {
+const rendered: (string | undefined)[] = [];
+
+class TagNotice extends Notice {
+    public constructor() {
+        super('refused');
+    }
+
+    public render(ctx: RenderContext): ReplyResponse {
+        rendered.push(ctx.dispatch.get('actor'));
+        return { components: [new TextDisplayBuilder().setContent('nope')] };
+    }
+}
+
+const RefusesWithNotice = defineGate('RefusesWithNotice', () => {
+    throw new TagNotice();
+});
+
+class RefusedHandler extends SlashHandler<never> {
+    public async execute(): Promise<void> {
+        await this.reply('done');
+    }
+}
+Reflect.defineMetadata(GatedMetadataKey, [RefusesWithNotice], RefusedHandler);
+
+async function dispatchThrough(
+    Handler: typeof GuardedHandler,
+    ...ctors: InteractionMiddlewareConstructor[]
+): Promise<void> {
     Envapter.useSource(new PortableSource({}));
     const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
     for (const ctor of ctors) middlewares.register(ctor);
@@ -64,7 +93,7 @@ async function dispatchThrough(...ctors: InteractionMiddlewareConstructor[]): Pr
         match: {
             kind: InteractionKind.Slash,
             routeId: 'slash:guarded',
-            load: () => Promise.resolve(GuardedHandler)
+            load: () => Promise.resolve(Handler)
         },
         payload: slashPayload('guarded') as ValidInteractionTypes,
         core: createCore(nullPathConfig, VALID_TOKEN),
@@ -75,18 +104,54 @@ async function dispatchThrough(...ctors: InteractionMiddlewareConstructor[]): Pr
 
 beforeEach(() => {
     seen.length = 0;
+    rendered.length = 0;
 });
 
 describe('the dispatch context on an http gate', () => {
     it('hands a gate the same context the chain wrote to', async () => {
-        await dispatchThrough(Tagger);
+        await dispatchThrough(GuardedHandler, Tagger);
 
         expect(seen).toEqual(['from-middleware']);
     });
 
     it('leaves the key undefined when no middleware wrote it', async () => {
-        await dispatchThrough();
+        await dispatchThrough(GuardedHandler);
 
         expect(seen).toEqual([undefined]);
+    });
+});
+
+describe('the dispatch context on a rendered notice', () => {
+    it('reaches the render of a notice a gate threw', async () => {
+        await dispatchThrough(RefusedHandler, Tagger);
+
+        expect(rendered).toEqual(['from-middleware']);
+    });
+
+    it('reaches the default card when the route fails to load its handler', async () => {
+        const routes: string[] = [];
+
+        class RecordingCard implements RenderableNotice {
+            public readonly report = true;
+
+            public render(ctx: RenderContext): ReplyResponse {
+                routes.push(ctx.dispatch.routeId);
+                return { components: [new TextDisplayBuilder().setContent('failed')] };
+            }
+        }
+
+        Envapter.useSource(new PortableSource({}));
+        await dispatchInteraction({
+            match: {
+                kind: InteractionKind.Slash,
+                routeId: 'slash:guarded',
+                load: () => Promise.reject(new Error('module blew up'))
+            },
+            payload: slashPayload('guarded') as ValidInteractionTypes,
+            core: createCore({ ...nullPathConfig, errors: { defaultError: RecordingCard } }, VALID_TOKEN),
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>()
+        });
+
+        expect(routes).toEqual(['slash:guarded']);
     });
 });

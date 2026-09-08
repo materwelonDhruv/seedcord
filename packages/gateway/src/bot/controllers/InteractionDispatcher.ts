@@ -396,15 +396,16 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         const queuedMs = queuedMsFor(interaction.id);
         const matched = this.maps[kind].get(key);
 
+        const HandlerCtor = matched ?? fallback;
         // an empty key means a customId seedcord never minted
-        let routeId = `${kind}:${key || 'unrouted'}`;
+        const dispatch = new DispatchContext(routeIdOf(HandlerCtor) ?? `${kind}:${key || 'unrouted'}`);
         const report = this.reporterFor({
             interaction,
             kind,
             fallback: !matched,
             startedAt,
             queuedMs,
-            routeId: () => routeId
+            routeId: () => dispatch.routeId
         });
 
         // outside the try so the fault boundary keeps the handler's ack state
@@ -412,24 +413,20 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         const ran: InteractionMiddleware[] = [];
         let result: DispatchResult = { outcome: 'handled' };
         try {
-            const HandlerCtor = matched ?? fallback;
-            const dispatch = new DispatchContext(routeIdOf(HandlerCtor) ?? routeId);
-            routeId = dispatch.routeId;
-
             const handler = this.buildHandler(HandlerCtor, interaction as Repliables, dispatch, key, !matched);
             if (handler instanceof RepliableHandler) sender = handler.sender;
 
             const refusal = await this.refusalBeforeHandler({ HandlerCtor, kind, interaction, dispatch, sender, ran });
             if (refusal) {
                 result = resultFor(refusal.caught);
-                await this.answer(refusal.caught, interaction as ValidInteractionTypes, routeId, sender, report);
+                await this.answer(refusal.caught, interaction as ValidInteractionTypes, dispatch, sender, report);
                 return;
             }
             await handler.execute();
             report('handled');
         } catch (caught) {
             result = resultFor(caught);
-            await this.answer(caught, interaction as ValidInteractionTypes, routeId, sender, report);
+            await this.answer(caught, interaction as ValidInteractionTypes, dispatch, sender, report);
         } finally {
             await runAfter(ran, result, this.logger);
         }
@@ -438,12 +435,12 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private async answer(
         caught: unknown,
         interaction: ValidInteractionTypes,
-        routeId: string,
+        dispatch: DispatchContext,
         sender: ReplySender | undefined,
         report: (outcome: DispatchOutcome) => void
     ): Promise<void> {
         try {
-            await handleInteractionFault(caught, interaction, this.core, routeId, sender);
+            await handleInteractionFault(caught, interaction, this.core, dispatch, sender);
         } finally {
             report(outcomeFor(caught));
         }

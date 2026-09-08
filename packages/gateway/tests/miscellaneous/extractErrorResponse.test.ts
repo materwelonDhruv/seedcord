@@ -1,4 +1,4 @@
-import { Fault } from '@seedcord/core';
+import { DispatchContext, Fault } from '@seedcord/core';
 import { PublishDefault } from '@seedcord/core/internal';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -11,6 +11,8 @@ import type { Core } from '#interfaces/Core';
 import type { Repliables } from '#src/handlers/interactionTypes';
 import type { SubscriptionData } from '@seedcord/core';
 import type { Guild, User } from 'discord.js';
+
+const dispatch = new DispatchContext('slash:probe');
 
 function mockCore(publish: ReturnType<typeof vi.fn>): Core {
     // justified: the fixture implements only the Core surface extractErrorResponse reads.
@@ -41,6 +43,7 @@ describe('extractErrorResponse', () => {
         const result = extractErrorResponse(denial, mockCore(publish), {
             interaction: slashInteraction(),
             routeId: 'slash:ban',
+            dispatch,
             guild: null,
             user: null
         });
@@ -60,6 +63,7 @@ describe('extractErrorResponse', () => {
         const publish = vi.fn();
         const result = extractErrorResponse(new Error('a bug'), mockCore(publish), {
             routeId: 'autocomplete:raw-probe',
+            dispatch,
             guild: null,
             user: null
         });
@@ -71,6 +75,7 @@ describe('extractErrorResponse', () => {
         const publish = vi.fn();
         extractErrorResponse(new Error('a bug'), mockCore(publish), {
             routeId: 'slash:route-probe',
+            dispatch,
             guild: null,
             user: null
         });
@@ -85,6 +90,7 @@ describe('extractErrorResponse', () => {
         const origin = {
             interaction: slashInteraction('profile'),
             routeId: 'slash:profile',
+            dispatch,
             guild: null,
             user: null
         };
@@ -104,7 +110,12 @@ describe('extractErrorResponse', () => {
         const guild = { id: 'g1', name: 'Guild One', members: {} } as unknown as Guild;
         const user = { id: 'u1', username: 'uname', client: {} } as unknown as User;
 
-        extractErrorResponse(new Error('a bug'), mockCore(publish), { routeId: 'slash:scalar-probe', guild, user });
+        extractErrorResponse(new Error('a bug'), mockCore(publish), {
+            routeId: 'slash:scalar-probe',
+            dispatch,
+            guild,
+            user
+        });
 
         const [, payload] = publish.mock.calls[0] as [string, SubscriptionData<'unknownException'>];
         expect(payload.guild).toEqual({ id: 'g1', name: 'Guild One' });
@@ -116,6 +127,7 @@ describe('extractErrorResponse', () => {
         extractErrorResponse(new TestNotice(), mockCore(publish), {
             interaction: slashInteraction(),
             routeId: 'slash:quiet-probe',
+            dispatch,
             guild: null,
             user: null
         });
@@ -129,6 +141,7 @@ describe('extractErrorResponse', () => {
         extractErrorResponse(denial, mockCore(publish), {
             event: { name: 'messageCreate', handler: 'Starboard', args: [{}], channelId: 'ch1' },
             routeId: 'event:messageCreate:Starboard',
+            dispatch,
             guild: null,
             user: null
         });

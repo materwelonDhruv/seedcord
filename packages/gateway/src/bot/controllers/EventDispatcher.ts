@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- one handler method per event type keeps the router in one file */
 import { DispatchContext } from '@seedcord/core';
 import { HmrModuleHandler } from '@seedcord/core/hmr';
 import {
@@ -247,7 +248,11 @@ export class EventDispatcher implements Initializeable, HmrAware {
             try {
                 await middleware.execute();
             } catch (caught) {
-                handleEventFault(caught, String(eventName), Middleware.name, args, this.core);
+                handleEventFault(
+                    caught,
+                    { eventName: String(eventName), handlerName: Middleware.name, args, dispatch },
+                    this.core
+                );
                 return { caught };
             }
         }
@@ -393,7 +398,11 @@ export class EventDispatcher implements Initializeable, HmrAware {
             await handler.execute();
             return { handler: Ctor.name, outcome: 'handled' };
         } catch (caught) {
-            handleEventFault(caught, String(eventName), Ctor.name, args, this.core);
+            handleEventFault(
+                caught,
+                { eventName: String(eventName), handlerName: Ctor.name, args, dispatch },
+                this.core
+            );
             return { handler: Ctor.name, ...resultFor(caught) };
         }
     }

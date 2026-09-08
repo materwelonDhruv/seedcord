@@ -10,6 +10,7 @@ import { HARMLESS_API_CODES } from './harmlessApiCodes';
 
 import type { Core } from '#interfaces/Core';
 import type { ValidInteractionTypes } from '#src/handlers/interactionTypes';
+import type { DispatchContext } from '@seedcord/core';
 import type { ReplyResponse } from '@seedcord/types';
 import type { AutocompleteInteraction } from 'discord.js';
 
@@ -19,9 +20,10 @@ export async function handleInteractionFault(
     caught: unknown,
     interaction: ValidInteractionTypes,
     core: Core,
-    routeId: string,
+    dispatch: DispatchContext,
     sender?: ReplySender
 ): Promise<void> {
+    const { routeId } = dispatch;
     if (caught instanceof Silence) {
         if (caught.reason !== undefined && (core.config.errors?.logSilences ?? true)) {
             logger.debug(`Silence: ${caught.reason}`);
@@ -40,6 +42,7 @@ export async function handleInteractionFault(
     if (interaction.isAutocomplete()) {
         extractErrorResponse(error, core, {
             routeId,
+            dispatch,
             guild: interaction.guild,
             user: interaction.user,
             metadata: interaction
@@ -52,6 +55,7 @@ export async function handleInteractionFault(
     const { response } = extractErrorResponse(error, core, {
         interaction,
         routeId,
+        dispatch,
         guild: interaction.guild,
         user: interaction.user,
         metadata: interaction
