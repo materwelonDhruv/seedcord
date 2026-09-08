@@ -136,7 +136,7 @@ A throw from `init()` stops startup. seedcord disposes every plugin whose `init(
 
 The plugin that threw never gets its `dispose()` call, so close whatever `init()` already opened before you throw.
 
-A timeout takes a different path. `init()` keeps running after the wait rejects, and seedcord calls `dispose()` when that `init()` resolves. Put the cleanup for a late `init()` there.
+A timeout takes a different path. `init()` keeps running after the wait rejects, and seedcord calls `dispose()` when that `init()` resolves. Put the cleanup for a late `init()` there. That call runs outside any shutdown phase. The phase you declared applies to a real shutdown.
 
 seedcord never calls `dispose()` for an `init()` that hangs forever. Give whatever `init()` awaits its own timeout. That turns a hang into a throw you can catch.
 
