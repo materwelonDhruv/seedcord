@@ -141,45 +141,85 @@ function boundedToBigint(field: CustomIdField<unknown>, name: string, value: unk
     }
     const slot = boundedSlot(field, name, value);
     // out of range would carry into the neighbouring field on decode.
-    if (slot < 0n || slot >= radixOf(field)) outOfRange(name, value);
+    if (slot < 0n || slot >= radixOf(field)) reject(field, name, value);
     return slot;
+}
+
+// a bad value makes BigInt() throw a bare TypeError or SyntaxError. the guard gets ahead of it with
+// the branded error.
+function snowflakeSlot(field: CustomIdField<unknown>, name: string, value: unknown): bigint {
+    if (typeof value !== 'string' || !/^\d+$/.test(value)) return reject(field, name, value);
+    return BigInt(value);
+}
+
+function uuidSlot(field: CustomIdField<unknown>, name: string, value: unknown): bigint {
+    if (typeof value !== 'string') return reject(field, name, value);
+    const hex = value.replaceAll('-', '');
+    if (!/^[0-9a-fA-F]{32}$/.test(hex)) return reject(field, name, value);
+    return BigInt(`0x${hex}`);
 }
 
 // a slot is the value as an integer in [0, radix).
 function boundedSlot(field: CustomIdField<unknown>, name: string, value: unknown): bigint {
     switch (field.kind) {
         case 'snowflake': {
-            // a bad value makes BigInt() throw a bare TypeError or SyntaxError. the guard gets
-            // ahead of it with the branded error.
-            if (typeof value !== 'string' || !/^\d+$/.test(value)) return outOfRange(name, value);
-            return BigInt(value);
+            return snowflakeSlot(field, name, value);
         }
         case 'uuid': {
-            if (typeof value !== 'string') return outOfRange(name, value);
-            const hex = value.replaceAll('-', '');
-            if (!/^[0-9a-fA-F]{32}$/.test(hex)) return outOfRange(name, value);
-            return BigInt(`0x${hex}`);
+            return uuidSlot(field, name, value);
         }
         case 'bool': {
+            if (typeof value !== 'boolean') return reject(field, name, value);
             return value ? 1n : 0n;
         }
         case 'oneOf': {
             const index = (field.choices ?? []).indexOf(value as string);
-            return index === -1 ? outOfRange(name, value) : BigInt(index);
+            return index === -1 ? reject(field, name, value) : BigInt(index);
         }
         case 'int': {
             // eslint-disable-next-line unicorn/prefer-number-is-safe-integer -- a bounded int field may declare max up to 2**53 exactly (a power of two, exact in float64)
-            if (!Number.isInteger(value)) return outOfRange(name, value);
-            return BigInt((value as number) - (field.min ?? 0));
+            if (!Number.isInteger(value)) return reject(field, name, value);
+            // a plain js number cannot hold this subtraction once it passes 2^53.
+            return BigInt(value as number) - BigInt(field.min ?? 0);
         }
         default: {
-            return outOfRange(name, value);
+            return reject(field, name, value);
         }
     }
 }
 
-function outOfRange(name: string, value: unknown): never {
-    throw new SeedcordRangeError(SeedcordErrorCode.CustomIdValueOutOfRange, [name, String(value)]);
+function reject(field: CustomIdField<unknown>, name: string, value: unknown): never {
+    throw new SeedcordRangeError(SeedcordErrorCode.CustomIdValueRejected, [name, expectation(field), show(value)]);
+}
+
+// what the field takes, written to finish the sentence "expects ...".
+function expectation(field: CustomIdField<unknown>): string {
+    switch (field.kind) {
+        case 'snowflake': {
+            return 'a snowflake string below 2^64';
+        }
+        case 'uuid': {
+            return 'a uuid string';
+        }
+        case 'bool': {
+            return 'a boolean';
+        }
+        case 'oneOf': {
+            return `one of ${(field.choices ?? []).map((choice) => JSON.stringify(choice)).join(', ')}`;
+        }
+        case 'int': {
+            if (field.min === undefined || field.max === undefined) return 'a safe integer';
+            return `an integer from ${field.min} to ${field.max}`;
+        }
+        default: {
+            return 'a string';
+        }
+    }
+}
+
+// quoting keeps the string 'false' apart from the boolean.
+function show(value: unknown): string {
+    return typeof value === 'string' ? JSON.stringify(value) : String(value);
 }
 
 // inverse of boundedSlot.
@@ -205,7 +245,7 @@ function kindValue(field: CustomIdField<unknown>, slot: bigint): unknown {
             return (field.choices ?? [])[Number(slot)];
         }
         case 'int': {
-            return Number(slot) + (field.min ?? 0);
+            return Number(slot + BigInt(field.min ?? 0));
         }
         default: {
             throw invalidError(`field kind ${field.kind} is not bounded`);
@@ -229,10 +269,11 @@ function encodeUnboundedToken(field: CustomIdField<unknown>, name: string, value
         return PRESENT + encodeUnboundedToken({ ...field, nullable: false }, name, value);
     }
     if (field.kind === 'int') {
-        if (!Number.isSafeInteger(value)) outOfRange(name, value);
+        if (!Number.isSafeInteger(value)) reject(field, name, value);
         return bigintToBase64(zigzagEncode(value as number));
     }
-    return escapeToken(value as string);
+    if (typeof value !== 'string') return reject(field, name, value);
+    return escapeToken(value);
 }
 function decodeUnboundedToken(field: CustomIdField<unknown>, piece: string): unknown {
     if (field.nullable === true) {
@@ -265,7 +306,8 @@ export function computeLayoutHash(shape: CustomIdShape): string {
     );
     const modulus = BASE ** BigInt(HASH_LENGTH);
     let hash = 0n;
-    for (const char of signature) hash = (hash * 131n + BigInt(char.charCodeAt(0))) % modulus;
+    // js stores an emoji as two halves. reading only the first half hashes 1024 emoji to one value.
+    for (let i = 0; i < signature.length; i++) hash = (hash * 131n + BigInt(signature.charCodeAt(i))) % modulus;
 
     let text = '';
     for (let i = 0; i < HASH_LENGTH; i++) {

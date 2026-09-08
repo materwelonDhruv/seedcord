@@ -15,6 +15,15 @@ function thrownCode(run: () => unknown): SeedcordErrorCode | undefined {
     return undefined;
 }
 
+function thrownMessage(run: () => unknown): string {
+    try {
+        run();
+    } catch (error) {
+        return (error as Error).message; // fixture cast, read the message off whatever was thrown
+    }
+    return '';
+}
+
 describe('nullable fields', () => {
     it('round-trips null and a value for every kind', () => {
         const Every = new CustomId('every')
@@ -83,7 +92,7 @@ describe('nullable fields', () => {
                     userId: null
                 })
             )
-        ).toBe(SeedcordErrorCode.CustomIdValueOutOfRange);
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
     });
 });
 
@@ -132,6 +141,17 @@ describe('CustomId round-trips', () => {
         expect(Big.decode(Big.encode({ n: 2 ** 53 })).n).toBe(2 ** 53);
     });
 
+    it('round-trips a bounded int whose slot lands past 2^53', () => {
+        // a negative min pushes the stored number past 2^53, where js numbers start skipping.
+        const Big = new CustomId('big').int('n', -2, Number.MAX_SAFE_INTEGER);
+        expect(Big.decode(Big.encode({ n: Number.MAX_SAFE_INTEGER })).n).toBe(Number.MAX_SAFE_INTEGER);
+    });
+
+    it('gives two bounded ints past 2^53 two different wires', () => {
+        const Big = new CustomId('big').int('n', -2, Number.MAX_SAFE_INTEGER);
+        expect(Big.encode({ n: Number.MAX_SAFE_INTEGER })).not.toBe(Big.encode({ n: Number.MAX_SAFE_INTEGER - 1 }));
+    });
+
     it('round-trips a customId with no fields', () => {
         const Refresh = new CustomId('refresh');
         expect(Refresh.decode(Refresh.encode({}))).toEqual({});
@@ -162,6 +182,20 @@ describe('CustomId stale detection', () => {
         const v1 = new CustomId('page').int('index');
         const v2 = new CustomId('page').int('index', 0, 100);
         expect(thrownCode(() => v2.decode(v1.encode({ index: 3 })))).toBe(SeedcordErrorCode.CustomIdWireStale);
+    });
+
+    it('flags a swapped emoji oneOf as stale', () => {
+        const v1 = new CustomId('react').oneOf('emoji', ['\u{1F44D}', '\u{1F44E}']);
+        const v2 = new CustomId('react').oneOf('emoji', ['\u{1F44F}', '\u{1F440}']);
+        expect(thrownCode(() => v2.decode(v1.encode({ emoji: '\u{1F44E}' })))).toBe(
+            SeedcordErrorCode.CustomIdWireStale
+        );
+    });
+
+    it('hashes two emoji from one surrogate block apart', () => {
+        const grin = new CustomId('e').oneOf('c', ['\u{1F600}']);
+        const beam = new CustomId('e').oneOf('c', ['\u{1F601}']);
+        expect(grin.routeKey).not.toBe(beam.routeKey);
     });
 });
 
@@ -208,20 +242,20 @@ describe('CustomId corruption is rejected', () => {
 describe('CustomId encode guards', () => {
     it('rejects a bounded int outside its range', () => {
         const Page = new CustomId('page').int('index', 0, 7);
-        expect(thrownCode(() => Page.encode({ index: 50 }))).toBe(SeedcordErrorCode.CustomIdValueOutOfRange);
+        expect(thrownCode(() => Page.encode({ index: 50 }))).toBe(SeedcordErrorCode.CustomIdValueRejected);
     });
 
     it('rejects a snowflake at or above 2^64', () => {
         const Ban = new CustomId('ban').snowflake('userId');
         expect(thrownCode(() => Ban.encode({ userId: (1n << 64n).toString() }))).toBe(
-            SeedcordErrorCode.CustomIdValueOutOfRange
+            SeedcordErrorCode.CustomIdValueRejected
         );
     });
 
     it('rejects a snowflake that is not a numeric string', () => {
         const Ban = new CustomId('ban').snowflake('userId');
         expect(thrownCode(() => Ban.encode({ userId: 'not-a-snowflake' }))).toBe(
-            SeedcordErrorCode.CustomIdValueOutOfRange
+            SeedcordErrorCode.CustomIdValueRejected
         );
     });
 
@@ -234,7 +268,98 @@ describe('CustomId encode guards', () => {
 
     it('rejects an unbounded int beyond the safe-integer range at encode time', () => {
         const Counter = new CustomId('counter').int('total');
-        expect(thrownCode(() => Counter.encode({ total: 2 ** 53 }))).toBe(SeedcordErrorCode.CustomIdValueOutOfRange);
+        expect(thrownCode(() => Counter.encode({ total: 2 ** 53 }))).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+
+    it('rejects a str that is not a string', () => {
+        const Note = new CustomId('note').str('body');
+        expect(
+            thrownCode(() =>
+                Note.encode({
+                    // @ts-expect-error a str field rejects a number at compile time and at runtime
+                    body: 42
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+
+    it('rejects null on a non-nullable str', () => {
+        const Note = new CustomId('note').str('body');
+        expect(
+            thrownCode(() =>
+                Note.encode({
+                    // @ts-expect-error a non-nullable field rejects null at compile time and at runtime
+                    body: null
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+
+    it('rejects null on a non-nullable bool', () => {
+        const Flag = new CustomId('flag').bool('silent');
+        expect(
+            thrownCode(() =>
+                Flag.encode({
+                    // @ts-expect-error a non-nullable field rejects null at compile time and at runtime
+                    silent: null
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+
+    it('rejects a bool that is not a boolean', () => {
+        const Flag = new CustomId('flag').bool('silent');
+        expect(
+            thrownCode(() =>
+                Flag.encode({
+                    // @ts-expect-error a bool field rejects a string at compile time and at runtime
+                    silent: 'false'
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+});
+
+describe('CustomId rejection messages', () => {
+    it('names the type a bool expects and quotes the string it got', () => {
+        const Flag = new CustomId('flag').bool('silent');
+        const message = thrownMessage(() =>
+            Flag.encode({
+                // @ts-expect-error a bool field rejects a string at compile time and at runtime
+                silent: 'false'
+            })
+        );
+        expect(message).toContain('expects a boolean');
+        expect(message).toContain('"false"');
+    });
+
+    it('names the declared bounds an int expects', () => {
+        const Page = new CustomId('page').int('index', 0, 7);
+        expect(thrownMessage(() => Page.encode({ index: 50 }))).toContain('expects an integer from 0 to 7');
+    });
+
+    it('names the choices a oneOf expects', () => {
+        const Poll = new CustomId('poll').oneOf('choice', ['yes', 'no']);
+        expect(
+            thrownMessage(() =>
+                Poll.encode({
+                    // @ts-expect-error a oneOf field rejects an unlisted value at compile time and at runtime
+                    choice: 'maybe'
+                })
+            )
+        ).toContain('expects one of "yes", "no"');
+    });
+
+    it('names what a str expects', () => {
+        const Note = new CustomId('note').str('body');
+        expect(
+            thrownMessage(() =>
+                Note.encode({
+                    // @ts-expect-error a str field rejects a number at compile time and at runtime
+                    body: 42
+                })
+            )
+        ).toContain('expects a string');
     });
 });
 

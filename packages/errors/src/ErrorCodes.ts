@@ -106,8 +106,8 @@ export enum SeedcordErrorCode {
     CustomIdEmptyChoices = 1603,
     /** An int() field was declared with min greater than max. */
     CustomIdInvalidBounds = 1604,
-    /** A value passed to encode() is outside its field's allowed range. */
-    CustomIdValueOutOfRange = 1605,
+    /** A value passed to encode() is not one its field can hold. */
+    CustomIdValueRejected = 1605,
     /** An encoded customId exceeds Discord's 100-character limit. */
     CustomIdWireTooLong = 1606,
     /** A field name is declared more than once in the same customId chain. */
