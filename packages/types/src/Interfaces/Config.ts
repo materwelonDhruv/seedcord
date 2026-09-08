@@ -169,4 +169,23 @@ export interface Config {
      * Logging level, sinks, and per-channel overrides. Omitted fields keep the transport's defaults.
      */
     logger?: LoggerConfig;
+
+    /**
+     * Bounds on how long the coordinated shutdown may take.
+     */
+    lifecycle?: LifecycleConfig;
+}
+
+/** Bounds the framework applies to the coordinated shutdown sequence. */
+export interface LifecycleConfig {
+    /**
+     * How long the whole coordinated shutdown may take, in milliseconds. Every task's own timeout is
+     * clamped to what remains, so a phase that overruns leaves less for the teardowns after it.
+     *
+     * Set it below your platform's kill window. Kubernetes sends SIGKILL 30 seconds after SIGTERM by
+     * default, and `docker stop` waits 10.
+     *
+     * @defaultValue `25000`
+     */
+    shutdownDeadline?: number;
 }

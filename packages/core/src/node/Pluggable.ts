@@ -110,6 +110,9 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             Pluggable.liveProcessErrors = registerProcessErrors(this, this[HostShutdown]);
         }
 
+        const deadline = this.config.lifecycle?.shutdownDeadline;
+        if (deadline !== undefined) this[HostShutdown].setDeadline(deadline);
+
         const startupSettled: PromiseWithResolvers<void> = Promise.withResolvers();
         this[HostShutdown].gateOnStartup(startupSettled.promise);
 

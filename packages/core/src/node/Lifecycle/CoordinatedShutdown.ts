@@ -16,6 +16,9 @@ const PHASE_ORDER: ShutdownPhase[] = [
 // gives the logger's file sink time to flush before process.exit
 const LOG_FLUSH_DELAY_MS = 3000;
 
+// 25s leaves room under kubernetes' 30s SIGKILL window for the flush delay above.
+const DEFAULT_SHUTDOWN_DEADLINE_MS = 25_000;
+
 export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private isShuttingDown = false;
     private hasShutdown = false;
@@ -23,11 +26,23 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private onSigTerm: (() => void) | null = null;
     private onSigInt: (() => void) | null = null;
     private startupGate?: Promise<void>;
+    private deadlineMs = DEFAULT_SHUTDOWN_DEADLINE_MS;
+    private expiresAt = Infinity;
 
     public constructor() {
         super('Shutdown', PHASE_ORDER, ShutdownPhase);
 
         this.registerSignalHandlers();
+    }
+
+    /** @internal */
+    public setDeadline(deadlineMs: number): void {
+        this.deadlineMs = deadlineMs;
+    }
+
+    // every task shares one budget, so a phase that overruns leaves less for the teardowns after it
+    protected override timeoutFor(task: LifecycleTask): number {
+        return Math.max(0, Math.min(task.timeout, this.expiresAt - Date.now()));
     }
 
     protected canAddTask(): boolean {
@@ -111,6 +126,8 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
 
         try {
             if (this.startupGate) await this.startupGate;
+            // the gate above can take as long as startup needs, so the budget starts after it
+            this.expiresAt = Date.now() + this.deadlineMs;
             const failures: unknown[] = [];
             for (const phase of PHASE_ORDER) {
                 // run every phase so a mid-shutdown failure still attempts the later teardowns

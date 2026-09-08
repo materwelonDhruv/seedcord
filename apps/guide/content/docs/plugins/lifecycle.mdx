@@ -107,6 +107,29 @@ Task "Plugin:db:dispose" timed out after 10000ms.
 
 Declaring a timeout of zero, a negative number, or `Infinity` throws `PluginInvalidLifecycleTimeout` in the constructor, before any of your code runs.
 
+A shutdown carries one budget across all four phases, 25000ms by default. Each task's timeout clamps to whatever the budget has left, so a phase that overruns leaves less for the teardowns after it.
+
+```ts twoslash title="src/bot.ts"
+import { resolve } from 'node:path';
+
+import { Seedcord } from '@seedcord/gateway';
+import { GatewayIntentBits } from 'discord.js';
+
+const seedcord = new Seedcord({
+    bot: {
+        clientOptions: { intents: [GatewayIntentBits.Guilds] },
+        interactions: {
+            path: resolve(import.meta.dirname, './handlers')
+        },
+        commands: { path: null },
+        events: { path: null }
+    },
+    subscribers: { path: null },
+    // keep this under your platform's kill window, 30s on kubernetes and 10s on docker stop
+    lifecycle: { shutdownDeadline: 25_000 }
+});
+```
+
 ## When init fails
 
 A throw from `init()` stops startup. seedcord disposes every plugin whose `init()` already finished, in reverse attach order, and rethrows what you threw.
