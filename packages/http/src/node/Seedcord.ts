@@ -3,7 +3,7 @@ import { createServer } from 'node:http';
 
 import { REST } from '@discordjs/rest';
 import { Bus } from '@seedcord/core';
-import { busLoggerOf, getDevChannel, HmrManager, setBotColor } from '@seedcord/core/internal';
+import { busLoggerOf, getDevChannel, HmrManager, MiddlewareRegistry, setBotColor } from '@seedcord/core/internal';
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
@@ -206,7 +206,8 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
 
     private async listen(): Promise<void> {
         const maps = this.interactions?.maps ?? buildRouteMaps(EMPTY_MANIFEST);
-        const { handle, inFlight } = buildEngine(this, maps);
+        // no loader walks a middlewares directory yet
+        const { handle, inFlight } = buildEngine(this, maps, new MiddlewareRegistry());
 
         const server = createServer((incoming, outgoing) => {
             void (async () => {

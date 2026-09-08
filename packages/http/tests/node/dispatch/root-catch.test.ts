@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import { InteractionKind } from '@seedcord/core';
+import { MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -46,7 +47,7 @@ async function routerThrows(thrown: unknown): Promise<{
     vi.spyOn(maps[InteractionKind.Slash], 'get').mockImplementation(() => {
         throw thrown;
     });
-    const { handle } = buildEngine(core, maps);
+    const { handle } = buildEngine(core, maps, new MiddlewareRegistry());
 
     return { response: await handle(await signedRequest(signer, slashPayload('anything'))), seen };
 }

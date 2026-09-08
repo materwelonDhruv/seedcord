@@ -12,11 +12,9 @@ import { slashRouteOf } from './slashRouteOf';
 import type { ComponentRoute, RouteManifest, RouteModule } from '#src/manifest/RouteManifest';
 import type { APIInteraction } from 'discord-api-types/v10';
 
-type ResolvedKind = `${InteractionKind}`;
-
 /** A manifest row matched to an incoming interaction, keyed the way the gateway dispatcher keys. */
 export interface ResolvedRoute {
-    readonly kind: ResolvedKind;
+    readonly kind: InteractionKind;
     /**
      * The stable dispatch id, `kind:key` (`slash:ban`), the shape core's `routeIdOf` builds. Null for the
      * unhandled default, which matches no row.

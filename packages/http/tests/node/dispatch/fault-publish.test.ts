@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
-import { Notice } from '@seedcord/core';
+import { InteractionKind, Notice } from '@seedcord/core';
+import { MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -79,11 +80,16 @@ function watched(): { core: Core; published: Published } {
 }
 
 async function dispatchThrough(core: Core, handler: unknown): Promise<void> {
-    const match: ResolvedRoute = { kind: 'slash', routeId: 'slash:ok', load: () => Promise.resolve(handler) };
+    const match: ResolvedRoute = {
+        kind: InteractionKind.Slash,
+        routeId: 'slash:ok',
+        load: () => Promise.resolve(handler)
+    };
     const execute = await dispatchInteraction({
         match,
         payload: slashPayload('ok') as ValidInteractionTypes,
-        core
+        core,
+        middlewares: new MiddlewareRegistry()
     });
     await execute?.();
 }

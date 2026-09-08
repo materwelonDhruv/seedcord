@@ -1,4 +1,4 @@
-import { RegisterDefaults } from '@seedcord/core/internal';
+import { MiddlewareRegistry, RegisterDefaults } from '@seedcord/core/internal';
 import { validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
 import { Envapter } from 'envapt';
@@ -40,5 +40,6 @@ export function createSeedcord(
     const core = createCore(config, token);
     core.bus[RegisterDefaults]();
     registerSubscribers(core.bus, manifest);
-    return buildEngine(core, buildRouteMaps(manifest)).handle;
+    // the manifest carries no middleware rows yet
+    return buildEngine(core, buildRouteMaps(manifest), new MiddlewareRegistry()).handle;
 }

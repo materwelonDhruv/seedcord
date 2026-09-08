@@ -1,5 +1,5 @@
 import { DiscordAPIError, REST } from '@discordjs/rest';
-import { BaseHandler, Bus, DispatchContext, Fault, Notice, Silence } from '@seedcord/core';
+import { BaseHandler, Bus, DispatchContext, Fault, InteractionKind, Notice, Silence } from '@seedcord/core';
 import {
     asError,
     outcomeFor,
@@ -21,14 +21,17 @@ import { interactionGateContext } from '#src/gates/context';
 
 import { reportFault } from './reportFault';
 
-import type { HandlerConstructor } from '#handlers/constructors';
+import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
+import type { InteractionMiddleware } from '#handlers/interaction/InteractionMiddleware';
+import type { InteractionOf } from '#handlers/interaction/middlewareKinds';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { HttpConfig } from '#interfaces/Config';
 import type { Core } from '#interfaces/Core';
 import type { ResolvedRoute } from './resolve';
-import type { DispatchOutcome } from '@seedcord/core';
+import type { DispatchOutcome, MiddlewareKind } from '@seedcord/core';
+import type { MiddlewareRegistry } from '@seedcord/core/internal';
 import type { CoordinatedShutdown, CoordinatedStartup } from '@seedcord/core/node';
-import type { IRateLimiter, RenderContext, TypedOmit } from '@seedcord/types';
+import type { IRateLimiter, RenderContext, TypedConstructor, TypedOmit } from '@seedcord/types';
 
 // lazy, env binds after this module loads
 let dispatchLogger: Logger | undefined;
@@ -171,6 +174,7 @@ interface DispatchArgs {
     readonly match: ResolvedRoute;
     readonly payload: ValidInteractionTypes;
     readonly core: Core;
+    readonly middlewares: MiddlewareRegistry<InteractionMiddlewareConstructor>;
 }
 
 function unhandledRouteId(match: ResolvedRoute): string {
@@ -188,7 +192,7 @@ function freshScope(match: ResolvedRoute, payload: ValidInteractionTypes, core: 
         core,
         payload,
         routeId,
-        sender: match.kind === 'autocomplete' ? null : new ReplySender(ref, core.rest, routeId, core.bus)
+        sender: match.kind === InteractionKind.Autocomplete ? null : new ReplySender(ref, core.rest, routeId, core.bus)
     };
 }
 
@@ -253,9 +257,24 @@ async function loadHandlerCtor(
     return null;
 }
 
+async function runMiddlewares(
+    chain: readonly InteractionMiddlewareConstructor[],
+    payload: ValidInteractionTypes,
+    core: Core,
+    dispatch: DispatchContext,
+    sender: ReplySender
+): Promise<void> {
+    for (const middleware of chain) {
+        const Middleware = middleware as TypedConstructor<typeof InteractionMiddleware>;
+        // the caller picked the chain for this kind. the payload is the one the class declares.
+        const event = payload as InteractionOf<MiddlewareKind>;
+        await new Middleware(event, core, dispatch, sender).execute();
+    }
+}
+
 // a null return means the refusal is already sent
 export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Promise<void>) | null> {
-    const { match, payload, core } = args;
+    const { match, payload, core, middlewares } = args;
     const report = dispatchReporter(match, payload, core);
 
     const Handler = await loadHandlerCtor(match, payload, core, report);
@@ -279,6 +298,16 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
         routeId,
         sender: handler instanceof RepliableHandler ? handler.sender : null
     };
+
+    // the chain shares the handler's sender
+    if (match.kind !== InteractionKind.Autocomplete && scope.sender) {
+        try {
+            await runMiddlewares(middlewares.chainFor(match.kind), payload, core, dispatch, scope.sender);
+        } catch (caught) {
+            await answer(caught, scope, report);
+            return null;
+        }
+    }
 
     const refusal = await gateRefusal(Handler, match, payload, core);
     if (refusal) {
@@ -305,7 +334,8 @@ async function gateRefusal(
 ): Promise<{ caught: unknown } | null> {
     // match.kind comes from payload.type in the router. the second clause narrows the union to
     // Repliables for interactionGateContext
-    if (match.kind === 'autocomplete' || payload.type === InteractionType.ApplicationCommandAutocomplete) return null;
+    if (match.kind === InteractionKind.Autocomplete || payload.type === InteractionType.ApplicationCommandAutocomplete)
+        return null;
     const monitor = slowGateMonitor();
     try {
         await runHandlerGates(
