@@ -102,11 +102,11 @@ export enum SeedcordErrorCode {
     CustomIdInvalidPrefix = 1601,
     /** A customId field name is integer-like, which JS would silently reorder. */
     CustomIdReservedFieldName = 1602,
-    /** A oneOf() field was declared with no choices. */
+    /** A oneOf() or someOf() field was declared with no choices. */
     CustomIdEmptyChoices = 1603,
     /** An int() field was declared with min greater than max. */
     CustomIdInvalidBounds = 1604,
-    /** A value passed to encode() is not one its field can hold. */
+    /** A field rejected the value given to encode(). */
     CustomIdValueRejected = 1605,
     /** An encoded customId exceeds Discord's 100-character limit. */
     CustomIdWireTooLong = 1606,

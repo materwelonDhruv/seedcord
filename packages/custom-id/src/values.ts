@@ -45,7 +45,7 @@ function kindRadix(field: CustomIdField<unknown>): bigint {
         }
         case 'someOf': {
             if (!field.choices?.length) throw invalidError('someOf field has no choices');
-            // one bit per choice, so every subset of n choices gets its own slot.
+            // one bit per choice.
             return 1n << BigInt(field.choices.length);
         }
         case 'int': {
@@ -166,12 +166,14 @@ function listChoices(field: CustomIdField<unknown>): string {
     return (field.choices ?? []).map((choice) => JSON.stringify(choice)).join(', ');
 }
 
-// quoting keeps the string 'false' apart from the boolean.
+// quoting keeps the string 'false' apart from the boolean. JSON.stringify throws on a bigint.
+function quote(value: unknown): string {
+    return typeof value === 'string' ? JSON.stringify(value) : String(value);
+}
+
 function show(value: unknown): string {
-    if (typeof value === 'string') return JSON.stringify(value);
-    // String() over JSON.stringify, which throws on a bigint
-    if (Array.isArray(value)) return `[${value.map((entry) => show(entry)).join(', ')}]`;
-    return String(value);
+    if (Array.isArray(value)) return `[${value.map((entry) => quote(entry)).join(', ')}]`;
+    return quote(value);
 }
 
 // inverse of boundedSlot.
@@ -200,7 +202,11 @@ function kindValue(field: CustomIdField<unknown>, slot: bigint): unknown {
             return (field.choices ?? []).filter((_, index) => ((slot >> BigInt(index)) & 1n) === 1n);
         }
         case 'int': {
-            return Number(slot + BigInt(field.min ?? 0));
+            const value = slot + BigInt(field.min ?? 0);
+            const asNumber = Number(value);
+            // 2^53 is a legal max here. a MAX_SAFE_INTEGER check would reject it.
+            if (BigInt(asNumber) !== value) throw invalidError('bounded integer out of safe range');
+            return asNumber;
         }
         default: {
             throw invalidError(`field kind ${field.kind} is not bounded`);

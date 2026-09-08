@@ -235,19 +235,19 @@ export class CustomId<Prefix extends string, Shape extends CustomIdShape = {}> {
         choices: Choices,
         opts?: FieldOptions<Nullable>
     ): CustomId<Prefix, Shape & Record<Name, CustomIdField<Nullish<Choices[number], Nullable>>>> {
-        if (choices.length === 0) throw new SeedcordRangeError(SeedcordErrorCode.CustomIdEmptyChoices, [name]);
+        if (choices.length === 0) throw new SeedcordRangeError(SeedcordErrorCode.CustomIdEmptyChoices, [name, 'oneOf']);
         return this.add<Name, Nullish<Choices[number], Nullable>>(name, { ...opts, kind: 'oneOf', choices });
     }
 
     /**
-     * Add a field that is any subset of a fixed list, decoded as an array of the literal union.
+     * Add a field that holds any subset of a fixed list, decoded as an array of the literal union.
      *
-     * The field carries which values were picked. A repeat collapses into one entry. Decode returns
-     * the picks in the order you declared them in the CustomId. One choice costs one bit on the wire.
+     * A duplicate collapses into one entry. Decode returns the picks in the order the CustomId declares
+     * them. One choice costs one bit on the wire.
      *
      * @example
      * ```ts
-     * // the roles a member picked in a select menu, carried onto the confirm button
+     * // a member picks roles in a select menu, and the confirm button carries them
      * // roles: ('reader' | 'artist' | 'vip')[]
      * new CustomId('assign').someOf('roles', ['reader', 'artist', 'vip']);
      * ```
@@ -257,7 +257,8 @@ export class CustomId<Prefix extends string, Shape extends CustomIdShape = {}> {
         choices: Choices,
         opts?: FieldOptions<Nullable>
     ): CustomId<Prefix, Shape & Record<Name, CustomIdField<Nullish<Choices[number][], Nullable>>>> {
-        if (choices.length === 0) throw new SeedcordRangeError(SeedcordErrorCode.CustomIdEmptyChoices, [name]);
+        if (choices.length === 0)
+            throw new SeedcordRangeError(SeedcordErrorCode.CustomIdEmptyChoices, [name, 'someOf']);
         return this.add<Name, Nullish<Choices[number][], Nullable>>(name, { ...opts, kind: 'someOf', choices });
     }
 

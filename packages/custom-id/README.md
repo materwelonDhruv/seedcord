@@ -58,7 +58,7 @@ client.on(Events.InteractionCreate, (interaction) => {
 });
 ```
 
-Fields come from `snowflake`, `uuid`, `int`, `bool`, `oneOf`, `someOf`, and `str`. Each one takes `{ nullable: true }` to also carry null. A bounded `int('page', 1, 50)` packs into fewer characters than an unbounded one. `someOf('tags', [...])` carries any subset of its list for one bit per choice.
+Fields come from `snowflake`, `uuid`, `int`, `bool`, `oneOf`, `someOf`, and `str`. Each one takes `{ nullable: true }` to also carry null. `int` alone takes a second form with bounds, as `int('page', 1, 50)`.
 
 `prefixOf` recovers the route prefix from a raw wire. The prefix survives a shape change, which makes it what you route on. `decodeFor` takes several definitions at once and returns the matched prefix with its own params.
 

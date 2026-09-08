@@ -244,6 +244,20 @@ describe('someOf fields', () => {
             )
         ).toBe(SeedcordErrorCode.CustomIdValueRejected);
     });
+
+    it('rejects an array that holds itself', () => {
+        // formatting the value for the message must not follow the cycle.
+        const cyclic: unknown[] = [];
+        cyclic.push(cyclic);
+        expect(
+            thrownCode(() =>
+                Assign.encode({
+                    // @ts-expect-error a someOf field rejects a nested array at compile time and at runtime
+                    roles: cyclic
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
 });
 
 describe('CustomId stale detection', () => {
@@ -299,7 +313,7 @@ describe('CustomId stale detection', () => {
 });
 
 describe('routeKey stability', () => {
-    // the guide prints these in components/custom-ids.mdx and components/stale.mdx. a hash change edits both.
+    // the guide prints these in components/custom-ids.mdx and components/stale.mdx. changing the hash edits both.
     const Ticket = new CustomId('ticket').snowflake('ownerId').oneOf('action', ['close', 'reopen']);
 
     it('pins the routeKeys the guide documents', () => {
@@ -348,6 +362,14 @@ describe('CustomId corruption is rejected', () => {
         expect(thrownCode(() => Counter.decode(`${Counter.routeKey}:${oversized}`))).toBe(
             SeedcordErrorCode.CustomIdWireInvalid
         );
+    });
+
+    it('rejects a bounded int wire past what a js number holds', () => {
+        // 2^53 + 1 sits inside the declared range, and no js number holds it exactly.
+        const Ban = new CustomId('ban').snowflake('userId');
+        const body = Ban.encode({ userId: (2n ** 53n + 1n).toString() }).split(':')[1] ?? '';
+        const Big = new CustomId('big').int('v', 0, 2 ** 60);
+        expect(thrownCode(() => Big.decode(`${Big.routeKey}:${body}`))).toBe(SeedcordErrorCode.CustomIdWireInvalid);
     });
 
     it('rejects a packed block with leftover bits after unpacking', () => {
@@ -506,6 +528,19 @@ describe('CustomId definition guards', () => {
         expect(thrownCode(() => new CustomId('poll').oneOf('choice', empty))).toBe(
             SeedcordErrorCode.CustomIdEmptyChoices
         );
+    });
+
+    it('rejects a someOf with no choices', () => {
+        const empty = [] as unknown as [string]; // fixture cast, bypass NonEmptyTuple to reach the runtime guard
+        expect(thrownCode(() => new CustomId('assign').someOf('roles', empty))).toBe(
+            SeedcordErrorCode.CustomIdEmptyChoices
+        );
+    });
+
+    it('names the method that was called with no choices', () => {
+        const empty = [] as unknown as [string]; // fixture cast, bypass NonEmptyTuple to reach the runtime guard
+        expect(thrownMessage(() => new CustomId('assign').someOf('roles', empty))).toContain('someOf()');
+        expect(thrownMessage(() => new CustomId('poll').oneOf('choice', empty))).toContain('oneOf()');
     });
 
     it('rejects an int with min over max', () => {
