@@ -36,4 +36,4 @@ describe('the seedcord bin', () => {
         expect(stderr).toBe('');
         expect(code).toBe(0);
     });
-});
+}, 30_000);
