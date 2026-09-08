@@ -20,7 +20,8 @@ import type {
     APIUser
 } from 'discord-api-types/v10';
 
-type SelectInteraction<Data> = APIMessageComponentSelectMenuInteraction & { data: Data };
+/** @internal */
+export type SelectInteraction<Data> = APIMessageComponentSelectMenuInteraction & { data: Data };
 
 // discord-api-types marks resolved required. discord.js guards it anyway, since a menu that resolved
 // nothing arrives without the key.
