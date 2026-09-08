@@ -171,6 +171,81 @@ describe('CustomId round-trips', () => {
     });
 });
 
+describe('someOf fields', () => {
+    // a self-assign role menu, where the confirm button carries what the member picked.
+    const ROLES = ['reader', 'artist', 'streamer', 'events', 'vip'] as const;
+    const Assign = new CustomId('assign').someOf('roles', ROLES);
+
+    it('round-trips a subset', () => {
+        expect(Assign.decode(Assign.encode({ roles: ['artist', 'events'] })).roles).toEqual(['artist', 'events']);
+    });
+
+    it('collapses a repeated choice into one entry', () => {
+        expect(Assign.decode(Assign.encode({ roles: ['artist', 'events', 'artist', 'events'] })).roles).toEqual([
+            'artist',
+            'events'
+        ]);
+    });
+
+    it('round-trips the empty set', () => {
+        expect(Assign.decode(Assign.encode({ roles: [] })).roles).toEqual([]);
+    });
+
+    it('round-trips every choice at once', () => {
+        expect(Assign.decode(Assign.encode({ roles: [...ROLES] })).roles).toEqual([...ROLES]);
+    });
+
+    it('returns the choices in declaration order', () => {
+        expect(Assign.decode(Assign.encode({ roles: ['vip', 'reader', 'events'] })).roles).toEqual([
+            'reader',
+            'events',
+            'vip'
+        ]);
+    });
+
+    it('mints one wire for the same set in either order', () => {
+        expect(Assign.encode({ roles: ['streamer', 'reader'] })).toBe(Assign.encode({ roles: ['reader', 'streamer'] }));
+    });
+
+    it('spends one bit per choice', () => {
+        // five choices pack into a radix-32 slot, which is one base64 character.
+        const body = Assign.encode({ roles: [...ROLES] }).split(':')[1];
+        expect(body).toHaveLength(1);
+    });
+
+    it('keeps null apart from the empty set when nullable', () => {
+        const Optional = new CustomId('assign').someOf('roles', ROLES, { nullable: true });
+        expect(Optional.decode(Optional.encode({ roles: [] })).roles).toEqual([]);
+        expect(Optional.decode(Optional.encode({ roles: null })).roles).toBeNull();
+    });
+
+    it('mints one wire whether a choice repeats or not', () => {
+        expect(Assign.encode({ roles: ['vip', 'vip'] })).toBe(Assign.encode({ roles: ['vip'] }));
+    });
+
+    it('rejects a choice that is not on the list', () => {
+        expect(
+            thrownCode(() =>
+                Assign.encode({
+                    // @ts-expect-error a someOf field rejects an unlisted value at compile time and at runtime
+                    roles: ['reader', 'admin']
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+
+    it('rejects a value that is not an array', () => {
+        expect(
+            thrownCode(() =>
+                Assign.encode({
+                    // @ts-expect-error a someOf field rejects a bare string at compile time and at runtime
+                    roles: 'reader'
+                })
+            )
+        ).toBe(SeedcordErrorCode.CustomIdValueRejected);
+    });
+});
+
 describe('CustomId stale detection', () => {
     it('flags a reordered oneOf as stale', () => {
         const v1 = new CustomId('poll').oneOf('choice', ['yes', 'no']);
@@ -184,6 +259,30 @@ describe('CustomId stale detection', () => {
         expect(thrownCode(() => v2.decode(v1.encode({ index: 3 })))).toBe(SeedcordErrorCode.CustomIdWireStale);
     });
 
+    it('flags a someOf that gained a choice as stale', () => {
+        const v1 = new CustomId('assign').someOf('roles', ['reader', 'artist']);
+        const v2 = new CustomId('assign').someOf('roles', ['reader', 'artist', 'vip']);
+        expect(thrownCode(() => v2.decode(v1.encode({ roles: ['artist'] })))).toBe(SeedcordErrorCode.CustomIdWireStale);
+    });
+
+    it('flags a reordered someOf as stale', () => {
+        const v1 = new CustomId('assign').someOf('roles', ['reader', 'artist']);
+        const v2 = new CustomId('assign').someOf('roles', ['artist', 'reader']);
+        expect(thrownCode(() => v2.decode(v1.encode({ roles: ['artist'] })))).toBe(SeedcordErrorCode.CustomIdWireStale);
+    });
+
+    it('flags a someOf that lost a choice as stale', () => {
+        const v1 = new CustomId('assign').someOf('roles', ['reader', 'artist', 'vip']);
+        const v2 = new CustomId('assign').someOf('roles', ['reader', 'artist']);
+        expect(thrownCode(() => v2.decode(v1.encode({ roles: ['reader'] })))).toBe(SeedcordErrorCode.CustomIdWireStale);
+    });
+
+    it('flags a oneOf swapped for a someOf as stale', () => {
+        const v1 = new CustomId('assign').oneOf('roles', ['reader', 'artist']);
+        const v2 = new CustomId('assign').someOf('roles', ['reader', 'artist']);
+        expect(thrownCode(() => v2.decode(v1.encode({ roles: 'artist' })))).toBe(SeedcordErrorCode.CustomIdWireStale);
+    });
+
     it('flags a swapped emoji oneOf as stale', () => {
         const v1 = new CustomId('react').oneOf('emoji', ['\u{1F44D}', '\u{1F44E}']);
         const v2 = new CustomId('react').oneOf('emoji', ['\u{1F44F}', '\u{1F440}']);
@@ -193,8 +292,8 @@ describe('CustomId stale detection', () => {
     });
 
     it('hashes two emoji from one surrogate block apart', () => {
-        const grin = new CustomId('e').oneOf('c', ['\u{1F600}']);
-        const beam = new CustomId('e').oneOf('c', ['\u{1F601}']);
+        const grin = new CustomId('react').oneOf('emoji', ['\u{1F600}']);
+        const beam = new CustomId('react').oneOf('emoji', ['\u{1F601}']);
         expect(grin.routeKey).not.toBe(beam.routeKey);
     });
 });
