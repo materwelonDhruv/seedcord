@@ -236,7 +236,7 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
         }
     }
 
-    // a timed-out init never reaches completedInits, so shutdown skips this plugin.
+    // a timed-out init never reaches completedInits, so shutdown skips this plugin
     private disposeWhenInitResolves(attachment: Attachment, running: Promise<void>): void {
         const dispose = attachment.instance.dispose?.bind(attachment.instance);
         if (!dispose) return;
@@ -247,7 +247,7 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
                 withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
                     (caught: unknown) => this.pluginLogger.warn('dispose after a timed-out init failed', caught)
                 ),
-            // a rejected init cleans up in its own catch
+            // dispose never runs for an init that threw
             () => undefined
         );
     }

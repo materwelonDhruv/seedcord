@@ -176,11 +176,12 @@ export interface Config {
     lifecycle?: LifecycleConfig;
 }
 
-/** Bounds the framework applies to the coordinated shutdown sequence. */
+/** Timing settings for the coordinated shutdown sequence. */
 export interface LifecycleConfig {
     /**
-     * How long the whole coordinated shutdown may take, in milliseconds. Every task's own timeout is
-     * clamped to what remains, so a phase that overruns leaves less for the teardowns after it.
+     * How long the whole coordinated shutdown may take, in milliseconds. Each task's own timeout
+     * clamps to what the budget has left, so a phase that overruns leaves less for the teardowns
+     * after it.
      *
      * Set it below your platform's kill window. Kubernetes sends SIGKILL 30 seconds after SIGTERM by
      * default, and `docker stop` waits 10.

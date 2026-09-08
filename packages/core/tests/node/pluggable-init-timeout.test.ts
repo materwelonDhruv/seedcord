@@ -17,7 +17,6 @@ const SETTLE_MS = 90;
 
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-// stands in for the pool or socket a real plugin opens in init()
 class SlowConnect extends Plugin {
     public connectionOpen = false;
     public disposeCalls = 0;
