@@ -5,6 +5,7 @@ export {
     ComponentKindBrand,
     ContextMenuKindBrand,
     ContextMenuNamesBrand,
+    MiddlewareKindsBrand,
     SlashRouteBrand
 } from '#decorators/brands';
 export { setBotColor } from '#components/botColorHolder';

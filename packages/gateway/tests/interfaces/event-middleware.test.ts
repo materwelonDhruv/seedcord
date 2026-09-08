@@ -7,7 +7,7 @@ import { EventMiddleware } from '#handlers/event';
 import { InteractionMiddleware } from '#handlers/interaction';
 
 import type { Core } from '#interfaces/Core';
-import type { Repliables, ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
+import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { ClientEvents } from 'discord.js';
 
 const core = {} as unknown as Core;
@@ -155,9 +155,9 @@ class BadWideGeneric extends EventMiddleware<Events.MessageCreate | Events.Guild
 }
 void BadWideGeneric;
 
-// interaction middleware is unchanged, catchall over Repliables, no events
+// a catchall interaction middleware takes no events
 @Middleware(MiddlewareType.Interaction, 0)
-class GoodInteraction extends InteractionMiddleware<Repliables> {
+class GoodInteraction extends InteractionMiddleware {
     async execute(): Promise<void> {
         await Promise.resolve();
     }
@@ -169,7 +169,7 @@ describe('Middleware event cross-check', () => {
         expect(() => {
             // justified: a JS consumer without types passing events to interaction middleware, the cast mimics that
             @Middleware(MiddlewareType.Interaction, 0, { events: [Events.MessageCreate] } as never)
-            class Bad extends InteractionMiddleware<Repliables> {
+            class Bad extends InteractionMiddleware {
                 async execute(): Promise<void> {
                     await Promise.resolve();
                 }

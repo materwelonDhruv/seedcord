@@ -7,3 +7,4 @@ export const ContextMenuKindBrand: unique symbol = Symbol('seedcord:brand:contex
 export const ContextMenuNamesBrand: unique symbol = Symbol('seedcord:brand:context-menu-names');
 export const ComponentKindBrand: unique symbol = Symbol('seedcord:brand:component-kind');
 export const ComponentDefsBrand: unique symbol = Symbol('seedcord:brand:component-defs');
+export const MiddlewareKindsBrand: unique symbol = Symbol('seedcord:brand:middleware-kinds');

@@ -4,7 +4,7 @@ import { SeedcordTypeError } from '@seedcord/errors/internal';
 
 import type { EventMiddleware } from '#handlers/event';
 import type { InteractionMiddleware } from '#handlers/interaction';
-import type { Repliables, ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
+import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { Constructor } from 'type-fest';
 
 /**
@@ -64,7 +64,7 @@ export function Middleware<MType extends MiddlewareType, const Events extends re
 ) {
     return (
         ctor: MType extends MiddlewareType.Interaction
-            ? Constructor<InteractionMiddleware<Repliables>>
+            ? Constructor<InteractionMiddleware>
             : Events extends readonly []
               ? Constructor<EventMiddleware<ValidNonInteractionKeys>>
               : Constructor<EventMiddleware<Events[number]>>

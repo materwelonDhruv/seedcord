@@ -1167,12 +1167,81 @@ describe('InteractionDispatcher Integration', () => {
             }
         `;
 
-        // refused means a gate stopped the dispatch, so every other pre-handler throw reports failed
-        it('reports failed when a middleware throws before the handler is built', async () => {
+        // only a gate refusal reports refused
+        it('reports failed when a middleware throws', async () => {
             const published = await dispatchedFor(MW_BOOM_ROUTE, 'mwboom', MW_BOOM_MIDDLEWARE);
 
             expect(published).toHaveLength(1);
             expect(published[0]).toMatchObject({ routeId: 'slash:mwboom', outcome: 'failed' });
+        });
+
+        it('lets the handler edit what its middleware deferred', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('shared')
+                export class SharedHandler extends SlashHandler<'shared'> {
+                    public async execute() {
+                        await this.send('done');
+                    }
+                }
+                `,
+                `
+                import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+
+                @Middleware(MiddlewareType.Interaction)
+                export class Defers extends InteractionMiddleware {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const interaction = fakeSlash('shared');
+            await controller.handleSlashCommand(interaction);
+
+            expect(interaction.deferReply).toHaveBeenCalledTimes(1);
+            expect(interaction.editReply).toHaveBeenCalledTimes(1);
+            expect(interaction.reply).not.toHaveBeenCalled();
+        });
+
+        it('skips the chain when the handler constructor throws', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ctorboom')
+                export class CtorBoomHandler extends SlashHandler<'ctorboom'> {
+                    constructor(...args) {
+                        super(...args);
+                        throw new Error('ctor exploded');
+                    }
+                    public async execute() {}
+                }
+                `,
+                `
+                import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+
+                @Middleware(MiddlewareType.Interaction)
+                export class Defers extends InteractionMiddleware {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            const interaction = fakeSlash('ctorboom');
+            await controller.handleSlashCommand(interaction);
+
+            // the outcome proves the dispatch reached the constructor
+            expect(published[0]).toMatchObject({ routeId: 'slash:ctorboom', outcome: 'failed' });
+            expect(interaction.deferReply).not.toHaveBeenCalled();
         });
 
         // the unhandled default carries no route decorator, so its own sender has no dispatch route id
@@ -1198,8 +1267,7 @@ describe('InteractionDispatcher Integration', () => {
             expect(written[0]?.routeId).toBe('slash:unregistered');
         });
 
-        // a middleware throw leaves no handler sender, so the boundary builds its own and the two keys
-        // have to agree on the route a consumer groups by
+        // a consumer groups the two keys by route, so they have to agree
         it('publishes one route id across both keys when a middleware throws', async () => {
             const controller = await bootWith(MW_BOOM_ROUTE, MW_BOOM_MIDDLEWARE);
             const dispatched: SubscriptionData<'interactionDispatched'>[] = [];

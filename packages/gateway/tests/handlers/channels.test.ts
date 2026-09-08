@@ -1,3 +1,4 @@
+import { DispatchContext } from '@seedcord/core';
 import { LoggerChannelRegistry } from '@seedcord/logger';
 import { beforeEach, describe, expect, it } from 'vitest';
 
@@ -9,7 +10,9 @@ import { SlashHandler } from '#handlers/interaction/SlashHandler';
 
 import { mockInteraction } from '../utils/senderMock';
 
+import type { ReplySender } from '#bot/ReplySender';
 import type { Core } from '#interfaces/Core';
+import type { InteractionKind } from '@seedcord/core';
 import type { ILogSink, LogRecord } from '@seedcord/types';
 import type { AutocompleteInteraction, ChatInputCommandInteraction, ClientEvents } from 'discord.js';
 
@@ -48,7 +51,7 @@ class Filter extends EventMiddleware<'messageCreate'> {
     }
 }
 
-class Guard extends InteractionMiddleware<ChatInputCommandInteraction<'cached'>> {
+class Guard extends InteractionMiddleware<InteractionKind.Slash> {
     public execute(): Promise<void> {
         this.logger.info('ran');
         return Promise.resolve();
@@ -81,7 +84,13 @@ describe('gateway handler log channels', () => {
         // justified: the fixture implements only the interaction surface these bases read
         const interaction = mockInteraction();
 
-        await new Guard(interaction as unknown as ChatInputCommandInteraction<'cached'>, core).execute();
+        await new Guard(
+            interaction as unknown as ChatInputCommandInteraction,
+            core,
+            new DispatchContext('slash:ban'),
+            // justified: this probe only reads the logger channel, no reply member runs
+            {} as ReplySender
+        ).execute();
         await new Suggest(interaction as unknown as AutocompleteInteraction<undefined>, core).execute();
         await new Ban(interaction as unknown as ChatInputCommandInteraction<undefined>, core).execute();
 

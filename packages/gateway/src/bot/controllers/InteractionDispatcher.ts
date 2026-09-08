@@ -412,13 +412,18 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         // outside the try so the fault boundary keeps the handler's ack state
         let sender: ReplySender | undefined;
         try {
-            if (!interaction.isAutocomplete()) await this.runMiddlewares(interaction as Repliables);
-
             const HandlerCtor = matched ?? fallback;
             const dispatch = new DispatchContext(routeIdOf(HandlerCtor) ?? routeId);
             routeId = dispatch.routeId ?? routeId;
+
             const handler = this.buildHandler(HandlerCtor, interaction as Repliables, dispatch, key, !matched);
             if (handler instanceof RepliableHandler) sender = handler.sender;
+
+            // the chain shares the handler's sender
+            if (!interaction.isAutocomplete() && sender) {
+                await this.runMiddlewares(interaction as Repliables, dispatch, sender);
+            }
+
             // @Gated rejects autocomplete at compile time, since it has no reply target. this is the backstop
             const refusal = interaction.isAutocomplete()
                 ? null
@@ -463,9 +468,13 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
         return new HandlerCtor(interaction as never, this.core, dispatch);
     }
 
-    private async runMiddlewares(interaction: Repliables): Promise<void> {
+    private async runMiddlewares(
+        interaction: Repliables,
+        dispatch: DispatchContext,
+        sender: ReplySender
+    ): Promise<void> {
         for (const { ctor: Middleware } of this.middlewares) {
-            const middleware = new Middleware(interaction, this.core);
+            const middleware = new Middleware(interaction, this.core, dispatch, sender);
             await middleware.execute();
         }
     }
