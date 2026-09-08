@@ -4,11 +4,11 @@ import path from 'node:path';
 
 import { extractPackageApiModel } from './ae-extractor';
 import { writeManifest } from './manifest';
-import { ApiDocsPaths } from './paths';
+import { ApiDocsPaths } from './ApiDocsPaths';
 import { buildSourceIndex } from './source-index';
 import { discoverWorkspacePackages, readPackageManifest, readReadme, unscopedName } from './workspace';
 
-import type { ApiDocsPathConfig } from './paths';
+import type { ApiDocsPathConfig } from './ApiDocsPaths';
 import type { PackageDocResult } from './types';
 
 type ConsoleLike = Pick<Console, 'log'> & Partial<Pick<Console, 'error'>>;

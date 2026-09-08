@@ -77,7 +77,7 @@ export { PaginatorBase } from '#pagination/PaginatorBase';
 export type { PaginatorConfig } from '#pagination/PaginatorBase';
 export { ArraySourceBase, CursorSourceBase } from '#pagination/sources';
 export type { PageSourceBase } from '#pagination/sources';
-export type { ControlCosmetics, ControlKey, PaginatorControls } from '#pagination/controls';
+export type { ControlCosmetics, ControlKey, PaginatorControls } from '#pagination/Controls';
 export type { ItemRender, PageRender } from '#pagination/render';
 
 export { Bus, Subscribe, Subscriber, WebhookLog, WebhookUrl } from '#subscribers/index';

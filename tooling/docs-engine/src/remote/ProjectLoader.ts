@@ -1,7 +1,7 @@
 import { ProjectFetchError } from '#remote/errors';
 import { validateProjectFile } from '#remote/project-file';
 
-import type { Fetcher } from '#remote/index-loader';
+import type { Fetcher } from '#remote/IndexLoader';
 import type { DocProjectFile } from '#remote/project-file';
 
 const defaultFetcher: Fetcher = (url) => globalThis.fetch(url);

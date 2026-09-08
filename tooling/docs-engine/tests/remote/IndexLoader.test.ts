@@ -2,10 +2,10 @@ import { describe, expect, it, vi } from 'vitest';
 
 import { IndexFetchError } from '#remote/errors';
 import { validateIndex } from '#remote/index-json';
-import { IndexLoader } from '#remote/index-loader';
+import { IndexLoader } from '#remote/IndexLoader';
 
 import type { IndexJson, PackageIndexEntry } from '#remote/index-json';
-import type { Fetcher } from '#remote/index-loader';
+import type { Fetcher } from '#remote/IndexLoader';
 
 const INDEX_URL = 'https://cdn.test/index.json';
 

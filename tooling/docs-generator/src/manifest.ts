@@ -2,9 +2,9 @@ import { writeFile } from 'node:fs/promises';
 
 import { Extractor } from '@microsoft/api-extractor';
 
-import { defaultPaths } from './paths';
+import { defaultPaths } from './ApiDocsPaths';
 
-import type { ApiDocsPaths } from './paths';
+import type { ApiDocsPaths } from './ApiDocsPaths';
 import type { ManifestRepository, PackageDocResult } from './types';
 
 export async function writeManifest(

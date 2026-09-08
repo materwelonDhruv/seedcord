@@ -1,9 +1,9 @@
 import { TextDisplayBuilder } from '@discordjs/builders';
 
 import { BuilderComponent } from '#components/Component';
-import { Controls } from '#pagination/controls';
+import { Controls } from '#pagination/Controls';
 
-import type { ControlKey, PaginatorControls } from '#pagination/controls';
+import type { ControlKey, PaginatorControls } from '#pagination/Controls';
 import type { PageCursor } from '#pagination/cursor';
 import type { PageView } from '#pagination/PageView';
 import type { ButtonBuilder, ActionRowBuilder } from '@discordjs/builders';

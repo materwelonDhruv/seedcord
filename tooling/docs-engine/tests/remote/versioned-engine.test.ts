@@ -1,7 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest';
 
 import { IndexFetchError, PackageVersionNotFoundError, ProjectFetchError } from '#remote/errors';
-import { IndexLoader } from '#remote/index-loader';
+import { IndexLoader } from '#remote/IndexLoader';
 import { serializeProject } from '#remote/project-file';
 import { VersionedDocsEngine } from '#remote/VersionedDocsEngine';
 
@@ -9,7 +9,7 @@ import { MOCK_PACKAGE_FULL_NAME } from '../utils/constants';
 import { getMockPackage } from '../utils/test-helpers';
 
 import type { IndexJson } from '#remote/index-json';
-import type { Fetcher } from '#remote/index-loader';
+import type { Fetcher } from '#remote/IndexLoader';
 import type { DocProjectFile } from '#remote/project-file';
 import type { DocPackageModel } from '#src/types';
 
