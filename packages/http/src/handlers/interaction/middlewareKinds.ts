@@ -1,5 +1,5 @@
 import type { SelectInteraction } from './components/SelectMenuHandler';
-import type { InteractionKind } from '@seedcord/core';
+import type { InteractionKind, MiddlewareKind } from '@seedcord/core';
 import type {
     APIChatInputApplicationCommandInteraction,
     APIMessageApplicationCommandInteraction,
@@ -13,8 +13,7 @@ import type {
     APIUserApplicationCommandInteraction
 } from 'discord-api-types/v10';
 
-// a kind added to the enum stays out of the middleware surface until someone gives it an entry here
-interface InteractionForKind {
+interface Payloads {
     [InteractionKind.Slash]: APIChatInputApplicationCommandInteraction;
     [InteractionKind.Button]: APIMessageComponentButtonInteraction;
     [InteractionKind.Modal]: APIModalSubmitInteraction;
@@ -27,8 +26,8 @@ interface InteractionForKind {
     [InteractionKind.UserContextMenu]: APIUserApplicationCommandInteraction;
 }
 
-/** The interaction kinds a middleware can filter on. Autocomplete carries no reply target. */
-export type MiddlewareKind = keyof InteractionForKind;
+// indexing Payloads by every MiddlewareKind means a kind added to core breaks here until it is mapped
+type InteractionForKind = { [Kind in MiddlewareKind]: Payloads[Kind] };
 
 /** @internal */
 export type InteractionOf<Kind extends MiddlewareKind> = InteractionForKind[Kind];

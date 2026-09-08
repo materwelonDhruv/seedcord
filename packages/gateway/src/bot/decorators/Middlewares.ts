@@ -1,90 +1,74 @@
-import { MiddlewareMetadataKey } from '@seedcord/core/internal';
+import { EventMiddlewareMetadataKey } from '@seedcord/core/internal';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { SeedcordTypeError } from '@seedcord/errors/internal';
 
 import type { EventMiddleware } from '#handlers/event';
-import type { InteractionMiddleware } from '#handlers/interaction';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { Constructor } from 'type-fest';
 
-/**
- * Middleware types supported by Seedcord
- */
-export enum MiddlewareType {
-    Interaction = 'interaction',
-    Event = 'event'
-}
-
-/**
- * Additional middleware registration options
- *
- * @typeParam MType - The type of middleware being registered
- */
-export interface MiddlewareOptions<
-    MType extends MiddlewareType,
-    Events extends readonly ValidNonInteractionKeys[] = readonly ValidNonInteractionKeys[]
-> {
+/** Registration options for an event middleware. */
+export interface EventMiddlewareOptions<Events extends readonly ValidNonInteractionKeys[]> {
     /**
-     * Restrict event middleware execution to specific Discord client events. The middleware's `EventMiddleware`
-     * generic must list the same events, or applying the decorator is a compile error.
+     * Restrict this middleware to certain Discord client events. The middleware's `EventMiddleware`
+     * generic must list the same events, or applying the decorator is a compile error. Omit it to run on
+     * every event.
      */
-    readonly events?: MType extends MiddlewareType.Event ? Events : never;
+    readonly events?: Events;
+    /** Lower runs earlier. Two middleware sharing a priority run in registration order.
+     *
+     * @defaultValue 0
+     */
+    readonly priority?: number;
 }
 
 /** @internal */
-export interface MiddlewareMetadata {
-    priority: number;
-    type: MiddlewareType;
-    events?: readonly ValidNonInteractionKeys[];
+export interface EventMiddlewareMetadata {
+    readonly priority: number;
+    readonly events?: readonly ValidNonInteractionKeys[];
 }
 
 /**
- * Decorator used to register middleware with priority ordering. The lower the priority number, the earlier it runs.
+ * Registers an event middleware. It runs before the handlers for every event it lists.
  *
- * Interaction middleware cannot specify event filters.
- *
- * @param type - Middleware kind from {@link MiddlewareType}
- * @param priority - Ordering value where lower runs earlier. {@default `0` }
- * @param options - Additional registration options
- *
+ * @param options - The events this middleware runs on and its ordering.
  * @decorator
  *
  * @example
  * ```ts
- * \@Middleware(MiddlewareType.Event, 10, { events: [Events.MessageCreate, Events.MessageUpdate] })
- * class MyEventMiddleware extends EventMiddleware {}
+ * \@RegisterEventMiddleware({ events: [Events.MessageCreate], priority: 10 })
+ * class Audit extends EventMiddleware<Events.MessageCreate> {
+ *     async execute() {
+ *         this.logger.info(this.event[0].id);
+ *     }
+ * }
  * ```
- * @throws A **SeedcordTypeError** If priority is not a finite number
- * @throws A **SeedcordError** If interaction middleware specifies event filters
+ *
+ * @throws A **SeedcordTypeError** If `priority` is not a finite number.
  */
-export function Middleware<MType extends MiddlewareType, const Events extends readonly ValidNonInteractionKeys[] = []>(
-    type: MType,
-    priority = 0,
-    options: MiddlewareOptions<MType, Events> = {}
-) {
-    return (
-        ctor: MType extends MiddlewareType.Interaction
-            ? Constructor<InteractionMiddleware>
-            : Events extends readonly []
-              ? Constructor<EventMiddleware<ValidNonInteractionKeys>>
-              : Constructor<EventMiddleware<Events[number]>>
-    ): void => {
-        const normalizedPriority = Number(priority);
-        if (!Number.isFinite(normalizedPriority)) {
+export function RegisterEventMiddleware<
+    const Events extends readonly ValidNonInteractionKeys[] = readonly ValidNonInteractionKeys[]
+>(options: EventMiddlewareOptions<Events> = {}) {
+    return function (
+        ctor: Events extends readonly []
+            ? Constructor<EventMiddleware<ValidNonInteractionKeys>>
+            : Constructor<EventMiddleware<Events[number]>>
+    ): void {
+        const priority = Number(options.priority ?? 0);
+        if (!Number.isFinite(priority)) {
             throw new SeedcordTypeError(SeedcordErrorCode.DecoratorInvalidMiddlewarePriority);
         }
 
-        if (type === MiddlewareType.Interaction && Array.isArray(options.events) && options.events.length > 0) {
-            throw new SeedcordTypeError(SeedcordErrorCode.DecoratorInteractionEventFilter);
-        }
-
-        const metadata: MiddlewareMetadata = {
-            priority: normalizedPriority,
-            type,
-            // an empty array means catchall
+        const metadata: EventMiddlewareMetadata = {
+            priority,
             ...(options.events && options.events.length > 0 && { events: options.events })
         };
 
-        Reflect.defineMetadata(MiddlewareMetadataKey, metadata, ctor);
+        Reflect.defineMetadata(EventMiddlewareMetadataKey, metadata, ctor);
     };
+}
+
+/** @internal */
+export function eventMiddlewareMetaOf(constructor: object): EventMiddlewareMetadata | undefined {
+    const saved: unknown = Reflect.getMetadata(EventMiddlewareMetadataKey, constructor);
+    return saved as EventMiddlewareMetadata | undefined;
 }

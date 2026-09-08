@@ -8,7 +8,8 @@ import {
     outcomeFor,
     queuedMsFor,
     reportDispatch,
-    MiddlewareMetadataKey,
+    InteractionMiddlewareMetadataKey,
+    interactionMiddlewareMetaOf,
     PublishDefault,
     routeIdOf,
     runHandlerGates,
@@ -24,7 +25,6 @@ import { traverseDirectory } from '@seedcord/utils/node';
 import { Events } from 'discord.js';
 import { Envapter } from 'envapt';
 
-import { MiddlewareType } from '#bDecorators/Middlewares';
 import { CONFIRM_DEF } from '#bot/confirm/reserved';
 import { UnhandledAutocomplete, UnhandledRepliable } from '#bot/defaults';
 import { interactionGateContext } from '#bot/gates/runGates';
@@ -34,7 +34,6 @@ import { AutocompleteHandler, InteractionMiddleware } from '#handlers/interactio
 import { InteractionHandler } from '#handlers/interaction/InteractionHandler';
 import { RepliableHandler } from '#handlers/RepliableHandler';
 
-import type { MiddlewareMetadata } from '#bDecorators/Middlewares';
 import type { ReplySender } from '#bot/ReplySender';
 import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { Core } from '#interfaces/Core';
@@ -260,8 +259,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     }
 
     private registerMiddleware(middlewareCtor: InteractionMiddlewareConstructor, relativePath: string): void {
-        const metadata = Reflect.getMetadata(MiddlewareMetadataKey, middlewareCtor) as MiddlewareMetadata | undefined;
-        if (metadata?.type !== MiddlewareType.Interaction) return;
+        const metadata = interactionMiddlewareMetaOf(middlewareCtor);
+        if (!metadata) return;
 
         // same class re-registered (double import or an HMR re-scan) is idempotent, matching event middleware
         if (this.middlewares.some((entry) => entry.ctor === middlewareCtor)) return;
@@ -291,7 +290,9 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
     private isMiddlewareClass(obj: unknown): obj is InteractionMiddlewareConstructor {
         if (typeof obj !== 'function') return false;
-        return obj.prototype instanceof InteractionMiddleware && Reflect.hasMetadata(MiddlewareMetadataKey, obj);
+        return (
+            obj.prototype instanceof InteractionMiddleware && Reflect.hasMetadata(InteractionMiddlewareMetadataKey, obj)
+        );
     }
 
     private registerHandler(handlerClass: HandlerConstructor, relativePath: string): void {

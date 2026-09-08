@@ -120,8 +120,8 @@ export abstract class AutocompleteHandler<Route extends string> extends BaseHand
     }
 }
 
-// a repliable this.event, but extends BaseHandler directly so it never passes the InteractionHandler gate
-export abstract class InteractionMiddleware<Event extends Repliable> extends BaseHandler<Event> {}
+// sits beside InteractionHandler, never under it
+export abstract class InteractionMiddleware<Event extends Repliable = Repliable> extends BaseHandler<Event> {}
 
 export abstract class EventMiddleware<Event = unknown> extends BaseHandler<Event> {}
 

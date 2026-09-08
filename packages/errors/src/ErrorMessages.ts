@@ -54,7 +54,6 @@ const messages = {
     [SeedcordErrorCode.CoreBusEmitUnavailable]: (event: string) =>
         `core.bus.emit('${event}') would reach your on() listeners and skip every Subscriber class. Call core.bus.publish('${event}', data) to run both.`,
 
-    [SeedcordErrorCode.DecoratorInteractionEventFilter]: () => 'Interaction middleware cannot specify event filters.',
     [SeedcordErrorCode.DecoratorCommandAlreadyRegistered]: (
         commandName: string,
         existingScope: string,

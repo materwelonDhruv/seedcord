@@ -1,3 +1,5 @@
+import type { TypedExclude } from '@seedcord/types';
+
 /**
  * Every interaction kind seedcord routes.
  */
@@ -15,10 +17,16 @@ export enum InteractionKind {
     Autocomplete = 'autocomplete'
 }
 
+/**
+ * The interaction kinds a middleware can filter on. Autocomplete carries no reply target.
+ */
+export type MiddlewareKind = TypedExclude<InteractionKind, InteractionKind.Autocomplete>;
+
 // Symbol.for so a second copy of this module reads the same slots
 export const CommandMetadataKey = Symbol.for('seedcord:command:metadata');
 export const InteractionMetadataKey = Symbol.for('seedcord:interaction:metadata');
-export const MiddlewareMetadataKey = Symbol.for('seedcord:middleware:metadata');
+export const InteractionMiddlewareMetadataKey = Symbol.for('seedcord:middleware:interaction:metadata');
+export const EventMiddlewareMetadataKey = Symbol.for('seedcord:middleware:event:metadata');
 export const SubscribeMetadataKey = Symbol.for('seedcord:subscribe:metadata');
 export const EventMetadataKey = Symbol.for('seedcord:event:metadata');
 export const GatedMetadataKey = Symbol.for('seedcord:gated:metadata');

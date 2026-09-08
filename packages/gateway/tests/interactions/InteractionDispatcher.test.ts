@@ -229,9 +229,9 @@ describe('InteractionDispatcher Integration', () => {
             await testEnv.createFile(
                 `${middlewaresDir}/${file}.ts`,
                 `
-                import { Middleware, MiddlewareType, InteractionMiddleware } from '${seedcordPath}';
+                import { RegisterInteractionMiddleware, InteractionMiddleware } from '${seedcordPath}';
 
-                @Middleware(MiddlewareType.Interaction, 0)
+                @RegisterInteractionMiddleware()
                 export class RateLimit extends InteractionMiddleware {
                     public async execute() {
                         await Promise.resolve();
@@ -1157,9 +1157,9 @@ describe('InteractionDispatcher Integration', () => {
             }
         `;
         const MW_BOOM_MIDDLEWARE = `
-            import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
 
-            @Middleware(MiddlewareType.Interaction)
+            @RegisterInteractionMiddleware()
             export class BoomMiddleware extends InteractionMiddleware {
                 public async execute() {
                     throw new Error('middleware exploded');
@@ -1188,9 +1188,9 @@ describe('InteractionDispatcher Integration', () => {
                 }
                 `,
                 `
-                import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
 
-                @Middleware(MiddlewareType.Interaction)
+                @RegisterInteractionMiddleware()
                 export class Defers extends InteractionMiddleware {
                     public async execute() {
                         await this.defer();
@@ -1222,9 +1222,9 @@ describe('InteractionDispatcher Integration', () => {
                 }
                 `,
                 `
-                import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
 
-                @Middleware(MiddlewareType.Interaction)
+                @RegisterInteractionMiddleware()
                 export class Defers extends InteractionMiddleware {
                     public async execute() {
                         await this.defer();

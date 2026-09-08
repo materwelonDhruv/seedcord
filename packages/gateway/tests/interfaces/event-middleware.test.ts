@@ -1,8 +1,9 @@
+import { RegisterInteractionMiddleware } from '@seedcord/core';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { Events } from 'discord.js';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
-import { Middleware, MiddlewareType } from '#bDecorators/Middlewares';
+import { RegisterEventMiddleware } from '#bDecorators/Middlewares';
 import { EventMiddleware } from '#handlers/event';
 import { InteractionMiddleware } from '#handlers/interaction';
 
@@ -99,9 +100,9 @@ describe('EventMiddleware', () => {
     });
 });
 
-// --- @Middleware <-> EventMiddleware generic cross-check (compile-time) ---
+// --- @RegisterEventMiddleware <-> EventMiddleware generic cross-check (compile-time) ---
 
-@Middleware(MiddlewareType.Event, 0)
+@RegisterEventMiddleware()
 class GoodCatchall extends EventMiddleware {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -109,7 +110,7 @@ class GoodCatchall extends EventMiddleware {
 }
 void GoodCatchall;
 
-@Middleware(MiddlewareType.Event, 0, { events: [Events.MessageCreate] })
+@RegisterEventMiddleware({ events: [Events.MessageCreate] })
 class GoodSingle extends EventMiddleware<Events.MessageCreate> {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -117,7 +118,7 @@ class GoodSingle extends EventMiddleware<Events.MessageCreate> {
 }
 void GoodSingle;
 
-@Middleware(MiddlewareType.Event, 0, { events: [Events.MessageCreate, Events.MessageUpdate] })
+@RegisterEventMiddleware({ events: [Events.MessageCreate, Events.MessageUpdate] })
 class GoodMulti extends EventMiddleware<Events.MessageCreate | Events.MessageUpdate> {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -127,7 +128,7 @@ void GoodMulti;
 
 // the generic names an event { events } omits
 // @ts-expect-error events lists messageCreate, the generic is guildMemberAdd
-@Middleware(MiddlewareType.Event, 0, { events: [Events.MessageCreate] })
+@RegisterEventMiddleware({ events: [Events.MessageCreate] })
 class BadMismatch extends EventMiddleware<Events.GuildMemberAdd> {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -137,7 +138,7 @@ void BadMismatch;
 
 // { events } is a superset of the generic
 // @ts-expect-error events lists messageUpdate, the generic omits it
-@Middleware(MiddlewareType.Event, 0, { events: [Events.MessageCreate, Events.MessageUpdate] })
+@RegisterEventMiddleware({ events: [Events.MessageCreate, Events.MessageUpdate] })
 class BadNarrowGeneric extends EventMiddleware<Events.MessageCreate> {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -147,7 +148,7 @@ void BadNarrowGeneric;
 
 // the generic is a superset of { events }
 // @ts-expect-error the generic lists guildMemberAdd, { events } omits it
-@Middleware(MiddlewareType.Event, 0, { events: [Events.MessageCreate] })
+@RegisterEventMiddleware({ events: [Events.MessageCreate] })
 class BadWideGeneric extends EventMiddleware<Events.MessageCreate | Events.GuildMemberAdd> {
     async execute(): Promise<void> {
         await Promise.resolve();
@@ -155,26 +156,10 @@ class BadWideGeneric extends EventMiddleware<Events.MessageCreate | Events.Guild
 }
 void BadWideGeneric;
 
-// a catchall interaction middleware takes no events
-@Middleware(MiddlewareType.Interaction, 0)
+@RegisterInteractionMiddleware()
 class GoodInteraction extends InteractionMiddleware {
     async execute(): Promise<void> {
         await Promise.resolve();
     }
 }
 void GoodInteraction;
-
-describe('Middleware event cross-check', () => {
-    it('rejects event filters on interaction middleware at decoration time', () => {
-        expect(() => {
-            // justified: a JS consumer without types passing events to interaction middleware, the cast mimics that
-            @Middleware(MiddlewareType.Interaction, 0, { events: [Events.MessageCreate] } as never)
-            class Bad extends InteractionMiddleware {
-                async execute(): Promise<void> {
-                    await Promise.resolve();
-                }
-            }
-            void Bad;
-        }).toThrow(expect.objectContaining({ code: SeedcordErrorCode.DecoratorInteractionEventFilter }));
-    });
-});

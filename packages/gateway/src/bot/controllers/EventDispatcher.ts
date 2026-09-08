@@ -3,7 +3,7 @@ import {
     areRoutes,
     asError,
     EventMetadataKey,
-    MiddlewareMetadataKey,
+    EventMiddlewareMetadataKey,
     PublishDefault,
     runHandlerGates
 } from '@seedcord/core/internal';
@@ -15,13 +15,12 @@ import { formatFilePath, hasKeys } from '@seedcord/utils';
 import { traverseDirectory } from '@seedcord/utils/node';
 import { Envapter } from 'envapt';
 
-import { MiddlewareType } from '#bDecorators/Middlewares';
+import { eventMiddlewareMetaOf } from '#bDecorators/Middlewares';
 import { eventGateContext } from '#bot/gates/runGates';
 import { handleEventFault } from '#bot/handleEventFault';
 import { EventHandler, EventMiddleware } from '#handlers/event';
 
 import type { RegisterEventMetadataEntry } from '#bDecorators/Events';
-import type { MiddlewareMetadata } from '#bDecorators/Middlewares';
 import type { EventHandlerConstructor, EventMiddlewareConstructor } from '#handlers/constructors';
 import type { Core } from '#interfaces/Core';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
@@ -206,8 +205,8 @@ export class EventDispatcher implements Initializeable, HmrAware {
     }
 
     private registerMiddleware(middlewareCtor: EventMiddlewareConstructor, relativePath: string): void {
-        const metadata = Reflect.getMetadata(MiddlewareMetadataKey, middlewareCtor) as MiddlewareMetadata | undefined;
-        if (metadata?.type !== MiddlewareType.Event) return;
+        const metadata = eventMiddlewareMetaOf(middlewareCtor);
+        if (!metadata) return;
 
         const alreadyRegistered = this.middlewares.some((entry) => entry.ctor === middlewareCtor);
         if (alreadyRegistered) return;
@@ -253,7 +252,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
     private isMiddlewareClass(obj: unknown): obj is EventMiddlewareConstructor {
         if (typeof obj !== 'function') return false;
-        return obj.prototype instanceof EventMiddleware && Reflect.hasMetadata(MiddlewareMetadataKey, obj);
+        return obj.prototype instanceof EventMiddleware && Reflect.hasMetadata(EventMiddlewareMetadataKey, obj);
     }
 
     private registerHandler(handlerClass: EventHandlerConstructor, relativePath: string): void {

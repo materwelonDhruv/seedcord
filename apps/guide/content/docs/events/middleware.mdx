@@ -8,8 +8,7 @@ Middleware runs before the handlers for an event. Throwing from it stops all of 
 ```ts twoslash title="src/events/middlewares/SkipMuted.ts"
 import {
     EventMiddleware,
-    Middleware,
-    MiddlewareType,
+    RegisterEventMiddleware,
     Silence
 } from '@seedcord/gateway';
 import { Events } from 'discord.js';
@@ -18,7 +17,7 @@ import { Events } from 'discord.js';
 declare function isMuted(userId: string): Promise<boolean>;
 // ---cut-end---
 
-@Middleware(MiddlewareType.Event, 0, {
+@RegisterEventMiddleware({
     events: [Events.MessageCreate]
 })
 export class SkipMuted extends EventMiddleware<Events.MessageCreate> {
@@ -32,7 +31,7 @@ export class SkipMuted extends EventMiddleware<Events.MessageCreate> {
 }
 ```
 
-[`@Middleware`](ref:gateway/Middleware) takes the kind first, then a priority, then its options. [`MiddlewareType.Event`](ref:gateway/MiddlewareType) is the kind for client events.
+[`@RegisterEventMiddleware`](ref:gateway/RegisterEventMiddleware) takes one options object. Interaction middleware takes [`@RegisterInteractionMiddleware`](ref:core/RegisterInteractionMiddleware), which filters on `{ kinds }`.
 
 ## Stopping the event
 
@@ -49,13 +48,13 @@ With several, the payload could be any of them, so `this.event` turns `never`. [
 ```ts twoslash title="src/events/middlewares/CountMessages.ts"
 import {
     EventMiddleware,
-    Middleware,
-    MiddlewareType
+    RegisterEventMiddleware
 } from '@seedcord/gateway';
 import { Events } from 'discord.js';
 // ---cut---
-@Middleware(MiddlewareType.Event, 1, {
-    events: [Events.MessageCreate, Events.MessageDelete]
+@RegisterEventMiddleware({
+    events: [Events.MessageCreate, Events.MessageDelete],
+    priority: 1
 })
 export class CountMessages extends EventMiddleware<
     Events.MessageCreate | Events.MessageDelete
@@ -71,11 +70,10 @@ Leaving `{ events }` off gives a catchall, which runs on every event that your h
 ```ts twoslash title="src/events/middlewares/Trace.ts"
 import {
     EventMiddleware,
-    Middleware,
-    MiddlewareType
+    RegisterEventMiddleware
 } from '@seedcord/gateway';
 // ---cut---
-@Middleware(MiddlewareType.Event, 2)
+@RegisterEventMiddleware({ priority: 2 })
 export class Trace extends EventMiddleware {
     public async execute(): Promise<void> {
         this.logger.debug(`${this.eventName} reached the chain`);
@@ -122,7 +120,7 @@ export const seedcord = new Seedcord({
 });
 ```
 
-A class without `@Middleware` loads and never runs, the same way a handler without `@RegisterEvent` does. The `@seedcord/middleware-missing-register-decorator` rule reports it.
+A class without `@RegisterEventMiddleware` loads and never runs, the same way a handler without `@RegisterEvent` does. The `@seedcord/middleware-missing-register-decorator` rule reports it.
 
 <Callout type="warning">
 
@@ -132,7 +130,7 @@ Middleware runs only when a handler is about to run. seedcord looks for a handle
 
 <Callout type="transport" only="gateway">
 
-`@Middleware` and both middleware bases ship on `@seedcord/gateway`. An http bot routes each interaction straight to its handler.
+`@RegisterEventMiddleware` and `EventMiddleware` ship on `@seedcord/gateway`. An http bot has no client events to run them on.
 
 </Callout>
 

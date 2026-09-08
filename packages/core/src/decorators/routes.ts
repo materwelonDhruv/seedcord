@@ -81,7 +81,9 @@ type AssertSlashRoute<Route extends keyof SlashRegistry, TCtor extends AnyHandle
 ]
     ? [SlashRouteOf<TCtor>] extends [Route]
         ? TCtor
-        : Constructor<['SlashHandler declares a route the SlashRoute decorator does not list', SlashRouteOf<TCtor>]>
+        : Constructor<
+              ['SlashHandler declares a route that the SlashRoute decorator does not list', SlashRouteOf<TCtor>]
+          >
     : Constructor<['SlashRoute does not match the SlashHandler generic', Route]>;
 
 type AssertAutocompleteRoute<Route extends keyof SlashRegistry, TCtor extends AnyHandlerCtor> = [Route] extends [
@@ -91,7 +93,7 @@ type AssertAutocompleteRoute<Route extends keyof SlashRegistry, TCtor extends An
         ? TCtor
         : Constructor<
               [
-                  'AutocompleteHandler declares a command the AutocompleteRoute decorator does not list',
+                  'AutocompleteHandler declares a command that the AutocompleteRoute decorator does not list',
                   AutocompleteRouteOf<TCtor>
               ]
           >
@@ -108,14 +110,14 @@ type AssertContextMenuRoute<
                 ? TCtor
                 : Constructor<
                       [
-                          'ContextMenuHandler declares a name the ContextMenuRoute decorator does not list',
+                          'ContextMenuHandler declares a name that the ContextMenuRoute decorator does not list',
                           ContextMenuNamesOf<TCtor>
                       ]
                   >
-            : Constructor<['ContextMenuRoute lists a name the ContextMenuHandler generic does not declare', Names]>
+            : Constructor<['ContextMenuRoute lists a name that the ContextMenuHandler generic does not declare', Names]>
         : Constructor<
               [
-                  'ContextMenuHandler declares a kind the ContextMenuRoute decorator does not match',
+                  'ContextMenuHandler declares a kind that the ContextMenuRoute decorator does not match',
                   ContextMenuKindOf<TCtor>
               ]
           >

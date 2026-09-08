@@ -1,10 +1,10 @@
-import { EventMiddleware, Middleware, MiddlewareType } from '@seedcord/gateway';
+import { EventMiddleware, RegisterEventMiddleware } from '@seedcord/gateway';
 
 /**
- * a catchall middleware. with no `{ events }` filter, `this.event` is `never`, so the fired event is read from
- * `this.eventName`.
+ * a catchall middleware. omitting `{ events }` leaves `this.event` as `never`. `this.eventName` carries
+ * the fired event.
  */
-@Middleware(MiddlewareType.Event, 2)
+@RegisterEventMiddleware({ priority: 2 })
 export class MiddlewareLogger2 extends EventMiddleware {
     public async execute(): Promise<void> {
         this.logger.info(`event → Priority 2 (${this.eventName})`);

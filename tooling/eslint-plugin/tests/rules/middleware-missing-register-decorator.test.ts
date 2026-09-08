@@ -10,31 +10,31 @@ ruleTester.run('middleware-missing-register-decorator', rule, {
     valid: [
         // decorated middleware, the real shape
         dedent`
-            import { EventMiddleware, Middleware } from 'seedcord';
-            @Middleware(MiddlewareType.Event, 0)
+            import { EventMiddleware, RegisterEventMiddleware } from 'seedcord';
+            @RegisterEventMiddleware()
             export class LogMw extends EventMiddleware {}
         `,
         dedent`
-            import { InteractionMiddleware, Middleware } from 'seedcord';
-            @Middleware(MiddlewareType.Interaction, 0)
-            export class AuthMw extends InteractionMiddleware<Repliables> {}
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from 'seedcord';
+            @RegisterInteractionMiddleware()
+            export class AuthMw extends InteractionMiddleware {}
         `,
         dedent`
-            import { EventMiddleware, Middleware } from 'seedcord';
-            @Middleware(MiddlewareType.Event, 5, { events: [Events.MessageCreate] })
+            import { EventMiddleware, RegisterEventMiddleware } from 'seedcord';
+            @RegisterEventMiddleware({ events: [Events.MessageCreate], priority: 5 })
             export class MsgMw extends EventMiddleware<Events.MessageCreate> {}
         `,
         // an aliased decorator import still counts
         dedent`
-            import { EventMiddleware, Middleware as Mw } from 'seedcord';
-            @Mw(MiddlewareType.Event, 0)
+            import { EventMiddleware, RegisterEventMiddleware as Mw } from 'seedcord';
+            @Mw()
             export class LogMw extends EventMiddleware {}
         `,
         // a relative decorator import counts, the framework and user barrels resolve this way
         dedent`
             import { EventMiddleware } from 'seedcord';
-            import { Middleware } from './decorators/Middleware';
-            @Middleware(MiddlewareType.Event, 0)
+            import { RegisterEventMiddleware } from './decorators/Middleware';
+            @RegisterEventMiddleware()
             export class LogMw extends EventMiddleware {}
         `,
         // abstract base is not a concrete middleware
@@ -61,12 +61,29 @@ ruleTester.run('middleware-missing-register-decorator', rule, {
         {
             code: dedent`
                 import { InteractionMiddleware } from 'seedcord';
-                export class AuthMw extends InteractionMiddleware<Repliables> {}
+                export class AuthMw extends InteractionMiddleware {}
             `,
             errors: [{ messageId: 'missingMiddleware' }]
         },
         {
-            // has a decorator, but not @Middleware
+            // each base takes its own decorator
+            code: dedent`
+                import { EventMiddleware, RegisterInteractionMiddleware } from 'seedcord';
+                @RegisterInteractionMiddleware()
+                export class LogMw extends EventMiddleware {}
+            `,
+            errors: [{ messageId: 'missingMiddleware' }]
+        },
+        {
+            code: dedent`
+                import { InteractionMiddleware, RegisterEventMiddleware } from 'seedcord';
+                @RegisterEventMiddleware()
+                export class AuthMw extends InteractionMiddleware {}
+            `,
+            errors: [{ messageId: 'missingMiddleware' }]
+        },
+        {
+            // has a decorator, but not a register one
             code: dedent`
                 import { EventMiddleware } from 'seedcord';
                 @LogUsage()
@@ -78,8 +95,8 @@ ruleTester.run('middleware-missing-register-decorator', rule, {
             // a same-named decorator from another module satisfies nothing
             code: dedent`
                 import { EventMiddleware } from 'seedcord';
-                import { Middleware } from 'some-other-lib';
-                @Middleware(MiddlewareType.Event, 0)
+                import { RegisterEventMiddleware } from 'some-other-lib';
+                @RegisterEventMiddleware()
                 export class LogMw extends EventMiddleware {}
             `,
             errors: [{ messageId: 'missingMiddleware' }]

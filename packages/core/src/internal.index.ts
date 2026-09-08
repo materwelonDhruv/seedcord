@@ -8,6 +8,8 @@ export {
     MiddlewareKindsBrand,
     SlashRouteBrand
 } from '#decorators/brands';
+export { interactionMiddlewareMetaOf } from '#decorators/middleware';
+export type { InteractionMiddlewareMetadata } from '#decorators/middleware';
 export { setBotColor } from '#components/botColorHolder';
 
 export type { PluginArgs, PluginCtor } from '#src/plugin/Plugin';
@@ -58,10 +60,11 @@ export {
 export {
     CommandMetadataKey,
     EventMetadataKey,
+    EventMiddlewareMetadataKey,
     GatedMetadataKey,
     InteractionMetadataKey,
+    InteractionMiddlewareMetadataKey,
     InteractionRouteKeys,
-    MiddlewareMetadataKey,
     SubscribeMetadataKey,
     WebhookUrlMetadataKey
 } from '#src/metadataKeys';

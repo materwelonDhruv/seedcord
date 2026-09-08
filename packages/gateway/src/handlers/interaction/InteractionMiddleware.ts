@@ -2,8 +2,8 @@ import { RepliableHandler } from '#src/handlers/RepliableHandler';
 
 import type { ReplySender } from '#bot/ReplySender';
 import type { Core } from '#interfaces/Core';
-import type { InteractionOf, MiddlewareKind } from './middlewareKinds';
-import type { DispatchContext } from '@seedcord/core';
+import type { InteractionOf } from './middlewareKinds';
+import type { DispatchContext, MiddlewareKind } from '@seedcord/core';
 import type { MiddlewareKindsBrand } from '@seedcord/core/internal';
 
 /**

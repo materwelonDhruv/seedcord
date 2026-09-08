@@ -1,11 +1,14 @@
-import { EventMiddleware, Middleware, MiddlewareType } from '@seedcord/gateway';
+import { EventMiddleware, RegisterEventMiddleware } from '@seedcord/gateway';
 import { Events } from 'discord.js';
 
 /**
- * a multi-event middleware runs the same for every event it lists, so `this.event` is `never` and the fired
- * event is read from `this.eventName`.
+ * a multi-event middleware runs the same for every event it lists. `this.eventName` carries the fired
+ * event, since `this.event` is `never` here.
  */
-@Middleware(MiddlewareType.Event, 1, { events: [Events.MessageCreate, Events.MessageDelete, Events.MessageUpdate] })
+@RegisterEventMiddleware({
+    events: [Events.MessageCreate, Events.MessageDelete, Events.MessageUpdate],
+    priority: 1
+})
 export class MiddlewareLogger1 extends EventMiddleware<
     Events.MessageCreate | Events.MessageDelete | Events.MessageUpdate
 > {
