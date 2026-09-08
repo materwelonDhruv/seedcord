@@ -95,7 +95,7 @@ export abstract class CoordinatedLifecycle<TPhase extends number> {
         );
 
         try {
-            await withTimeout(task.name, task.task, this.timeoutFor(task));
+            await withTimeout(task.name, task.task, task.timeout);
 
             this.logger.trace(
                 `${paint.italic('Completed')} task ${paint.sky.bold(task.name)} in phase ${paint.iris.bold(this.phaseEnum[phase])}`
@@ -112,10 +112,6 @@ export abstract class CoordinatedLifecycle<TPhase extends number> {
 
     protected isAborted(): boolean {
         return false;
-    }
-
-    protected timeoutFor(task: LifecycleTask): number {
-        return task.timeout;
     }
 
     protected abstract canAddTask(): boolean;

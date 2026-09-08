@@ -179,12 +179,11 @@ export interface Config {
 /** Timing settings for the coordinated shutdown sequence. */
 export interface LifecycleConfig {
     /**
-     * How long the whole coordinated shutdown may take, in milliseconds. Each task's own timeout
-     * clamps to what the budget has left, so a phase that overruns leaves less for the teardowns
-     * after it.
+     * How long seedcord waits for the coordinated shutdown, in milliseconds. Once it elapses the
+     * remaining phases stop running and the process exits.
      *
-     * Set it below your platform's kill window. Kubernetes sends SIGKILL 30 seconds after SIGTERM by
-     * default, and `docker stop` waits 10.
+     * Set it below your platform's kill window, leaving three seconds for the log flush after the
+     * phases. Kubernetes sends SIGKILL 30 seconds after SIGTERM by default, and `docker stop` waits 10.
      *
      * @defaultValue `25000`
      */

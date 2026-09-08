@@ -1,8 +1,10 @@
-import { paint } from '@seedcord/errors';
+import { SeedcordErrorCode, paint } from '@seedcord/errors';
+import { SeedcordRangeError } from '@seedcord/errors/internal';
 
 import { ShutdownPhase } from '#src/lifecycle/phases';
 
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
+import { settleWithin } from './withTimeout';
 
 import type { LifecycleTask } from './LifecycleTypes';
 
@@ -27,7 +29,7 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private onSigInt: (() => void) | null = null;
     private startupGate?: Promise<void>;
     private deadlineMs = DEFAULT_SHUTDOWN_DEADLINE_MS;
-    private expiresAt = Infinity;
+    private runningPhase: ShutdownPhase | undefined;
 
     public constructor() {
         super('Shutdown', PHASE_ORDER, ShutdownPhase);
@@ -37,11 +39,23 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
 
     /** @internal */
     public setDeadline(deadlineMs: number): void {
+        if (!Number.isFinite(deadlineMs) || deadlineMs <= 0) {
+            throw new SeedcordRangeError(SeedcordErrorCode.LifecycleInvalidShutdownDeadline, [deadlineMs]);
+        }
         this.deadlineMs = deadlineMs;
     }
 
-    protected override timeoutFor(task: LifecycleTask): number {
-        return Math.max(0, Math.min(task.timeout, this.expiresAt - Date.now()));
+    private async runPhases(failures: unknown[]): Promise<void> {
+        for (const phase of PHASE_ORDER) {
+            this.runningPhase = phase;
+            // the later teardowns still run after a phase fails
+            try {
+                await this.runPhase(phase);
+            } catch (error) {
+                failures.push(error);
+            }
+        }
+        this.runningPhase = undefined;
     }
 
     protected canAddTask(): boolean {
@@ -125,19 +139,15 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
 
         try {
             if (this.startupGate) await this.startupGate;
-            // keep this below the gate because startup can take as long as it needs
-            this.expiresAt = Date.now() + this.deadlineMs;
             const failures: unknown[] = [];
-            for (const phase of PHASE_ORDER) {
-                // run every phase so a mid-shutdown failure still attempts the later teardowns
-                try {
-                    await this.runPhase(phase);
-                } catch (error) {
-                    failures.push(error);
-                }
-            }
+            // keep this below the gate because startup can take as long as it needs
+            await settleWithin(this.runPhases(failures), this.deadlineMs);
 
-            if (failures.length > 0) {
+            if (this.runningPhase !== undefined) {
+                this.logger.error(
+                    `Shutdown deadline of ${paint.sky.bold(this.deadlineMs)}ms elapsed during phase ${paint.iris.bold(this.phaseEnum[this.runningPhase])}`
+                );
+            } else if (failures.length > 0) {
                 this.logger.error(`${paint.coral.bold('Coordinated shutdown failed')}`, ...failures);
             } else {
                 this.logger.info(`${paint.mint.bold('Coordinated shutdown completed')} successfully`);

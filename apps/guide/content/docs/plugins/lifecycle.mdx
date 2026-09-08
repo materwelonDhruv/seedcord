@@ -107,7 +107,7 @@ Task "Plugin:db:dispose" timed out after 10000ms.
 
 Declaring a timeout of zero, a negative number, or `Infinity` throws `PluginInvalidLifecycleTimeout` in the constructor, before any of your code runs.
 
-A shutdown carries one budget across all four phases, 25000ms by default. Each task's timeout clamps to whatever the budget has left, so a phase that overruns leaves less for the teardowns after it.
+A single deadline bounds the whole shutdown, 25000ms by default. Once it elapses seedcord stops running phases and exits, so the teardowns queued behind a slow task never run. Leave three seconds under your platform's kill window for the logs to flush. seedcord throws `LifecycleInvalidShutdownDeadline` at startup for a deadline that is zero, negative, or infinite.
 
 ```ts twoslash title="src/bot.ts"
 import { resolve } from 'node:path';
@@ -125,7 +125,7 @@ const seedcord = new Seedcord({
         events: { path: null }
     },
     subscribers: { path: null },
-    // keep this under your platform's kill window, 30s on kubernetes and 10s on docker stop
+    // kubernetes kills at 30s by default, docker stop at 10s
     lifecycle: { shutdownDeadline: 25_000 }
 });
 ```

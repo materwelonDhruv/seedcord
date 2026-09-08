@@ -9,8 +9,9 @@ import { SlashHandler } from '#handlers/interaction/SlashHandler';
 
 import { FROM, capturingCtx, emptyManifest, readyEngine, signedRequest, slashPayload } from './harness';
 
+import type { HttpConfig } from '#interfaces/Config';
 import type { RouteManifest } from '#src/manifest/RouteManifest';
-import type { Config, RenderContext, ReplyResponse } from '@seedcord/types';
+import type { RenderContext, ReplyResponse } from '@seedcord/types';
 import type { UUID } from 'node:crypto';
 
 const rest = vi.hoisted(() => {
@@ -125,7 +126,7 @@ describe('fault boundary', () => {
     });
 
     it('omits the Silence debug line when logSilences is false', async () => {
-        const config: Config = {
+        const config: HttpConfig = {
             bot: { interactions: { path: null }, commands: { path: null } },
             subscribers: { path: null },
             errors: { logSilences: false }
@@ -203,7 +204,7 @@ describe('fault boundary', () => {
                 return { components: [{ toJSON: () => ({ type: 10, content: 'custom fault' }) }] };
             }
         }
-        const config: Config = {
+        const config: HttpConfig = {
             bot: { interactions: { path: null }, commands: { path: null } },
             subscribers: { path: null },
             errors: { defaultError: CustomCard }
@@ -224,7 +225,7 @@ describe('fault boundary', () => {
     });
 
     it('swallows an api code listed in ignoreApiCodes without a card', async () => {
-        const config: Config = {
+        const config: HttpConfig = {
             bot: { interactions: { path: null }, commands: { path: null } },
             subscribers: { path: null },
             errors: { ignoreApiCodes: [10_008] }

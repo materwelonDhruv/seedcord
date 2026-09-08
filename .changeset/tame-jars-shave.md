@@ -1,6 +1,9 @@
 ---
 '@seedcord/core': minor
 '@seedcord/types': minor
+'@seedcord/errors': minor
 ---
 
-Added `lifecycle.shutdownDeadline`, a cap on how long the whole coordinated shutdown may take. Each task's timeout clamps to what the budget has left, so a phase that overruns leaves less for the teardowns after it. It defaults to 25000ms, which means a shutdown that used to run longer now stops there.
+**BREAKING:** A shutdown that used to run past 25 seconds now stops there and skips the remaining phases. This will probably affect no one.
+
+Added `lifecycle.shutdownDeadline`, a cap on the whole coordinated shutdown, 25000ms by default. A deadline that is zero, negative, or not finite throws `LifecycleInvalidShutdownDeadline`.
