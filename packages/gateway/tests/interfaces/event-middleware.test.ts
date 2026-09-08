@@ -1,4 +1,4 @@
-import { RegisterInteractionMiddleware } from '@seedcord/core';
+import { DispatchContext, RegisterInteractionMiddleware } from '@seedcord/core';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { Events } from 'discord.js';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -12,6 +12,7 @@ import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { ClientEvents } from 'discord.js';
 
 const core = {} as unknown as Core;
+const dispatch = new DispatchContext('event:test');
 
 function fakeMessage(): { reply: ReturnType<typeof vi.fn> } {
     return { reply: vi.fn() };
@@ -78,22 +79,22 @@ void CatchallType;
 
 describe('EventMiddleware', () => {
     it('threads the fired event name into the ctor', () => {
-        const mw = new SingleMw(createPayload(fakeMessage()), core, Events.MessageCreate);
+        const mw = new SingleMw(createPayload(fakeMessage()), core, dispatch, Events.MessageCreate);
         expect(mw.readName()).toBe(Events.MessageCreate);
     });
 
     it('reads this.event as the concrete tuple on a single-event middleware', () => {
-        const mw = new SingleMw(createPayload(fakeMessage()), core, Events.MessageCreate);
+        const mw = new SingleMw(createPayload(fakeMessage()), core, dispatch, Events.MessageCreate);
         expect(mw.readEvent()).toHaveLength(1);
     });
 
     it('exposes the fired name on a catchall middleware', () => {
-        const mw = new CatchallMw(createPayload(fakeMessage()), core, Events.MessageCreate);
+        const mw = new CatchallMw(createPayload(fakeMessage()), core, dispatch, Events.MessageCreate);
         expect(mw.readName()).toBe(Events.MessageCreate);
     });
 
     it('throws when the fired event name is unavailable', () => {
-        const mw = new SingleMw(createPayload(fakeMessage()), core);
+        const mw = new SingleMw(createPayload(fakeMessage()), core, dispatch);
         expect(() => mw.readName()).toThrow(
             expect.objectContaining({ code: SeedcordErrorCode.EventMiddlewareNameUnavailable })
         );

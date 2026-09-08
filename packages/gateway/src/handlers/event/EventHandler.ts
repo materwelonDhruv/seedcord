@@ -6,6 +6,7 @@ import { BaseHandler } from '#src/handlers/BaseHandler';
 import type { Core } from '#interfaces/Core';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { SingleEventPayload } from './payload';
+import type { DispatchContext } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 import type { Promisable } from 'type-fest';
 
@@ -43,8 +44,8 @@ export abstract class EventHandler<in out Names extends ValidNonInteractionKeys>
     // the controller threads this in, undefined when a test constructs the handler directly
     private readonly firedEvent: Names | undefined;
 
-    constructor(event: ClientEvents[Names], core: Core, eventName?: Names) {
-        super(event, core, undefined, 'events');
+    constructor(event: ClientEvents[Names], core: Core, dispatch: DispatchContext, eventName?: Names) {
+        super(event, core, dispatch, 'events');
         this.firedEvent = eventName;
     }
 

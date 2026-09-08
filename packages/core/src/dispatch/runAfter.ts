@@ -2,11 +2,11 @@ import { asError } from '#stops/asError';
 
 import { outcomeFor } from './dispatchReport';
 
-import type { DispatchResult } from './dispatchResult';
+import type { DispatchResult, EventDispatchResult, HandlerResult } from './dispatchResult';
 import type { Logger } from '@seedcord/logger';
 
-interface Afterable {
-    after?(result: DispatchResult): Promise<void>;
+interface Afterable<Result> {
+    after?(result: Result): Promise<void>;
 }
 
 /** @internal */
@@ -16,12 +16,31 @@ export function resultFor(caught: unknown): DispatchResult {
 }
 
 /**
+ * Builds what an event middleware's `after()` receives. `handlers` is empty exactly when the chain
+ * stopped the fire.
+ *
+ * @internal
+ */
+export function eventResultFor(
+    stopped: { caught: unknown } | null,
+    handlers: readonly HandlerResult[]
+): EventDispatchResult {
+    if (!stopped) return { outcome: 'handled', handlers };
+    const result = resultFor(stopped.caught);
+    return result.outcome === 'handled' ? { outcome: 'handled', handlers } : { ...result, handlers: [] };
+}
+
+/**
  * Calls `after()` on each middleware that ran, newest first. A throw inside one is logged. Every
  * remaining middleware still gets its call.
  *
  * @internal
  */
-export async function runAfter(ran: readonly Afterable[], result: DispatchResult, logger: Logger): Promise<void> {
+export async function runAfter<Result>(
+    ran: readonly Afterable<Result>[],
+    result: Result,
+    logger: Logger
+): Promise<void> {
     for (let index = ran.length - 1; index >= 0; index--) {
         const middleware = ran[index];
         try {

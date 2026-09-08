@@ -1,4 +1,4 @@
-import { Notice } from '@seedcord/core';
+import { DispatchContext, Notice } from '@seedcord/core';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { Events } from 'discord.js';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
@@ -11,6 +11,7 @@ import type { ReplyResponse } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
 
 const core = {} as unknown as Core;
+const dispatch = new DispatchContext('event:test');
 
 // a minimal Message-shaped fake, the arms only call reply on it
 function fakeMessage(): { reply: ReturnType<typeof vi.fn> } {
@@ -177,13 +178,13 @@ void ThrowingMulti;
 
 describe('EventHandler.match', () => {
     it('propagates a throw from a match arm out of execute, where the controller boundary catches it', async () => {
-        const handler = new ThrowingMulti(createPayload(fakeMessage()), core, Events.MessageCreate);
+        const handler = new ThrowingMulti(createPayload(fakeMessage()), core, dispatch, Events.MessageCreate);
         await expect(handler.execute()).rejects.toBeInstanceOf(BoomError);
     });
 
     it('routes by the fired event name, not the payload shape', async () => {
         const created = fakeMessage();
-        await new PingMulti(createPayload(created), core, Events.MessageCreate).execute();
+        await new PingMulti(createPayload(created), core, dispatch, Events.MessageCreate).execute();
         expect(created.reply).toHaveBeenCalledWith('created');
         expect(created.reply).not.toHaveBeenCalledWith('updated');
 
@@ -191,25 +192,25 @@ describe('EventHandler.match', () => {
         const oldMsg = fakeMessage();
         const newMsg = fakeMessage();
         const updatePayload = [oldMsg, newMsg] as unknown as ClientEvents[Events.MessageCreate];
-        await new PingMulti(updatePayload, core, 'messageUpdate' as Events.MessageCreate).execute();
+        await new PingMulti(updatePayload, core, dispatch, 'messageUpdate' as Events.MessageCreate).execute();
         expect(newMsg.reply).toHaveBeenCalledWith('updated');
         expect(oldMsg.reply).not.toHaveBeenCalled();
     });
 
     it('reads this.event directly on a single-event handler', () => {
         const m = fakeMessage();
-        const handler = new SingleRead(createPayload(m), core, Events.MessageCreate);
+        const handler = new SingleRead(createPayload(m), core, dispatch, Events.MessageCreate);
         expect(handler.read()).toHaveLength(1);
     });
 
     it('throws EventMatchArmMissing when the fired event has no arm', async () => {
         // a stale-deployed event arrives that the handler does not branch on
-        const handler = new PingMulti(createPayload(fakeMessage()), core, 'ghost' as Events.MessageCreate);
+        const handler = new PingMulti(createPayload(fakeMessage()), core, dispatch, 'ghost' as Events.MessageCreate);
         await expect(handler.execute()).rejects.toMatchObject({ code: SeedcordErrorCode.EventMatchArmMissing });
     });
 
     it('throws EventMatchArmMissing when constructed without an event name', async () => {
-        const handler = new PingMulti(createPayload(fakeMessage()), core);
+        const handler = new PingMulti(createPayload(fakeMessage()), core, dispatch);
         await expect(handler.execute()).rejects.toMatchObject({ code: SeedcordErrorCode.EventMatchArmMissing });
     });
 });

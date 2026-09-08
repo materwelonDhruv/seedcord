@@ -74,8 +74,9 @@ class Ban extends SlashHandler<never> {
 
 describe('gateway handler log channels', () => {
     it('puts both event bases on the events channel', async () => {
-        await new Greet(messagePayload, core).execute();
-        await new Filter(messagePayload, core).execute();
+        const dispatch = new DispatchContext('event:messageCreate');
+        await new Greet(messagePayload, core, dispatch).execute();
+        await new Filter(messagePayload, core, dispatch).execute();
 
         expect(sink.records.map((record) => record.channel)).toEqual(['events', 'events']);
     });

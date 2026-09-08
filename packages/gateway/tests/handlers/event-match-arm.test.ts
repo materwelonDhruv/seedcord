@@ -1,3 +1,4 @@
+import { DispatchContext } from '@seedcord/core';
 import { isSeedcordError, SeedcordErrorCode } from '@seedcord/errors';
 import { describe, expect, it } from 'vitest';
 
@@ -24,7 +25,7 @@ class Watcher extends EventHandler<Events.MessageCreate> {
 // justified: only a cast fires a name outside ClientEvents
 function watcherFiring(name: string): Watcher {
     const payload = [message] as unknown as ClientEvents[Events.MessageCreate];
-    return new Watcher(payload, core, name as Events.MessageCreate);
+    return new Watcher(payload, core, new DispatchContext(`event:${name}`), name as Events.MessageCreate);
 }
 
 describe('EventHandler.match', () => {

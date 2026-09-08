@@ -1308,8 +1308,9 @@ describe('InteractionDispatcher Integration', () => {
             expect(interaction.deferReply).not.toHaveBeenCalled();
         });
 
-        // a global is the only channel back to the test, since the fixture compiles into a temp dir
-        const AFTER_PAIR = `
+        describe('after()', () => {
+            // a global is the only channel back to the test, since the fixture compiles into a temp dir
+            const AFTER_PAIR = `
             import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
 
             @RegisterInteractionMiddleware({ priority: 1 })
@@ -1333,17 +1334,17 @@ describe('InteractionDispatcher Integration', () => {
             }
         `;
 
-        function afterCalls(): string[] {
-            return (globalThis as { afterCalls?: string[] }).afterCalls ?? [];
-        }
+            function afterCalls(): string[] {
+                return (globalThis as { afterCalls?: string[] }).afterCalls ?? [];
+            }
 
-        beforeEach(() => {
-            (globalThis as { afterCalls?: string[] }).afterCalls = [];
-        });
+            beforeEach(() => {
+                (globalThis as { afterCalls?: string[] }).afterCalls = [];
+            });
 
-        it('runs after() in reverse of the chain once the handler settles', async () => {
-            const controller = await bootWith(
-                `
+            it('runs after() in reverse of the chain once the handler settles', async () => {
+                const controller = await bootWith(
+                    `
                 import { SlashHandler, SlashRoute } from '${seedcordPath}';
 
                 @SlashRoute('after')
@@ -1354,23 +1355,23 @@ describe('InteractionDispatcher Integration', () => {
                     }
                 }
                 `,
-                AFTER_PAIR
-            );
+                    AFTER_PAIR
+                );
 
-            await controller.handleSlashCommand(fakeSlash('after'));
+                await controller.handleSlashCommand(fakeSlash('after'));
 
-            expect(afterCalls()).toEqual([
-                'First.execute',
-                'Second.execute',
-                'handler',
-                'Second:handled',
-                'First:handled'
-            ]);
-        });
+                expect(afterCalls()).toEqual([
+                    'First.execute',
+                    'Second.execute',
+                    'handler',
+                    'Second:handled',
+                    'First:handled'
+                ]);
+            });
 
-        it('hands after() the refusal when a gate stops the handler', async () => {
-            const controller = await bootWith(
-                `
+            it('hands after() the refusal when a gate stops the handler', async () => {
+                const controller = await bootWith(
+                    `
                 import { Gated, OwnerOnly, SlashHandler, SlashRoute } from '${seedcordPath}';
 
                 @Gated(OwnerOnly())
@@ -1382,12 +1383,13 @@ describe('InteractionDispatcher Integration', () => {
                     }
                 }
                 `,
-                AFTER_PAIR
-            );
+                    AFTER_PAIR
+                );
 
-            await controller.handleSlashCommand(fakeSlash('gated'));
+                await controller.handleSlashCommand(fakeSlash('gated'));
 
-            expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
+                expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
+            });
         });
 
         it('skips the chain when the handler constructor throws', async () => {

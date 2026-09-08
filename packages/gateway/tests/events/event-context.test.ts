@@ -1,0 +1,211 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { eventsOf } from '#bot/Bot';
+import { Seedcord } from '#src/Seedcord';
+
+import { seedcordPath } from '../utils/source-path';
+import { testConfig } from '../utils/test-config';
+import { TestEnvironment } from '../utils/test-env';
+
+import '../utils/mock-env';
+
+interface PrivateEventDispatcher {
+    init(): Promise<void>;
+    processEvent(eventName: string, args: unknown[]): Promise<void>;
+}
+
+// justified: processEvent is private on the dispatcher
+function dispatcherOf(instance: Seedcord): PrivateEventDispatcher {
+    return eventsOf(instance.bot) as unknown as PrivateEventDispatcher;
+}
+
+// a global is the only channel back to the test, since the fixture compiles into a temp dir
+function fireCalls(): string[] {
+    return (globalThis as { fireCalls?: string[] }).fireCalls ?? [];
+}
+
+describe('the per-fire event context', () => {
+    let testEnv: TestEnvironment;
+    let seedcord: Seedcord;
+
+    beforeEach(async () => {
+        // @ts-expect-error singleton reset between tests
+        Seedcord.reset();
+        (globalThis as { fireCalls?: string[] }).fireCalls = [];
+        testEnv = new TestEnvironment('event-context-');
+        await testEnv.setup();
+    });
+
+    afterEach(async () => {
+        await testEnv.teardown();
+        vi.clearAllMocks();
+    });
+
+    async function boot(handlers: string, middlewares?: string): Promise<PrivateEventDispatcher> {
+        await testEnv.createFile('events/Handler.ts', handlers);
+        if (middlewares) await testEnv.createFile('event-mw/Mw.ts', middlewares);
+
+        const config = testConfig({
+            events: testEnv.resolvePath('events'),
+            ...(middlewares && { eventMiddlewares: testEnv.resolvePath('event-mw') })
+        });
+
+        seedcord = new Seedcord(config);
+        const events = dispatcherOf(seedcord);
+        await events.init();
+        return events;
+    }
+
+    it('shares one context between the chain and every handler of a fire', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class Reader extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler:' + this.dispatch.require('tag'));
+                    globalThis.fireCalls.push('routeId:' + this.dispatch.routeId);
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';
+
+            @RegisterEventMiddleware()
+            export class Tagger extends EventMiddleware {
+                public async execute() {
+                    this.dispatch.set('tag', 'from-middleware');
+                }
+            }
+            `
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual(['handler:from-middleware', 'routeId:event:messageCreate']);
+    });
+
+    // a global is the only channel back to the test, since the fixture compiles into a temp dir
+    const AFTER_PAIR = `
+        import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';
+
+        @RegisterEventMiddleware({ priority: 1 })
+        export class First extends EventMiddleware {
+            public async execute() {}
+            public override async after(result) {
+                globalThis.fireCalls.push('First:' + JSON.stringify(result));
+            }
+        }
+
+        @RegisterEventMiddleware({ priority: 2 })
+        export class Second extends EventMiddleware {
+            public async execute() {}
+            public override async after(result) {
+                globalThis.fireCalls.push('Second:' + result.outcome);
+            }
+        }
+    `;
+
+    it('hands after() one entry per handler that ran, newest middleware first', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class Greeter extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler');
+                }
+            }
+            `,
+            AFTER_PAIR
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual([
+            'handler',
+            'Second:handled',
+            `First:${JSON.stringify({ outcome: 'handled', handlers: [{ handler: 'Greeter', outcome: 'handled' }] })}`
+        ]);
+    });
+
+    it('leaves the handler list empty when the chain stops the fire', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class NeverRuns extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler');
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware, Silence } from '${seedcordPath}';
+
+            @RegisterEventMiddleware({ priority: 1 })
+            export class Watcher extends EventMiddleware {
+                public async execute() {}
+                public override async after(result) {
+                    globalThis.fireCalls.push(result.outcome + ':' + result.handlers.length);
+                }
+            }
+
+            @RegisterEventMiddleware({ priority: 2 })
+            export class Stops extends EventMiddleware {
+                public async execute() {
+                    throw new Silence('stop the fire');
+                }
+            }
+            `
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual(['refused:0']);
+    });
+
+    it('names a failing handler in the list and still runs the rest', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class Boom extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    throw new Error('handler exploded');
+                }
+            }
+
+            @RegisterEvent(['messageCreate'])
+            export class Survivor extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('survivor');
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';
+
+            @RegisterEventMiddleware()
+            export class Watcher extends EventMiddleware {
+                public async execute() {}
+                public override async after(result) {
+                    globalThis.fireCalls.push(result.handlers.map((h) => h.handler + ':' + h.outcome).join(','));
+                }
+            }
+            `
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual(['survivor', 'Boom:failed,Survivor:handled']);
+    });
+});

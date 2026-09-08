@@ -6,6 +6,7 @@ import { BaseHandler } from '#src/handlers/BaseHandler';
 import type { Core } from '#interfaces/Core';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { SingleEventPayload } from './payload';
+import type { DispatchContext, EventDispatchResult } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 
 /**
@@ -25,8 +26,8 @@ export abstract class EventMiddleware<
     // the fired event name, threaded by the controller. undefined when constructed directly, e.g. in a test.
     private readonly firedEvent: EventName | undefined;
 
-    constructor(event: ClientEvents[EventName], core: Core, eventName?: EventName) {
-        super(event, core, undefined, 'events');
+    constructor(event: ClientEvents[EventName], core: Core, dispatch: DispatchContext, eventName?: EventName) {
+        super(event, core, dispatch, 'events');
         this.firedEvent = eventName;
     }
 
@@ -42,4 +43,21 @@ export abstract class EventMiddleware<
         if (this.firedEvent === undefined) throw new SeedcordError(SeedcordErrorCode.EventMiddlewareNameUnavailable);
         return this.firedEvent;
     }
+
+    /**
+     * Runs once the fire finishes, newest middleware first. Implement it to release something this
+     * middleware took in `execute()`. A throw in here is logged and goes no further.
+     *
+     * @param result - `outcome` reports the chain alone. `handlers` holds one entry per handler that
+     * ran, empty exactly when the chain stopped the fire.
+     *
+     * @example
+     * ```ts
+     * // the base declares it. an implementation carries `override`.
+     * override async after(result: EventDispatchResult) {
+     *     this.span.end();
+     * }
+     * ```
+     */
+    public after?(result: EventDispatchResult): Promise<void>;
 }
