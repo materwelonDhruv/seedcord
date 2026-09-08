@@ -27,7 +27,7 @@ export function withTimeout(name: string, run: () => Promise<void>, timeoutMs: n
     });
 }
 
-// always resolves, including when work rejects
+// the caller does not get work's rejection
 export function settleWithin(work: Promise<unknown>, timeoutMs: number): Promise<void> {
     return raceTimer(
         () =>

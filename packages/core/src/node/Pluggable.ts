@@ -1,4 +1,4 @@
-import { SeedcordErrorCode } from '@seedcord/errors';
+import { SeedcordErrorCode, isSeedcordError } from '@seedcord/errors';
 import { SeedcordAggregateError, SeedcordError, SeedcordTypeError } from '@seedcord/errors/internal';
 import { FRAMEWORK_CHANNELS, Logger } from '@seedcord/logger';
 import { HostPluginKeys, HostShutdown, HostStartup } from '@seedcord/types/internal';
@@ -104,14 +104,15 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
         // a rerun after a failed startup would re-init the rolled-back plugins
         if (this.startFailed) throw new SeedcordError(SeedcordErrorCode.LifecycleRestartAfterFailure);
 
+        // a SIGTERM landing before this line still shuts down on the default deadline
+        const deadline = this.config.lifecycle?.shutdownDeadline;
+        if (deadline !== undefined) this[HostShutdown].setDeadline(deadline);
+
         this.registerPluginTasks();
 
         if (this.config.errors?.catchProcessErrors ?? true) {
             Pluggable.liveProcessErrors = registerProcessErrors(this, this[HostShutdown]);
         }
-
-        const deadline = this.config.lifecycle?.shutdownDeadline;
-        if (deadline !== undefined) this[HostShutdown].setDeadline(deadline);
 
         const startupSettled: PromiseWithResolvers<void> = Promise.withResolvers();
         this[HostShutdown].gateOnStartup(startupSettled.promise);
@@ -226,7 +227,10 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             try {
                 await withTimeout(`Plugin (${key})`, () => running, spec.init.timeout);
             } catch (caught) {
-                this.disposeWhenInitResolves(attachment, running);
+                // a rejection from init() reaches here too
+                if (isSeedcordError(caught, undefined, SeedcordErrorCode.LifecycleTaskTimeout)) {
+                    this.disposeWhenInitResolves(attachment, running);
+                }
                 throw caught;
             }
             pluginLoggerOf(instance).utils.initialization(key, 'end');
@@ -239,15 +243,15 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
     // shutdown skips a plugin that never reached completedInits
     private disposeWhenInitResolves(attachment: Attachment, running: Promise<void>): void {
         const dispose = attachment.instance.dispose?.bind(attachment.instance);
-        if (!dispose) return;
         const spec = resolvedLifecycleSpecOf(attachment.instance);
 
         void running.then(
-            () =>
-                withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
+            async () => {
+                if (!dispose) return;
+                await withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
                     (caught: unknown) => this.pluginLogger.warn('dispose after a timed-out init failed', caught)
-                ),
-            // without this warn a late init failure goes unreported
+                );
+            },
             (caught: unknown) => this.pluginLogger.warn(`${attachment.key} init failed after its timeout`, caught)
         );
     }

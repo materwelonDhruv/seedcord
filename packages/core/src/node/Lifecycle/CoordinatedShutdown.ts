@@ -18,7 +18,7 @@ const PHASE_ORDER: ShutdownPhase[] = [
 // gives the logger's file sink time to flush before process.exit
 const LOG_FLUSH_DELAY_MS = 3000;
 
-// 25s leaves room under kubernetes' 30s SIGKILL window for the flush delay above
+// 25s plus LOG_FLUSH_DELAY_MS stays under kubernetes' 30s SIGKILL window
 const DEFAULT_SHUTDOWN_DEADLINE_MS = 25_000;
 
 export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
@@ -29,6 +29,7 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private onSigInt: (() => void) | null = null;
     private startupGate?: Promise<void>;
     private deadlineMs = DEFAULT_SHUTDOWN_DEADLINE_MS;
+    private phasesExpireAt = Infinity;
     private runningPhase: ShutdownPhase | undefined;
 
     public constructor() {
@@ -47,8 +48,9 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
 
     private async runPhases(failures: unknown[]): Promise<void> {
         for (const phase of PHASE_ORDER) {
+            // a hung task may still resume the loop after settleWithin stops waiting
+            if (Date.now() >= this.phasesExpireAt) return;
             this.runningPhase = phase;
-            // the later teardowns still run after a phase fails
             try {
                 await this.runPhase(phase);
             } catch (error) {
@@ -140,16 +142,20 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
         try {
             if (this.startupGate) await this.startupGate;
             const failures: unknown[] = [];
-            // keep this below the gate because startup can take as long as it needs
+            // hoisting this above the gate would put the startup wait inside the deadline
+            this.phasesExpireAt = Date.now() + this.deadlineMs;
             await settleWithin(this.runPhases(failures), this.deadlineMs);
 
-            if (this.runningPhase !== undefined) {
+            const caughtPhase = this.runningPhase;
+            if (caughtPhase !== undefined) {
                 this.logger.error(
-                    `Shutdown deadline of ${paint.sky.bold(this.deadlineMs)}ms elapsed during phase ${paint.iris.bold(this.phaseEnum[this.runningPhase])}`
+                    `Shutdown deadline of ${paint.sky.bold(this.deadlineMs)}ms elapsed during phase ${paint.iris.bold(this.phaseEnum[caughtPhase])}`
                 );
-            } else if (failures.length > 0) {
+            }
+
+            if (failures.length > 0) {
                 this.logger.error(`${paint.coral.bold('Coordinated shutdown failed')}`, ...failures);
-            } else {
+            } else if (caughtPhase === undefined) {
                 this.logger.info(`${paint.mint.bold('Coordinated shutdown completed')} successfully`);
             }
         } finally {

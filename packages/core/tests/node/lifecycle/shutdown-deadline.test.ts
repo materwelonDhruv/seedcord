@@ -9,12 +9,12 @@ import type { SeedcordError } from '@seedcord/errors/internal';
 
 const DEADLINE_MS = 60;
 const TASK_TIMEOUT_MS = 10_000;
-const SETTLE_MS = 200;
+// outlives the deadline, so the loop reaches the next phase only after run() has returned
+const HUNG_TASK_TIMEOUT_MS = 150;
 
 const never = (): Promise<void> => new Promise<void>(() => undefined);
 const delay = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-// an unrestored spy carries the previous test's calls into this one
 afterEach(() => {
     vi.restoreAllMocks();
 });
@@ -56,7 +56,8 @@ describe('CoordinatedShutdown deadline', () => {
         expect(closed).toBe(true);
     });
 
-    it('stops at the phase the deadline caught, keeping the later ones in order', async () => {
+    // the hung task gives up after the deadline, which is when the loop would reach Disconnect
+    it('leaves the phases after the deadline alone once the hung task gives up', async () => {
         const shutdown = new CoordinatedShutdown();
         shutdown.removeSignalHandlers();
         shutdown.setDeadline(DEADLINE_MS);
@@ -67,12 +68,12 @@ describe('CoordinatedShutdown deadline', () => {
             return Promise.resolve();
         };
         shutdown.addTask(ShutdownPhase.Unbind, 'unbind', record('unbind'), TASK_TIMEOUT_MS);
-        shutdown.addTask(ShutdownPhase.Drain, 'hangs', never, TASK_TIMEOUT_MS);
+        shutdown.addTask(ShutdownPhase.Drain, 'hangs', never, HUNG_TASK_TIMEOUT_MS);
         shutdown.addTask(ShutdownPhase.Disconnect, 'disconnect', record('disconnect'), TASK_TIMEOUT_MS);
         shutdown.addTask(ShutdownPhase.Logout, 'logout', record('logout'), TASK_TIMEOUT_MS);
 
         await shutdown.run(1, false);
-        await delay(SETTLE_MS);
+        await delay(HUNG_TASK_TIMEOUT_MS * 3);
 
         expect(ran).toEqual(['unbind']);
     });
@@ -85,10 +86,30 @@ describe('CoordinatedShutdown deadline', () => {
         try {
             shutdown.setDeadline(deadline);
         } catch (error) {
-            code = (error as SeedcordError).code; // fixture cast, read the code off whatever was thrown
+            code = (error as SeedcordError).code; // fixture cast, setDeadline only throws a SeedcordRangeError
         }
 
         expect(code).toBe(SeedcordErrorCode.LifecycleInvalidShutdownDeadline);
+    });
+
+    it('reports a failure it collected before the deadline passed', async () => {
+        const errors = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);
+        const shutdown = new CoordinatedShutdown();
+        shutdown.removeSignalHandlers();
+        shutdown.setDeadline(DEADLINE_MS);
+
+        shutdown.addTask(
+            ShutdownPhase.Unbind,
+            'unbind',
+            () => Promise.reject(new Error('close failed')),
+            TASK_TIMEOUT_MS
+        );
+        shutdown.addTask(ShutdownPhase.Drain, 'hangs', never, TASK_TIMEOUT_MS);
+
+        await shutdown.run(1, false);
+
+        const reported = errors.mock.calls.some((call) => call.some((arg) => String(arg).includes('shutdown failed')));
+        expect(reported).toBe(true);
     });
 
     it('names the phase that was running when the deadline passed', async () => {

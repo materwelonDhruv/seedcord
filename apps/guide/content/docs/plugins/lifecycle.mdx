@@ -125,7 +125,7 @@ const seedcord = new Seedcord({
         events: { path: null }
     },
     subscribers: { path: null },
-    // kubernetes kills at 30s by default, docker stop at 10s
+    // kubernetes kills at 30s by default and docker stop at 10s
     lifecycle: { shutdownDeadline: 25_000 }
 });
 ```

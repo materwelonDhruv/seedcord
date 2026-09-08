@@ -99,6 +99,49 @@ describe('a plugin whose init outlasts its timeout', () => {
         expect(logged).toBe(true);
     });
 
+    it('calls an immediate init rejection a failure, never a timeout', async () => {
+        class FastFailure extends SlowConnect {
+            public override init(): Promise<void> {
+                return Promise.reject(new Error('immediate failure'));
+            }
+        }
+
+        const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+        const host = makeHost();
+        host.attach('db', FastFailure);
+
+        await expect(host.run()).rejects.toThrow();
+        await delay(SETTLE_MS);
+
+        const blamedTheTimeout = warn.mock.calls.some((call) =>
+            call.some((arg) => String(arg).includes('after its timeout'))
+        );
+        expect(blamedTheTimeout).toBe(false);
+    });
+
+    it('logs a late rejection from a plugin that declares no dispose', async () => {
+        class NoDispose extends Plugin {
+            constructor(core: CoreBase) {
+                super(core, { init: { timeout: INIT_TIMEOUT_MS } });
+            }
+
+            public async init(): Promise<void> {
+                await delay(CONNECT_MS);
+                throw new Error('late failure');
+            }
+        }
+
+        const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
+        const host = makeHost();
+        host.attach('db', NoDispose);
+
+        await expect(host.run()).rejects.toThrow();
+        await delay(SETTLE_MS);
+
+        const logged = warn.mock.calls.some((call) => call.some((arg) => String(arg).includes('late failure')));
+        expect(logged).toBe(true);
+    });
+
     it('disposes once when a shutdown follows', async () => {
         const shutdown = new CoordinatedShutdown();
         const host = new TestHost(shutdown, new CoordinatedStartup());
