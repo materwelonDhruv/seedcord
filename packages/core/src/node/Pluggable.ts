@@ -219,12 +219,34 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             const spec = resolvedLifecycleSpecOf(instance);
 
             pluginLoggerOf(instance).utils.initialization(key, 'start');
-            await withTimeout(`Plugin (${key})`, () => instance.init(), spec.init.timeout);
+            const running = instance.init();
+            try {
+                await withTimeout(`Plugin (${key})`, () => running, spec.init.timeout);
+            } catch (caught) {
+                this.disposeWhenInitResolves(attachment, running);
+                throw caught;
+            }
             pluginLoggerOf(instance).utils.initialization(key, 'end');
 
             this.completedInits.add(attachment);
             if (instance.dispose) this.registerDisposeTask(spec.dispose.phase);
         }
+    }
+
+    // a timed-out init never reaches completedInits, so shutdown skips this plugin.
+    private disposeWhenInitResolves(attachment: Attachment, running: Promise<void>): void {
+        const dispose = attachment.instance.dispose?.bind(attachment.instance);
+        if (!dispose) return;
+        const spec = resolvedLifecycleSpecOf(attachment.instance);
+
+        void running.then(
+            () =>
+                withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
+                    (caught: unknown) => this.pluginLogger.warn('dispose after a timed-out init failed', caught)
+                ),
+            // a rejected init cleans up in its own catch
+            () => undefined
+        );
     }
 
     private registerReadyTask(readyInits: readonly Attachment[]): void {
