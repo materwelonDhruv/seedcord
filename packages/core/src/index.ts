@@ -64,8 +64,15 @@ export { Notice } from '#stops/Notice';
 export { Fault } from '#stops/Fault';
 export { Silence } from '#stops/Silence';
 
-export { CustomId, setCustomIdErrors } from '@seedcord/custom-id';
-export type { FieldOptions } from '@seedcord/custom-id';
+export { CustomId, decodeFor, prefixOf, setCustomIdErrors } from '@seedcord/custom-id';
+export type {
+    AnyCustomId,
+    CustomIdField,
+    CustomIdShape,
+    DecodedParams,
+    DecodedRoute,
+    FieldOptions
+} from '@seedcord/custom-id';
 
 export { ResolvedEmoji } from '#src/miscellaneous/emoji';
 
