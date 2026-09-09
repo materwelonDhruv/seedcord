@@ -29,6 +29,15 @@ async function readWhenWritten(file: string, timeoutMs = 2000): Promise<string> 
     return readFileSync(file, 'utf8');
 }
 
+async function listWhenWritten(dir: string, timeoutMs = 2000): Promise<string[]> {
+    for (let waited = 0; waited < timeoutMs; waited += 20) {
+        const written = readdirSync(dir);
+        if (written.length > 0) return written;
+        await new Promise((resolve) => setTimeout(resolve, 20));
+    }
+    return readdirSync(dir);
+}
+
 const plain = (value: string): string => stripAnsi(value);
 
 const registry = LoggerChannelRegistry.instance;
@@ -124,9 +133,8 @@ describe('winston sinks', () => {
         const sink = new WinstonFileSink({ filename: join(dir, 'run-{timestamp}.log'), format: 'json' });
 
         sink.onLog(record({ message: 'stamped' }));
-        await new Promise((resolve) => setTimeout(resolve, 100));
 
-        const written = readdirSync(dir);
+        const written = await listWhenWritten(dir);
         expect(written).toHaveLength(1);
         expect(written[0]).toMatch(/^run-\d{4}-\d{2}-\d{2}-\d{6}-\d{3}\.log$/u);
         sink.dispose();
@@ -137,9 +145,8 @@ describe('winston sinks', () => {
         const sink = new WinstonFileSink({ filename: join(dir, 'run-{date}.log'), format: 'json' });
 
         sink.onLog(record({ message: 'stamped' }));
-        await new Promise((resolve) => setTimeout(resolve, 100));
 
-        const written = readdirSync(dir);
+        const written = await listWhenWritten(dir);
         expect(written).toHaveLength(1);
         expect(written[0]).toMatch(/^run-\d{4}-\d{2}-\d{2}\.log$/u);
         sink.dispose();

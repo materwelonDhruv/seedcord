@@ -224,7 +224,7 @@ A custom id you write by hand compiles. `setCustomId('ticket:123')` skips the sh
 
 <Callout type="danger">
 
-`CustomId` ships in `@seedcord/custom-id`, and your transport package re-exports it. Import it from `@seedcord/gateway` or `@seedcord/http`. Adding `@seedcord/custom-id` to your own dependencies can resolve a second copy, and a decode failure from that copy skips the cards on [When a custom id goes stale](/components/stale).
+`CustomId` ships in `@seedcord/custom-id`, and your transport package re-exports it. Import it from `@seedcord/gateway` or `@seedcord/http`. Adding `@seedcord/custom-id` to your own dependencies can resolve a second copy, and a decode failure from that copy skips the [rendered notices](/components/stale) seedcord provides.
 
 </Callout>
 
