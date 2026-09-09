@@ -12,7 +12,17 @@ async function raceTimer(
         await Promise.race([
             start(),
             new Promise<void>((resolve, reject) => {
-                timer = setTimeout(() => onTimeout(resolve, reject), timeoutMs);
+                // node's timer can go off before performance.now() reaches timeoutMs
+                const expiresAt = performance.now() + timeoutMs;
+                const tick = (): void => {
+                    const remaining = expiresAt - performance.now();
+                    if (remaining > 0) {
+                        timer = setTimeout(tick, remaining);
+                        return;
+                    }
+                    onTimeout(resolve, reject);
+                };
+                timer = setTimeout(tick, timeoutMs);
             })
         ]);
     } finally {
