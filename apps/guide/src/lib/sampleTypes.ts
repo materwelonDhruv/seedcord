@@ -45,6 +45,7 @@ const REGISTRIES = `
             cache: 'cached';
         };
         roles: { options: {}; cache: 'cached' };
+        whoami: { options: {}; cache: 'cached' };
         history: { options: {}; cache: 'cached' };
         feed: { options: {}; cache: 'cached' };
         leaderboard: { options: {}; cache: 'cached' };
