@@ -9,15 +9,10 @@ packages:
 embedReadme: true
 
 overrides:
-  # discord.js/rest pin undici 6.24.1
-  discord.js>undici: ^6.27.0
-  '@discordjs/rest>undici': ^6.27.0
   # < 7.29 has GHSA-4cwx-7wf7-3272
   'undici@7': ^7.29.0
   # forces one api-types copy so the djs-free reply types assign to djs
   discord-api-types: ^0.38.52
-  # djs pins 3.5.3, rest needs ^3.5.5, collapse to one (same API)
-  '@sapphire/snowflake': 3.5.5
 
   brace-expansion: ^5.0.9 # < 5.0.9 has GHSA-rgw5-rvv9-x895
   minimatch: ^10.2.6 # brace-expansion 5 exports named `expand` while minimatch 9 default-imports it
@@ -27,7 +22,7 @@ overrides:
   'js-yaml@4': ^4.3.1
   'linkify-it@5': ^5.0.2
   postcss: ^8.5.25
-  sharp: ^0.35.3
+  sharp: ^0.35.4 # < 0.35.4 has GHSA-rgj7-g3m4-5g8c through libheif
 
 supportedArchitectures:
   libc:
@@ -57,7 +52,7 @@ catalogs:
     lodash.merge: ^4.6.2
     lucide-react: ^1.31.0
     motion: ^12.43.0
-    next: ^16.2.12
+    next: ^16.3.4
     prettier: ^3.9.6
     prettier-plugin-tailwindcss: ^0.8.1
     reflect-metadata: ^0.2.2
@@ -74,7 +69,7 @@ catalogs:
     '@types/eslint-plugin-security': ^3.0.1
     '@typescript-eslint/parser': ^8.65.0
     eslint: ^10.8.0
-    eslint-config-next: ^16.2.12
+    eslint-config-next: ^16.3.4
     eslint-config-prettier: ^10.1.8
     eslint-import-resolver-typescript: ^4.4.5
     eslint-plugin-better-tailwindcss: ^4.7.0
