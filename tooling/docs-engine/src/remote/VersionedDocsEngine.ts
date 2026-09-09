@@ -1,14 +1,14 @@
 import { PackageVersionNotFoundError } from '#remote/errors';
-import { IndexLoader } from '#remote/index-loader';
+import { IndexLoader } from '#remote/IndexLoader';
 import { deserializeProject } from '#remote/project-file';
-import { ProjectLoader } from '#remote/project-loader';
+import { ProjectLoader } from '#remote/ProjectLoader';
 import { AnchorStrategy } from '#routing/AnchorStrategy';
 import { ReferenceResolver } from '#routing/ReferenceResolver';
 import { orderedPackageCandidates } from '#routing/resolve-helpers';
 import { DocSearch } from '#services/Search';
 
 import type { IndexJson, PackageIndexEntry } from '#remote/index-json';
-import type { Fetcher } from '#remote/index-loader';
+import type { Fetcher } from '#remote/IndexLoader';
 import type { CrossPackageEntity, NodeLookup, PackageRegistry } from '#routing/lookup';
 import type { GlobalId } from '#src/ids';
 import type { DirectorySnapshot, PackageDirectory } from '#src/PackageDirectory';

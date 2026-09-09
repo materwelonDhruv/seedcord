@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { ApiAdapter } from '#model/adapter';
+import { ApiAdapter } from '#model/ApiAdapter';
 import { DocKind } from '#model/kinds';
 import { mergeEntries, type AdapterEntry } from '#model/merge-entries';
 import { PackageDirectory } from '#src/PackageDirectory';

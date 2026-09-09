@@ -2,7 +2,7 @@ import { resolve } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
-import { ApiAdapter } from '#model/adapter';
+import { ApiAdapter } from '#model/ApiAdapter';
 import { createApiModel, loadApiPackage } from '#model/load-model';
 
 import { MOCK_PACKAGE_NAME, TEMP_DIR } from './utils/constants';

@@ -75,6 +75,7 @@ export class DocSearch {
     constructor(private readonly collection: DocCollection) {
         this.searchIndex = this.aggregateSearchIndex(collection);
 
+        // eslint-disable-next-line new-cap -- external library
         this.uf = new uFuzzy({ intraMode: 1 });
         this.namesHaystack = this.searchIndex.map((e) => e.name.toLowerCase());
         this.qualifiedNamesHaystack = this.searchIndex.map((e) => e.qualifiedName.toLowerCase());

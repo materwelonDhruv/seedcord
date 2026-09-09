@@ -64,8 +64,15 @@ export { Notice } from '#stops/Notice';
 export { Fault } from '#stops/Fault';
 export { Silence } from '#stops/Silence';
 
-export { CustomId, setCustomIdErrors } from '@seedcord/custom-id';
-export type { FieldOptions } from '@seedcord/custom-id';
+export { CustomId, decodeFor, prefixOf, setCustomIdErrors } from '@seedcord/custom-id';
+export type {
+    AnyCustomId,
+    CustomIdField,
+    CustomIdShape,
+    DecodedParams,
+    DecodedRoute,
+    FieldOptions
+} from '@seedcord/custom-id';
 
 export { ResolvedEmoji } from '#src/miscellaneous/emoji';
 
@@ -77,7 +84,7 @@ export { PaginatorBase } from '#pagination/PaginatorBase';
 export type { PaginatorConfig } from '#pagination/PaginatorBase';
 export { ArraySourceBase, CursorSourceBase } from '#pagination/sources';
 export type { PageSourceBase } from '#pagination/sources';
-export type { ControlCosmetics, ControlKey, PaginatorControls } from '#pagination/controls';
+export type { ControlCosmetics, ControlKey, PaginatorControls } from '#pagination/Controls';
 export type { ItemRender, PageRender } from '#pagination/render';
 
 export { Bus, Subscribe, Subscriber, WebhookLog, WebhookUrl } from '#subscribers/index';

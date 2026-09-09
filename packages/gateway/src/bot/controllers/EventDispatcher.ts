@@ -231,14 +231,14 @@ export class EventDispatcher implements Initializeable, HmrAware {
         eventName: KeyOfEvents,
         args: ClientEvents[KeyOfEvents]
     ): Promise<boolean> {
-        for (const { ctor, events } of this.middlewares) {
+        for (const { ctor: Middleware, events } of this.middlewares) {
             if (events && !events.includes(eventName)) continue;
 
             try {
-                const middleware = new ctor(args, this.core, eventName); // event name so a catchall/multi middleware can read this.eventName
+                const middleware = new Middleware(args, this.core, eventName); // event name so a catchall/multi middleware can read this.eventName
                 await middleware.execute();
             } catch (caught) {
-                handleEventFault(caught, String(eventName), ctor.name, args, this.core);
+                handleEventFault(caught, String(eventName), Middleware.name, args, this.core);
                 return false;
             }
         }
@@ -363,17 +363,17 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
     private async processHandler<KeyOfEvents extends keyof ClientEvents>(
         eventName: KeyOfEvents,
-        ctor: EventHandlerConstructor,
+        Ctor: EventHandlerConstructor,
         args: ClientEvents[KeyOfEvents]
     ): Promise<void> {
         try {
-            this.logger.debug(`Processing ${paint.sky.bold(eventName)} with ${paint.mute(ctor.name)}`);
-            const handler = new ctor(args, this.core, eventName); // event name so match can route by it
+            this.logger.debug(`Processing ${paint.sky.bold(eventName)} with ${paint.mute(Ctor.name)}`);
+            const handler = new Ctor(args, this.core, eventName); // event name so match can route by it
             const eventCtx = eventGateContext(eventName, args, this.core);
-            await runHandlerGates(ctor, eventCtx);
+            await runHandlerGates(Ctor, eventCtx);
             await handler.execute();
         } catch (caught) {
-            handleEventFault(caught, String(eventName), ctor.name, args, this.core);
+            handleEventFault(caught, String(eventName), Ctor.name, args, this.core);
         }
     }
 }

@@ -3,7 +3,7 @@ import { ApiExportedMixin, type ApiItem, type ApiModel, type ApiPackage } from '
 import { groupOverloads, synthGroups } from '#model/adapter-helpers';
 import { apiKindToDocKind } from '#model/kinds';
 
-import type { ApiAdapter } from '#model/adapter';
+import type { ApiAdapter } from '#model/ApiAdapter';
 import type { DocNode } from '#src/types';
 
 /** One entry point of a package, its `exports` map subpath paired with that subpath's own API model. */

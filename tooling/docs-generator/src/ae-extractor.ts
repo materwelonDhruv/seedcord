@@ -6,7 +6,7 @@ import { writeSharedModel } from './shared-model';
 import { pathExists } from './utils';
 import { readPackageManifest, resolveDocEntryPoints, unscopedName } from './workspace';
 
-import type { ApiDocsPaths } from './paths';
+import type { ApiDocsPaths } from './ApiDocsPaths';
 import type { EntryDocResult, PackageDocResult } from './types';
 
 function buildConfigObject(options: {

@@ -21,7 +21,7 @@ import type {
     SubscriptionKey,
     SubscriptionTuples
 } from './types/Subscriptions';
-import type { EventFrequency } from '@seedcord/types';
+import type { EventFrequency, TypedConstructor } from '@seedcord/types';
 
 /**
  * Both parameters are `never` because construct-signature parameters check contravariantly, and a
@@ -221,11 +221,8 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
         let name = '<unresolved>';
         try {
             entry.ctor ??= await entry.resolve();
-            // the registration keys each subscriber to its subscriptions, so data matches this ctor's payload arm
-            const Ctor = entry.ctor as new (
-                data: AllSubscriptions[KeyOfSubscribers],
-                core: CoreBase
-            ) => Subscriber<KeyOfSubscribers, CoreBase>;
+            // the registration keys each subscriber to its subscriptions. data matches this ctor's payload arm.
+            const Ctor = entry.ctor as TypedConstructor<typeof Subscriber>;
             name = Ctor.name;
             await new Ctor(data, this.core).execute();
         } catch (err) {

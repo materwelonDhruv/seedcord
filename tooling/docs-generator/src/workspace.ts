@@ -3,10 +3,10 @@ import path from 'node:path';
 
 import { parse } from 'yaml';
 
-import { defaultPaths } from './paths';
+import { defaultPaths } from './ApiDocsPaths';
 import { normalizeRelativePath, pathExists } from './utils';
 
-import type { ApiDocsPaths } from './paths';
+import type { ApiDocsPaths } from './ApiDocsPaths';
 import type { DocEntryPoint, ExportCondition, PackageManifest } from './types';
 
 const WORKSPACE_FILE = 'pnpm-workspace.yaml';
