@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 
-import { InteractionKind, RegisterInteractionMiddleware, Silence } from '@seedcord/core';
-import { MiddlewareRegistry } from '@seedcord/core/internal';
+import { defineGate, InteractionKind, Notice, RegisterInteractionMiddleware, Silence } from '@seedcord/core';
+import { GatedMetadataKey, interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -15,6 +15,7 @@ import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { DispatchResult } from '@seedcord/core';
+import type { ReplyResponse } from '@seedcord/types';
 
 vi.mock('@discordjs/rest', async (importOriginal) => {
     class FakeRest {
@@ -65,7 +66,7 @@ class OkHandler extends SlashHandler<never> {
 }
 
 function registry(...ctors: InteractionMiddlewareConstructor[]): MiddlewareRegistry<InteractionMiddlewareConstructor> {
-    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>();
+    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
     for (const ctor of ctors) middlewares.register(ctor);
     return middlewares;
 }
@@ -134,6 +135,34 @@ describe('after() on the http interaction chain', () => {
         await dispatchThrough(() => Promise.resolve(OkHandler), First, Stops);
 
         expect(results).toEqual([{ outcome: 'refused', caught: stop }]);
+    });
+
+    // answer() runs the user's render() between the refusal and the after() calls
+    it('still runs after() when rendering the refusal throws', async () => {
+        class ExplodingNotice extends Notice {
+            public constructor() {
+                super('refused');
+            }
+
+            public render(): ReplyResponse {
+                throw new Error('render exploded');
+            }
+        }
+
+        const refuse = defineGate('refuse', () => {
+            throw new ExplodingNotice();
+        });
+
+        class GatedHandler extends SlashHandler<never> {
+            async execute(): Promise<void> {
+                await this.reply('never');
+            }
+        }
+        Reflect.defineMetadata(GatedMetadataKey, [refuse], GatedHandler);
+
+        await expect(dispatchThrough(() => Promise.resolve(GatedHandler), First)).rejects.toThrow('render exploded');
+
+        expect(calls).toContain('First.after');
     });
 
     it('keeps going when one after() throws', async () => {

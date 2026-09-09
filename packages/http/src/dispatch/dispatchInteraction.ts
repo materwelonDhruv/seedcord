@@ -338,8 +338,12 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
     const ran: InteractionMiddleware[] = [];
     const refusal = await refusalBeforeHandler({ args, Handler, dispatch, scope, ran });
     if (refusal) {
-        await answer(refusal.caught, scope, report);
-        await runAfter(ran, resultFor(refusal.caught), logger());
+        try {
+            // a throwing render() inside answer() must not skip the after() calls
+            await answer(refusal.caught, scope, report);
+        } finally {
+            await runAfter(ran, resultFor(refusal.caught), logger());
+        }
         return null;
     }
 
