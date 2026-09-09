@@ -27,9 +27,10 @@ describe('CoordinatedShutdown deadline', () => {
         shutdown.setDeadline(DEADLINE_MS);
         shutdown.addTask(ShutdownPhase.Unbind, 'hangs', never, TASK_TIMEOUT_MS);
 
-        const startedAt = Date.now();
+        // the deadline runs off a setTimeout, so measuring on the wall clock can read short
+        const startedAt = performance.now();
         await shutdown.run(1, false);
-        const elapsed = Date.now() - startedAt;
+        const elapsed = performance.now() - startedAt;
 
         expect(elapsed).toBeGreaterThanOrEqual(DEADLINE_MS);
         expect(elapsed).toBeLessThan(DEADLINE_MS * 10);

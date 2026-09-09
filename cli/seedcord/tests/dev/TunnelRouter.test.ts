@@ -131,6 +131,18 @@ describe('TunnelRouter', () => {
         expect(stop).toHaveBeenCalledOnce();
     });
 
+    it('reports a coordinator that fails to stop and resolves', async () => {
+        const warn = vi.fn();
+        const boom = new Error('cloudflared refused to close');
+        const routing = router(fakeCoordinator({ stop: () => Promise.reject(boom) }), { ...silentLogger, warn });
+
+        await routing.route(QUICK, { type: 'server-listening', port: 1 });
+
+        await expect(routing.stop()).resolves.toBeUndefined();
+        expect(warn).toHaveBeenCalledOnce();
+        expect(warn.mock.calls[0]?.[1]).toBe(boom);
+    });
+
     it('routes a configured url without asking for cloudflared', async () => {
         const onPort = vi.fn().mockResolvedValue(undefined);
         const warn = vi.fn();
