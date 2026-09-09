@@ -96,7 +96,13 @@ export abstract class Plugin<Opts extends PluginOptions = {}, TCore extends Core
      */
     ready?(): Promise<void>;
 
-    /** Runs during teardown, in `ShutdownPhase.Disconnect` by default. It never runs when `init()` has thrown. */
+    /**
+     * Runs during teardown, in `ShutdownPhase.Disconnect` by default. seedcord skips it when `init()`
+     * has thrown.
+     *
+     * When `init()` outlasts its timeout, seedcord calls this once that `init()` resolves, outside any
+     * shutdown phase. The process must still be alive for that call to happen.
+     */
     dispose?(): Promise<void>;
 
     /**

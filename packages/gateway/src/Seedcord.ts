@@ -57,7 +57,7 @@ export class Seedcord extends Pluggable<'gateway', 'server'> implements Core, Se
      * @throws A **SeedcordError** When attempting to create multiple instances (singleton)
      */
     constructor(public readonly config: GatewayConfig) {
-        super(new CoordinatedShutdown(), new CoordinatedStartup());
+        super(new CoordinatedShutdown(config.lifecycle?.shutdownDeadline), new CoordinatedStartup());
 
         installNodeDefaults(config.logger);
         setBotColor(config.botColor);

@@ -110,7 +110,8 @@
             "ignore": [
                 "tests/node/commands/fixtures/**",
                 "tests/node/discovery/fixtures/**",
-                "tests/node/discovery/duplicates/**"
+                "tests/node/discovery/duplicates/**",
+                "tests/node/fixtures/**"
             ],
             "entry": [
                 "**/*.types-test.ts"

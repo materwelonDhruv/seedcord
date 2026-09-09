@@ -14,6 +14,9 @@ import {
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
+    DRAIN_TASK_TIMEOUT_MS,
+    DRAIN_WINDOW_MS,
+    drainInFlight,
     ShutdownPhase,
     shutdownOf,
     StartupPhase,
@@ -47,7 +50,6 @@ import type { AddressInfo } from 'node:net';
 
 const DEFAULT_PORT = 3000;
 const SERVER_SHUTDOWN_TIMEOUT_MS = 5000;
-const DRAIN_TIMEOUT_MS = 10_000;
 
 type RuntimeOfConfig<Cfg extends HttpConfig> = Cfg extends { runtime: 'edge' } ? 'edge' : 'server';
 
@@ -93,7 +95,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
     private fetchedUsername?: string | undefined;
 
     constructor(public readonly config: Cfg) {
-        super(new CoordinatedShutdown(), new CoordinatedStartup());
+        super(new CoordinatedShutdown(config.lifecycle?.shutdownDeadline), new CoordinatedStartup());
 
         installNodeDefaults(config.logger);
         setBotColor(config.botColor);
@@ -248,10 +250,8 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
         this.shutdown.addTask(
             ShutdownPhase.Drain,
             'drain-inflight',
-            async () => {
-                await Promise.allSettled(inFlight);
-            },
-            DRAIN_TIMEOUT_MS
+            () => drainInFlight(inFlight, DRAIN_WINDOW_MS, this.logger, 'Interactions'),
+            DRAIN_TASK_TIMEOUT_MS
         );
     }
 

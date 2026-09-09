@@ -19,7 +19,7 @@ describe('settleWithin', () => {
     });
 
     it('resolves when the work rejects', async () => {
-        // callers bound a shutdown step with this. a failed step must leave the shutdown running.
+        // shutdown keeps going after a step fails
         await expect(settleWithin(Promise.reject(new Error('clear failed')), BOUND_MS)).resolves.toBeUndefined();
     });
 });
@@ -36,7 +36,7 @@ describe('withTimeout', () => {
     });
 
     it('rejects when run throws before it returns a promise', async () => {
-        // a plugin can write dispose() without async. the throw has to reach the caller's catch.
+        // a plugin can write dispose() without async
         const boom = new Error('sync throw');
         const run = (): Promise<void> => {
             throw boom;

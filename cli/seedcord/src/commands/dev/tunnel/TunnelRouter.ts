@@ -42,9 +42,14 @@ export class TunnelRouter {
         await this.coordinator?.onPort(port);
     }
 
+    // a rejection here would go unreported on the quit path
     public stop(): Promise<void> {
         const running = this.coordinator;
         this.coordinator = undefined;
-        return running?.stop() ?? Promise.resolve();
+        return (
+            running?.stop().catch((error: unknown) => {
+                this.logger.warn('Could not stop the tunnel', error);
+            }) ?? Promise.resolve()
+        );
     }
 }

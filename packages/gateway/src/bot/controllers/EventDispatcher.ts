@@ -12,7 +12,7 @@ import {
     runAfter,
     runHandlerGates
 } from '@seedcord/core/internal';
-import { settleWithin } from '@seedcord/core/node/internal';
+import { drainInFlight } from '@seedcord/core/node/internal';
 import { SeedcordErrorCode, paint } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
@@ -331,7 +331,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
     }
 
     public drain(timeoutMs: number): Promise<void> {
-        return settleWithin(Promise.allSettled(this.inFlight), timeoutMs);
+        return drainInFlight(this.inFlight, timeoutMs, this.logger, 'Events');
     }
 
     private async processEvent<KeyOfEvents extends keyof ClientEvents>(

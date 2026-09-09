@@ -1,7 +1,7 @@
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { SeedcordError } from '@seedcord/errors/internal';
 
-// calling start() in here turns its synchronous throw into a rejection.
+// calling start() in here turns its synchronous throw into a rejection
 async function raceTimer(
     start: () => Promise<unknown>,
     timeoutMs: number,
@@ -27,7 +27,7 @@ export function withTimeout(name: string, run: () => Promise<void>, timeoutMs: n
     });
 }
 
-// resolves when work settles or the bound elapses. a rejection resolves too.
+// the caller does not get work's rejection
 export function settleWithin(work: Promise<unknown>, timeoutMs: number): Promise<void> {
     return raceTimer(
         () =>
