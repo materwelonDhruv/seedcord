@@ -1,5 +1,31 @@
 # @seedcord/core
 
+## 0.6.0
+
+### Minor Changes
+
+- 4013669: **BREAKING:** A shutdown that used to run more than 25 seconds now stops there and skips the rest. This will most likely affect no one.
+
+    Added `lifecycle.shutdownDeadline`, a cap on the whole shutdown, 25000ms by default. A shutdown that interrupts a slow startup waits for that startup out of the same budget. A deadline that is zero, negative, or not finite throws `LifecycleInvalidShutdownDeadline`.
+
+### Patch Changes
+
+- 4013669: Fixed a plugin whose `init()` outlasts its timeout. Its `dispose()` now runs when that `init()` resolves, for as long as the process is still alive, so it can release whatever `init()` claimed past the deadline. A late `init()` that rejects now logs a warning.
+- 0988f67: The transport packages now export `prefixOf`, `decodeFor`, and the custom-id types. Reading a raw customId no longer needs `@seedcord/custom-id` as a direct dependency.
+- 4163b96: Fixed the wait that bounds a shutdown step. The shutdown now continues past a failing step.
+
+    Fixed a lifecycle task or plugin hook that throws before returning a promise. The throw now rejects the returned promise.
+
+- Updated dependencies [b3d1713]
+- Updated dependencies [b3d1713]
+- Updated dependencies [b3d1713]
+- Updated dependencies [4013669]
+    - @seedcord/custom-id@0.2.0
+    - @seedcord/errors@0.7.0
+    - @seedcord/types@0.12.0
+    - @seedcord/logger@0.3.1
+    - @seedcord/utils@0.8.10
+
 ## 0.5.0
 
 ### Minor Changes

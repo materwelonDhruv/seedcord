@@ -1,5 +1,21 @@
 # seedcord
 
+## 0.19.4
+
+### Patch Changes
+
+- 4013669: `seedcord dev` logs a warning when the tunnel fails to stop on quit, and finishes quitting either way.
+- Updated dependencies [4013669]
+- Updated dependencies [0988f67]
+- Updated dependencies [b3d1713]
+- Updated dependencies [4163b96]
+- Updated dependencies [4013669]
+    - @seedcord/core@0.6.0
+    - @seedcord/errors@0.7.0
+    - @seedcord/types@0.12.0
+    - @seedcord/logger@0.3.1
+    - @seedcord/utils@0.8.10
+
 ## 0.19.3
 
 ### Patch Changes

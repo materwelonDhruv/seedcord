@@ -1,5 +1,15 @@
 # @seedcord/logger
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [b3d1713]
+- Updated dependencies [4013669]
+    - @seedcord/errors@0.7.0
+    - @seedcord/types@0.12.0
+    - @seedcord/utils@0.8.10
+
 ## 0.3.0
 
 ### Minor Changes

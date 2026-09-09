@@ -1,5 +1,26 @@
 # @seedcord/gateway
 
+## 0.5.1
+
+### Patch Changes
+
+- 0988f67: The transport packages now export `prefixOf`, `decodeFor`, and the custom-id types. Reading a raw customId no longer needs `@seedcord/custom-id` as a direct dependency.
+- 4013669: Halved the drain window to 5000ms for http bots, the same window gateway uses. An http shutdown now completes there, where it used to report a failure. Both transports log how many handlers were still running when the window closed.
+- Updated dependencies [4013669]
+- Updated dependencies [0988f67]
+- Updated dependencies [b3d1713]
+- Updated dependencies [b3d1713]
+- Updated dependencies [b3d1713]
+- Updated dependencies [4163b96]
+- Updated dependencies [4013669]
+    - @seedcord/core@0.6.0
+    - @seedcord/custom-id@0.2.0
+    - @seedcord/errors@0.7.0
+    - @seedcord/types@0.12.0
+    - @seedcord/logger@0.3.1
+    - @seedcord/utils@0.8.10
+    - @seedcord/rate-limiter@0.1.7
+
 ## 0.5.0
 
 ### Minor Changes
