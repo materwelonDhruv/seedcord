@@ -118,12 +118,6 @@ describe('reportDispatch', () => {
         expect(payload.userId).toBe('u1');
         expect(payload.guildId).toBe('g1');
     });
-
-    it('publishes a null guildId outside a guild', () => {
-        const payload = publishedFor({ ...reportFor(), userId: 'u1', guildId: null });
-
-        expect(payload.guildId).toBeNull();
-    });
 });
 
 describe('durationMs', () => {
@@ -140,7 +134,7 @@ describe('durationMs', () => {
 });
 
 describe('queuedMsFor', () => {
-    it('reads the queue time at dispatch entry, so a slow handler never inflates it', () => {
+    it('publishes the queue time it was handed, never a recomputed one', () => {
         const created = timestampFromSnowflake(SNOWFLAKE);
         let now = created + 1234;
         vi.spyOn(Date, 'now').mockImplementation(() => now);

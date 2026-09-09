@@ -1540,6 +1540,7 @@ describe('InteractionDispatcher Integration', () => {
             await controller.handleSlashCommand(interaction);
 
             // the outcome proves the dispatch reached the constructor
+            expect(published).toHaveLength(1);
             expect(published[0]).toMatchObject({ routeId: 'slash:ctorboom', outcome: 'failed' });
             expect(interaction.deferReply).not.toHaveBeenCalled();
         });
@@ -1694,30 +1695,6 @@ describe('InteractionDispatcher Integration', () => {
 
             expect(published).toHaveLength(1);
             expect(published[0]).toMatchObject({ routeId: 'slash:rawgate', outcome: 'failed' });
-        });
-
-        it('reports failed when the handler constructor throws', async () => {
-            const published = await dispatchedFor(
-                `
-                import { SlashHandler, SlashRoute } from '${seedcordPath}';
-
-                @SlashRoute('ctorboom')
-                export class CtorBoomHandler extends SlashHandler<'ctorboom'> {
-                    constructor(...args) {
-                        super(...args);
-                        throw new Error('ctor exploded');
-                    }
-
-                    public async execute() {
-                        await this.event.reply('done');
-                    }
-                }
-                `,
-                'ctorboom'
-            );
-
-            expect(published).toHaveLength(1);
-            expect(published[0]).toMatchObject({ routeId: 'slash:ctorboom', outcome: 'failed' });
         });
     });
 });

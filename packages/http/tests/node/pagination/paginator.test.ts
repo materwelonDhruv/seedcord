@@ -226,20 +226,15 @@ describe('http Paginator nav handler', () => {
     });
 });
 
-describe('http Paginator typing', () => {
-    it('carries the item type and the http page context through the source subclass', () => {
-        const nums = new Paginator({
-            prefix: 'nums',
-            source: new ArraySource((ctx) => {
-                expectTypeOf(ctx).toEqualTypeOf<PageContext>();
-                return [1, 2, 3];
-            }),
-            renderItem: (item) => {
-                expectTypeOf(item).toEqualTypeOf<number>();
-                return String(item);
-            }
-        });
-
-        expect(nums.cursor.prefix).toBe('nums');
-    });
+// the callbacks below are typechecked and never called
+void new Paginator({
+    prefix: 'nums',
+    source: new ArraySource((ctx) => {
+        expectTypeOf(ctx).toEqualTypeOf<PageContext>();
+        return [1, 2, 3];
+    }),
+    renderItem: (item) => {
+        expectTypeOf(item).toEqualTypeOf<number>();
+        return String(item);
+    }
 });

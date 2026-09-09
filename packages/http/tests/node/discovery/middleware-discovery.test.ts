@@ -29,6 +29,7 @@ describe('http middleware discovery', () => {
         const dispatcher = await readyDispatcher(MIDDLEWARES_DIR);
 
         expect(names(dispatcher.middlewares.chainFor(InteractionKind.Button))).toEqual(['Audit', 'ButtonAudit']);
+        expect(names(dispatcher.middlewares.chainFor(InteractionKind.Modal))).toEqual(['Audit']);
     });
 
     it('drops a middleware from every chain when its file goes away', async () => {

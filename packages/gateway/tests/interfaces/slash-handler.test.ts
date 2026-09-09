@@ -218,15 +218,13 @@ describe('SlashHandler', () => {
             code: SeedcordErrorCode.SlashMatchArmMissing
         });
     });
-
-    it('exposes the additional typed slash handlers', () => {
-        expect([
-            UnionOptionsHandler,
-            PerArmNarrowing,
-            ExtraArmHandler,
-            SubcommandHandler,
-            UnknownDecoratorRoute,
-            UnknownGenericRoute
-        ]).toHaveLength(6);
-    });
 });
+
+void [
+    UnionOptionsHandler,
+    PerArmNarrowing,
+    ExtraArmHandler,
+    SubcommandHandler,
+    UnknownDecoratorRoute,
+    UnknownGenericRoute
+];

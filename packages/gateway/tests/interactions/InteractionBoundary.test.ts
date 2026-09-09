@@ -142,7 +142,6 @@ describe('handleInteractionFault', () => {
         expect(payload.error.message).toBe('a thrown string');
     });
 
-    // the uuid on the user's error card has to be greppable
     it('logs a line per fault', async () => {
         const core = mockCore(publish);
         const errorLog = vi.spyOn(Logger.prototype, 'error').mockImplementation(() => undefined);

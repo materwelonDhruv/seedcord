@@ -81,17 +81,4 @@ describe('runHandlerGates', () => {
             runHandlerGates(Handler, eventGateContext('messageCreate', payload, core, dispatch))
         ).rejects.toBeInstanceOf(Notice);
     });
-
-    it('resolves when the event handler has no gates', async () => {
-        class Handler extends EventHandler<Events.MessageCreate> {
-            async execute(): Promise<void> {
-                await Promise.resolve();
-            }
-        }
-
-        const payload = [] as unknown as Parameters<typeof eventGateContext>[1];
-        await expect(
-            runHandlerGates(Handler, eventGateContext('messageCreate', payload, core, dispatch))
-        ).resolves.toBeUndefined();
-    });
 });

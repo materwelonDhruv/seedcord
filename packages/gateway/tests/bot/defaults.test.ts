@@ -1,7 +1,7 @@
 import { TextDisplayBuilder } from '@discordjs/builders';
 import { DispatchContext } from '@seedcord/core';
 import { PublishDefault } from '@seedcord/core/internal';
-import { ComponentType, MessageFlags } from 'discord.js';
+import { MessageFlags } from 'discord.js';
 import { describe, expect, it, vi } from 'vitest';
 
 import { UnhandledAutocomplete } from '#bot/defaults/UnhandledAutocomplete';
@@ -37,16 +37,6 @@ describe('UnhandledRepliable', () => {
         expect(options.components).toEqual([notImplemented]);
         expect((options.flags ?? 0) & MessageFlags.IsComponentsV2).toBe(MessageFlags.IsComponentsV2);
         expect((options.flags ?? 0) & MessageFlags.Ephemeral).toBe(MessageFlags.Ephemeral);
-    });
-
-    it('wraps the message in a single TextDisplay component', async () => {
-        const mock = mockInteraction({ isMessageComponent: false, isModalSubmit: false });
-        await new UnhandledRepliable(asSlash(mock), core, dispatch).execute();
-
-        const options = mock.reply.mock.calls[0]?.[0] as { components: { type: number; content: string }[] };
-        expect(options.components).toHaveLength(1);
-        expect(options.components[0]?.type).toBe(ComponentType.TextDisplay);
-        expect(options.components[0]?.content).toBe('Feature not implemented yet.');
     });
 });
 

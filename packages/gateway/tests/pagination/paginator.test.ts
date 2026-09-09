@@ -238,7 +238,7 @@ describe('Paginator nav handler', () => {
 });
 
 describe('Paginator registration', () => {
-    it('the decorated .Handler subclass is a discoverable InteractionHandler routed by the cursor prefix', () => {
+    it('registers the .Handler subclass under the cursor prefix', () => {
         expect(BansNav.prototype).toBeInstanceOf(InteractionHandler);
         expect(Reflect.hasMetadata(InteractionMetadataKey, BansNav)).toBe(true);
         const routeKeys = Reflect.getMetadata(InteractionRouteKeys[InteractionKind.Button], BansNav) as string[];
@@ -261,18 +261,14 @@ describe('Paginator context', () => {
     });
 });
 
-describe('Paginator typing', () => {
-    it('infers the item type from the source into renderItem', () => {
-        const nums = new Paginator({
-            prefix: 'nums',
-            source: new ArraySource(() => [1, 2, 3]),
-            renderItem: (item) => {
-                expectTypeOf(item).toEqualTypeOf<number>();
-                return String(item);
-            }
-        });
-        expect(nums.cursor.prefix).toBe('nums');
-    });
+// renderItem is typechecked and never called
+void new Paginator({
+    prefix: 'nums',
+    source: new ArraySource(() => [1, 2, 3]),
+    renderItem: (item) => {
+        expectTypeOf(item).toEqualTypeOf<number>();
+        return String(item);
+    }
 });
 
 const Roster = new Paginator({
