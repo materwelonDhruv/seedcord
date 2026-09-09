@@ -9,7 +9,8 @@ import type { DispatchBag, DispatchState } from '@seedcord/types';
  * dispatched `routeId`.
  */
 export class DispatchContext implements DispatchBag {
-    private readonly state: Partial<DispatchState> = {};
+    // a {} here would let a key named toString or __proto__ reach Object.prototype
+    private readonly state = Object.create(null) as Partial<DispatchState>;
 
     constructor(public readonly routeId: string) {}
 

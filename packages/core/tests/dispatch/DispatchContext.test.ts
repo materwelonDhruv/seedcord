@@ -52,4 +52,17 @@ describe('DispatchContext', () => {
             expect.objectContaining({ code: SeedcordErrorCode.DispatchStateMissing })
         );
     });
+
+    it.each(['constructor', 'toString', 'valueOf', 'hasOwnProperty'])('treats %s as missing', (key) => {
+        const bag = bagOf(new DispatchContext('slash:test'));
+        expect(() => bag.require(key)).toThrow(
+            expect.objectContaining({ code: SeedcordErrorCode.DispatchStateMissing })
+        );
+    });
+
+    it('stores __proto__ as a value', () => {
+        const bag = bagOf(new DispatchContext('slash:test'));
+        bag.set('__proto__', 'en');
+        expect(bag.require('__proto__')).toBe('en');
+    });
 });
