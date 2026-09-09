@@ -1,9 +1,9 @@
 ---
 title: The lifecycle
-description: A plugin can write up to three methods, though init() is the only one seedcord requires.
+description: seedcord calls init(), ready(), and dispose() at fixed points in startup and shutdown, each with its own timeout.
 ---
 
-You write up to three methods on a plugin. `init()` is the required one. seedcord skips `ready()` and `dispose()` when you omit them.
+You write up to three methods on a plugin. `init()` is the one method every plugin writes. seedcord calls `ready()` and `dispose()` when you add them.
 
 ```ts twoslash title="src/plugins/Presence.ts"
 import { Plugin } from '@seedcord/gateway';
@@ -62,7 +62,7 @@ Shutdown then runs four.
 
 {/* prettier-ignore-end */}
 
-Inside one phase your plugins run one after another in attach order. Every `ready()` waits for every `init()` to resolve. A plugin that you moved into the Ready phase still finishes its `init()` before any `ready()` starts.
+Inside one phase your plugins run one after another in attach order. Every `ready()` waits for every `init()` to resolve, including an `init()` you moved into the Ready phase itself.
 
 ## Moving a method to another phase
 
@@ -109,7 +109,7 @@ Declaring a timeout of zero, a negative number, or `Infinity` throws `PluginInva
 
 A single deadline bounds the shutdown phases, 25000ms by default. Once it elapses seedcord skips the phases it never reached and exits. A task already running keeps going until the process exits three seconds later. A deadline of zero, a negative number, or `Infinity` throws `LifecycleInvalidShutdownDeadline` at startup.
 
-That default assumes the 30 seconds Kubernetes waits before SIGKILL. Since `docker stop` allows 10, drop the deadline to 7000 there, or widen the window with `docker stop -t`.
+That default assumes the 30 seconds Kubernetes waits before SIGKILL. Since `docker stop` allows 10, drop the deadline to 5000 there, or widen the window with `docker stop -t`.
 
 ```ts twoslash title="src/bot.ts"
 import { resolve } from 'node:path';
@@ -146,8 +146,6 @@ seedcord never calls `dispose()` for an `init()` that hangs forever. Give whatev
 
 That host cannot start again either. Calling `start()` on it a second time throws `LifecycleRestartAfterFailure`.
 
-<Callout type="warning">
+## When dispose fails
 
-During shutdown one failing `dispose()` never stops the others. seedcord runs them all, then throws the single failure it caught. Several failures throw as one `AggregateError` carrying `PluginDisposeFailures`, with each individual error on its `errors` array.
-
-</Callout>
+One failing `dispose()` never stops the others. seedcord runs them all, then throws the single failure it caught. Several failures throw as one `AggregateError` carrying `PluginDisposeFailures`, with each individual error on its `errors` array.
