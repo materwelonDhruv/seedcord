@@ -22,6 +22,15 @@ describe('settleWithin', () => {
         // shutdown keeps going after a step fails
         await expect(settleWithin(Promise.reject(new Error('clear failed')), BOUND_MS)).resolves.toBeUndefined();
     });
+
+    // a wait that ends early leaves the shutdown enough deadline to run a phase
+    it('waits the whole time by performance.now()', async () => {
+        for (let attempt = 0; attempt < 40; attempt++) {
+            const startedAt = performance.now();
+            await settleWithin(never(), SHORT_MS);
+            expect(performance.now() - startedAt).toBeGreaterThanOrEqual(SHORT_MS);
+        }
+    });
 });
 
 describe('withTimeout', () => {

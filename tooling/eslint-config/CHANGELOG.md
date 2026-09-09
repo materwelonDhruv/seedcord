@@ -1,5 +1,11 @@
 # @seedcord/eslint-config
 
+## 2.2.0
+
+### Minor Changes
+
+- 815fbb7: `new-cap` now requires a PascalCase name after `new`.
+
 ## 2.1.0
 
 ### Minor Changes

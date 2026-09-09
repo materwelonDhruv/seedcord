@@ -1,5 +1,14 @@
 # @seedcord/errors
 
+## 0.7.0
+
+### Minor Changes
+
+- b3d1713: **BREAKING:** renamed `SeedcordErrorCode.CustomIdValueOutOfRange` to `CustomIdValueRejected` (same error code). It now gives a more accurate description of the error with what's wrong and what was expected.
+- 4013669: **BREAKING:** A shutdown that used to run more than 25 seconds now stops there and skips the rest. This will most likely affect no one.
+
+    Added `lifecycle.shutdownDeadline`, a cap on the whole shutdown, 25000ms by default. A shutdown that interrupts a slow startup waits for that startup out of the same budget. A deadline that is zero, negative, or not finite throws `LifecycleInvalidShutdownDeadline`.
+
 ## 0.6.0
 
 ### Minor Changes
