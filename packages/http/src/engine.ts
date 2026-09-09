@@ -10,9 +10,11 @@ import { resolve } from './dispatch/resolve';
 import { Ed25519Verifier } from './receiver/Ed25519Verifier';
 import { ReplayGuard } from './receiver/ReplayGuard';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { Core } from '#interfaces/Core';
 import type { RouteMaps } from './dispatch/resolve';
+import type { MiddlewareRegistry } from '@seedcord/core/internal';
 import type { APIInteraction } from 'discord-api-types/v10';
 
 const SIGNATURE_HEADER = 'x-signature-ed25519';
@@ -46,7 +48,11 @@ export interface EngineParts {
     readonly inFlight: ReadonlySet<Promise<void>>;
 }
 
-export function buildEngine(core: Core, maps: RouteMaps): EngineParts {
+export function buildEngine(
+    core: Core,
+    maps: RouteMaps,
+    middlewares: MiddlewareRegistry<InteractionMiddlewareConstructor>
+): EngineParts {
     if (!Envapter.has('DISCORD_PUBLIC_KEY'))
         throw new SeedcordError(SeedcordErrorCode.ConfigMissingEnv, ['DISCORD_PUBLIC_KEY']);
     const publicKey = Envapter.getRequired('DISCORD_PUBLIC_KEY', Converters.String);
@@ -62,10 +68,10 @@ export function buildEngine(core: Core, maps: RouteMaps): EngineParts {
         payload: ValidInteractionTypes,
         ctx: EngineContext | undefined
     ): Promise<void> {
-        const start = await dispatchInteraction({ match, payload, core });
+        const start = await dispatchInteraction({ match, payload, core, middlewares });
         if (!start) return;
 
-        // this catch is all that stands between a throw and an unhandled rejection
+        // without this catch the rejection reaches the process unhandled
         const work = start().catch(rootFault);
         if (ctx) {
             ctx.waitUntil(work);

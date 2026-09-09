@@ -11,8 +11,8 @@
         "replying",
         "throwing",
         "components",
-        "events",
         "gates",
+        "events",
         "plugins",
         "utilities",
         "tooling"

@@ -6,6 +6,7 @@ import { BaseHandler } from '#src/handlers/BaseHandler';
 import type { Core } from '#interfaces/Core';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { SingleEventPayload } from './payload';
+import type { DispatchContext, EventDispatchResult } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 
 /**
@@ -22,11 +23,11 @@ import type { ClientEvents } from 'discord.js';
 export abstract class EventMiddleware<
     in out EventName extends ValidNonInteractionKeys = ValidNonInteractionKeys
 > extends BaseHandler<ClientEvents[EventName]> {
-    // the fired event name, threaded by the controller. undefined when constructed directly, e.g. in a test.
+    // the controller threads this in, undefined when a test constructs the middleware directly
     private readonly firedEvent: EventName | undefined;
 
-    constructor(event: ClientEvents[EventName], core: Core, eventName?: EventName) {
-        super(event, core, undefined, 'events');
+    constructor(event: ClientEvents[EventName], core: Core, dispatch: DispatchContext, eventName?: EventName) {
+        super(event, core, dispatch, 'events');
         this.firedEvent = eventName;
     }
 
@@ -42,4 +43,22 @@ export abstract class EventMiddleware<
         if (this.firedEvent === undefined) throw new SeedcordError(SeedcordErrorCode.EventMiddlewareNameUnavailable);
         return this.firedEvent;
     }
+
+    /**
+     * Runs once the event finishes, newest middleware first. Every middleware whose `execute()`
+     * started gets the call, a stopped chain and a throw included. Implement it to release something
+     * this middleware took in `execute()`. A throw in here is logged and goes no further.
+     *
+     * @param result - `outcome` reports the chain alone. `handlers` holds one entry per handler that
+     * ran, empty exactly when the chain stopped the event.
+     *
+     * @example
+     * ```ts
+     * // the base declares it. an implementation carries `override`.
+     * override async after(result: EventDispatchResult) {
+     *     this.span.end();
+     * }
+     * ```
+     */
+    public after?(result: EventDispatchResult): Promise<void>;
 }

@@ -8,18 +8,28 @@ import { AST_NODE_TYPES, ESLintUtils } from '@typescript-eslint/utils';
 
 import { createRule } from '../createRule';
 
-const MIDDLEWARE_BASES = new Set(['InteractionMiddleware', 'EventMiddleware']);
-const MIDDLEWARE_DECORATOR = 'Middleware';
+const BASE_TO_DECORATOR = {
+    InteractionMiddleware: 'RegisterInteractionMiddleware',
+    EventMiddleware: 'RegisterEventMiddleware'
+} as const;
+
+type MiddlewareBase = keyof typeof BASE_TO_DECORATOR;
+
+const MIDDLEWARE_BASE_NAMES = Object.keys(BASE_TO_DECORATOR) as MiddlewareBase[];
+
+function isMiddlewareBase(name: string): name is MiddlewareBase {
+    return name in BASE_TO_DECORATOR;
+}
 
 export default createRule({
     name: 'middleware-missing-register-decorator',
     meta: {
         type: 'problem',
         docs: {
-            description: 'Require @Middleware on every concrete interaction or event middleware.'
+            description: 'Require the matching register decorator on every concrete middleware.'
         },
         messages: {
-            missingMiddleware: 'This middleware has no @Middleware decorator, so it never runs on any request.'
+            missingMiddleware: 'This {{base}} has no @{{decorator}} decorator, so it never runs.'
         },
         schema: []
     },
@@ -27,32 +37,38 @@ export default createRule({
     create(context) {
         const services = ESLintUtils.getParserServices(context);
         const checker = services.program.getTypeChecker();
-        const bases = new Set<string>();
-        const decorators = createDecoratorMatcher(services, checker, [MIDDLEWARE_DECORATOR]);
+        const bases = new Map<string, MiddlewareBase>();
+        const decorators = createDecoratorMatcher(services, checker, Object.values(BASE_TO_DECORATOR));
 
         return {
             ImportDeclaration(node) {
                 forEachSeedcordImport(node, (imported, local) => {
-                    if (MIDDLEWARE_BASES.has(imported)) bases.add(local);
+                    if (isMiddlewareBase(imported)) bases.set(local, imported);
                 });
                 decorators.collectImports(node);
             },
             ClassDeclaration(node) {
                 if (node.superClass?.type !== AST_NODE_TYPES.Identifier) return;
 
-                let isBase = bases.has(node.superClass.name);
-                if (!isBase) {
+                let base = bases.get(node.superClass.name);
+                if (base === undefined) {
                     const classType = classInstanceType(node, services, checker);
-                    if (classType) isBase = extendsSeedcordType(checker, classType, MIDDLEWARE_BASES);
+                    if (classType) {
+                        base = MIDDLEWARE_BASE_NAMES.find((name) => extendsSeedcordType(checker, classType, name));
+                    }
                 }
-                if (!isBase) return;
+                if (base === undefined) return;
                 if (node.abstract) {
-                    if (node.id) bases.add(node.id.name);
+                    if (node.id) bases.set(node.id.name, base);
                     return;
                 }
-                if (decorators.hasDecorator(node, MIDDLEWARE_DECORATOR)) return;
+                if (decorators.hasDecorator(node, BASE_TO_DECORATOR[base])) return;
 
-                context.report({ node: node.id ?? node, messageId: 'missingMiddleware' });
+                context.report({
+                    node: node.id ?? node,
+                    messageId: 'missingMiddleware',
+                    data: { base, decorator: BASE_TO_DECORATOR[base] }
+                });
             }
         };
     }

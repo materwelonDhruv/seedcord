@@ -1,3 +1,4 @@
+import type { DispatchBag } from './Dispatch';
 import type { APIMessageTopLevelComponent } from 'discord-api-types/v10';
 import type { UUID } from 'node:crypto';
 
@@ -64,4 +65,6 @@ export interface RenderContext {
     readonly uuid: UUID;
     /** Contact name a generic fault reply points the user to, from `notifications.developerUsername`. */
     readonly developerUsername?: string;
+    /** The bag for this dispatch. The same instance the handler, its gates, and its middleware hold. */
+    readonly dispatch: DispatchBag;
 }

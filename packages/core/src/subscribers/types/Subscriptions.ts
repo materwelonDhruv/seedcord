@@ -130,6 +130,10 @@ export interface DefaultSubscriptions {
         readonly outcome: DispatchOutcome;
         /** True when no route matched and the unhandled default ran. */
         readonly fallback: boolean;
+        /** Who ran the route. Null when the payload carried no user. */
+        readonly userId: string | null;
+        /** Guild the interaction came from, null in DMs. */
+        readonly guildId: string | null;
         /** Dispatch entry until the user has a response, replies included. A clock change never affects it. */
         readonly durationMs: number;
         /**
@@ -189,7 +193,7 @@ export type PublishableKey = TypedExclude<SubscriptionKey, keyof DefaultSubscrip
  */
 export type SubscriptionData<KeyOfSubscribers extends SubscriptionKey> = AllSubscriptions[KeyOfSubscribers];
 
-// event map for Bus, compatible with TypedEventEmitter
+// one-element tuples because TypedEventEmitter keys on the listener's argument list
 export type SubscriptionTuples = {
     [K in SubscriptionKey]: [AllSubscriptions[K]];
 };

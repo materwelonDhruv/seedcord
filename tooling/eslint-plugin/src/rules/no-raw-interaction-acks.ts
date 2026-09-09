@@ -5,12 +5,12 @@ import { createRule } from '../createRule';
 
 import type { TSESTree } from '@typescript-eslint/utils';
 
-// InteractionMiddleware extends BaseHandler directly, so this gate excludes it
-const HANDLER_GATES = ['InteractionHandler', 'AutocompleteHandler'];
+const HANDLER_GATES = ['InteractionHandler', 'AutocompleteHandler', 'InteractionMiddleware'];
 
 const HANDLER_BASE_NAMES = new Set([
     'InteractionHandler',
     'AutocompleteHandler',
+    'InteractionMiddleware',
     'ComponentHandler',
     'SlashHandler',
     'ButtonHandler',

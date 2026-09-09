@@ -7,17 +7,20 @@ import { deriveEventActor } from '#miscellaneous/deriveEventActor';
 import { extractErrorResponse } from '#miscellaneous/extractErrorResponse';
 
 import type { Core } from '#interfaces/Core';
+import type { DispatchContext } from '@seedcord/core';
 
 const logger = new Logger('Faults', { channel: 'errors' });
 
+interface EventFault {
+    readonly eventName: string;
+    readonly handlerName: string;
+    readonly args: unknown;
+    readonly dispatch: DispatchContext;
+}
+
 // a generic event has no reply target
-export function handleEventFault(
-    caught: unknown,
-    eventName: string,
-    handlerName: string,
-    args: unknown,
-    core: Core
-): void {
+export function handleEventFault(caught: unknown, fault: EventFault, core: Core): void {
+    const { eventName, handlerName, args, dispatch } = fault;
     if (caught instanceof Silence) {
         if (caught.reason !== undefined && (core.config.errors?.logSilences ?? true)) {
             logger.debug(`Silence: ${caught.reason}`);
@@ -26,20 +29,19 @@ export function handleEventFault(
     }
     const error = asError(caught);
 
-    // a dead resource on an event keeps reporting until the dev adds its code to this list
     const ignore = new Set<number | string>(core.config.errors?.ignoreEventApiCodes ?? []);
     if (error instanceof DiscordAPIError && ignore.has(error.code)) {
         logger.debug(`swallowed api code ${error.code}`);
         return;
     }
 
-    // a non-reporting denial has no reply target on an event and stops quietly
     if (error instanceof Notice && !error.report) return;
 
     const actor = deriveEventActor(args);
     extractErrorResponse(error, core, {
         event: { name: eventName, handler: handlerName, args, channelId: actor.channelId },
         routeId: `event:${eventName}:${handlerName}`,
+        dispatch,
         guild: actor.guild,
         user: actor.user
     });

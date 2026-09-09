@@ -1,4 +1,4 @@
-import { SlashRoute } from '@seedcord/core';
+import { DispatchContext, SlashRoute } from '@seedcord/core';
 import { SeedcordErrorCode } from '@seedcord/errors';
 import { describe, expect, expectTypeOf, it } from 'vitest';
 
@@ -8,9 +8,10 @@ import type { SlashOptions } from '#inputs/SlashOptions';
 import type { Core } from '#interfaces/Core';
 import type { ChatInputCommandInteraction, CommandInteractionOption, User } from 'discord.js';
 
-// Compile-time spec for SlashHandler. The execute() bodies are typechecked but never run, so each guarded
-// mistake below fails the build if it stops being a compile error. Distinct routes from typed-options.test.ts
-// avoid a duplicate registry augmentation.
+const dispatch = new DispatchContext('test:probe');
+
+// the execute() bodies are typechecked and never run. every guarded mistake below fails the build the day it
+// stops being a compile error. the routes differ from typed-options.test.ts to keep the augmentations apart.
 declare module '@seedcord/core' {
     interface SlashRegistry {
         kick: { options: { member: { kind: 'user'; required: true } }; cache: 'cached' };
@@ -212,20 +213,18 @@ describe('SlashHandler', () => {
                 });
             }
         }
-        const handler = new Mod(slashInteraction('constructor'), core);
+        const handler = new Mod(slashInteraction('constructor'), core, dispatch);
         await expect(handler.execute()).rejects.toMatchObject({
             code: SeedcordErrorCode.SlashMatchArmMissing
         });
     });
-
-    it('exposes the additional typed slash handlers', () => {
-        expect([
-            UnionOptionsHandler,
-            PerArmNarrowing,
-            ExtraArmHandler,
-            SubcommandHandler,
-            UnknownDecoratorRoute,
-            UnknownGenericRoute
-        ]).toHaveLength(6);
-    });
 });
+
+void [
+    UnionOptionsHandler,
+    PerArmNarrowing,
+    ExtraArmHandler,
+    SubcommandHandler,
+    UnknownDecoratorRoute,
+    UnknownGenericRoute
+];

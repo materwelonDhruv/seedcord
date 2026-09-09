@@ -1,15 +1,20 @@
-import { Silence, Fault } from '@seedcord/core';
+import { DispatchContext, Silence, Fault } from '@seedcord/core';
 import { PublishDefault } from '@seedcord/core/internal';
 import { Logger } from '@seedcord/logger';
 import { DiscordAPIError, RESTJSONErrorCodes } from 'discord.js';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { handleEventFault } from '#bot/handleEventFault';
+import { handleEventFault as boundary } from '#bot/handleEventFault';
 
 import { TestNotice } from '../utils/TestNotice';
 
 import type { Core } from '#interfaces/Core';
 import type { SubscriptionData } from '@seedcord/core';
+
+// the dispatcher supplies the per-fire context
+function handleEventFault(caught: unknown, eventName: string, handlerName: string, args: unknown, core: Core): void {
+    boundary(caught, { eventName, handlerName, args, dispatch: new DispatchContext(`event:${eventName}`) }, core);
+}
 
 function deadResourceError(): DiscordAPIError {
     return new DiscordAPIError(
@@ -23,8 +28,7 @@ function deadResourceError(): DiscordAPIError {
 }
 
 function stringCodedError(): DiscordAPIError {
-    // the boundary reads `.code`, which is the second constructor argument, the rawError body's numeric
-    // code is unrelated. djs returns string codes for some errors, this models that.
+    // djs puts the code the boundary reads in the second constructor argument. some of them are strings.
     return new DiscordAPIError(
         { code: 0, message: 'Unknown command' },
         'SLASH_COMMAND_UNKNOWN',

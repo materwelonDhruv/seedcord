@@ -1,0 +1,152 @@
+import { SeedcordErrorCode } from '@seedcord/errors';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
+import { eventsOf } from '#bot/Bot';
+import { Seedcord } from '#src/Seedcord';
+
+import { seedcordPath } from '../utils/source-path';
+import { testConfig } from '../utils/test-config';
+import { TestEnvironment } from '../utils/test-env';
+
+import '../utils/mock-env';
+
+interface PrivateEventDispatcher {
+    init(): Promise<void>;
+    onHmr(event: unknown): Promise<void>;
+    processEvent(eventName: string, args: unknown[]): Promise<void>;
+}
+
+// justified: processEvent and onHmr are private on the dispatcher
+function dispatcherOf(instance: Seedcord): PrivateEventDispatcher {
+    return eventsOf(instance.bot) as unknown as PrivateEventDispatcher;
+}
+
+const EVENTS_DIR = 'events';
+const MIDDLEWARES_DIR = 'event-mw';
+
+const HANDLER = `
+    import { EventHandler, RegisterEvent } from '${seedcordPath}';
+    import { Events } from 'discord.js';
+
+    @RegisterEvent(['messageCreate'])
+    export class Msg extends EventHandler<Events.MessageCreate> {
+        public async execute() {
+            await this.match({ messageCreate: (message) => message.reply('ran') });
+        }
+    }
+`;
+
+const PARKS = `
+    import { RegisterEventMiddleware, EventMiddleware } from '${seedcordPath}';
+
+    @RegisterEventMiddleware({ priority: 1 })
+    export class Parks extends EventMiddleware {
+        public async execute() {
+            globalThis.mwRan.push('Parks');
+            globalThis.mwReached();
+            await globalThis.mwParked;
+        }
+    }
+`;
+
+const FOLLOWS = `
+    import { RegisterEventMiddleware, EventMiddleware } from '${seedcordPath}';
+
+    @RegisterEventMiddleware({ priority: 2 })
+    export class Follows extends EventMiddleware {
+        public async execute() {
+            globalThis.mwRan.push('Follows');
+            await Promise.resolve();
+        }
+    }
+`;
+
+function deferred(): { promise: Promise<void>; resolve: () => void } {
+    let resolve!: () => void;
+    const promise = new Promise<void>((settle) => (resolve = settle));
+    return { promise, resolve };
+}
+
+const AUDIT = `
+    import { RegisterEventMiddleware, EventMiddleware } from '${seedcordPath}';
+
+    @RegisterEventMiddleware()
+    export class Audit extends EventMiddleware {
+        public async execute() {
+            await Promise.resolve();
+        }
+    }
+`;
+
+describe('the event middleware registry', () => {
+    let testEnv: TestEnvironment;
+    let seedcord: Seedcord;
+
+    beforeEach(async () => {
+        // @ts-expect-error: Accessing private method for testing
+        Seedcord.reset();
+        testEnv = new TestEnvironment('event-mw-hmr-');
+        await testEnv.setup();
+    });
+
+    afterEach(async () => {
+        await testEnv.teardown();
+        vi.clearAllMocks();
+    });
+
+    it('runs the rest of the chain when a reload drops a middleware mid-dispatch', async () => {
+        const ran: string[] = [];
+        const parked = deferred();
+        const started = deferred();
+
+        // globalThis is how a temp-dir fixture reaches this test
+        Object.assign(globalThis, { mwRan: ran, mwParked: parked.promise, mwReached: started.resolve });
+
+        await testEnv.createFile(`${EVENTS_DIR}/Msg.ts`, HANDLER);
+        const parksPath = await testEnv.createFile(`${MIDDLEWARES_DIR}/Parks.ts`, PARKS);
+        await testEnv.createFile(`${MIDDLEWARES_DIR}/Follows.ts`, FOLLOWS);
+
+        seedcord = new Seedcord(
+            testConfig({
+                events: testEnv.resolvePath(EVENTS_DIR),
+                eventMiddlewares: testEnv.resolvePath(MIDDLEWARES_DIR)
+            })
+        );
+        const events = dispatcherOf(seedcord);
+        await events.init();
+
+        const dispatching = events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+        await started.promise;
+
+        // the reload drops Parks while its execute() is still awaiting
+        await testEnv.createFile(`${MIDDLEWARES_DIR}/Parks.ts`, 'export const gone = true;');
+        await events.onHmr({ file: parksPath, type: 'update' });
+
+        parked.resolve();
+        await dispatching;
+
+        expect(ran).toEqual(['Parks', 'Follows']);
+    });
+
+    it('throws when two event middleware classes share a name', async () => {
+        await testEnv.createFile(`${EVENTS_DIR}/Msg.ts`, HANDLER);
+        await testEnv.createFile(`${MIDDLEWARES_DIR}/First.ts`, AUDIT);
+        await testEnv.createFile(`${MIDDLEWARES_DIR}/Second.ts`, AUDIT);
+
+        seedcord = new Seedcord(
+            testConfig({
+                events: testEnv.resolvePath(EVENTS_DIR),
+                eventMiddlewares: testEnv.resolvePath(MIDDLEWARES_DIR)
+            })
+        );
+
+        const error: unknown = await dispatcherOf(seedcord)
+            .init()
+            .then(
+                () => null,
+                (caught: unknown) => caught
+            );
+
+        expect(error).toMatchObject({ code: SeedcordErrorCode.DuplicateMiddleware });
+    });
+});

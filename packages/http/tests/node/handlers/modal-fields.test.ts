@@ -1,4 +1,4 @@
-import { CustomId } from '@seedcord/core';
+import { DispatchContext, CustomId } from '@seedcord/core';
 import { ComponentType } from 'discord-api-types/v10';
 import { describe, expect, it } from 'vitest';
 
@@ -8,6 +8,8 @@ import { ModalRoute } from '#src/index';
 
 import type { Core } from '#interfaces/Core';
 import type { APIModalSubmitInteraction } from 'discord-api-types/v10';
+
+const dispatch = new DispatchContext('test:probe');
 
 const ConfigId = new CustomId('config').str('guildId');
 
@@ -45,7 +47,7 @@ describe('modal fields on the http handler', () => {
             }
         }
 
-        await new ConfigModal(modalEvent(ConfigId.encode({ guildId: 'g1' })), core).execute();
+        await new ConfigModal(modalEvent(ConfigId.encode({ guildId: 'g1' })), core, dispatch).execute();
 
         expect(seen).toBe('seedcord');
     });
@@ -63,7 +65,7 @@ describe('modal fields on the http handler', () => {
             }
         }
 
-        await new ConfigModal(modalEvent(ConfigId.encode({ guildId: 'g1' })), core).execute();
+        await new ConfigModal(modalEvent(ConfigId.encode({ guildId: 'g1' })), core, dispatch).execute();
 
         expect(first).toBeInstanceOf(ModalFields);
         expect(first).toBe(second);

@@ -1,3 +1,4 @@
+import { DispatchContext } from '@seedcord/core';
 import { isSeedcordError, SeedcordErrorCode } from '@seedcord/errors';
 import { ApplicationCommandType } from 'discord-api-types/v10';
 import { describe, expect, expectTypeOf, it } from 'vitest';
@@ -12,6 +13,8 @@ import type {
     APIUser,
     APIUserApplicationCommandInteraction
 } from 'discord-api-types/v10';
+
+const dispatch = new DispatchContext('test:probe');
 
 declare module '@seedcord/core' {
     interface UserContextMenuRegistry {
@@ -130,27 +133,28 @@ void UnknownArm;
 
 describe('http context menu match', () => {
     it('runs the arm for the command that fired', async () => {
-        await expect(new Menu(userMenuEvent('hb Profile'), core).run()).resolves.toBe('profile:dhruv:dee');
-        await expect(new Menu(userMenuEvent('hb Greet'), core).run()).resolves.toBe('greet:dhruv');
+        await expect(new Menu(userMenuEvent('hb Profile'), core, dispatch).run()).resolves.toBe('profile:dhruv:dee');
+        await expect(new Menu(userMenuEvent('hb Greet'), core, dispatch).run()).resolves.toBe('greet:dhruv');
     });
 
     it('hands a message arm the clicked message', async () => {
-        await expect(new Tools(messageMenuEvent('hb Pin'), core).run()).resolves.toBe('pinned msg1');
+        await expect(new Tools(messageMenuEvent('hb Pin'), core, dispatch).run()).resolves.toBe('pinned msg1');
     });
 
     it('throws when the fired command has no arm', async () => {
-        await expect(new Menu(userMenuEvent('hb Greet'), core).runPartial()).rejects.toSatisfy((error: unknown) =>
-            isSeedcordError(error, 'SeedcordTypeError', SeedcordErrorCode.ContextMenuMatchArmMissing)
+        await expect(new Menu(userMenuEvent('hb Greet'), core, dispatch).runPartial()).rejects.toSatisfy(
+            (error: unknown) =>
+                isSeedcordError(error, 'SeedcordTypeError', SeedcordErrorCode.ContextMenuMatchArmMissing)
         );
     });
 
     it('throws for a command named after an Object.prototype member', async () => {
-        await expect(new Menu(userMenuEvent('constructor'), core).run()).rejects.toSatisfy((error: unknown) =>
+        await expect(new Menu(userMenuEvent('constructor'), core, dispatch).run()).rejects.toSatisfy((error: unknown) =>
             isSeedcordError(error, 'SeedcordTypeError', SeedcordErrorCode.ContextMenuMatchArmMissing)
         );
     });
 
     it('reads the fired command name without an arm', () => {
-        expect(new Menu(userMenuEvent('hb Greet'), core).readName()).toBe('hb Greet');
+        expect(new Menu(userMenuEvent('hb Greet'), core, dispatch).readName()).toBe('hb Greet');
     });
 });

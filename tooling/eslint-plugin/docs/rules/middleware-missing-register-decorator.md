@@ -1,8 +1,8 @@
 # middleware-missing-register-decorator
 
-Require `@Middleware` on every concrete interaction or event middleware.
+Require the matching register decorator on every concrete middleware.
 
-A class that extends `InteractionMiddleware` or `EventMiddleware` registers only when it carries `@Middleware`. Without it the middleware loads without error and never runs on a single request.
+`InteractionMiddleware` takes `@RegisterInteractionMiddleware` and `EventMiddleware` takes `@RegisterEventMiddleware`. A class carrying the other family's decorator reports, since neither dispatcher would register it. Without a decorator the middleware loads without error and never runs on a single request.
 
 The base class must be imported from `seedcord` or a `@seedcord/*` package, and an `abstract` intermediate base is skipped.
 
@@ -16,11 +16,18 @@ import { EventMiddleware } from 'seedcord';
 export class LogMiddleware extends EventMiddleware {}
 ```
 
+```ts
+import { EventMiddleware, RegisterInteractionMiddleware } from 'seedcord';
+
+@RegisterInteractionMiddleware()
+export class LogMiddleware extends EventMiddleware {}
+```
+
 ## Correct
 
 ```ts
-import { EventMiddleware, Middleware } from 'seedcord';
+import { EventMiddleware, RegisterEventMiddleware } from 'seedcord';
 
-@Middleware(MiddlewareType.Event, 0)
+@RegisterEventMiddleware()
 export class LogMiddleware extends EventMiddleware {}
 ```

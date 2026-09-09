@@ -10,14 +10,11 @@ import type { PageContext } from './PageContext';
 import type { PaginatorConfig } from '@seedcord/core';
 import type { PageCursor } from '@seedcord/core/internal';
 import type { ReplyResponse } from '@seedcord/types';
-import type { ButtonInteraction, CacheType } from 'discord.js';
+import type { CacheType } from 'discord.js';
 
-// `& { execute }` concretizes the abstract execute so the empty `extends Bans.Handler {}` stays concrete
-// (no TS2515) and a concrete Nav assigns with no cast.
-// a nav click arrives wherever the paginated message lives
+// `& { execute }` makes execute concrete. an empty `extends Bans.Handler {}` hits TS2515 without it.
 type PaginatorHandlerCtor<Prefix extends string> = new (
-    event: ButtonInteraction<CacheType>,
-    core: Core
+    ...args: ConstructorParameters<typeof ButtonHandler>
 ) => ButtonHandler<[PageCursor<Prefix>], CacheType> & { execute(): Promise<void> };
 
 function contextOf(interaction: Repliables, core: Core): PageContext {

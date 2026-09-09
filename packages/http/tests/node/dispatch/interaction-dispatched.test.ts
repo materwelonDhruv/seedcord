@@ -1,17 +1,19 @@
 import 'reflect-metadata';
 
-import { defineGate, Fault, Silence } from '@seedcord/core';
-import { GatedMetadataKey } from '@seedcord/core/internal';
+import { defineGate, Fault, InteractionKind, RegisterInteractionMiddleware, Silence } from '@seedcord/core';
+import { GatedMetadataKey, interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 import { AutocompleteHandler } from '#handlers/interaction/AutocompleteHandler';
+import { InteractionMiddleware } from '#handlers/interaction/InteractionMiddleware';
 import { SlashHandler } from '#handlers/interaction/SlashHandler';
 import { createCore, dispatchInteraction } from '#src/dispatch/dispatchInteraction';
 
 import { slashPayload } from './harness';
 import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { ResolvedRoute } from '#src/dispatch/resolve';
 import type { SubscriptionData } from '@seedcord/core';
@@ -104,11 +106,43 @@ class SearchAutocomplete extends AutocompleteHandler<never> {
     }
 }
 
+const ran: string[] = [];
+
+@RegisterInteractionMiddleware()
+class Audit extends InteractionMiddleware {
+    public async execute(): Promise<void> {
+        ran.push('Audit');
+        await Promise.resolve();
+    }
+}
+
+@RegisterInteractionMiddleware()
+class Defers extends InteractionMiddleware {
+    public async execute(): Promise<void> {
+        await this.defer();
+    }
+}
+
+@RegisterInteractionMiddleware()
+class Refuses extends InteractionMiddleware {
+    public execute(): Promise<void> {
+        throw new Silence('blocked by middleware');
+    }
+}
+
+@RegisterInteractionMiddleware({ kinds: [InteractionKind.Button] })
+class ButtonOnly extends InteractionMiddleware<InteractionKind.Button> {
+    public async execute(): Promise<void> {
+        ran.push('ButtonOnly');
+        await Promise.resolve();
+    }
+}
+
 // type 4 is an autocomplete, and resolve keys it off the same command data a slash carries
 const autocompletePayload = (): object => ({ ...slashPayload('search'), type: 4 });
 
 function routeFor(routeId: string | null, load: () => Promise<unknown>): ResolvedRoute {
-    return { kind: 'slash', routeId, load };
+    return { kind: InteractionKind.Slash, routeId, load };
 }
 
 async function dispatchedFor(route: ResolvedRoute): Promise<SubscriptionData<'interactionDispatched'>[]> {
@@ -118,13 +152,40 @@ async function dispatchedFor(route: ResolvedRoute): Promise<SubscriptionData<'in
     core.bus.on('interactionDispatched', (payload) => published.push(payload));
 
     const payload = slashPayload('ok') as ValidInteractionTypes;
-    const execute = await dispatchInteraction({ match: route, payload, core });
+    const execute = await dispatchInteraction({
+        match: route,
+        payload,
+        core,
+        middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
+    });
     await execute?.();
     return published;
 }
 
+async function dispatchedThrough(middleware: InteractionMiddlewareConstructor): Promise<{
+    execute: (() => Promise<void>) | null;
+    published: SubscriptionData<'interactionDispatched'>[];
+}> {
+    Envapter.useSource(new PortableSource({}));
+    const core = createCore(nullPathConfig, VALID_TOKEN);
+    const published: SubscriptionData<'interactionDispatched'>[] = [];
+    core.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
+    middlewares.register(middleware);
+
+    const execute = await dispatchInteraction({
+        match: routeFor('slash:ok', () => Promise.resolve(OkHandler)),
+        payload: slashPayload('ok') as ValidInteractionTypes,
+        core,
+        middlewares
+    });
+    return { execute, published };
+}
+
 afterEach(() => {
     Envapter.useSource(new PortableSource({}));
+    ran.length = 0;
 });
 
 describe('interactionDispatched from the http dispatcher', () => {
@@ -137,8 +198,65 @@ describe('interactionDispatched from the http dispatcher', () => {
             interactionId: 'int-1',
             kind: 'slash',
             outcome: 'handled',
-            fallback: false
+            fallback: false,
+            userId: 'u1',
+            guildId: null
         });
+    });
+
+    it('runs a registered middleware on a matching dispatch', async () => {
+        const { execute, published } = await dispatchedThrough(Audit);
+        await execute?.();
+
+        expect(ran).toEqual(['Audit']);
+        expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'handled' });
+    });
+
+    it('shares one ack state between the chain and the handler', async () => {
+        // a reply() after the chain's defer() is illegal on one shared sender
+        const { execute, published } = await dispatchedThrough(Defers);
+        await execute?.();
+
+        expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'failed' });
+    });
+
+    it('answers a Notice thrown from the chain the way a gate refusal answers', async () => {
+        const { execute, published } = await dispatchedThrough(Refuses);
+
+        expect(execute).toBeNull();
+        expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'refused' });
+    });
+
+    it('skips a middleware whose kinds omit the dispatched kind', async () => {
+        // justified: the chain only builds a kind-filtered middleware for the kind its ctor accepts
+        const { execute } = await dispatchedThrough(ButtonOnly as InteractionMiddlewareConstructor);
+        await execute?.();
+
+        expect(ran).toEqual([]);
+    });
+
+    it('reads the actor off member.user in a guild', async () => {
+        Envapter.useSource(new PortableSource({}));
+        const core = createCore(nullPathConfig, VALID_TOKEN);
+        const published: SubscriptionData<'interactionDispatched'>[] = [];
+        core.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+        const payload = {
+            ...slashPayload('ok'),
+            user: undefined,
+            member: { user: { id: 'guild-user', username: 'tester' } },
+            guild_id: 'g1'
+        } as unknown as ValidInteractionTypes;
+
+        const execute = await dispatchInteraction({
+            match: routeFor('slash:ok', () => Promise.resolve(OkHandler)),
+            payload,
+            core,
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
+        });
+        await execute?.();
+
+        expect(published[0]).toMatchObject({ userId: 'guild-user', guildId: 'g1' });
     });
 
     // an unmatched route carries no routeId, so the handler's own sender has none from the dispatch
@@ -151,7 +269,7 @@ describe('interactionDispatched from the http dispatcher', () => {
         core.bus.on('responseAttempted', (payload) => written.push(payload));
 
         const match: ResolvedRoute = {
-            kind: 'slash',
+            kind: InteractionKind.Slash,
             routeId: null,
             attemptedKey: 'unregistered',
             load: () => Promise.resolve(OkHandler)
@@ -159,7 +277,8 @@ describe('interactionDispatched from the http dispatcher', () => {
         const execute = await dispatchInteraction({
             match,
             payload: slashPayload('ok') as ValidInteractionTypes,
-            core
+            core,
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
@@ -227,7 +346,7 @@ describe('interactionDispatched from the http dispatcher', () => {
     // a customId seedcord never minted reads an empty key, which both transports render as unrouted
     it('names an unmintable customId unrouted', async () => {
         const match: ResolvedRoute = {
-            kind: 'button',
+            kind: InteractionKind.Button,
             routeId: null,
             attemptedKey: '',
             load: () => Promise.resolve(OkHandler)
@@ -240,7 +359,7 @@ describe('interactionDispatched from the http dispatcher', () => {
     // the same shape gateway emits, so a dashboard can break unmatched routes down by command
     it('flags the unhandled default as a fallback and keeps the attempted key', async () => {
         const match: ResolvedRoute = {
-            kind: 'slash',
+            kind: InteractionKind.Slash,
             routeId: null,
             attemptedKey: 'unregistered',
             load: () => Promise.resolve(OkHandler)
@@ -262,7 +381,8 @@ describe('interactionDispatched from the http dispatcher', () => {
         const execute = await dispatchInteraction({
             match,
             payload: slashPayload('ok') as ValidInteractionTypes,
-            core
+            core,
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 
@@ -283,14 +403,15 @@ describe('interactionDispatched from the http dispatcher', () => {
         core.bus.on('responseAttempted', (payload) => sent.push(payload));
 
         const match: ResolvedRoute = {
-            kind: 'autocomplete',
+            kind: InteractionKind.Autocomplete,
             routeId: 'autocomplete:search',
             load: () => Promise.resolve(SearchAutocomplete)
         };
         const execute = await dispatchInteraction({
             match,
             payload: autocompletePayload() as ValidInteractionTypes,
-            core
+            core,
+            middlewares: new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
         });
         await execute?.();
 

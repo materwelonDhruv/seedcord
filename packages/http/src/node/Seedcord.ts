@@ -3,7 +3,14 @@ import { createServer } from 'node:http';
 
 import { REST } from '@discordjs/rest';
 import { Bus } from '@seedcord/core';
-import { busLoggerOf, getDevChannel, HmrManager, setBotColor } from '@seedcord/core/internal';
+import {
+    busLoggerOf,
+    getDevChannel,
+    HmrManager,
+    interactionMiddleware,
+    MiddlewareRegistry,
+    setBotColor
+} from '@seedcord/core/internal';
 import { CoordinatedShutdown, CoordinatedStartup, Pluggable } from '@seedcord/core/node';
 import {
     CommandRegistry,
@@ -33,6 +40,7 @@ import { InteractionDispatcher } from './InteractionDispatcher';
 import { toWebRequest, writeWebResponse } from './webBridge';
 import { version as packageVersion } from '../version';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { HttpConfig } from '#interfaces/Config';
 import type { Core } from '#interfaces/Core';
 import type { IRateLimiter } from '@seedcord/types';
@@ -95,8 +103,9 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
         this.hmrManager = new HmrManager();
         this.hmrManager.init();
 
-        if (this.config.bot.interactions.path) {
-            this.interactions = new InteractionDispatcher(this.config.bot.interactions.path);
+        const interactions = this.config.bot.interactions;
+        if (interactions.path) {
+            this.interactions = new InteractionDispatcher(interactions.path, interactions.middlewares);
         }
 
         if (this.config.bot.commands.path) this.commandRegistry = new CommandRegistry(this);
@@ -208,7 +217,10 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
 
     private async listen(): Promise<void> {
         const maps = this.interactions?.maps ?? buildRouteMaps(EMPTY_MANIFEST);
-        const { handle, inFlight } = buildEngine(this, maps);
+        const middlewares =
+            this.interactions?.middlewares ??
+            new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
+        const { handle, inFlight } = buildEngine(this, maps, middlewares);
 
         const server = createServer((incoming, outgoing) => {
             void (async () => {
@@ -268,8 +280,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
                 this.logger.info(paint.coral.bold('Interactions server stopped'));
                 resolveClose();
             });
-            // close() waits on idle keep-alive sockets. active responses still flush, and the task
-            // timeout bounds a hung one
+            // node's close() waits out idle keep-alive sockets
             server.closeIdleConnections();
         });
     }

@@ -6,8 +6,8 @@ import type { DispatchContext } from '#src/dispatch/DispatchContext';
 import type { DeferOpts, ReplyResponse, SendOpts } from '@seedcord/types';
 
 /**
- * Shared base the repliable handlers on both transports extend. Defines the reply members over the sender
- * the transport builds.
+ * Shared base the repliable handlers on both transports extend. Defines the reply members over one sender.
+ * A handler builds its own through `buildSender`. A middleware takes the handler's.
  *
  * @typeParam Event - The repliable interaction type this handler processes
  * @typeParam TCore - The transport's Core
@@ -26,11 +26,11 @@ export abstract class RepliableHandler<
     public readonly sender: TSender;
     protected readonly routeId: string;
 
-    protected constructor(event: Event, core: TCore, dispatch?: DispatchContext) {
+    protected constructor(event: Event, core: TCore, dispatch: DispatchContext, sender?: TSender) {
         super(event, core, dispatch, 'interactions');
-        this.routeId = dispatch?.routeId ?? this.constructor.name;
+        this.routeId = dispatch.routeId;
         // the override runs before its own field initializers
-        this.sender = this.buildSender(event, core, this.routeId);
+        this.sender = sender ?? this.buildSender(event, core, this.routeId);
     }
 
     protected abstract buildSender(event: Event, core: TCore, routeId: string): TSender;

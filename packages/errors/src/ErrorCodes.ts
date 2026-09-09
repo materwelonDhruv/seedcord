@@ -65,23 +65,23 @@ export enum SeedcordErrorCode {
     /** `emit` was called on the bus. It reaches listeners and skips every subscriber. */
     CoreBusEmitUnavailable = 1212,
 
-    /** Interaction middleware decorated with disallowed event filters. */
-    DecoratorInteractionEventFilter = 1301,
     /** A command decorator attempted to re-register an existing command scope. */
-    DecoratorCommandAlreadyRegistered = 1302,
+    DecoratorCommandAlreadyRegistered = 1301,
     /** A global command decorator specified guild IDs, which is not allowed. */
-    DecoratorCommandGlobalWithGuilds = 1303,
+    DecoratorCommandGlobalWithGuilds = 1302,
     /** A guild command decorator omitted the required guild ID list. */
-    DecoratorCommandGuildWithoutGuilds = 1304,
+    DecoratorCommandGuildWithoutGuilds = 1303,
     /** Middleware priority provided by the decorator was not a finite number. */
-    DecoratorInvalidMiddlewarePriority = 1305,
+    DecoratorInvalidMiddlewarePriority = 1304,
     /** A WebhookLog subclass is missing its `@WebhookUrl` decorator. */
-    DecoratorWebhookUrlMissing = 1306,
+    DecoratorWebhookUrlMissing = 1305,
+    /** A middleware decorator was given an empty filter array. */
+    DecoratorEmptyMiddlewareFilter = 1306,
 
     /** Two interaction handlers registered the same route within a scope. */
     InteractionDuplicateRoute = 1401,
-    /** Two different interaction middleware classes share a class name. */
-    InteractionDuplicateMiddleware = 1402,
+    /** Two different middleware classes share a class name. */
+    DuplicateMiddleware = 1402,
     /** A route manifest row gives an export name its module does not have. */
     InteractionRouteExportMissing = 1403,
     /** A subscriber manifest row specifies an export that does not extend `Subscriber`. */
@@ -142,6 +142,8 @@ export enum SeedcordErrorCode {
     CustomIdWireStale = 1620,
     /** A customId wire is corrupt, truncated, or was minted by a different definition. */
     CustomIdWireInvalid = 1621,
+    /** `dispatch.require()` was called for a key nothing wrote on this dispatch. */
+    DispatchStateMissing = 1622,
 
     /** A Cooldown gate was given a duration string that is not a well-formed positive duration. */
     GateInvalidCooldownDuration = 1701,

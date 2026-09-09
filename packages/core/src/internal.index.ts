@@ -5,8 +5,13 @@ export {
     ComponentKindBrand,
     ContextMenuKindBrand,
     ContextMenuNamesBrand,
+    MiddlewareKindsBrand,
     SlashRouteBrand
 } from '#decorators/brands';
+export { interactionMiddlewareMetaOf } from '#decorators/middleware';
+export type { InteractionMiddlewareMetadata } from '#decorators/middleware';
+export { interactionMiddleware, MiddlewareRegistry } from '#src/dispatch/MiddlewareRegistry';
+export type { MiddlewareRegistration, MiddlewareRegistrationOf } from '#src/dispatch/MiddlewareRegistry';
 export { setBotColor } from '#components/botColorHolder';
 
 export type { PluginArgs, PluginCtor } from '#src/plugin/Plugin';
@@ -57,10 +62,11 @@ export {
 export {
     CommandMetadataKey,
     EventMetadataKey,
+    EventMiddlewareMetadataKey,
     GatedMetadataKey,
     InteractionMetadataKey,
+    InteractionMiddlewareMetadataKey,
     InteractionRouteKeys,
-    MiddlewareMetadataKey,
     SubscribeMetadataKey,
     WebhookUrlMetadataKey
 } from '#src/metadataKeys';
@@ -104,6 +110,7 @@ export {
     VerifyWebhooks
 } from '#subscribers/slots';
 export { outcomeFor, queuedMsFor, reportDispatch } from '#src/dispatch/dispatchReport';
+export { eventResultFor, resultFor, runAfter } from '#src/dispatch/runAfter';
 // the transports' augmentation target for their own default keys
 export type { DefaultSubscriptions } from '#subscribers/types/Subscriptions';
 export type { Initializeable } from '#src/plugin/Plugin';

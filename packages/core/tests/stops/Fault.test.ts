@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
+import { DispatchContext } from '#src/dispatch/DispatchContext';
 import { Fault } from '#stops/Fault';
 
 import { cardJson } from '../utils/cardText';
 
 import type { RenderContext } from '@seedcord/types';
 
-const ctx: RenderContext = { uuid: '11111111-2222-3333-4444-555555555555' };
+const dispatch = new DispatchContext('slash:probe');
+const ctx: RenderContext = { uuid: '11111111-2222-3333-4444-555555555555', dispatch };
 
 describe('Fault', () => {
     it('reports by default and threads ctx.uuid into the reply', () => {
@@ -32,7 +34,7 @@ describe('Fault', () => {
     });
 
     it('names the configured developer as the contact', () => {
-        const response = new Fault().render({ uuid: ctx.uuid, developerUsername: 'maintainer#1' });
+        const response = new Fault().render({ uuid: ctx.uuid, developerUsername: 'maintainer#1', dispatch });
         expect(cardJson(response)).toContain('maintainer#1');
     });
 

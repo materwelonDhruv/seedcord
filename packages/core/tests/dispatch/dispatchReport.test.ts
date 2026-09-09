@@ -33,6 +33,8 @@ function reportFor(queuedMs = 0): Parameters<typeof reportDispatch>[1] {
         kind: InteractionKind.Slash,
         outcome: 'handled',
         fallback: false,
+        userId: 'u0',
+        guildId: null,
         startedAt: performance.now(),
         queuedMs
     };
@@ -109,6 +111,13 @@ describe('reportDispatch', () => {
         expect(payload.routeId).toBe('slash:ping');
         expect(payload.kind).toBe('slash');
     });
+
+    it('forwards the actor so an audit line can name who ran the route', () => {
+        const payload = publishedFor({ ...reportFor(), userId: 'u1', guildId: 'g1' });
+
+        expect(payload.userId).toBe('u1');
+        expect(payload.guildId).toBe('g1');
+    });
 });
 
 describe('durationMs', () => {
@@ -125,7 +134,7 @@ describe('durationMs', () => {
 });
 
 describe('queuedMsFor', () => {
-    it('reads the queue time at dispatch entry, so a slow handler never inflates it', () => {
+    it('publishes the queue time it was handed, never a recomputed one', () => {
         const created = timestampFromSnowflake(SNOWFLAKE);
         let now = created + 1234;
         vi.spyOn(Date, 'now').mockImplementation(() => now);

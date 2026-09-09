@@ -34,6 +34,8 @@ export class SlowDispatch extends Subscriber<'interactionDispatched'> {
 | `kind` | [`InteractionKind`](ref:core/InteractionKind) | `slash`, `button`, `modal`, `autocomplete`, the five `*Menu` kinds, and the two `*ContextMenu` kinds |
 | `outcome` | [`DispatchOutcome`](ref:core/DispatchOutcome) | `handled`, `refused`, or `failed` |
 | `fallback` | `boolean` | true when no route matched and the unhandled default ran |
+| `userId` | `string \| null` | who ran the route, null when the payload carried no user |
+| `guildId` | `string \| null` | the guild it came from, null in DMs |
 | `durationMs` | `number` | dispatch entry until the user has a response |
 | `queuedMs` | `number` | Discord's interaction creation until dispatch entry |
 

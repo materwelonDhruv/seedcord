@@ -56,7 +56,6 @@ const messages = {
     [SeedcordErrorCode.CoreBusEmitUnavailable]: (event: string) =>
         `core.bus.emit('${event}') would reach your on() listeners and skip every Subscriber class. Call core.bus.publish('${event}', data) to run both.`,
 
-    [SeedcordErrorCode.DecoratorInteractionEventFilter]: () => 'Interaction middleware cannot specify event filters.',
     [SeedcordErrorCode.DecoratorCommandAlreadyRegistered]: (
         commandName: string,
         existingScope: string,
@@ -71,10 +70,12 @@ const messages = {
     [SeedcordErrorCode.DecoratorWebhookUrlMissing]: (className: string) =>
         `${className} extends WebhookLog and needs a @WebhookUrl decorator naming its env var.`,
 
+    [SeedcordErrorCode.DecoratorEmptyMiddlewareFilter]: (key: string) =>
+        `\`${key}\` was given an empty array. Drop the key to run the middleware on everything.`,
     [SeedcordErrorCode.InteractionDuplicateRoute]: (route: string, first: string, second: string) =>
         `Two interaction handlers resolve to the same route \`${route}\`. Registered by ${first} and ${second}. Rename one.`,
-    [SeedcordErrorCode.InteractionDuplicateMiddleware]: (name: string) =>
-        `Two different interaction middleware classes share the name \`${name}\`. Rename one so they do not collide.`,
+    [SeedcordErrorCode.DuplicateMiddleware]: (name: string) =>
+        `Two different middleware classes share the name \`${name}\`. Rename one so they do not collide.`,
     [SeedcordErrorCode.InteractionRouteExportMissing]: (route: string, exportName: string, from: string) =>
         `Route \`${route}\` loads \`${exportName}\` from ${from}, which exports no such name.`,
     [SeedcordErrorCode.SubscriberRouteNotASubscriber]: (keys: string, exportName: string, from: string) =>
@@ -140,6 +141,8 @@ const messages = {
         `Modal field ${JSON.stringify(customId)} carries no selection. Build the component as required, or read it without the required argument.`,
     [SeedcordErrorCode.ModalFieldChannelType]: (customId: string, picked: string, allowed: string) =>
         `Modal field ${JSON.stringify(customId)} picked a ${picked} channel. This read allows ${allowed}.`,
+    [SeedcordErrorCode.DispatchStateMissing]: (key: string) =>
+        `Nothing set \`${key}\` on this dispatch. Check that the middleware writing it is registered and that its filter covers this dispatch.`,
 
     [SeedcordErrorCode.GateInvalidCooldownDuration]: (input: string) =>
         `Cooldown duration ${JSON.stringify(input)} is not valid. Pass a number of seconds or a duration string like '30m', '24h', or '500ms'.`,

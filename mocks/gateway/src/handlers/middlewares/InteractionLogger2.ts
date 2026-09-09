@@ -1,7 +1,7 @@
-import { Middleware, MiddlewareType, InteractionMiddleware, type Repliables } from '@seedcord/gateway';
+import { InteractionMiddleware, RegisterInteractionMiddleware } from '@seedcord/gateway';
 
-@Middleware(MiddlewareType.Interaction, 2)
-export class InteractionLogger2 extends InteractionMiddleware<Repliables> {
+@RegisterInteractionMiddleware({ priority: 2 })
+export class InteractionLogger2 extends InteractionMiddleware {
     public async execute(): Promise<void> {
         this.logger.info(`interaction received → Priority 2 by ${this.event.user.username} (${this.event.user.id})`);
 

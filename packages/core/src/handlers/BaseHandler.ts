@@ -14,13 +14,13 @@ import type { LoggerChannelId } from '@seedcord/types';
 export abstract class BaseHandler<Event, TCore extends CoreBase> {
     protected readonly event: Event;
     protected readonly logger: Logger;
-    // absent on event handlers
-    protected readonly dispatch?: DispatchContext | undefined;
+    /** The bag for this dispatch. Each interaction gets its own. Every handler for one event shares a single bag. */
+    protected readonly dispatch: DispatchContext;
 
     protected constructor(
         event: Event,
         public readonly core: TCore,
-        dispatch?: DispatchContext,
+        dispatch: DispatchContext,
         channel?: LoggerChannelId
     ) {
         this.event = event;

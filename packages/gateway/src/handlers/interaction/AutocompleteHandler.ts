@@ -50,9 +50,8 @@ export abstract class AutocompleteHandler<
     /** @internal */
     declare readonly [AutocompleteRouteBrand]?: Route;
 
-    // keep this ctor. it gives typeof AutocompleteHandler a public construct signature that HandlerConstructor
-    // needs, and dropping it (inheriting BaseHandler's protected ctor) collapses HandlerConstructor to never.
-    constructor(event: AutocompleteInteraction<Cache>, core: Core, dispatch?: DispatchContext) {
+    // keep this ctor. inheriting BaseHandler's protected one collapses HandlerConstructor to never.
+    constructor(event: AutocompleteInteraction<Cache>, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch, 'interactions');
     }
 
@@ -67,7 +66,7 @@ export abstract class AutocompleteHandler<
         const raw = this.event.options.getFocused(true);
         const focused = { name: raw.name, value: raw.value };
         this.decodedFocused = focused;
-        // the registry constrains the names. a focused field outside the set has no arm.
+        // the registry constrains the names
         return focused as FocusedField<Route>;
     }
 
@@ -112,11 +111,13 @@ export abstract class AutocompleteHandler<
 
     /** Send autocomplete suggestions, callback type 8. Prefer {@link match}, which restricts each field's choices to its declared type. */
     protected async respond(choices: readonly ApplicationCommandOptionChoiceData[]): Promise<void> {
-        // a hand-built handler outside a dispatch carries no route id
-        const routeId = this.dispatch?.routeId ?? 'autocomplete';
-        await reportedWrite({ bus: this.core.bus, interactionId: this.event.id }, routeId, 'respond', () =>
-            // eslint-disable-next-line @seedcord/no-raw-interaction-acks -- this is the base respond and calls djs directly
-            this.event.respond(choices)
+        await reportedWrite(
+            { bus: this.core.bus, interactionId: this.event.id },
+            this.dispatch.routeId,
+            'respond',
+            () =>
+                // eslint-disable-next-line @seedcord/no-raw-interaction-acks -- this is the base respond and calls djs directly
+                this.event.respond(choices)
         );
     }
 

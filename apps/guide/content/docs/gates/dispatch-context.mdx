@@ -1,0 +1,175 @@
+---
+title: The dispatch context
+description: One typed bag per dispatch, written by a middleware and read by the handler, its gates, and any card the framework renders.
+---
+
+A middleware often computes something the rest of the dispatch needs, like the caller's account row, their language, or a request id for your logs. The dispatch context is where you put that value.
+
+Each interaction gets one bag. The handler, its middleware, its gates, and any card the framework renders for that interaction all read the same one.
+
+The bag starts empty. Naming a key on [`DispatchState`](ref:types/DispatchState) types it for every file in your project.
+
+```ts twoslash title="src/dispatch-state.ts"
+import '@seedcord/gateway';
+
+declare module '@seedcord/gateway' {
+    interface DispatchState {
+        actor: string;
+    }
+}
+```
+
+<Callout type="note">
+
+TypeScript augments only a module the file already imports. Leaving that first `import` line out gives `Invalid module name in augmentation`.
+
+</Callout>
+
+## Writing a value
+
+Fill the bag from a middleware, which runs first on every dispatch.
+
+```ts twoslash title="src/handlers/middlewares/Actor.ts"
+import '@seedcord/gateway';
+
+import {
+    InteractionMiddleware,
+    RegisterInteractionMiddleware
+} from '@seedcord/gateway';
+
+declare module '@seedcord/gateway' {
+    interface DispatchState {
+        actor: string;
+    }
+}
+// ---cut---
+@RegisterInteractionMiddleware({ priority: -10 })
+export class Actor extends InteractionMiddleware {
+    public async execute(): Promise<void> {
+        this.dispatch.set('actor', this.event.user.username);
+        await Promise.resolve();
+    }
+}
+```
+
+## Reading it back
+
+`this.dispatch` is on every handler. [`require`](ref:core/DispatchContext.require) returns the value with `undefined` stripped, and throws when nothing wrote the key.
+
+```ts twoslash hovers title="src/handlers/Whoami.ts"
+import '@seedcord/gateway';
+
+import { SlashHandler, SlashRoute } from '@seedcord/gateway';
+
+declare module '@seedcord/gateway' {
+    interface DispatchState {
+        actor: string;
+    }
+}
+// ---cut---
+@SlashRoute('whoami')
+export class Whoami extends SlashHandler<'whoami'> {
+    public async execute(): Promise<void> {
+        await this.reply(`hello ${this.dispatch.require('actor')}`);
+    }
+}
+```
+
+`require` throws a `SeedcordError` whose code is `DispatchStateMissing` and whose message names the key you asked for. That happens when the middleware writing it never registered, or when its `{ kinds }` filter skipped this interaction.
+
+[`get`](ref:core/DispatchContext.get) answers the same question without throwing, returning `undefined` for a key nothing wrote. Use it where the value is genuinely optional.
+
+Alongside your own keys, `routeId` holds the dispatched handler as `kind:route`, such as `slash:daily`.
+
+## Reading it from a gate
+
+A gate's context carries the same bag, so a gate can refuse on something a middleware computed.
+
+```ts twoslash title="src/gates/KnownActor.ts"
+import '@seedcord/gateway';
+
+import { defineGate, Silence } from '@seedcord/gateway';
+
+declare module '@seedcord/gateway' {
+    interface DispatchState {
+        actor: string;
+    }
+}
+// ---cut---
+export const KnownActor = defineGate('KnownActor', (ctx) => {
+    if (!ctx.dispatch.get('actor')) throw new Silence('no actor');
+});
+```
+
+[`GateContextBase`](ref:core/GateContextBase) declares the bag, so a gate reading it fits any handler on either transport. Its [other fields](/gates/your-own) carry the caller's ids and permission bits.
+
+<Callout type="warning">
+
+Every middleware runs ahead of the first gate, which is what makes this read safe. A value the handler writes lands too late for any gate to read.
+
+</Callout>
+
+## Reading it in a card
+
+[`RenderContext`](ref:types/RenderContext) carries the bag too, which matters most for a card the framework builds itself. Since its constructor takes only the fault's uuid, `render(ctx)` is the one place your code reads the dispatch.
+
+```ts twoslash title="src/errors/LocalisedFault.ts"
+import '@seedcord/gateway';
+
+import type {
+    RenderContext,
+    ReplyResponse
+} from '@seedcord/gateway';
+
+declare function translate(locale: string, key: string): string;
+
+declare module '@seedcord/gateway' {
+    interface DispatchState {
+        locale: string;
+    }
+}
+// ---cut---
+export class LocalisedFault {
+    public readonly report = true;
+
+    public constructor(private readonly uuid: string) {}
+
+    public render(ctx: RenderContext): ReplyResponse {
+        const locale = ctx.dispatch.get('locale') ?? 'en';
+        void translate(locale, 'fault.generic');
+        void this.uuid;
+
+        return { components: [] };
+    }
+}
+```
+
+Point `errors.defaultError` at it and every unknown fault renders through your card.
+
+```ts title="src/bot.ts"
+import { resolve } from 'node:path';
+
+import { Seedcord } from '@seedcord/gateway';
+import { GatewayIntentBits } from 'discord.js';
+
+import { LocalisedFault } from './errors/LocalisedFault';
+
+export const seedcord = new Seedcord({
+    bot: {
+        commands: { path: null },
+        events: { path: null },
+        clientOptions: { intents: [GatewayIntentBits.Guilds] },
+        interactions: {
+            path: resolve(import.meta.dirname, './handlers')
+        }
+    },
+    subscribers: { path: null },
+    errors: { defaultError: LocalisedFault }
+});
+```
+
+## One bag per event
+
+An event fires once and runs every handler registered for it. Those handlers share one bag, filled by the event middleware chain ahead of them. `routeId` reads `event:<name>` there.
+
+Whatever you write there stays until that event finishes. The next event starts with an empty bag.

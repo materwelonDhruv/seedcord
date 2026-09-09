@@ -229,9 +229,9 @@ describe('InteractionDispatcher Integration', () => {
             await testEnv.createFile(
                 `${middlewaresDir}/${file}.ts`,
                 `
-                import { Middleware, MiddlewareType, InteractionMiddleware } from '${seedcordPath}';
+                import { RegisterInteractionMiddleware, InteractionMiddleware } from '${seedcordPath}';
 
-                @Middleware(MiddlewareType.Interaction, 0)
+                @RegisterInteractionMiddleware()
                 export class RateLimit extends InteractionMiddleware {
                     public async execute() {
                         await Promise.resolve();
@@ -253,7 +253,7 @@ describe('InteractionDispatcher Integration', () => {
             () => null,
             (caught: unknown) => caught
         );
-        expect(error).toMatchObject({ code: SeedcordErrorCode.InteractionDuplicateMiddleware });
+        expect(error).toMatchObject({ code: SeedcordErrorCode.DuplicateMiddleware });
         const message = Error.isError(error) ? error.message : String(error);
         expect(message).toContain('RateLimit');
     });
@@ -459,6 +459,72 @@ describe('InteractionDispatcher Integration', () => {
         await controller.onHmr({ file: filePath, type: 'update' });
 
         expect(controller.maps[InteractionKind.Slash].has('ping')).toBe(true);
+    });
+
+    it('rebuilds the kind chains when a middleware reloads', async () => {
+        const interactionsDir = 'interactions';
+        const middlewaresDir = 'interaction-mw';
+        await testEnv.createFile(
+            `${interactionsDir}/Ok.ts`,
+            `
+            import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+            @SlashRoute('ok')
+            export class OkHandler extends SlashHandler<'ok'> {
+                public async execute() {
+                    await this.send('done');
+                }
+            }
+            `
+        );
+
+        // the first version skips slash, so the chain leaves the dispatch alone
+        const mwPath = await testEnv.createFile(
+            `${middlewaresDir}/Audit.ts`,
+            `
+            import { InteractionKind, InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+            @RegisterInteractionMiddleware({ kinds: [InteractionKind.Button] })
+            export class Audit extends InteractionMiddleware<InteractionKind.Button> {
+                public async execute() {
+                    await this.defer();
+                }
+            }
+            `
+        );
+
+        seedcord = new Seedcord(
+            testConfig({
+                interactions: testEnv.resolvePath(interactionsDir),
+                interactionMiddlewares: testEnv.resolvePath(middlewaresDir)
+            })
+        );
+        const controller = controllerOf(seedcord);
+        await controller.init();
+
+        const before = fakeSlash('ok');
+        await controller.handleSlashCommand(before);
+        expect(before.deferReply).not.toHaveBeenCalled();
+
+        // the same class widens to a catchall, so the reload has to reach the slash chain
+        await testEnv.createFile(
+            `${middlewaresDir}/Audit.ts`,
+            `
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+            @RegisterInteractionMiddleware()
+            export class Audit extends InteractionMiddleware {
+                public async execute() {
+                    await this.defer();
+                }
+            }
+            `
+        );
+        await controller.onHmr({ file: mwPath, type: 'update' });
+
+        const after = fakeSlash('ok');
+        await controller.handleSlashCommand(after);
+        expect(after.deferReply).toHaveBeenCalledTimes(1);
     });
 
     it('rolls back both handlers when a reload introduces a duplicate route in one file', async () => {
@@ -802,6 +868,55 @@ describe('InteractionDispatcher Integration', () => {
             expect(interaction.reply).toHaveBeenCalledTimes(1);
         });
 
+        it('hands a gate the same dispatch context a middleware wrote to', async () => {
+            await testEnv.createFile(
+                'interactions/GateReads.ts',
+                `
+                import { defineGate, Gated, SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                const ReadsDispatch = defineGate('ReadsDispatch', (ctx) => {
+                    globalThis.gateSaw.push(ctx.dispatch.get('actor'));
+                });
+
+                @Gated(ReadsDispatch)
+                @SlashRoute('gatereads')
+                export class GateReadsHandler extends SlashHandler<'gatereads'> {
+                    public async execute() {
+                        await this.event.reply('done');
+                    }
+                }
+                `
+            );
+            await testEnv.createFile(
+                'interaction-mw/Tagger.ts',
+                `
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware()
+                export class Tagger extends InteractionMiddleware {
+                    public async execute() {
+                        this.dispatch.set('actor', 'from-middleware');
+                    }
+                }
+                `
+            );
+
+            (globalThis as { gateSaw?: unknown[] }).gateSaw = [];
+
+            seedcord = new Seedcord(
+                testConfig({
+                    interactions: testEnv.resolvePath('interactions'),
+                    interactionMiddlewares: testEnv.resolvePath('interaction-mw')
+                })
+            );
+            const controller = controllerOf(seedcord);
+            await controller.init();
+
+            await controller.handleSlashCommand(fakeSlash('gatereads'));
+
+            expect((globalThis as { gateSaw?: unknown[] }).gateSaw).toEqual(['from-middleware']);
+        });
+
         it('a real OwnerOnly catalog gate passes a configured owner through the dispatcher', async () => {
             await testEnv.createFile(
                 'interactions/Owner.ts',
@@ -1017,8 +1132,32 @@ describe('InteractionDispatcher Integration', () => {
                 interactionId: 'i1',
                 kind: 'slash',
                 outcome: 'handled',
-                fallback: false
+                fallback: false,
+                userId: 'u1',
+                guildId: 'g1'
             });
+        });
+
+        it('reports a null guildId for a dispatch outside a guild', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ok')
+                export class OkHandler extends SlashHandler<'ok'> {
+                    public async execute() {
+                        await this.event.reply('done');
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            await controller.handleSlashCommand({ ...fakeSlash('ok'), guildId: null });
+
+            expect(published[0]).toMatchObject({ userId: 'u1', guildId: null });
         });
 
         it('reports refused when a gate stops the handler', async () => {
@@ -1133,9 +1272,9 @@ describe('InteractionDispatcher Integration', () => {
             }
         `;
         const MW_BOOM_MIDDLEWARE = `
-            import { InteractionMiddleware, Middleware, MiddlewareType } from '${seedcordPath}';
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
 
-            @Middleware(MiddlewareType.Interaction)
+            @RegisterInteractionMiddleware()
             export class BoomMiddleware extends InteractionMiddleware {
                 public async execute() {
                     throw new Error('middleware exploded');
@@ -1143,12 +1282,267 @@ describe('InteractionDispatcher Integration', () => {
             }
         `;
 
-        // refused means a gate stopped the dispatch, so every other pre-handler throw reports failed
-        it('reports failed when a middleware throws before the handler is built', async () => {
+        // only a gate refusal reports refused
+        it('reports failed when a middleware throws', async () => {
             const published = await dispatchedFor(MW_BOOM_ROUTE, 'mwboom', MW_BOOM_MIDDLEWARE);
 
             expect(published).toHaveLength(1);
             expect(published[0]).toMatchObject({ routeId: 'slash:mwboom', outcome: 'failed' });
+        });
+
+        it('lets the handler edit what its middleware deferred', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('shared')
+                export class SharedHandler extends SlashHandler<'shared'> {
+                    public async execute() {
+                        await this.send('done');
+                    }
+                }
+                `,
+                `
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware()
+                export class Defers extends InteractionMiddleware {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const interaction = fakeSlash('shared');
+            await controller.handleSlashCommand(interaction);
+
+            expect(interaction.deferReply).toHaveBeenCalledTimes(1);
+            expect(interaction.editReply).toHaveBeenCalledTimes(1);
+            expect(interaction.reply).not.toHaveBeenCalled();
+        });
+
+        it('skips a middleware whose kinds omit the dispatched kind', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ok')
+                export class OkHandler extends SlashHandler<'ok'> {
+                    public async execute() {
+                        await this.send('done');
+                    }
+                }
+                `,
+                `
+                import { InteractionKind, InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware({ kinds: [InteractionKind.Button] })
+                export class ButtonOnly extends InteractionMiddleware<InteractionKind.Button> {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            const interaction = fakeSlash('ok');
+            await controller.handleSlashCommand(interaction);
+
+            // the outcome proves the slash dispatch ran
+            expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'handled' });
+            expect(interaction.deferReply).not.toHaveBeenCalled();
+        });
+
+        describe('after()', () => {
+            // a global is the only channel back to the test, since the fixture compiles into a temp dir
+            const AFTER_PAIR = `
+            import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+            @RegisterInteractionMiddleware({ priority: 1 })
+            export class First extends InteractionMiddleware {
+                public async execute() {
+                    globalThis.afterCalls.push('First.execute');
+                }
+                public override async after(result) {
+                    globalThis.afterCalls.push('First:' + result.outcome);
+                }
+            }
+
+            @RegisterInteractionMiddleware({ priority: 2 })
+            export class Second extends InteractionMiddleware {
+                public async execute() {
+                    globalThis.afterCalls.push('Second.execute');
+                }
+                public override async after(result) {
+                    globalThis.afterCalls.push('Second:' + result.outcome);
+                }
+            }
+        `;
+
+            function afterCalls(): string[] {
+                return (globalThis as { afterCalls?: string[] }).afterCalls ?? [];
+            }
+
+            beforeEach(() => {
+                (globalThis as { afterCalls?: string[] }).afterCalls = [];
+            });
+
+            it('runs after() in reverse of the chain once the handler settles', async () => {
+                const controller = await bootWith(
+                    `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('after')
+                export class AfterHandler extends SlashHandler<'after'> {
+                    public async execute() {
+                        globalThis.afterCalls.push('handler');
+                        await this.reply('done');
+                    }
+                }
+                `,
+                    AFTER_PAIR
+                );
+
+                await controller.handleSlashCommand(fakeSlash('after'));
+
+                expect(afterCalls()).toEqual([
+                    'First.execute',
+                    'Second.execute',
+                    'handler',
+                    'Second:handled',
+                    'First:handled'
+                ]);
+            });
+
+            it('hands after() the refusal when a gate stops the handler', async () => {
+                const controller = await bootWith(
+                    `
+                import { Gated, OwnerOnly, SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @Gated(OwnerOnly())
+                @SlashRoute('gated')
+                export class GatedHandler extends SlashHandler<'gated'> {
+                    public async execute() {
+                        globalThis.afterCalls.push('handler');
+                        await this.reply('done');
+                    }
+                }
+                `,
+                    AFTER_PAIR
+                );
+
+                await controller.handleSlashCommand(fakeSlash('gated'));
+
+                expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
+            });
+
+            it('gives the middleware that threw its own after()', async () => {
+                const controller = await bootWith(
+                    `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('stopped')
+                export class StoppedHandler extends SlashHandler<'stopped'> {
+                    public async execute() {
+                        globalThis.afterCalls.push('handler');
+                    }
+                }
+                `,
+                    `
+                import { InteractionMiddleware, RegisterInteractionMiddleware, Silence } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware({ priority: 1 })
+                export class Stops extends InteractionMiddleware {
+                    public async execute() {
+                        throw new Silence('blocked');
+                    }
+                    public override async after(result) {
+                        globalThis.afterCalls.push('Stops:' + result.outcome);
+                    }
+                }
+                `
+                );
+
+                await controller.handleSlashCommand(fakeSlash('stopped'));
+
+                expect(afterCalls()).toEqual(['Stops:refused']);
+            });
+
+            it('keeps the refusal on after() when rendering that refusal throws', async () => {
+                const controller = await bootWith(
+                    `
+                import { defineGate, Gated, Notice, SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                class ExplodingNotice extends Notice {
+                    constructor() {
+                        super('refused');
+                    }
+                    render() {
+                        throw new Error('render exploded');
+                    }
+                }
+
+                const Refuse = defineGate('Refuse', () => {
+                    throw new ExplodingNotice();
+                });
+
+                @Gated(Refuse)
+                @SlashRoute('boomcard')
+                export class BoomCardHandler extends SlashHandler<'boomcard'> {
+                    public async execute() {
+                        await this.reply('never');
+                    }
+                }
+                `,
+                    AFTER_PAIR
+                );
+
+                await controller.handleSlashCommand(fakeSlash('boomcard'));
+
+                expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
+            });
+        });
+
+        it('skips the chain when the handler constructor throws', async () => {
+            const controller = await bootWith(
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('ctorboom')
+                export class CtorBoomHandler extends SlashHandler<'ctorboom'> {
+                    constructor(...args) {
+                        super(...args);
+                        throw new Error('ctor exploded');
+                    }
+                    public async execute() {}
+                }
+                `,
+                `
+                import { InteractionMiddleware, RegisterInteractionMiddleware } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware()
+                export class Defers extends InteractionMiddleware {
+                    public async execute() {
+                        await this.defer();
+                    }
+                }
+                `
+            );
+
+            const published: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => published.push(payload));
+
+            const interaction = fakeSlash('ctorboom');
+            await controller.handleSlashCommand(interaction);
+
+            // the outcome proves the dispatch reached the constructor
+            expect(published).toHaveLength(1);
+            expect(published[0]).toMatchObject({ routeId: 'slash:ctorboom', outcome: 'failed' });
+            expect(interaction.deferReply).not.toHaveBeenCalled();
         });
 
         // the unhandled default carries no route decorator, so its own sender has no dispatch route id
@@ -1174,8 +1568,7 @@ describe('InteractionDispatcher Integration', () => {
             expect(written[0]?.routeId).toBe('slash:unregistered');
         });
 
-        // a middleware throw leaves no handler sender, so the boundary builds its own and the two keys
-        // have to agree on the route a consumer groups by
+        // a consumer groups the two keys by route, so they have to agree
         it('publishes one route id across both keys when a middleware throws', async () => {
             const controller = await bootWith(MW_BOOM_ROUTE, MW_BOOM_MIDDLEWARE);
             const dispatched: SubscriptionData<'interactionDispatched'>[] = [];
@@ -1302,30 +1695,6 @@ describe('InteractionDispatcher Integration', () => {
 
             expect(published).toHaveLength(1);
             expect(published[0]).toMatchObject({ routeId: 'slash:rawgate', outcome: 'failed' });
-        });
-
-        it('reports failed when the handler constructor throws', async () => {
-            const published = await dispatchedFor(
-                `
-                import { SlashHandler, SlashRoute } from '${seedcordPath}';
-
-                @SlashRoute('ctorboom')
-                export class CtorBoomHandler extends SlashHandler<'ctorboom'> {
-                    constructor(...args) {
-                        super(...args);
-                        throw new Error('ctor exploded');
-                    }
-
-                    public async execute() {
-                        await this.event.reply('done');
-                    }
-                }
-                `,
-                'ctorboom'
-            );
-
-            expect(published).toHaveLength(1);
-            expect(published[0]).toMatchObject({ routeId: 'slash:ctorboom', outcome: 'failed' });
         });
     });
 });

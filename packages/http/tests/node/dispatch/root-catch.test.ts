@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 
 import { InteractionKind } from '@seedcord/core';
+import { interactionMiddleware, MiddlewareRegistry } from '@seedcord/core/internal';
 import { Envapter, PortableSource } from 'envapt';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
@@ -12,6 +13,7 @@ import { signedRequest, slashPayload } from './harness';
 import { createSigner } from '../../helpers/ed25519';
 import { emptyManifest, nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
+import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { SubscriptionData } from '@seedcord/core';
 
 vi.mock('@discordjs/rest', async (importOriginal) => {
@@ -46,7 +48,11 @@ async function routerThrows(thrown: unknown): Promise<{
     vi.spyOn(maps[InteractionKind.Slash], 'get').mockImplementation(() => {
         throw thrown;
     });
-    const { handle } = buildEngine(core, maps);
+    const { handle } = buildEngine(
+        core,
+        maps,
+        new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
+    );
 
     return { response: await handle(await signedRequest(signer, slashPayload('anything'))), seen };
 }

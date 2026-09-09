@@ -1,4 +1,5 @@
 import { API } from '@discordjs/core/http-only';
+import { DispatchContext } from '@seedcord/core';
 import { describe, expect, it } from 'vitest';
 
 import { AutocompleteHandler } from '#handlers/interaction/AutocompleteHandler';
@@ -9,6 +10,8 @@ import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { Core } from '#interfaces/Core';
+
+const dispatch = new DispatchContext('test:probe');
 
 declare module '@seedcord/core' {
     interface SlashRegistry {
@@ -47,7 +50,7 @@ describe('handler api field', () => {
     it('constructs the typed api over the core rest client', () => {
         const shared = core();
         // justified: the probe ctor accepts the narrowed payload arm at runtime
-        const handler = new SlashProbe(payload as never, shared);
+        const handler = new SlashProbe(payload as never, shared, dispatch);
 
         expect(handler.exposedApi()).toBeInstanceOf(API);
     });
@@ -55,8 +58,8 @@ describe('handler api field', () => {
     it('caches one api per core across handlers', () => {
         const shared = core();
         // justified: the probe ctors accept the narrowed payload arms at runtime
-        const slash = new SlashProbe(payload as never, shared);
-        const autocomplete = new AutocompleteProbe(payload as never, shared);
+        const slash = new SlashProbe(payload as never, shared, dispatch);
+        const autocomplete = new AutocompleteProbe(payload as never, shared, dispatch);
 
         expect(slash.exposedApi()).toBe(autocomplete.exposedApi());
     });

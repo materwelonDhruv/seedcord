@@ -1,4 +1,5 @@
 import { TextDisplayBuilder } from '@discordjs/builders';
+import { DispatchContext } from '@seedcord/core';
 import { isSeedcordError, SeedcordErrorCode } from '@seedcord/errors';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -16,6 +17,8 @@ import type {
     APIMessageComponentButtonInteraction,
     APIModalSubmitInteraction
 } from 'discord-api-types/v10';
+
+const dispatch = new DispatchContext('test:probe');
 
 const CALLBACK_ROUTE = '/interactions/int-1/tok/callback';
 const WEBHOOK_ROUTE = '/webhooks/app-1/tok';
@@ -94,7 +97,7 @@ describe('SlashHandler base', () => {
     it('routes reply through the sender to a type 4 callback', async () => {
         const rest = restMock();
 
-        await new Ban(slashEvent(), coreWith(rest)).execute();
+        await new Ban(slashEvent(), coreWith(rest), dispatch).execute();
 
         const [route, options] = rest.post.mock.calls[0] as [string, { body: { type: number } }];
         expect(route).toBe(CALLBACK_ROUTE);
@@ -109,7 +112,7 @@ describe('SlashHandler base', () => {
         }
         const rest = restMock();
 
-        await new Open(slashEvent(), coreWith(rest)).execute();
+        await new Open(slashEvent(), coreWith(rest), dispatch).execute();
 
         const [, options] = rest.post.mock.calls[0] as [string, { body: { type: number } }];
         expect(options.body.type).toBe(9);
@@ -126,7 +129,7 @@ describe('ButtonHandler base', () => {
     it('routes update through the sender to a type 7 callback', async () => {
         const rest = restMock();
 
-        await new Page(buttonEvent(), coreWith(rest)).execute();
+        await new Page(buttonEvent(), coreWith(rest), dispatch).execute();
 
         const [route, options] = rest.post.mock.calls[0] as [
             string,
@@ -150,7 +153,7 @@ describe('ModalHandler base', () => {
         const rest = restMock();
         const event = modalEvent({ message: { id: 'src-1' } });
 
-        await new Save(event, coreWith(rest)).execute();
+        await new Save(event, coreWith(rest), dispatch).execute();
 
         expect(rest.post.mock.calls[0]?.[1]).toMatchObject({ body: { type: 6 } });
         expect(rest.patch.mock.calls[0]?.[0]).toBe(ORIGINAL_ROUTE);
@@ -159,7 +162,7 @@ describe('ModalHandler base', () => {
     it('throws ReplyUpdateWithoutSource when the modal was opened from a command', async () => {
         const rest = restMock();
 
-        await expect(new Save(modalEvent(), coreWith(rest)).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Save(modalEvent(), coreWith(rest), dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyUpdateWithoutSource)
         );
         expect(rest.post).not.toHaveBeenCalled();
@@ -175,7 +178,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await new Wait(slashEvent(), coreWith(rest)).execute();
+        await new Wait(slashEvent(), coreWith(rest), dispatch).execute();
 
         const [route, options] = rest.post.mock.calls[0] as [string, { body: { type: number } }];
         expect(route).toBe(CALLBACK_ROUTE);
@@ -191,7 +194,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await new After(slashEvent(), coreWith(rest)).execute();
+        await new After(slashEvent(), coreWith(rest), dispatch).execute();
 
         expect(rest.post.mock.calls[1]?.[0]).toBe(WEBHOOK_ROUTE);
     });
@@ -205,7 +208,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await new Fill(slashEvent(), coreWith(rest)).execute();
+        await new Fill(slashEvent(), coreWith(rest), dispatch).execute();
 
         expect(rest.patch.mock.calls[0]?.[0]).toBe(ORIGINAL_ROUTE);
     });
@@ -221,7 +224,7 @@ describe('base member delegation', () => {
         const rest = restMock();
         rest.post.mockResolvedValueOnce(withResponse).mockResolvedValueOnce({ id: 'earlier-1' });
 
-        await new Rewrite(slashEvent(), coreWith(rest)).execute();
+        await new Rewrite(slashEvent(), coreWith(rest), dispatch).execute();
 
         expect(rest.patch.mock.calls[0]?.[0]).toBe(`${WEBHOOK_ROUTE}/messages/earlier-1`);
     });
@@ -236,7 +239,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await expect(new Rewrite(slashEvent(), coreWith(rest)).execute()).rejects.toSatisfy((e: unknown) =>
+        await expect(new Rewrite(slashEvent(), coreWith(rest), dispatch).execute()).rejects.toSatisfy((e: unknown) =>
             isSeedcordError(e, 'SeedcordError', SeedcordErrorCode.ReplyForeignEditTarget)
         );
         expect(rest.patch).not.toHaveBeenCalled();
@@ -250,7 +253,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await new Show(slashEvent(), coreWith(rest)).execute();
+        await new Show(slashEvent(), coreWith(rest), dispatch).execute();
 
         const [route, options] = rest.post.mock.calls[0] as [string, { body: { type: number } }];
         expect(route).toBe(CALLBACK_ROUTE);
@@ -266,7 +269,7 @@ describe('base member delegation', () => {
         }
         const rest = restMock();
 
-        await new Remove(slashEvent(), coreWith(rest)).execute();
+        await new Remove(slashEvent(), coreWith(rest), dispatch).execute();
 
         expect(rest.delete.mock.calls[0]?.[0]).toBe(ORIGINAL_ROUTE);
     });
@@ -282,7 +285,7 @@ describe('base member delegation', () => {
         const rest = restMock();
         rest.post.mockResolvedValueOnce(withResponse).mockResolvedValueOnce({ id: 'earlier-1' });
 
-        await new Remove(slashEvent(), coreWith(rest)).execute();
+        await new Remove(slashEvent(), coreWith(rest), dispatch).execute();
 
         expect(rest.delete.mock.calls[0]?.[0]).toBe(`${WEBHOOK_ROUTE}/messages/earlier-1`);
     });

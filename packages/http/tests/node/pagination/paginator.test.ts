@@ -1,3 +1,4 @@
+import { DispatchContext } from '@seedcord/core';
 import { ComponentType, InteractionResponseType, MessageFlags } from 'discord-api-types/v10';
 import { describe, expect, expectTypeOf, it, vi } from 'vitest';
 
@@ -21,6 +22,8 @@ import type {
     APIContainerComponent,
     APIMessageComponentButtonInteraction
 } from 'discord-api-types/v10';
+
+const dispatch = new DispatchContext('test:probe');
 
 const APP_ID = '111';
 const TOKEN = 'tok';
@@ -207,7 +210,7 @@ describe('http Paginator nav handler', () => {
         // justified: the nav handler reads rest and the bus
         const core = { rest: { post, patch }, bus: stubBus() } as unknown as Core;
 
-        await new LettersNav(navEvent(pager.cursor.encode({ page: 2, slot: 0 })), core).execute();
+        await new LettersNav(navEvent(pager.cursor.encode({ page: 2, slot: 0 })), core, dispatch).execute();
 
         expect(post).toHaveBeenCalledOnce();
         expect(post.mock.calls[0]?.[0]).toBe(CALLBACK_ROUTE);
@@ -223,20 +226,15 @@ describe('http Paginator nav handler', () => {
     });
 });
 
-describe('http Paginator typing', () => {
-    it('carries the item type and the http page context through the source subclass', () => {
-        const nums = new Paginator({
-            prefix: 'nums',
-            source: new ArraySource((ctx) => {
-                expectTypeOf(ctx).toEqualTypeOf<PageContext>();
-                return [1, 2, 3];
-            }),
-            renderItem: (item) => {
-                expectTypeOf(item).toEqualTypeOf<number>();
-                return String(item);
-            }
-        });
-
-        expect(nums.cursor.prefix).toBe('nums');
-    });
+// the callbacks below are typechecked and never called
+void new Paginator({
+    prefix: 'nums',
+    source: new ArraySource((ctx) => {
+        expectTypeOf(ctx).toEqualTypeOf<PageContext>();
+        return [1, 2, 3];
+    }),
+    renderItem: (item) => {
+        expectTypeOf(item).toEqualTypeOf<number>();
+        return String(item);
+    }
 });

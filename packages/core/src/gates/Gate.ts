@@ -1,4 +1,5 @@
 import type { CoreBase } from '#interfaces/CoreBase';
+import type { DispatchContext } from '#src/dispatch/DispatchContext';
 
 /**
  * The transport-agnostic gate context, the scalar identity of the acting user resolvable from any
@@ -43,6 +44,11 @@ export interface GateContextBase {
      * metadata. `Cooldown` uses it so its window is stable across restarts and isolates.
      */
     readonly routeId: string | null;
+    /**
+     * The bag for this dispatch, the same instance the handler and its middleware hold. Every middleware
+     * runs before the first gate. A gate therefore reads what a middleware wrote.
+     */
+    readonly dispatch: DispatchContext;
 }
 
 /**

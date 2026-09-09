@@ -1,10 +1,15 @@
+import { DispatchContext } from '@seedcord/core';
 import { HmrModuleHandler } from '@seedcord/core/hmr';
 import {
     areRoutes,
     asError,
     EventMetadataKey,
-    MiddlewareMetadataKey,
+    EventMiddlewareMetadataKey,
+    eventResultFor,
+    MiddlewareRegistry,
     PublishDefault,
+    resultFor,
+    runAfter,
     runHandlerGates
 } from '@seedcord/core/internal';
 import { drainInFlight } from '@seedcord/core/node/internal';
@@ -15,26 +20,24 @@ import { formatFilePath, hasKeys } from '@seedcord/utils';
 import { traverseDirectory } from '@seedcord/utils/node';
 import { Envapter } from 'envapt';
 
-import { MiddlewareType } from '#bDecorators/Middlewares';
+import { eventMiddlewareMetaOf } from '#bDecorators/Middlewares';
 import { eventGateContext } from '#bot/gates/runGates';
 import { handleEventFault } from '#bot/handleEventFault';
 import { EventHandler, EventMiddleware } from '#handlers/event';
 
 import type { RegisterEventMetadataEntry } from '#bDecorators/Events';
-import type { MiddlewareMetadata } from '#bDecorators/Middlewares';
 import type { EventHandlerConstructor, EventMiddlewareConstructor } from '#handlers/constructors';
 import type { Core } from '#interfaces/Core';
-import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
-import type { SubscriptionData } from '@seedcord/core';
-import type { Initializeable } from '@seedcord/core/internal';
+import type { HandlerResult, SubscriptionData } from '@seedcord/core';
+import type { Initializeable, MiddlewareRegistrationOf } from '@seedcord/core/internal';
 import type { EventFrequency, HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
 
-interface RegisteredEventMiddleware {
-    readonly ctor: EventMiddlewareConstructor;
-    readonly priority: number;
-    readonly events?: readonly ValidNonInteractionKeys[];
-}
+const eventMiddleware: MiddlewareRegistrationOf<EventMiddlewareConstructor, keyof ClientEvents> = (ctor) => {
+    const metadata = eventMiddlewareMetaOf(ctor);
+    if (!metadata) return undefined;
+    return { priority: metadata.priority, ...(metadata.events && { keys: metadata.events }) };
+};
 
 interface RegisteredEventHandlerEntry {
     readonly ctor: EventHandlerConstructor;
@@ -53,7 +56,9 @@ export class EventDispatcher implements Initializeable, HmrAware {
     private isInitialized = false;
 
     private readonly eventMap = new Map<keyof ClientEvents, RegisteredEventHandlerEntry[]>();
-    private readonly middlewares: RegisteredEventMiddleware[] = [];
+    private readonly middlewares = new MiddlewareRegistry<EventMiddlewareConstructor, keyof ClientEvents>(
+        eventMiddleware
+    );
     private readonly executedOnceHandlers = new Set<EventHandlerConstructor>();
     private readonly attachedEvents = new Set<keyof ClientEvents>();
 
@@ -199,51 +204,47 @@ export class EventDispatcher implements Initializeable, HmrAware {
     }
 
     private unregisterMiddleware(middlewareCtor: EventMiddlewareConstructor): void {
-        const index = this.middlewares.findIndex((entry) => entry.ctor === middlewareCtor);
-        if (index !== -1) {
-            this.middlewares.splice(index, 1);
-        }
+        this.middlewares.unregister(middlewareCtor);
     }
 
     private registerMiddleware(middlewareCtor: EventMiddlewareConstructor, relativePath: string): void {
-        const metadata = Reflect.getMetadata(MiddlewareMetadataKey, middlewareCtor) as MiddlewareMetadata | undefined;
-        if (metadata?.type !== MiddlewareType.Event) return;
+        const registration = this.middlewares.register(middlewareCtor);
+        if (!registration || !this.loading) return;
 
-        const alreadyRegistered = this.middlewares.some((entry) => entry.ctor === middlewareCtor);
-        if (alreadyRegistered) return;
-
-        this.middlewares.push({
-            ctor: middlewareCtor,
-            priority: metadata.priority,
-            ...(metadata.events && { events: metadata.events })
+        // the events are the only place a dev sees that a middleware is scoped
+        const scope = registration.keys
+            ? `${registration.priority}, ${registration.keys.join(', ')}`
+            : registration.priority;
+        this.loadedMiddlewares.push({
+            name: `${middlewareCtor.name} (${String(scope)})`,
+            from: formatFilePath(relativePath)
         });
-        this.middlewares.sort((a, b) => a.priority - b.priority);
-
-        if (this.loading) {
-            this.loadedMiddlewares.push({
-                name: `${middlewareCtor.name} (${metadata.priority})`,
-                from: formatFilePath(relativePath)
-            });
-        }
     }
 
+    // a returned value is the throw that stopped the event before any handler ran
     private async runMiddlewares<KeyOfEvents extends keyof ClientEvents>(
         eventName: KeyOfEvents,
-        args: ClientEvents[KeyOfEvents]
-    ): Promise<boolean> {
-        for (const { ctor: Middleware, events } of this.middlewares) {
-            if (events && !events.includes(eventName)) continue;
-
+        args: ClientEvents[KeyOfEvents],
+        dispatch: DispatchContext,
+        ran: EventMiddleware[]
+    ): Promise<{ caught: unknown } | null> {
+        for (const Middleware of this.middlewares.chainFor(eventName)) {
             try {
-                const middleware = new Middleware(args, this.core, eventName); // event name so a catchall/multi middleware can read this.eventName
+                const middleware = new Middleware(args, this.core, dispatch, eventName);
+                // pushed before the await because a middleware that throws still gets its after()
+                ran.push(middleware);
                 await middleware.execute();
             } catch (caught) {
-                handleEventFault(caught, String(eventName), Middleware.name, args, this.core);
-                return false;
+                handleEventFault(
+                    caught,
+                    { eventName: String(eventName), handlerName: Middleware.name, args, dispatch },
+                    this.core
+                );
+                return { caught };
             }
         }
 
-        return true;
+        return null;
     }
 
     private isEventHandlerClass(obj: unknown): obj is EventHandlerConstructor {
@@ -253,7 +254,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
     private isMiddlewareClass(obj: unknown): obj is EventMiddlewareConstructor {
         if (typeof obj !== 'function') return false;
-        return obj.prototype instanceof EventMiddleware && Reflect.hasMetadata(MiddlewareMetadataKey, obj);
+        return obj.prototype instanceof EventMiddleware && Reflect.hasMetadata(EventMiddlewareMetadataKey, obj);
     }
 
     private registerHandler(handlerClass: EventHandlerConstructor, relativePath: string): void {
@@ -346,34 +347,50 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
         if (handlersToExecute.length === 0) return;
 
-        const shouldContinue = await this.runMiddlewares(eventName, args);
-        if (!shouldContinue) return;
+        const dispatch = new DispatchContext(`event:${String(eventName)}`);
+        const ran: EventMiddleware[] = [];
+        const handlers: HandlerResult[] = [];
+        let stopped: { caught: unknown } | null = null;
 
-        for (const entry of handlersToExecute) {
-            // marked spent before running so a rethrow can't re-fire it
-            if (entry.frequency === 'once') {
-                // a concurrent fire could have claimed it during the runMiddlewares await
-                if (this.executedOnceHandlers.has(entry.ctor)) continue;
-                this.executedOnceHandlers.add(entry.ctor);
+        try {
+            stopped = await this.runMiddlewares(eventName, args, dispatch, ran);
+            if (stopped) return;
+
+            for (const entry of handlersToExecute) {
+                // marked spent before running so a rethrow can't re-fire it
+                if (entry.frequency === 'once') {
+                    // a concurrent fire could have claimed it during the runMiddlewares await
+                    if (this.executedOnceHandlers.has(entry.ctor)) continue;
+                    this.executedOnceHandlers.add(entry.ctor);
+                }
+
+                handlers.push(await this.processHandler(eventName, entry.ctor, args, dispatch));
             }
-
-            await this.processHandler(eventName, entry.ctor, args);
+        } finally {
+            await runAfter(ran, eventResultFor(stopped, handlers), this.logger);
         }
     }
 
     private async processHandler<KeyOfEvents extends keyof ClientEvents>(
         eventName: KeyOfEvents,
         Ctor: EventHandlerConstructor,
-        args: ClientEvents[KeyOfEvents]
-    ): Promise<void> {
+        args: ClientEvents[KeyOfEvents],
+        dispatch: DispatchContext
+    ): Promise<HandlerResult> {
         try {
             this.logger.debug(`Processing ${paint.sky.bold(eventName)} with ${paint.mute(Ctor.name)}`);
-            const handler = new Ctor(args, this.core, eventName); // event name so match can route by it
-            const eventCtx = eventGateContext(eventName, args, this.core);
+            const handler = new Ctor(args, this.core, dispatch, eventName);
+            const eventCtx = eventGateContext(eventName, args, this.core, dispatch);
             await runHandlerGates(Ctor, eventCtx);
             await handler.execute();
+            return { handler: Ctor.name, outcome: 'handled' };
         } catch (caught) {
-            handleEventFault(caught, String(eventName), Ctor.name, args, this.core);
+            handleEventFault(
+                caught,
+                { eventName: String(eventName), handlerName: Ctor.name, args, dispatch },
+                this.core
+            );
+            return { handler: Ctor.name, ...resultFor(caught) };
         }
     }
 }

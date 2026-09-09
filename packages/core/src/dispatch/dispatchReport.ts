@@ -22,7 +22,7 @@ function logger(): Logger {
  *
  * @internal
  */
-export function outcomeFor(caught: unknown): DispatchOutcome {
+export function outcomeFor(caught: unknown): Exclude<DispatchOutcome, 'handled'> {
     if (caught instanceof Silence) return 'refused';
     if (caught instanceof Notice) return caught.report ? 'failed' : 'refused';
     return 'failed';
@@ -35,6 +35,8 @@ interface DispatchReport {
     readonly outcome: DispatchOutcome;
     /** True when no route matched and the unhandled default ran. */
     readonly fallback: boolean;
+    readonly userId: string | null;
+    readonly guildId: string | null;
     /** `performance.now()` captured as the dispatch began. */
     readonly startedAt: number;
     /** {@link queuedMsFor} read at the same moment as `startedAt`. */
@@ -48,7 +50,7 @@ interface DispatchReport {
  * @internal
  */
 export function queuedMsFor(interactionId: string): number {
-    // telemetry never breaks a dispatch, and BigInt() throws on a malformed id
+    // timestampFromSnowflake throws on a malformed id
     try {
         return Date.now() - timestampFromSnowflake(interactionId);
     } catch {
@@ -64,6 +66,8 @@ export function reportDispatch(bus: Bus, report: DispatchReport): void {
         kind: report.kind,
         outcome: report.outcome,
         fallback: report.fallback,
+        userId: report.userId,
+        guildId: report.guildId,
         durationMs,
         queuedMs: report.queuedMs
     });

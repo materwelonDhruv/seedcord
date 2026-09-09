@@ -30,9 +30,13 @@ export {
 } from '#decorators/routes';
 
 export { InteractionKind } from '#src/metadataKeys';
+export type { MiddlewareKind } from '#src/metadataKeys';
+
+export { RegisterInteractionMiddleware } from '#decorators/middleware';
+export type { InteractionMiddlewareOptions } from '#decorators/middleware';
 
 export { DispatchContext } from '#src/dispatch/DispatchContext';
-export type { DispatchState } from '#src/dispatch/DispatchContext';
+export type { DispatchResult, EventDispatchResult, HandlerResult } from '#src/dispatch/dispatchResult';
 
 export { BaseHandler } from '#src/handlers/BaseHandler';
 export { RepliableHandler } from '#src/handlers/RepliableHandler';

@@ -293,11 +293,11 @@ describe('EventDispatcher Integration', () => {
         await testEnv.createFile(
             `${middlewaresDir}/BlockFirst.ts`,
             `
-            import { Middleware, MiddlewareType, EventMiddleware, Silence } from '${seedcordPath}';
+            import { RegisterEventMiddleware, EventMiddleware, Silence } from '${seedcordPath}';
 
             let fires = 0;
 
-            @Middleware(MiddlewareType.Event, 0)
+            @RegisterEventMiddleware()
             export class BlockFirst extends EventMiddleware {
                 public async execute() {
                     fires++;

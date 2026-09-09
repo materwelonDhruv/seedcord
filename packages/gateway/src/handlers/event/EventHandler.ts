@@ -6,11 +6,11 @@ import { BaseHandler } from '#src/handlers/BaseHandler';
 import type { Core } from '#interfaces/Core';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
 import type { SingleEventPayload } from './payload';
+import type { DispatchContext } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 import type { Promisable } from 'type-fest';
 
-// spread so the discord.js tuple labels surface as parameter names in editor signature help, e.g.
-// messageUpdate gives (oldMessage, newMessage). a single tuple param would lose the labels.
+// a single tuple param would drop the discord.js labels from editor signature help
 type EventMatchArms<Names extends ValidNonInteractionKeys, Ret> = {
     [Name in Names]: (...args: ClientEvents[Name]) => Promisable<Ret>;
 };
@@ -43,12 +43,12 @@ export abstract class EventHandler<in out Names extends ValidNonInteractionKeys>
     // the controller threads this in, undefined when a test constructs the handler directly
     private readonly firedEvent: Names | undefined;
 
-    constructor(event: ClientEvents[Names], core: Core, eventName?: Names) {
-        super(event, core, undefined, 'events');
+    constructor(event: ClientEvents[Names], core: Core, dispatch: DispatchContext, eventName?: Names) {
+        super(event, core, dispatch, 'events');
         this.firedEvent = eventName;
     }
 
-    // never for a multi-event handler. reading it there is a compile error
+    // never on a multi-event handler, where reading it is a compile error
     declare protected readonly event: SingleEventPayload<Names>;
 
     /**
@@ -82,7 +82,7 @@ export abstract class EventHandler<in out Names extends ValidNonInteractionKeys>
         // hasOwn, since a plain lookup for an event named `toString` returns Object.prototype's
         const arm = Object.hasOwn(arms, name) ? (arms as Record<string, unknown>)[name] : undefined;
         if (typeof arm !== 'function') throw new SeedcordTypeError(SeedcordErrorCode.EventMatchArmMissing, [name]);
-        // this.event narrows to never on a multi-event handler. getEvent() returns the real tuple, spread so each arm gets its named params.
+        // this.event is never on a multi-event handler. getEvent() returns the real tuple.
         return await (arm as (...args: unknown[]) => Promisable<Ret>)(...this.getEvent());
     }
 }
