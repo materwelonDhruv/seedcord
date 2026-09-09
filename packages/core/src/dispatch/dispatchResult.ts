@@ -11,7 +11,7 @@ export type DispatchResult =
 export type HandlerResult = { readonly handler: string } & DispatchResult;
 
 /**
- * An event middleware's `after()` receives this once the fire finishes. `outcome` reports the
+ * An event middleware's `after()` receives this once the event finishes. `outcome` reports the
  * middleware chain alone. `handlers` holds one entry per handler that ran. A stopped chain runs none.
  */
 export type EventDispatchResult =

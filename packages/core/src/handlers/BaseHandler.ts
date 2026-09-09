@@ -14,7 +14,7 @@ import type { LoggerChannelId } from '@seedcord/types';
 export abstract class BaseHandler<Event, TCore extends CoreBase> {
     protected readonly event: Event;
     protected readonly logger: Logger;
-    /** The bag for this dispatch. An interaction gets one per interaction, an event one per fire. */
+    /** The bag for this dispatch. Each interaction gets its own. Every handler for one event shares a single bag. */
     protected readonly dispatch: DispatchContext;
 
     protected constructor(

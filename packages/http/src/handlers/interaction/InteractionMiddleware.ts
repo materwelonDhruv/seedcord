@@ -38,9 +38,10 @@ export abstract class InteractionMiddleware<
     }
 
     /**
-     * Runs once the handler settles, newest middleware first. Implement it to release something this
-     * middleware took in `execute()`, such as a lock or an open span. A throw in here is logged and
-     * goes no further.
+     * Runs once the handler settles, newest middleware first. A refusal or a throw still reaches it,
+     * since seedcord calls it on every middleware whose `execute()` started. Implement it to release
+     * something this middleware took in `execute()`, such as a lock or an open span. A throw in here
+     * is logged and goes no further.
      *
      * @param result - How the dispatch ended. Either failure state carries the thrown value on `caught`.
      *

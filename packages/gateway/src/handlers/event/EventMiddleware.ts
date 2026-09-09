@@ -45,11 +45,12 @@ export abstract class EventMiddleware<
     }
 
     /**
-     * Runs once the fire finishes, newest middleware first. Implement it to release something this
-     * middleware took in `execute()`. A throw in here is logged and goes no further.
+     * Runs once the event finishes, newest middleware first. Every middleware whose `execute()`
+     * started gets the call, a stopped chain and a throw included. Implement it to release something
+     * this middleware took in `execute()`. A throw in here is logged and goes no further.
      *
      * @param result - `outcome` reports the chain alone. `handlers` holds one entry per handler that
-     * ran, empty exactly when the chain stopped the fire.
+     * ran, empty exactly when the chain stopped the event.
      *
      * @example
      * ```ts
