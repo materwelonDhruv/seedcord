@@ -1,8 +1,10 @@
-import { paint } from '@seedcord/errors';
+import { SeedcordErrorCode, paint } from '@seedcord/errors';
+import { SeedcordRangeError } from '@seedcord/errors/internal';
 
 import { ShutdownPhase } from '#src/lifecycle/phases';
 
 import { CoordinatedLifecycle } from './CoordinatedLifecycle';
+import { settleWithin } from './withTimeout';
 
 import type { LifecycleTask } from './LifecycleTypes';
 
@@ -16,6 +18,9 @@ const PHASE_ORDER: ShutdownPhase[] = [
 // gives the logger's file sink time to flush before process.exit
 const LOG_FLUSH_DELAY_MS = 3000;
 
+// 25s plus LOG_FLUSH_DELAY_MS stays under kubernetes' 30s SIGKILL window
+const DEFAULT_SHUTDOWN_DEADLINE_MS = 25_000;
+
 export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private isShuttingDown = false;
     private hasShutdown = false;
@@ -23,11 +28,39 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private onSigTerm: (() => void) | null = null;
     private onSigInt: (() => void) | null = null;
     private startupGate?: Promise<void>;
+    private deadlineMs = DEFAULT_SHUTDOWN_DEADLINE_MS;
+    private phasesExpireAt = Infinity;
+    private runningPhase: ShutdownPhase | undefined;
 
-    public constructor() {
+    // the signal handlers below can fire before start() ever runs
+    public constructor(deadlineMs?: number) {
         super('Shutdown', PHASE_ORDER, ShutdownPhase);
 
+        if (deadlineMs !== undefined) this.setDeadline(deadlineMs);
         this.registerSignalHandlers();
+    }
+
+    /** @internal */
+    public setDeadline(deadlineMs: number): void {
+        if (!Number.isFinite(deadlineMs) || deadlineMs <= 0) {
+            throw new SeedcordRangeError(SeedcordErrorCode.LifecycleInvalidShutdownDeadline, [deadlineMs]);
+        }
+        this.deadlineMs = deadlineMs;
+    }
+
+    private async runPhases(failures: unknown[]): Promise<void> {
+        for (const phase of PHASE_ORDER) {
+            // set above the check so the reported phase is the one that never started
+            this.runningPhase = phase;
+            // runPhases keeps going after settleWithin stops waiting on it
+            if (performance.now() >= this.phasesExpireAt) return;
+            try {
+                await this.runPhase(phase);
+            } catch (error) {
+                failures.push(error);
+            }
+        }
+        this.runningPhase = undefined;
     }
 
     protected canAddTask(): boolean {
@@ -110,20 +143,23 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
         );
 
         try {
-            if (this.startupGate) await this.startupGate;
+            this.phasesExpireAt = performance.now() + this.deadlineMs;
+            // a startup that outlasts the deadline leaves its own dispose tasks unregistered
+            if (this.startupGate) await settleWithin(this.startupGate, this.deadlineMs);
+
             const failures: unknown[] = [];
-            for (const phase of PHASE_ORDER) {
-                // run every phase so a mid-shutdown failure still attempts the later teardowns
-                try {
-                    await this.runPhase(phase);
-                } catch (error) {
-                    failures.push(error);
-                }
+            await settleWithin(this.runPhases(failures), Math.max(this.phasesExpireAt - performance.now(), 0));
+
+            const caughtPhase = this.runningPhase;
+            if (caughtPhase !== undefined) {
+                this.logger.error(
+                    `Shutdown deadline of ${paint.sky.bold(this.deadlineMs)}ms elapsed at phase ${paint.iris.bold(this.phaseEnum[caughtPhase])}`
+                );
             }
 
             if (failures.length > 0) {
                 this.logger.error(`${paint.coral.bold('Coordinated shutdown failed')}`, ...failures);
-            } else {
+            } else if (caughtPhase === undefined) {
                 this.logger.info(`${paint.mint.bold('Coordinated shutdown completed')} successfully`);
             }
         } finally {

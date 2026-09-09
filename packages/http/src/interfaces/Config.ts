@@ -21,6 +21,8 @@ export interface HttpServerConfig extends Config {
 export interface HttpEdgeConfig extends Config {
     runtime: 'edge';
     port?: never;
+    // an isolate does not run a coordinated shutdown
+    lifecycle?: never;
 }
 
 /**

@@ -1,4 +1,4 @@
-import { SeedcordErrorCode } from '@seedcord/errors';
+import { SeedcordErrorCode, isSeedcordError } from '@seedcord/errors';
 import { SeedcordAggregateError, SeedcordError, SeedcordTypeError } from '@seedcord/errors/internal';
 import { FRAMEWORK_CHANNELS, Logger } from '@seedcord/logger';
 import { HostPluginKeys, HostShutdown, HostStartup } from '@seedcord/types/internal';
@@ -219,12 +219,37 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             const spec = resolvedLifecycleSpecOf(instance);
 
             pluginLoggerOf(instance).utils.initialization(key, 'start');
-            await withTimeout(`Plugin (${key})`, () => instance.init(), spec.init.timeout);
+            const running = instance.init();
+            try {
+                await withTimeout(`Plugin (${key})`, () => running, spec.init.timeout);
+            } catch (caught) {
+                if (isSeedcordError(caught, undefined, SeedcordErrorCode.LifecycleTaskTimeout)) {
+                    this.disposeWhenInitResolves(attachment, running);
+                }
+                throw caught;
+            }
             pluginLoggerOf(instance).utils.initialization(key, 'end');
 
             this.completedInits.add(attachment);
             if (instance.dispose) this.registerDisposeTask(spec.dispose.phase);
         }
+    }
+
+    // disposeCompleted skips a plugin missing from completedInits
+    private disposeWhenInitResolves(attachment: Attachment, running: Promise<void>): void {
+        const dispose = attachment.instance.dispose?.bind(attachment.instance);
+        const spec = resolvedLifecycleSpecOf(attachment.instance);
+
+        void running.then(
+            async () => {
+                if (!dispose) return;
+                await withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
+                    (caught: unknown) =>
+                        this.pluginLogger.warn(`${attachment.key} dispose failed after a timed-out init`, caught)
+                );
+            },
+            (caught: unknown) => this.pluginLogger.warn(`${attachment.key} init failed after its timeout`, caught)
+        );
     }
 
     private registerReadyTask(readyInits: readonly Attachment[]): void {

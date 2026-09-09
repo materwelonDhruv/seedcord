@@ -169,4 +169,24 @@ export interface Config {
      * Logging level, sinks, and per-channel overrides. Omitted fields keep the transport's defaults.
      */
     logger?: LoggerConfig;
+
+    /**
+     * Set this when your platform kills the process on a shorter timer than seedcord's default.
+     */
+    lifecycle?: LifecycleConfig;
+}
+
+/** Timing settings for the coordinated shutdown sequence. */
+export interface LifecycleConfig {
+    /**
+     * How long the whole shutdown may run, in milliseconds. Once it elapses seedcord skips
+     * the phases it never reached and exits. A shutdown that interrupts a slow startup waits for
+     * that startup out of the same budget.
+     *
+     * Set it below your platform's kill window, leaving three seconds for the log flush after the
+     * phases. Kubernetes sends SIGKILL 30 seconds after SIGTERM by default, and `docker stop` waits 10.
+     *
+     * @defaultValue `25000`
+     */
+    shutdownDeadline?: number;
 }

@@ -37,6 +37,8 @@ export enum SeedcordErrorCode {
     LifecycleTaskTimeout = 1106,
     /** A host whose startup failed was started again. */
     LifecycleRestartAfterFailure = 1107,
+    /** The configured shutdown deadline is zero, negative, or not finite. */
+    LifecycleInvalidShutdownDeadline = 1108,
 
     /** Multiple Seedcord instances were created simultaneously. */
     CoreSingletonViolation = 1201,

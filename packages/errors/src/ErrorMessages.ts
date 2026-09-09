@@ -32,6 +32,8 @@ const messages = {
         `Task "${taskName}" timed out after ${timeout}ms.`,
     [SeedcordErrorCode.LifecycleRestartAfterFailure]: () =>
         'Startup failed and this host cannot start again. Construct a new instance.',
+    [SeedcordErrorCode.LifecycleInvalidShutdownDeadline]: (declared: number) =>
+        `lifecycle.shutdownDeadline is ${declared}. Pass a positive number of milliseconds, or omit it for the default.`,
 
     [SeedcordErrorCode.CoreSingletonViolation]: () =>
         'Seedcord can only be instantiated once. Use the existing instance instead.',

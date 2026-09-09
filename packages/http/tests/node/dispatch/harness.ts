@@ -6,8 +6,8 @@ import { createSeedcord } from '#src/createSeedcord';
 import { createSigner, type Signer } from '../../helpers/ed25519';
 import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
+import type { HttpConfig } from '#interfaces/Config';
 import type { RouteManifest } from '#src/manifest/RouteManifest';
-import type { Config } from '@seedcord/types';
 
 const encoder = new TextEncoder();
 
@@ -28,7 +28,7 @@ export async function signedRequest(signer: Signer, payload: unknown): Promise<R
 
 export async function readyEngine(
     manifest: RouteManifest,
-    config: Config = nullPathConfig
+    config: HttpConfig = nullPathConfig
 ): Promise<{ signer: Signer; handle: ReturnType<typeof createSeedcord> }> {
     const signer = await createSigner();
     Envapter.useSource(new PortableSource({ DISCORD_PUBLIC_KEY: signer.publicKeyHex, DISCORD_BOT_TOKEN: VALID_TOKEN }));
