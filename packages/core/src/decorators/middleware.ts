@@ -7,9 +7,10 @@ import type { MiddlewareKind } from '#src/metadataKeys';
 import type { MiddlewareKindsBrand } from './brands';
 import type { Constructor } from 'type-fest';
 
-// phantom brands keep the decorator off transport-specific classes
-type AnyMiddlewareCtor = new (...args: any[]) => unknown;
+/** @internal */
+export type AnyMiddlewareCtor = Constructor<unknown, never[]>;
 
+// phantom brands keep the decorator off transport-specific classes
 type KindsOf<TCtor extends AnyMiddlewareCtor> =
     InstanceType<TCtor> extends { [MiddlewareKindsBrand]?: infer Kind extends MiddlewareKind } ? Kind : never;
 

@@ -11,13 +11,12 @@ interface Afterable<Result> {
 
 /** @internal */
 export function resultFor(caught: unknown): DispatchResult {
-    const outcome = outcomeFor(caught);
-    return outcome === 'handled' ? { outcome } : { outcome, caught };
+    return { outcome: outcomeFor(caught), caught };
 }
 
 /**
  * Builds what an event middleware's `after()` receives. `handlers` is empty exactly when the chain
- * stopped the fire.
+ * stopped the event.
  *
  * @internal
  */

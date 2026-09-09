@@ -22,7 +22,7 @@ function logger(): Logger {
  *
  * @internal
  */
-export function outcomeFor(caught: unknown): DispatchOutcome {
+export function outcomeFor(caught: unknown): Exclude<DispatchOutcome, 'handled'> {
     if (caught instanceof Silence) return 'refused';
     if (caught instanceof Notice) return caught.report ? 'failed' : 'refused';
     return 'failed';
