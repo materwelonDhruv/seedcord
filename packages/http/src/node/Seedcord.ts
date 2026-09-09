@@ -87,7 +87,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
     private fetchedUsername?: string | undefined;
 
     constructor(public readonly config: Cfg) {
-        super(new CoordinatedShutdown(), new CoordinatedStartup());
+        super(new CoordinatedShutdown(config.lifecycle?.shutdownDeadline), new CoordinatedStartup());
 
         installNodeDefaults(config.logger);
         setBotColor(config.botColor);

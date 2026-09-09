@@ -32,9 +32,11 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
     private phasesExpireAt = Infinity;
     private runningPhase: ShutdownPhase | undefined;
 
-    public constructor() {
+    // the signal handlers below can fire before start() ever runs
+    public constructor(deadlineMs?: number) {
         super('Shutdown', PHASE_ORDER, ShutdownPhase);
 
+        if (deadlineMs !== undefined) this.setDeadline(deadlineMs);
         this.registerSignalHandlers();
     }
 

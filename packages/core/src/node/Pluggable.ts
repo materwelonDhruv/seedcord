@@ -104,10 +104,6 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
         // a rerun after a failed startup would re-init the rolled-back plugins
         if (this.startFailed) throw new SeedcordError(SeedcordErrorCode.LifecycleRestartAfterFailure);
 
-        // a SIGTERM before this line shuts down on the default deadline
-        const deadline = this.config.lifecycle?.shutdownDeadline;
-        if (deadline !== undefined) this[HostShutdown].setDeadline(deadline);
-
         this.registerPluginTasks();
 
         if (this.config.errors?.catchProcessErrors ?? true) {

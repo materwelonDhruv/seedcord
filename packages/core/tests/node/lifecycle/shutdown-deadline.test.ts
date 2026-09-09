@@ -21,6 +21,21 @@ afterEach(() => {
 
 // run(_, false) leaves the process alive
 describe('CoordinatedShutdown deadline', () => {
+    it('takes the deadline from the constructor, before any startup runs', async () => {
+        const shutdown = new CoordinatedShutdown(DEADLINE_MS);
+        shutdown.removeSignalHandlers();
+        shutdown.addTask(ShutdownPhase.Unbind, 'hangs', never, TASK_TIMEOUT_MS);
+
+        const startedAt = performance.now();
+        await shutdown.run(1, false);
+
+        expect(performance.now() - startedAt).toBeLessThan(DEADLINE_MS * 10);
+    });
+
+    it('refuses a deadline the constructor was given', () => {
+        expect(() => new CoordinatedShutdown(0)).toThrow();
+    });
+
     it('returns near the deadline with a task still hanging', async () => {
         const shutdown = new CoordinatedShutdown();
         shutdown.removeSignalHandlers();
