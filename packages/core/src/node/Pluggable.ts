@@ -249,7 +249,8 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             async () => {
                 if (!dispose) return;
                 await withTimeout(`Plugin:${attachment.key}:dispose`, dispose, spec.dispose.timeout).catch(
-                    (caught: unknown) => this.pluginLogger.warn('dispose after a timed-out init failed', caught)
+                    (caught: unknown) =>
+                        this.pluginLogger.warn(`${attachment.key} dispose failed after a timed-out init`, caught)
                 );
             },
             (caught: unknown) => this.pluginLogger.warn(`${attachment.key} init failed after its timeout`, caught)
