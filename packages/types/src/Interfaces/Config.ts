@@ -179,9 +179,9 @@ export interface Config {
 /** Timing settings for the coordinated shutdown sequence. */
 export interface LifecycleConfig {
     /**
-     * How long the shutdown phases may run, in milliseconds. Once it elapses seedcord skips
-     * the phases it never reached and exits. The clock starts after startup settles, so a shutdown
-     * that interrupts a slow startup waits for that startup first.
+     * How long the whole shutdown may run, in milliseconds. Once it elapses seedcord skips
+     * the phases it never reached and exits. A shutdown that interrupts a slow startup waits for
+     * that startup out of the same budget.
      *
      * Set it below your platform's kill window, leaving three seconds for the log flush after the
      * phases. Kubernetes sends SIGKILL 30 seconds after SIGTERM by default, and `docker stop` waits 10.

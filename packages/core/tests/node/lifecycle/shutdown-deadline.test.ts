@@ -36,6 +36,29 @@ describe('CoordinatedShutdown deadline', () => {
         expect(() => new CoordinatedShutdown(0)).toThrow();
     });
 
+    it('counts a slow startup against the deadline', async () => {
+        const shutdown = new CoordinatedShutdown(DEADLINE_MS);
+        shutdown.removeSignalHandlers();
+        shutdown.gateOnStartup(never());
+
+        const ran: string[] = [];
+        shutdown.addTask(
+            ShutdownPhase.Unbind,
+            'unbind',
+            () => {
+                ran.push('unbind');
+                return Promise.resolve();
+            },
+            TASK_TIMEOUT_MS
+        );
+
+        const startedAt = performance.now();
+        await shutdown.run(1, false);
+
+        expect(performance.now() - startedAt).toBeLessThan(DEADLINE_MS * 10);
+        expect(ran).toEqual([]);
+    });
+
     it('returns near the deadline with a task still hanging', async () => {
         const shutdown = new CoordinatedShutdown();
         shutdown.removeSignalHandlers();

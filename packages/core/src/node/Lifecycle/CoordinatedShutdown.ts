@@ -143,11 +143,12 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
         );
 
         try {
-            if (this.startupGate) await this.startupGate;
-            const failures: unknown[] = [];
-            // hoisting this above the gate would put the startup wait inside the deadline
             this.phasesExpireAt = performance.now() + this.deadlineMs;
-            await settleWithin(this.runPhases(failures), this.deadlineMs);
+            // a startup that outlasts the deadline leaves its own dispose tasks unregistered
+            if (this.startupGate) await settleWithin(this.startupGate, this.deadlineMs);
+
+            const failures: unknown[] = [];
+            await settleWithin(this.runPhases(failures), Math.max(this.phasesExpireAt - performance.now(), 0));
 
             const caughtPhase = this.runningPhase;
             if (caughtPhase !== undefined) {

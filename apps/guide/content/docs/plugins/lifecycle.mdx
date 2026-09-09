@@ -107,7 +107,9 @@ Task "Plugin:db:dispose" timed out after 10000ms.
 
 Declaring a timeout of zero, a negative number, or `Infinity` throws `PluginInvalidLifecycleTimeout` in the constructor, before any of your code runs.
 
-A single deadline bounds the shutdown phases, 25000ms by default. Once it elapses seedcord skips the phases it never reached and exits. A task already running keeps going until the process exits three seconds later. A deadline of zero, a negative number, or `Infinity` throws `LifecycleInvalidShutdownDeadline` in the constructor.
+A single deadline bounds the whole shutdown, 25000ms by default. Once it elapses seedcord skips the phases it never reached and exits. A task already running keeps going until the process exits three seconds later. A deadline of zero, a negative number, or `Infinity` throws `LifecycleInvalidShutdownDeadline` in the constructor.
+
+A shutdown that arrives mid-startup waits for that startup out of the same budget. Where the budget runs out first, seedcord skips the teardowns for whatever finished starting after it.
 
 That default assumes the 30 seconds Kubernetes waits before SIGKILL. Since `docker stop` allows 10, drop the deadline to 5000 there, or widen the window with `docker stop -t`.
 
