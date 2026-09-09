@@ -99,7 +99,7 @@ describe('a plugin whose init outlasts its timeout', () => {
         expect(logged).toBe(true);
     });
 
-    it('calls an immediate init rejection a failure, never a timeout', async () => {
+    it('treats an immediate init rejection as a plain failure', async () => {
         class FastFailure extends SlowClaim {
             public override init(): Promise<void> {
                 return Promise.reject(new Error('immediate failure'));
@@ -170,7 +170,7 @@ describe('a plugin whose init outlasts its timeout', () => {
 
         const shutdown = new CoordinatedShutdown();
         const host = new TestHost(shutdown, new CoordinatedStartup());
-        // this plugin finishes init and registers a real shutdown task while the timed out plugin does not
+        // only the healthy plugin registers a shutdown task
         const healthy = host.attach('healthy', QuickClaim).healthy;
         const late = host.attach('slow', SlowClaim).slow;
 

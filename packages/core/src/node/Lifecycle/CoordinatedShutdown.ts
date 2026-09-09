@@ -48,9 +48,9 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
 
     private async runPhases(failures: unknown[]): Promise<void> {
         for (const phase of PHASE_ORDER) {
-            // holds the phase the deadline stopped at, whether it ran or never started
+            // set above the check so the reported phase is the one that never started
             this.runningPhase = phase;
-            // a hung task may still resume the loop after settleWithin stops waiting
+            // runPhases keeps going after settleWithin stops waiting on it
             if (performance.now() >= this.phasesExpireAt) return;
             try {
                 await this.runPhase(phase);
@@ -144,7 +144,6 @@ export class CoordinatedShutdown extends CoordinatedLifecycle<ShutdownPhase> {
             if (this.startupGate) await this.startupGate;
             const failures: unknown[] = [];
             // hoisting this above the gate would put the startup wait inside the deadline
-            // performance.now() because setTimeout inside settleWithin runs off the same monotonic clock
             this.phasesExpireAt = performance.now() + this.deadlineMs;
             await settleWithin(this.runPhases(failures), this.deadlineMs);
 

@@ -42,7 +42,7 @@ export class TunnelRouter {
         await this.coordinator?.onPort(port);
     }
 
-    // the quit path bounds this wait, and a rejection would go unreported
+    // a rejection here would go unreported on the quit path
     public stop(): Promise<void> {
         const running = this.coordinator;
         this.coordinator = undefined;

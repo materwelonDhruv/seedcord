@@ -9,7 +9,7 @@ import type { SeedcordError } from '@seedcord/errors/internal';
 
 const DEADLINE_MS = 60;
 const TASK_TIMEOUT_MS = 10_000;
-// outlives the deadline, so the loop reaches the next phase only after run() has returned
+// longer than the deadline, so the loop reaches the next phase only after run() has returned
 const HUNG_TASK_TIMEOUT_MS = 150;
 
 const never = (): Promise<void> => new Promise<void>(() => undefined);
@@ -19,7 +19,7 @@ afterEach(() => {
     vi.restoreAllMocks();
 });
 
-// run(_, false) leaves the process alive (dev mode)
+// run(_, false) leaves the process alive
 describe('CoordinatedShutdown deadline', () => {
     it('returns near the deadline with a task still hanging', async () => {
         const shutdown = new CoordinatedShutdown();
@@ -27,7 +27,7 @@ describe('CoordinatedShutdown deadline', () => {
         shutdown.setDeadline(DEADLINE_MS);
         shutdown.addTask(ShutdownPhase.Unbind, 'hangs', never, TASK_TIMEOUT_MS);
 
-        // the deadline runs off a setTimeout, so measuring on the wall clock can read short
+        // Date.now() here can read under the deadline and flake this
         const startedAt = performance.now();
         await shutdown.run(1, false);
         const elapsed = performance.now() - startedAt;
@@ -57,7 +57,6 @@ describe('CoordinatedShutdown deadline', () => {
         expect(closed).toBe(true);
     });
 
-    // the hung task gives up after the deadline, which is when the loop would reach Disconnect
     it('leaves the phases after the deadline alone once the hung task gives up', async () => {
         const shutdown = new CoordinatedShutdown();
         shutdown.removeSignalHandlers();

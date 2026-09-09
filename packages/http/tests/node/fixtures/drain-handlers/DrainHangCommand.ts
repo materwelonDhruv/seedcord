@@ -8,7 +8,6 @@ declare module '@seedcord/core' {
     }
 }
 
-// still in the in-flight set when the drain window closes, which is the point
 @SlashRoute('drainhang')
 export class DrainHangCommand extends SlashHandler<'drainhang'> {
     async execute(): Promise<void> {

@@ -104,7 +104,7 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
         // a rerun after a failed startup would re-init the rolled-back plugins
         if (this.startFailed) throw new SeedcordError(SeedcordErrorCode.LifecycleRestartAfterFailure);
 
-        // a SIGTERM landing before this line still shuts down on the default deadline
+        // a SIGTERM before this line shuts down on the default deadline
         const deadline = this.config.lifecycle?.shutdownDeadline;
         if (deadline !== undefined) this[HostShutdown].setDeadline(deadline);
 
@@ -227,7 +227,6 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
             try {
                 await withTimeout(`Plugin (${key})`, () => running, spec.init.timeout);
             } catch (caught) {
-                // a rejection from init() reaches here too
                 if (isSeedcordError(caught, undefined, SeedcordErrorCode.LifecycleTaskTimeout)) {
                     this.disposeWhenInitResolves(attachment, running);
                 }
@@ -240,7 +239,7 @@ export abstract class Pluggable<BotT extends Transport, BotRt extends Runtime> i
         }
     }
 
-    // shutdown skips a plugin that never reached completedInits
+    // disposeCompleted skips a plugin missing from completedInits
     private disposeWhenInitResolves(attachment: Attachment, running: Promise<void>): void {
         const dispose = attachment.instance.dispose?.bind(attachment.instance);
         const spec = resolvedLifecycleSpecOf(attachment.instance);

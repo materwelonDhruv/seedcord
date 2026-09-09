@@ -171,7 +171,7 @@ export interface Config {
     logger?: LoggerConfig;
 
     /**
-     * Bounds on how long the shutdown phases may take.
+     * Set this when your platform kills the process on a shorter timer than seedcord's default.
      */
     lifecycle?: LifecycleConfig;
 }
@@ -179,7 +179,7 @@ export interface Config {
 /** Timing settings for the coordinated shutdown sequence. */
 export interface LifecycleConfig {
     /**
-     * How long seedcord gives the shutdown phases, in milliseconds. Once it elapses seedcord skips
+     * How long the shutdown phases may run, in milliseconds. Once it elapses seedcord skips
      * the phases it never reached and exits. The clock starts after startup settles, so a shutdown
      * that interrupts a slow startup waits for that startup first.
      *

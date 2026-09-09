@@ -19,7 +19,7 @@ describe('settleWithin', () => {
     });
 
     it('resolves when the work rejects', async () => {
-        // a failed shutdown step must leave the rest of the shutdown running
+        // shutdown keeps going after a step fails
         await expect(settleWithin(Promise.reject(new Error('clear failed')), BOUND_MS)).resolves.toBeUndefined();
     });
 });
