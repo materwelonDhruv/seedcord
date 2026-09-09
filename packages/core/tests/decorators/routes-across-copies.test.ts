@@ -3,10 +3,12 @@ import { describe, expect, it, vi } from 'vitest';
 import { InteractionKind } from '#src/metadataKeys';
 
 // resetModules gives the second import its own symbols, like the cli's bundled copy of core
-async function loadTwoCopies(): Promise<[typeof import('#src/internal.index'), typeof import('#src/internal.index')]> {
-    const writer = await import('#src/internal.index');
+async function loadTwoCopies(): Promise<
+    [typeof import('#src/decorators/interactionRoutes'), typeof import('#src/decorators/interactionRoutes')]
+> {
+    const writer = await import('#src/decorators/interactionRoutes');
     vi.resetModules();
-    const reader = await import('#src/internal.index');
+    const reader = await import('#src/decorators/interactionRoutes');
     return [writer, reader];
 }
 
