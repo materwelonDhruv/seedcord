@@ -50,7 +50,7 @@ interface Entry<Ctor, Key extends string> {
  */
 export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor, Key extends string = MiddlewareKind> {
     private readonly entries: Entry<Ctor, Key>[] = [];
-    // rebuild replaces this map. clearing it in place would break a chain mid-dispatch.
+    // an in-flight dispatch keeps walking the array chainFor gave it. never mutate one in place.
     private chains = new Map<Key, readonly Ctor[]>();
 
     public constructor(private readonly registrationOf: MiddlewareRegistrationOf<Ctor, Key>) {}

@@ -229,10 +229,10 @@ export class EventDispatcher implements Initializeable, HmrAware {
         ran: EventMiddleware[]
     ): Promise<{ caught: unknown } | null> {
         for (const Middleware of this.middlewares.chainFor(eventName)) {
-            const middleware = new Middleware(args, this.core, dispatch, eventName);
-            // pushed before the await because a middleware that throws still gets its after()
-            ran.push(middleware);
             try {
+                const middleware = new Middleware(args, this.core, dispatch, eventName);
+                // pushed before the await because a middleware that throws still gets its after()
+                ran.push(middleware);
                 await middleware.execute();
             } catch (caught) {
                 handleEventFault(

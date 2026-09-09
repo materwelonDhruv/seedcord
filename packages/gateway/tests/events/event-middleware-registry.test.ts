@@ -118,7 +118,7 @@ describe('the event middleware registry', () => {
         const dispatching = events.processEvent('messageCreate', [{ reply: vi.fn() }]);
         await started.promise;
 
-        // the reload splices Parks out of the chain's array mid-iteration
+        // the reload drops Parks while its execute() is still awaiting
         await testEnv.createFile(`${MIDDLEWARES_DIR}/Parks.ts`, 'export const gone = true;');
         await events.onHmr({ file: parksPath, type: 'update' });
 

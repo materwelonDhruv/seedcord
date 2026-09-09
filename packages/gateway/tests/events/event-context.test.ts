@@ -243,4 +243,44 @@ describe('the per-fire event context', () => {
 
         expect(fireCalls()).toEqual(['survivor', 'Boom:failed,Survivor:handled']);
     });
+
+    it('stops the fire when a middleware constructor throws', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class Never extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler');
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware } from '${seedcordPath}';
+
+            @RegisterEventMiddleware({ priority: 1 })
+            export class Watcher extends EventMiddleware {
+                public async execute() {}
+                public override async after(result) {
+                    globalThis.fireCalls.push('after:' + result.outcome);
+                }
+            }
+
+            @RegisterEventMiddleware({ priority: 2 })
+            export class Exploder extends EventMiddleware {
+                constructor(...args) {
+                    super(...args);
+                    throw new Error('ctor exploded');
+                }
+                public async execute() {}
+            }
+            `
+        );
+
+        await expect(events.processEvent('messageCreate', [{ reply: vi.fn() }])).resolves.toBeUndefined();
+
+        expect(fireCalls()).toEqual(['after:failed']);
+    });
 });
