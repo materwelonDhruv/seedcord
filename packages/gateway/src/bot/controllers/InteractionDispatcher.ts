@@ -425,7 +425,8 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             await handler.execute();
             report('handled');
         } catch (caught) {
-            result = resultFor(caught);
+            // a refusal already labelled the dispatch. a throw from answering it must not relabel.
+            if (result.outcome === 'handled') result = resultFor(caught);
             await this.answer(caught, interaction as ValidInteractionTypes, dispatch, sender, report);
         } finally {
             await runAfter(ran, result, this.logger);

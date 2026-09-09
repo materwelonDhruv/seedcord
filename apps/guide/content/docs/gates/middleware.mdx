@@ -70,8 +70,6 @@ export class ComponentTrace extends InteractionMiddleware<
 
 Every kind seedcord routes is a member of [`InteractionKind`](ref:core/InteractionKind). Autocomplete is the one a middleware cannot list, since Discord accepts only a list of choices in reply to one.
 
-An empty `kinds` array reads the same as leaving the key out. Both run the middleware on every kind.
-
 <Callout type="transport">
 
 `this.event` is a discord.js interaction on gateway and the payload Discord posted on http. A button's id reads `this.event.customId` on the first and `this.event.data.custom_id` on the second. A union narrows through the discord.js guards on gateway, and through `type` and `data.component_type` on http.

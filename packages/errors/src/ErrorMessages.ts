@@ -68,6 +68,8 @@ const messages = {
     [SeedcordErrorCode.DecoratorWebhookUrlMissing]: (className: string) =>
         `${className} extends WebhookLog and needs a @WebhookUrl decorator naming its env var.`,
 
+    [SeedcordErrorCode.DecoratorEmptyMiddlewareFilter]: (key: string) =>
+        `\`${key}\` was given an empty array. Drop the key to run the middleware on everything.`,
     [SeedcordErrorCode.InteractionDuplicateRoute]: (route: string, first: string, second: string) =>
         `Two interaction handlers resolve to the same route \`${route}\`. Registered by ${first} and ${second}. Rename one.`,
     [SeedcordErrorCode.DuplicateMiddleware]: (name: string) =>

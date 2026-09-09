@@ -4,10 +4,10 @@ import { SeedcordTypeError } from '@seedcord/errors/internal';
 
 import type { EventMiddleware } from '#handlers/event';
 import type { ValidNonInteractionKeys } from '#src/handlers/interactionTypes';
-import type { Constructor } from 'type-fest';
+import type { Constructor, NonEmptyTuple } from 'type-fest';
 
 /** Registration options for an event middleware. */
-export interface EventMiddlewareOptions<Events extends readonly ValidNonInteractionKeys[]> {
+export interface EventMiddlewareOptions<Events extends NonEmptyTuple<ValidNonInteractionKeys>> {
     /**
      * Restrict this middleware to certain Discord client events. The middleware's `EventMiddleware`
      * generic must list the same events, or applying the decorator is a compile error. Omit it to run on
@@ -46,21 +46,20 @@ export interface EventMiddlewareMetadata {
  * @throws A **SeedcordTypeError** If `priority` is not a finite number.
  */
 export function RegisterEventMiddleware<
-    const Events extends readonly ValidNonInteractionKeys[] = readonly ValidNonInteractionKeys[]
+    const Events extends NonEmptyTuple<ValidNonInteractionKeys> = NonEmptyTuple<ValidNonInteractionKeys>
 >(options: EventMiddlewareOptions<Events> = {}) {
-    return function (
-        ctor: Events extends readonly []
-            ? Constructor<EventMiddleware<ValidNonInteractionKeys>>
-            : Constructor<EventMiddleware<Events[number]>>
-    ): void {
+    return function (ctor: Constructor<EventMiddleware<Events[number]>>): void {
         const priority = Number(options.priority ?? 0);
         if (!Number.isFinite(priority)) {
             throw new SeedcordTypeError(SeedcordErrorCode.DecoratorInvalidMiddlewarePriority);
         }
+        if (options.events?.length === 0) {
+            throw new SeedcordTypeError(SeedcordErrorCode.DecoratorEmptyMiddlewareFilter, ['events']);
+        }
 
         const metadata: EventMiddlewareMetadata = {
             priority,
-            ...(options.events && options.events.length > 0 && { events: options.events })
+            ...(options.events && { events: options.events })
         };
 
         Reflect.defineMetadata(EventMiddlewareMetadataKey, metadata, ctor);

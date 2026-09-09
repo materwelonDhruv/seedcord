@@ -5,7 +5,7 @@ import { InteractionMiddlewareMetadataKey } from '#src/metadataKeys';
 
 import type { MiddlewareKind } from '#src/metadataKeys';
 import type { MiddlewareKindsBrand } from './brands';
-import type { Constructor } from 'type-fest';
+import type { Constructor, NonEmptyTuple } from 'type-fest';
 
 /** @internal */
 export type AnyMiddlewareCtor = Constructor<unknown, never[]>;
@@ -25,7 +25,7 @@ type AssertMiddlewareKinds<Kinds extends MiddlewareKind, TCtor extends AnyMiddle
     : Constructor<['RegisterInteractionMiddleware lists a kind that the middleware generic omits', Kinds]>;
 
 /** Registration options for an interaction middleware. */
-export interface InteractionMiddlewareOptions<Kinds extends readonly MiddlewareKind[]> {
+export interface InteractionMiddlewareOptions<Kinds extends NonEmptyTuple<MiddlewareKind>> {
     /**
      * Restrict this middleware to certain interaction kinds. The middleware's generic must list the same
      * kinds, or applying the decorator is a compile error. Omit it to run on every repliable kind.
@@ -65,16 +65,18 @@ export interface InteractionMiddlewareMetadata {
  * @throws A **SeedcordTypeError** If `priority` is not a finite number.
  */
 export function RegisterInteractionMiddleware<
-    const Kinds extends readonly MiddlewareKind[] = readonly MiddlewareKind[]
+    const Kinds extends NonEmptyTuple<MiddlewareKind> = NonEmptyTuple<MiddlewareKind>
 >(options: InteractionMiddlewareOptions<Kinds> = {}) {
     return function <TCtor extends AnyMiddlewareCtor>(ctor: AssertMiddlewareKinds<Kinds[number], TCtor>): void {
         const priority = Number(options.priority ?? 0);
         if (!Number.isFinite(priority))
             throw new SeedcordTypeError(SeedcordErrorCode.DecoratorInvalidMiddlewarePriority);
+        if (options.kinds?.length === 0)
+            throw new SeedcordTypeError(SeedcordErrorCode.DecoratorEmptyMiddlewareFilter, ['kinds']);
 
         const metadata: InteractionMiddlewareMetadata = {
             priority,
-            ...(options.kinds && options.kinds.length > 0 && { kinds: options.kinds })
+            ...(options.kinds && { kinds: options.kinds })
         };
 
         Reflect.defineMetadata(InteractionMiddlewareMetadataKey, metadata, ctor);

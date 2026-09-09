@@ -49,6 +49,15 @@ describe('MiddlewareRegistry', () => {
         expect(names(registry.chainFor(InteractionKind.Modal))).toEqual(['First', 'Second', 'Third']);
     });
 
+    it('rejects an empty kinds array', () => {
+        // justified: the type already rejects this, the throw covers a JS caller
+        const register = RegisterInteractionMiddleware as unknown as (o: object) => (ctor: unknown) => void;
+
+        expect(() => register({ kinds: [] })(middleware('Empty'))).toThrow(
+            expect.objectContaining({ code: SeedcordErrorCode.DecoratorEmptyMiddlewareFilter })
+        );
+    });
+
     it('throws when two classes share a name', () => {
         registry.register(middleware('Audit'));
 

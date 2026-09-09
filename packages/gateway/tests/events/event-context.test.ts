@@ -244,6 +244,39 @@ describe('the per-fire event context', () => {
         expect(fireCalls()).toEqual(['survivor', 'Boom:failed,Survivor:handled']);
     });
 
+    it('gives the middleware that threw its own after()', async () => {
+        const events = await boot(
+            `
+            import { EventHandler, RegisterEvent } from '${seedcordPath}';
+            import { Events } from 'discord.js';
+
+            @RegisterEvent(['messageCreate'])
+            export class NeverRuns extends EventHandler<Events.MessageCreate> {
+                public async execute() {
+                    globalThis.fireCalls.push('handler');
+                }
+            }
+            `,
+            `
+            import { EventMiddleware, RegisterEventMiddleware, Silence } from '${seedcordPath}';
+
+            @RegisterEventMiddleware()
+            export class Stops extends EventMiddleware {
+                public async execute() {
+                    throw new Silence('stop the fire');
+                }
+                public override async after(result) {
+                    globalThis.fireCalls.push('Stops:' + result.outcome);
+                }
+            }
+            `
+        );
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(fireCalls()).toEqual(['Stops:refused']);
+    });
+
     it('stops the fire when a middleware constructor throws', async () => {
         const events = await boot(
             `

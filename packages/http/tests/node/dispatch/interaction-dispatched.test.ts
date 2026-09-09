@@ -117,6 +117,13 @@ class Audit extends InteractionMiddleware {
 }
 
 @RegisterInteractionMiddleware()
+class Defers extends InteractionMiddleware {
+    public async execute(): Promise<void> {
+        await this.defer();
+    }
+}
+
+@RegisterInteractionMiddleware()
 class Refuses extends InteractionMiddleware {
     public execute(): Promise<void> {
         throw new Silence('blocked by middleware');
@@ -197,12 +204,20 @@ describe('interactionDispatched from the http dispatcher', () => {
         });
     });
 
-    it('runs a middleware over the handler sender before the gates', async () => {
+    it('runs a registered middleware on a matching dispatch', async () => {
         const { execute, published } = await dispatchedThrough(Audit);
         await execute?.();
 
         expect(ran).toEqual(['Audit']);
         expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'handled' });
+    });
+
+    it('shares one ack state between the chain and the handler', async () => {
+        // a reply() after the chain's defer() is illegal on one shared sender
+        const { execute, published } = await dispatchedThrough(Defers);
+        await execute?.();
+
+        expect(published[0]).toMatchObject({ routeId: 'slash:ok', outcome: 'failed' });
     });
 
     it('answers a Notice thrown from the chain the way a gate refusal answers', async () => {

@@ -137,6 +137,24 @@ describe('after() on the http interaction chain', () => {
         expect(results).toEqual([{ outcome: 'refused', caught: stop }]);
     });
 
+    it('gives the middleware that threw its own after()', async () => {
+        @RegisterInteractionMiddleware({ priority: 5 })
+        class StopsLoudly extends InteractionMiddleware {
+            public execute(): Promise<void> {
+                throw new Silence('blocked');
+            }
+
+            public override async after(): Promise<void> {
+                calls.push('StopsLoudly.after');
+                await Promise.resolve();
+            }
+        }
+
+        await dispatchThrough(() => Promise.resolve(OkHandler), First, StopsLoudly);
+
+        expect(calls).toEqual(['First.execute', 'StopsLoudly.after', 'First.after']);
+    });
+
     // answer() runs the user's render() between the refusal and the after() calls
     it('still runs after() when rendering the refusal throws', async () => {
         class ExplodingNotice extends Notice {

@@ -1439,6 +1439,72 @@ describe('InteractionDispatcher Integration', () => {
 
                 expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
             });
+
+            it('gives the middleware that threw its own after()', async () => {
+                const controller = await bootWith(
+                    `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('stopped')
+                export class StoppedHandler extends SlashHandler<'stopped'> {
+                    public async execute() {
+                        globalThis.afterCalls.push('handler');
+                    }
+                }
+                `,
+                    `
+                import { InteractionMiddleware, RegisterInteractionMiddleware, Silence } from '${seedcordPath}';
+
+                @RegisterInteractionMiddleware({ priority: 1 })
+                export class Stops extends InteractionMiddleware {
+                    public async execute() {
+                        throw new Silence('blocked');
+                    }
+                    public override async after(result) {
+                        globalThis.afterCalls.push('Stops:' + result.outcome);
+                    }
+                }
+                `
+                );
+
+                await controller.handleSlashCommand(fakeSlash('stopped'));
+
+                expect(afterCalls()).toEqual(['Stops:refused']);
+            });
+
+            it('keeps the refusal on after() when rendering that refusal throws', async () => {
+                const controller = await bootWith(
+                    `
+                import { defineGate, Gated, Notice, SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                class ExplodingNotice extends Notice {
+                    constructor() {
+                        super('refused');
+                    }
+                    render() {
+                        throw new Error('render exploded');
+                    }
+                }
+
+                const Refuse = defineGate('Refuse', () => {
+                    throw new ExplodingNotice();
+                });
+
+                @Gated(Refuse)
+                @SlashRoute('boomcard')
+                export class BoomCardHandler extends SlashHandler<'boomcard'> {
+                    public async execute() {
+                        await this.reply('never');
+                    }
+                }
+                `,
+                    AFTER_PAIR
+                );
+
+                await controller.handleSlashCommand(fakeSlash('boomcard'));
+
+                expect(afterCalls()).toEqual(['First.execute', 'Second.execute', 'Second:refused', 'First:refused']);
+            });
         });
 
         it('skips the chain when the handler constructor throws', async () => {

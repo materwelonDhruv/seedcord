@@ -73,6 +73,8 @@ export enum SeedcordErrorCode {
     DecoratorInvalidMiddlewarePriority = 1304,
     /** A WebhookLog subclass is missing its `@WebhookUrl` decorator. */
     DecoratorWebhookUrlMissing = 1305,
+    /** A middleware decorator was given an empty filter array. */
+    DecoratorEmptyMiddlewareFilter = 1306,
 
     /** Two interaction handlers registered the same route within a scope. */
     InteractionDuplicateRoute = 1401,
