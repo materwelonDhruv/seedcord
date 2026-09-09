@@ -31,7 +31,7 @@ type ComponentBrand = TypedExtract<
     | InteractionKind.MentionableMenu
 >;
 
-// phantom brands keep the decorators off transport-specific classes
+// core cannot import the transport handler bases. every route arrives on a phantom brand.
 type AnyHandlerCtor = new (...args: any[]) => unknown;
 
 type SlashRouteOf<TCtor extends AnyHandlerCtor> =

@@ -50,8 +50,7 @@ export abstract class AutocompleteHandler<
     /** @internal */
     declare readonly [AutocompleteRouteBrand]?: Route;
 
-    // keep this ctor. it gives typeof AutocompleteHandler a public construct signature that HandlerConstructor
-    // needs, and dropping it (inheriting BaseHandler's protected ctor) collapses HandlerConstructor to never.
+    // keep this ctor. inheriting BaseHandler's protected one collapses HandlerConstructor to never.
     constructor(event: AutocompleteInteraction<Cache>, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch, 'interactions');
     }
@@ -67,7 +66,7 @@ export abstract class AutocompleteHandler<
         const raw = this.event.options.getFocused(true);
         const focused = { name: raw.name, value: raw.value };
         this.decodedFocused = focused;
-        // the registry constrains the names. a focused field outside the set has no arm.
+        // the registry constrains the names
         return focused as FocusedField<Route>;
     }
 

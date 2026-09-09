@@ -28,8 +28,7 @@ function deadResourceError(): DiscordAPIError {
 }
 
 function stringCodedError(): DiscordAPIError {
-    // the boundary reads `.code`, which is the second constructor argument, the rawError body's numeric
-    // code is unrelated. djs returns string codes for some errors, this models that.
+    // djs puts the code the boundary reads in the second constructor argument. some of them are strings.
     return new DiscordAPIError(
         { code: 0, message: 'Unknown command' },
         'SLASH_COMMAND_UNKNOWN',

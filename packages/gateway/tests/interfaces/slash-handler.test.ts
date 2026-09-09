@@ -10,9 +10,8 @@ import type { ChatInputCommandInteraction, CommandInteractionOption, User } from
 
 const dispatch = new DispatchContext('test:probe');
 
-// Compile-time spec for SlashHandler. The execute() bodies are typechecked but never run, so each guarded
-// mistake below fails the build if it stops being a compile error. Distinct routes from typed-options.test.ts
-// avoid a duplicate registry augmentation.
+// the execute() bodies are typechecked and never run. every guarded mistake below fails the build the day it
+// stops being a compile error. the routes differ from typed-options.test.ts to keep the augmentations apart.
 declare module '@seedcord/core' {
     interface SlashRegistry {
         kick: { options: { member: { kind: 'user'; required: true } }; cache: 'cached' };

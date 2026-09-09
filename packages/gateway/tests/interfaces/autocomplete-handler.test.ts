@@ -240,7 +240,7 @@ describe('AutocompleteHandler', () => {
 
     it('decodes the focused option once and reuses the cached result', () => {
         const handler = new SearchFocused(autocomplete('query', 'sp'), core, dispatch);
-        expect(handler.read()).toBe(handler.read()); // same cached object across reads
+        expect(handler.read()).toBe(handler.read());
     });
 
     it('runs the arm for the focused field with the partial value', async () => {

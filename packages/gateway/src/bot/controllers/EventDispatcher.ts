@@ -229,7 +229,6 @@ export class EventDispatcher implements Initializeable, HmrAware {
         ran: EventMiddleware[]
     ): Promise<{ caught: unknown } | null> {
         for (const Middleware of this.middlewares.chainFor(eventName)) {
-            // event name so a catchall/multi middleware can read this.eventName
             const middleware = new Middleware(args, this.core, dispatch, eventName);
             // pushed before the await because a middleware that throws still gets its after()
             ran.push(middleware);
@@ -380,7 +379,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
     ): Promise<HandlerResult> {
         try {
             this.logger.debug(`Processing ${paint.sky.bold(eventName)} with ${paint.mute(Ctor.name)}`);
-            const handler = new Ctor(args, this.core, dispatch, eventName); // event name so match can route by it
+            const handler = new Ctor(args, this.core, dispatch, eventName);
             const eventCtx = eventGateContext(eventName, args, this.core, dispatch);
             await runHandlerGates(Ctor, eventCtx);
             await handler.execute();

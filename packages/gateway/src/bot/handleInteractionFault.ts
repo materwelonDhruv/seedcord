@@ -38,7 +38,7 @@ export async function handleInteractionFault(
         return;
     }
 
-    // autocomplete cannot be replied to, only reported
+    // discord does not accept a message on an autocomplete. the fault is only reported.
     if (interaction.isAutocomplete()) {
         extractErrorResponse(error, core, {
             routeId,

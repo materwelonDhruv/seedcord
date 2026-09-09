@@ -29,14 +29,12 @@ export function handleEventFault(caught: unknown, fault: EventFault, core: Core)
     }
     const error = asError(caught);
 
-    // a dead resource on an event keeps reporting until the dev adds its code to this list
     const ignore = new Set<number | string>(core.config.errors?.ignoreEventApiCodes ?? []);
     if (error instanceof DiscordAPIError && ignore.has(error.code)) {
         logger.debug(`swallowed api code ${error.code}`);
         return;
     }
 
-    // a non-reporting denial has no reply target on an event and stops quietly
     if (error instanceof Notice && !error.report) return;
 
     const actor = deriveEventActor(args);

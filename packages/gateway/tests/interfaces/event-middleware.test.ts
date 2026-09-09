@@ -46,7 +46,7 @@ class CatchallMw extends EventMiddleware {
     }
 }
 
-// --- type specs (compiled, never run) ---
+// the classes below are compiled and never run
 
 class SingleType extends EventMiddleware<Events.MessageCreate> {
     async execute(): Promise<void> {
@@ -101,7 +101,7 @@ describe('EventMiddleware', () => {
     });
 });
 
-// --- @RegisterEventMiddleware <-> EventMiddleware generic cross-check (compile-time) ---
+// @RegisterEventMiddleware and the EventMiddleware generic must agree, in both directions
 
 @RegisterEventMiddleware()
 class GoodCatchall extends EventMiddleware {

@@ -10,7 +10,7 @@ import type { Constructor } from 'type-fest';
 /** @internal */
 export type AnyMiddlewareCtor = Constructor<unknown, never[]>;
 
-// phantom brands keep the decorator off transport-specific classes
+// core cannot import the transport's middleware base. the kinds arrive on a phantom brand.
 type KindsOf<TCtor extends AnyMiddlewareCtor> =
     InstanceType<TCtor> extends { [MiddlewareKindsBrand]?: infer Kind extends MiddlewareKind } ? Kind : never;
 

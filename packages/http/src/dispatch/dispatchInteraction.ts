@@ -183,7 +183,7 @@ interface DispatchArgs {
 
 function unhandledRouteId(match: ResolvedRoute): string {
     if (match.routeId) return match.routeId;
-    // an empty key means a customId seedcord never minted, since a minted routeKey always outlives its 3-char hash
+    // an empty key means a customId seedcord never minted
     const key = match.attemptedKey ?? '';
     return `${match.kind}:${key.length > 0 ? key : 'unrouted'}`;
 }
@@ -212,7 +212,6 @@ function dispatchReporter(
     core: Core
 ): (outcome: DispatchOutcome) => void {
     const startedAt = performance.now();
-    // reading this at publish time would count the handler run into the queue too
     const queuedMs = queuedMsFor(payload.id);
     return (outcome) => {
         reportDispatch(core.bus, {
@@ -293,7 +292,6 @@ async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unkn
     const { args, scope } = step;
     const { kind } = args.match;
 
-    // the chain shares the handler's sender
     if (kind !== InteractionKind.Autocomplete && scope.sender) {
         try {
             await runMiddlewares(step, kind, scope.sender);
@@ -365,8 +363,7 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
 async function gateRefusal(step: BeforeHandler): Promise<{ caught: unknown } | null> {
     const { Handler, dispatch } = step;
     const { match, payload, core } = step.args;
-    // match.kind comes from payload.type in the router. the second clause narrows the union to
-    // Repliables for interactionGateContext
+    // match.kind comes from payload.type in the router. the second clause narrows the payload to Repliables.
     if (match.kind === InteractionKind.Autocomplete || payload.type === InteractionType.ApplicationCommandAutocomplete)
         return null;
     const monitor = slowGateMonitor();

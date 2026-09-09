@@ -193,7 +193,7 @@ export type PublishableKey = TypedExclude<SubscriptionKey, keyof DefaultSubscrip
  */
 export type SubscriptionData<KeyOfSubscribers extends SubscriptionKey> = AllSubscriptions[KeyOfSubscribers];
 
-// event map for Bus, compatible with TypedEventEmitter
+// one-element tuples because TypedEventEmitter keys on the listener's argument list
 export type SubscriptionTuples = {
     [K in SubscriptionKey]: [AllSubscriptions[K]];
 };

@@ -14,8 +14,7 @@ export function interactionGateContext(
     dispatch: DispatchContext
 ): InteractionGateContext {
     const rawMember = interaction.member;
-    // an uncached member's roles arrive as plain ids already, and the cached everyone role's id equals
-    // the guildId
+    // an uncached member's roles are already plain ids. the everyone role's id equals the guildId.
     const memberRoleIds =
         rawMember instanceof GuildMember
             ? [...rawMember.roles.cache.keys()].filter((id) => id !== interaction.guildId)

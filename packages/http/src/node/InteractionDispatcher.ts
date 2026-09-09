@@ -37,7 +37,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
     private isInitialized = false;
     private readonly hmrHandler?: HmrModuleHandler<HandlerConstructor, InteractionMiddlewareConstructor, string[]>;
-    // routeId -> owner row, the duplicate guard and the hmr unregister index
+    // keyed by routeId, read by the duplicate guard and the hmr unregister
     private readonly rowOwners = new Map<
         string,
         { ctor: HandlerConstructor; kind: InteractionKind; key: string; from: string }

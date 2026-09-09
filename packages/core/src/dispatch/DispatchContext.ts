@@ -28,7 +28,6 @@ export class DispatchContext implements DispatchBag {
      */
     require<Key extends keyof DispatchState>(key: Key): Exclude<DispatchState[Key], undefined> {
         const value = this.state[key];
-        // a key holding null was still set
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition -- an empty DispatchState types every value as undefined
         if (value === undefined) throw new SeedcordError(SeedcordErrorCode.DispatchStateMissing, [String(key)]);
         return value;

@@ -1,5 +1,4 @@
-// A handler base declares these so a route decorator can read what the handler is for. Nothing
-// assigns them at runtime.
+// phantom, nothing assigns these at runtime
 
 export const SlashRouteBrand: unique symbol = Symbol('seedcord:brand:slash-route');
 export const AutocompleteRouteBrand: unique symbol = Symbol('seedcord:brand:autocomplete-route');

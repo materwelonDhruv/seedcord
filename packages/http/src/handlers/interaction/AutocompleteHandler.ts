@@ -40,8 +40,7 @@ export abstract class AutocompleteHandler<Route extends keyof SlashRegistry> ext
     APIApplicationCommandAutocompleteInteraction,
     Core
 > {
-    // keep this ctor. it gives typeof AutocompleteHandler a public construct signature the dispatcher
-    // needs, and dropping it (inheriting BaseHandler's protected ctor) collapses the handler ctor type to never.
+    // keep this ctor. inheriting BaseHandler's protected one collapses the handler ctor type to never.
     constructor(event: APIApplicationCommandAutocompleteInteraction, core: Core, dispatch: DispatchContext) {
         super(event, core, dispatch, 'interactions');
     }
@@ -71,7 +70,7 @@ export abstract class AutocompleteHandler<Route extends keyof SlashRegistry> ext
     protected get focused(): FocusedField<Route> {
         const focused = this.reader.getFocused();
         if (!focused) throw new SeedcordError(SeedcordErrorCode.AutocompleteNoFocusedOption);
-        // the registry constrains the names. a focused field outside it has no arm
+        // the registry constrains the names
         return focused as FocusedField<Route>;
     }
 
@@ -124,7 +123,7 @@ export abstract class AutocompleteHandler<Route extends keyof SlashRegistry> ext
      * types the focused field. The focused field is on `this.focused`.
      */
     protected get options(): AutocompleteOptions<Route> {
-        // AutocompleteOptions is just the registry-typed view over the getters the reader already exposes
+        // AutocompleteOptions is the registry-typed view over the getters the reader exposes
         return this.reader as AutocompleteOptions<Route>;
     }
 }

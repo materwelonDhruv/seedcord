@@ -114,7 +114,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private readonly inFlight = new Set<Promise<void>>();
     private draining = false;
 
-    // batched during bulk load. a reload reports on the hmr channel instead
+    // a reload reports on the hmr channel
     private loading = false;
     private readonly loadedHandlers: { name: string; from: string }[] = [];
     private readonly loadedMiddlewares: { name: string; from: string }[] = [];
@@ -393,7 +393,6 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     ): Promise<void> {
         const key = extractKey(interaction);
         const startedAt = performance.now();
-        // reading at publish time would count the handler run into the queue
         const queuedMs = queuedMsFor(interaction.id);
         const matched = this.maps[kind].get(key);
 
@@ -486,7 +485,6 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private async refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unknown } | null> {
         const { HandlerCtor, kind, interaction, dispatch, sender, ran } = step;
 
-        // the chain shares the handler's sender
         if (kind !== InteractionKind.Autocomplete && sender) {
             try {
                 await this.runMiddlewares(kind, interaction as Repliables, dispatch, sender, ran);

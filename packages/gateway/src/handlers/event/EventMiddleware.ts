@@ -23,7 +23,7 @@ import type { ClientEvents } from 'discord.js';
 export abstract class EventMiddleware<
     in out EventName extends ValidNonInteractionKeys = ValidNonInteractionKeys
 > extends BaseHandler<ClientEvents[EventName]> {
-    // the fired event name, threaded by the controller. undefined when constructed directly, e.g. in a test.
+    // the controller threads this in, undefined when a test constructs the middleware directly
     private readonly firedEvent: EventName | undefined;
 
     constructor(event: ClientEvents[EventName], core: Core, dispatch: DispatchContext, eventName?: EventName) {

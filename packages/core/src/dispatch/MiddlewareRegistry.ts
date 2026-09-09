@@ -50,7 +50,7 @@ interface Entry<Ctor, Key extends string> {
  */
 export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor, Key extends string = MiddlewareKind> {
     private readonly entries: Entry<Ctor, Key>[] = [];
-    // a rebuild replaces this map. mutating it in place would break a chain mid-dispatch.
+    // rebuild replaces this map. clearing it in place would break a chain mid-dispatch.
     private chains = new Map<Key, readonly Ctor[]>();
 
     public constructor(private readonly registrationOf: MiddlewareRegistrationOf<Ctor, Key>) {}
@@ -65,7 +65,7 @@ export class MiddlewareRegistry<Ctor extends AnyMiddlewareCtor, Key extends stri
         const registration = this.registrationOf(ctor);
         if (!registration) return undefined;
 
-        // a double import or an hmr re-scan hands us the same class again
+        // a double import or an hmr re-scan registers the same class twice
         if (this.entries.some((entry) => entry.ctor === ctor)) return undefined;
         if (this.entries.some((entry) => entry.ctor.name === ctor.name)) {
             throw new SeedcordError(SeedcordErrorCode.DuplicateMiddleware, [ctor.name]);

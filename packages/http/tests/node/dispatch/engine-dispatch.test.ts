@@ -27,8 +27,7 @@ const rest = vi.hoisted(() => {
     return { instances, FakeRest };
 });
 
-// the factory must not import project modules, vitest loads factory imports in a mock-bypass
-// context that would cache the engine graph unmocked
+// vitest loads a mock factory's imports in a bypass context. a project module imported here caches unmocked.
 vi.mock('@discordjs/rest', async (importOriginal) => ({
     ...(await importOriginal<object>()),
     REST: rest.FakeRest

@@ -280,8 +280,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
                 this.logger.info(paint.coral.bold('Interactions server stopped'));
                 resolveClose();
             });
-            // close() waits on idle keep-alive sockets. active responses still flush, and the task
-            // timeout bounds a hung one
+            // node's close() waits out idle keep-alive sockets
             server.closeIdleConnections();
         });
     }

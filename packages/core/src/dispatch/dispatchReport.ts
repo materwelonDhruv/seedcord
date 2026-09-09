@@ -50,7 +50,7 @@ interface DispatchReport {
  * @internal
  */
 export function queuedMsFor(interactionId: string): number {
-    // telemetry never breaks a dispatch, and BigInt() throws on a malformed id
+    // timestampFromSnowflake throws on a malformed id
     try {
         return Date.now() - timestampFromSnowflake(interactionId);
     } catch {

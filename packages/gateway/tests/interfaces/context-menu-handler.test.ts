@@ -14,8 +14,8 @@ import type {
 
 const dispatch = new DispatchContext('test:probe');
 
-// The execute() bodies are typechecked and never run. Discord allows a user command and a message command
-// to share a name, which is what the two `Report` rows below stand in for.
+// the execute() bodies are typechecked and never run. discord lets a user command and a message command
+// share a name.
 declare module '@seedcord/core' {
     interface UserContextMenuRegistry {
         'View Profile': { cache: 'cached' };

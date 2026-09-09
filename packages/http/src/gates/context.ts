@@ -12,8 +12,7 @@ export function interactionGateContext(
     routeId: string | null
 ): InteractionGateContext {
     const member = payload.member ?? null;
-    // the wrapper types leave member and user both optional. Discord sends member.user in a guild and the
-    // top-level user in a DM
+    // discord sends member.user in a guild and the top-level user in a dm
     const resolved = member?.user ?? payload.user;
     return {
         kind: 'interaction',

@@ -129,7 +129,7 @@ describe('this.params on a single-route handler', () => {
     it('decodes once and reuses the cached result', () => {
         const wire = Approve.encode({ userId: USER, caseId: 1, urgent: false, action: 'approve', note: '' });
         const handler = new ApproveButton(button(wire), core, dispatch);
-        expect(handler.read()).toBe(handler.read()); // same cached object across reads
+        expect(handler.read()).toBe(handler.read());
     });
 
     it('throws StaleCustomId when the shape changed since the wire was minted', () => {

@@ -71,7 +71,7 @@ export function buildEngine(
         const start = await dispatchInteraction({ match, payload, core, middlewares });
         if (!start) return;
 
-        // this catch is all that stands between a throw and an unhandled rejection
+        // without this catch the rejection reaches the process unhandled
         const work = start().catch(rootFault);
         if (ctx) {
             ctx.waitUntil(work);
