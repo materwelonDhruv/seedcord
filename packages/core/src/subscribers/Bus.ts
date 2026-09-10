@@ -22,28 +22,22 @@ import type {
     SubscriptionTuples
 } from './types/Subscriptions';
 import type { EventFrequency, TypedConstructor } from '@seedcord/types';
+import type { Constructor } from 'type-fest';
 
 /**
- * Both parameters are `never` because construct-signature parameters check contravariantly, and a
- * concrete subscriber narrows each to its own payload and transport `Core`. One cast at dispatch
- * restores both.
+ * A concrete subscriber narrows `data` and `core` to its own payload and transport. Construct-signature
+ * parameters check contravariantly. Erasing them lets this type hold any subscriber class. One cast at
+ * dispatch restores both.
  *
  * @internal
  */
-export type StoredSubscriberCtor = new (data: never, core: never) => Subscriber<SubscriptionKey, CoreBase>;
+export type StoredSubscriberCtor = Constructor<Subscriber<SubscriptionKey, CoreBase>, never[]>;
 
-/**
- * `resolve` is lazy so an edge host registers from a manifest row without importing the module
- * until that key first publishes.
- *
- * @internal
- */
+/** @internal */
 export interface SubscriberRegistration {
     readonly keys: readonly SubscriptionKey[];
     readonly frequency: EventFrequency;
-    readonly resolve: () => StoredSubscriberCtor | Promise<StoredSubscriberCtor>;
-    /** A server-host registration carries it from the start. A lazy one fills it on first resolve. */
-    ctor?: StoredSubscriberCtor | undefined;
+    readonly ctor: StoredSubscriberCtor;
 }
 
 const loggerSlot = Symbol('seedcord:bus:logger');
@@ -76,7 +70,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
     /** @internal */
     public [RegisterSubscriber](registration: SubscriberRegistration): void {
         // a url-less reporter never registers. a publish on its key reaches nothing
-        if (registration.ctor && !this.probeWebhook(registration.ctor)) return;
+        if (!this.probeWebhook(registration.ctor)) return;
 
         for (const key of registration.keys) {
             let registrations = this.subscribersMap.get(key);
@@ -104,7 +98,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
         return [...this.subscribersMap.values()].reduce((total, entries) => total + entries.length, 0);
     }
 
-    /** @internal a lazy edge registration never probes. every server-host reporter registers eagerly */
+    /** @internal the url check at registration already dropped a reporter with none set */
     public async [VerifyWebhooks](): Promise<void> {
         const missing: string[] = [];
         await Promise.all(
@@ -220,7 +214,6 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
         // named outside the try so the catch can say which subscriber threw. several run per key
         let name = '<unresolved>';
         try {
-            entry.ctor ??= await entry.resolve();
             // the registration keys each subscriber to its subscriptions. data matches this ctor's payload arm.
             const Ctor = entry.ctor as TypedConstructor<typeof Subscriber>;
             name = Ctor.name;
@@ -238,7 +231,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
 /** @internal */
 export function registrationFor(ctor: StoredSubscriberCtor): SubscriberRegistration {
     const meta = Reflect.getMetadata(SubscribeMetadataKey, ctor) as SubscribeMetadataEntry;
-    return { keys: [meta.subscriber], frequency: meta.frequency ?? 'on', resolve: () => ctor, ctor };
+    return { keys: [meta.subscriber], frequency: meta.frequency ?? 'on', ctor };
 }
 
 /** @internal */

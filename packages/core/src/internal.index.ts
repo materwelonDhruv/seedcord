@@ -1,4 +1,4 @@
-export { busLoggerOf } from '#subscribers/Bus';
+export { busLoggerOf, registrationFor } from '#subscribers/Bus';
 export {
     AutocompleteRouteBrand,
     ComponentDefsBrand,

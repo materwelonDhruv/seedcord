@@ -36,12 +36,7 @@ describe("Bus 'once' re-entrancy", () => {
             }
         }
 
-        bus[RegisterSubscriber]({
-            keys: ['unknownException'],
-            frequency: 'once',
-            resolve: () => ReentrantOnce,
-            ctor: ReentrantOnce
-        });
+        bus[RegisterSubscriber]({ keys: ['unknownException'], frequency: 'once', ctor: ReentrantOnce });
 
         bus[PublishDefault]('unknownException', payload);
         await new Promise((resolve) => setTimeout(resolve, 20));

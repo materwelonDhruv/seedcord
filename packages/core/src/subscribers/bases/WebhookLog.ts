@@ -58,14 +58,10 @@ export abstract class WebhookLog<KeyOfSubscribers extends SubscriptionKey, TCore
     }
 
     async execute(): Promise<void> {
-        const url = WebhookLog.urlOf(WebhookLog.envKeyOf(this.constructor));
-        if (url === null) {
-            // only an edge host reaches this branch, since it registers reporters lazily
-            this.logger.warn(
-                `${paint.sky.bold(this.constructor.name)} has no webhook url set, this reporter is disabled`
-            );
-            return;
-        }
+        const envKey = WebhookLog.envKeyOf(this.constructor);
+        const url = WebhookLog.urlOf(envKey);
+        // Bus.probeWebhook dropped every url-less reporter at registration. reaching this means the env changed since.
+        if (url === null) throw new SeedcordError(SeedcordErrorCode.ConfigMissingEnv, [envKey]);
 
         const key = this.throttleKey();
         const throttle = ReportThrottle.for(this.core);
