@@ -5,15 +5,18 @@ import { Envapter } from 'envapt';
 
 import { createCore } from './dispatch/dispatchInteraction';
 import { registerSubscribers } from './dispatch/registerSubscribers';
-import { buildRouteMaps } from './dispatch/resolve';
+import { RouteRegistry } from './dispatch/RouteRegistry';
 import { buildEngine } from './engine';
 
 import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { HttpConfig } from '#interfaces/Config';
-import type { RouteManifest } from '#src/manifest/RouteManifest';
+import type { Manifest } from '#src/manifest/Manifest';
 import type { EngineContext } from './engine';
 
 export type { EngineContext } from './engine';
+
+// fills the slot the duplicate-route message gives a file path on node
+const MANIFEST_ORIGIN = 'the manifest';
 
 /**
  * Builds the HTTP-interactions engine, a `(request, ctx?) => Promise<Response>` handler.
@@ -33,18 +36,20 @@ export type { EngineContext } from './engine';
  */
 export function createSeedcord(
     config: HttpConfig,
-    manifest: RouteManifest
+    manifest: Manifest
 ): (request: Request, ctx?: EngineContext) => Promise<Response> {
     Logger.configure(config.logger ?? {});
 
     const token = validateDiscordToken(Envapter.get('DISCORD_BOT_TOKEN'));
     const core = createCore(config, token);
     core.bus[RegisterDefaults]();
-    registerSubscribers(core.bus, manifest);
-    // the manifest carries no middleware rows yet
-    return buildEngine(
-        core,
-        buildRouteMaps(manifest),
-        new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware)
-    ).handle;
+    registerSubscribers(core.bus, manifest.subscribers);
+
+    const routes = new RouteRegistry();
+    for (const handler of manifest.handlers) routes.register(handler, MANIFEST_ORIGIN);
+
+    const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
+    for (const middleware of manifest.middleware) middlewares.register(middleware);
+
+    return buildEngine(core, routes.maps, middlewares).handle;
 }
