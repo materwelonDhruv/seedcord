@@ -49,6 +49,18 @@ const BOOM = `
     }
 `;
 
+const ONCE = `
+    import { EventHandler, RegisterEvent } from '${seedcordPath}';
+    import { Events } from 'discord.js';
+
+    @RegisterEvent(['messageCreate', { frequency: 'once' }])
+    export class Spent extends EventHandler<Events.MessageCreate> {
+        public async execute() {
+            await Promise.resolve();
+        }
+    }
+`;
+
 const STOPS = `
     import { RegisterEventMiddleware, EventMiddleware, Silence } from '${seedcordPath}';
 
@@ -118,6 +130,34 @@ describe('eventDispatched', () => {
         expect(published).toHaveLength(1);
         expect(published[0]?.outcome).toBe('refused');
         expect(published[0]?.handlers).toEqual([]);
+    });
+
+    it('pairs with eventDispatching once a spent once-handler leaves nothing to run', async () => {
+        await testEnv.createFile(`${EVENTS_DIR}/Once.ts`, ONCE);
+
+        seedcord = new Seedcord(testConfig({ events: testEnv.resolvePath(EVENTS_DIR) }));
+        const events = dispatcherOf(seedcord);
+        const onSpy = vi.spyOn(seedcord.bot.client, 'on');
+        await events.init();
+
+        const starts: unknown[] = [];
+        const ends: unknown[] = [];
+        seedcord.bus.on('eventDispatching', (payload) => starts.push(payload));
+        seedcord.bus.on('eventDispatched', (payload) => ends.push(payload));
+
+        const fire = onSpy.mock.calls.find(([event]) => event === 'messageCreate')?.[1] as
+            | ((...args: unknown[]) => void)
+            | undefined;
+        expect(fire).toBeDefined();
+
+        fire?.({ reply: vi.fn() });
+        await vi.waitFor(() => expect(ends).toHaveLength(1));
+
+        fire?.({ reply: vi.fn() });
+        await vi.waitFor(() => expect(starts.length).toBeGreaterThan(0));
+
+        expect(ends).toHaveLength(1);
+        expect(starts).toHaveLength(1);
     });
 
     it('stays quiet for an event no handler registered', async () => {

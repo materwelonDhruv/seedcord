@@ -39,9 +39,9 @@ export interface GateContextBase {
      */
     readonly appPermissions: bigint | null;
     /**
-     * The route this dispatch matched, as `kind:route` (`slash:daily`, `button:confirm`). A handler
-     * registered on several routes reports the one that matched. Null off a route, which covers a plain
-     * event handler and a gate run outside a handler.
+     * The handler's own route, as `kind:route` (`slash:daily`, `button:confirm`). A handler registered
+     * on several reports the one this dispatch matched. Null when the handler declares none, which
+     * covers a plain event handler, the unhandled default, and a gate run outside a handler.
      */
     readonly declaredRoute: string | null;
     /**

@@ -105,6 +105,15 @@ describe('a handler registered on two routes', () => {
         expect(controller.maps[InteractionKind.Button].has(Cancel.prefix)).toBe(true);
     });
 
+    it('reports the clicked route as the dispatch id', async () => {
+        const { controller, published } = await bootWithVote();
+
+        await controller.handleButton(fakeButton(Confirm.encode({})));
+        await controller.handleButton(fakeButton(Cancel.encode({})));
+
+        expect(published.map((entry) => entry.routeId)).toEqual(['button:confirm', 'button:cancel']);
+    });
+
     it('cools down each route on its own', async () => {
         const { controller, published } = await bootWithVote();
 

@@ -1,11 +1,20 @@
 import { PublishDefault } from '@seedcord/core/internal';
 
 import type { Core } from '#interfaces/Core';
-import type { EventDispatchResult } from '@seedcord/core';
+import type { EventDispatchResult, SubscriptionData } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 
+export function reportEventDispatching<Name extends keyof ClientEvents>(
+    core: Core,
+    name: Name,
+    args: ClientEvents[Name]
+): void {
+    // justified: the generic key erases the per-event tuple and args matches name here
+    core.bus[PublishDefault]('eventDispatching', { name, args } as SubscriptionData<'eventDispatching'>);
+}
+
 // the interaction side of this is core's reportDispatch
-export function reportEventDispatch(
+export function reportEventDispatched(
     core: Core,
     name: keyof ClientEvents,
     result: EventDispatchResult,

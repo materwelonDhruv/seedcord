@@ -84,6 +84,7 @@ interface BeforeHandler {
     readonly dispatch: DispatchContext;
     readonly sender: ReplySender | undefined;
     readonly ran: InteractionMiddleware[];
+    readonly declaredRoute: string | undefined;
 }
 
 export class InteractionDispatcher implements Initializeable, HmrAware {
@@ -414,7 +415,15 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             const handler = this.buildHandler(HandlerCtor, interaction as Repliables, dispatch, key, !matched);
             if (handler instanceof RepliableHandler) sender = handler.sender;
 
-            const refusal = await this.refusalBeforeHandler({ HandlerCtor, kind, interaction, dispatch, sender, ran });
+            const refusal = await this.refusalBeforeHandler({
+                HandlerCtor,
+                kind,
+                interaction,
+                dispatch,
+                sender,
+                ran,
+                declaredRoute: matched ? dispatch.routeId : undefined
+            });
             if (refusal) {
                 result = resultFor(refusal.caught);
                 await this.answer(refusal.caught, interaction as ValidInteractionTypes, dispatch, sender, report);
@@ -482,7 +491,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
     // a returned value is the throw that stops the dispatch before the handler runs
     private async refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unknown } | null> {
-        const { HandlerCtor, kind, interaction, dispatch, sender, ran } = step;
+        const { HandlerCtor, kind, interaction, dispatch, sender, ran, declaredRoute } = step;
 
         if (kind !== InteractionKind.Autocomplete && sender) {
             try {
@@ -494,7 +503,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
         // @Gated rejects autocomplete at compile time, since it has no reply target. this is the backstop
         if (interaction.isAutocomplete()) return null;
-        return this.gateRefusal(HandlerCtor, interaction as Repliables, dispatch);
+        return this.gateRefusal(HandlerCtor, interaction as Repliables, dispatch, declaredRoute);
     }
 
     private async runMiddlewares(
@@ -517,14 +526,15 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
     private async gateRefusal(
         HandlerCtor: HandlerConstructor,
         interaction: Repliables,
-        dispatch: DispatchContext
+        dispatch: DispatchContext,
+        declaredRoute: string | undefined
     ): Promise<{ caught: unknown } | null> {
         const monitor = slowGateMonitor();
         try {
             await runHandlerGates(
                 HandlerCtor,
                 interactionGateContext(interaction, this.core, dispatch),
-                dispatch.routeId,
+                declaredRoute,
                 monitor?.observe
             );
             return null;
@@ -532,7 +542,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             return { caught };
         } finally {
             // a refusing gate spent budget too
-            monitor?.report(dispatch.routeId);
+            monitor?.report(declaredRoute ?? null);
         }
     }
 

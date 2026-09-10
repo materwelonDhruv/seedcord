@@ -53,7 +53,7 @@ async function dispatchRoute(core: Core, routeId: string): Promise<void> {
     await execute?.();
 }
 
-describe('one handler class reached through two routes', () => {
+describe('a gate keyed on the route the router matched', () => {
     it('cools down each route on its own', async () => {
         const { core, published } = freshCore();
 
