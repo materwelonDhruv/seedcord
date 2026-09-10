@@ -1,5 +1,5 @@
 import { DiscordAPIError, REST } from '@discordjs/rest';
-import { BaseHandler, Bus, DispatchContext, Fault, InteractionKind, Notice, Silence } from '@seedcord/core';
+import { Bus, DispatchContext, Fault, InteractionKind, Notice, Silence } from '@seedcord/core';
 import {
     asError,
     outcomeFor,
@@ -23,7 +23,11 @@ import { interactionGateContext } from '#src/gates/context';
 
 import { reportFault } from './reportFault';
 
-import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
+import type {
+    ConstructableHandler,
+    HandlerConstructor,
+    InteractionMiddlewareConstructor
+} from '#handlers/constructors';
 import type { InteractionMiddleware } from '#handlers/interaction/InteractionMiddleware';
 import type { InteractionOf } from '#handlers/interaction/middlewareKinds';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
@@ -66,10 +70,6 @@ export function createCore(config: HttpConfig, token: string): Core {
     } as CoreDraft;
     draft.bus = new Bus(draft);
     return draft;
-}
-
-function isHandlerCtor(value: unknown): value is HandlerConstructor {
-    return typeof value === 'function' && value.prototype instanceof BaseHandler;
 }
 
 interface FaultScope {
@@ -244,31 +244,6 @@ async function answer(
     }
 }
 
-async function loadHandlerCtor(
-    match: ResolvedRoute,
-    payload: ValidInteractionTypes,
-    core: Core,
-    dispatch: DispatchContext,
-    report: (outcome: DispatchOutcome) => void
-): Promise<HandlerConstructor | null> {
-    const routeId = unhandledRouteId(match);
-    let exported: unknown;
-    try {
-        exported = await match.load();
-    } catch (caught) {
-        logger().error(`Route ${paint.sky.bold(routeId)} failed to load its handler.`, caught);
-        await answer(caught, freshScope(match, payload, core, dispatch), report, 'failed');
-        return null;
-    }
-
-    if (isHandlerCtor(exported)) return exported;
-
-    logger().error(`Route ${paint.sky.bold(routeId)} loaded an export that is not a handler class.`);
-    const wrong = new Error(`route ${routeId} loaded an export that is not a handler class`);
-    await answer(wrong, freshScope(match, payload, core, dispatch), report, 'failed');
-    return null;
-}
-
 interface BeforeHandler {
     readonly args: DispatchArgs;
     readonly Handler: HandlerConstructor;
@@ -309,19 +284,17 @@ async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unkn
 export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Promise<void>) | null> {
     const { match, payload, core } = args;
     const routeId = unhandledRouteId(match);
-    // allocated before the load so every fault path below can render against the same bag
+    // every fault path below renders against this one bag
     const dispatch = new DispatchContext(routeId);
     const report = dispatchReporter(match, payload, core, dispatch.id);
 
-    const Handler = await loadHandlerCtor(match, payload, core, dispatch, report);
-    if (!Handler) return null;
-
+    const Handler = match.ctor;
     logger().debug(`Processing ${paint.sky.bold(routeId)} with ${paint.mute(Handler.name)}`);
 
-    let handler: InstanceType<HandlerConstructor>;
+    let handler: InstanceType<ConstructableHandler>;
     try {
         // in a union of both handler bases, the event parameter is never. the route pairs each kind with its class.
-        handler = new Handler(payload as never, core, dispatch);
+        handler = new (Handler as ConstructableHandler)(payload as never, core, dispatch);
     } catch (caught) {
         await answer(caught, freshScope(match, payload, core, dispatch), report);
         return null;

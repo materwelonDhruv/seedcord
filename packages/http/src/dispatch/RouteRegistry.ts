@@ -53,7 +53,7 @@ export class RouteRegistry {
 
         for (const { kind, key } of writes) {
             const routeId = `${kind}:${key}`;
-            this.maps[kind].set(key, { kind, routeId, load: () => Promise.resolve(ctor) });
+            this.maps[kind].set(key, { kind, routeId, ctor });
             this.owners.set(routeId, { ctor, kind, key, from });
         }
         return true;
