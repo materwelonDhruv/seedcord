@@ -30,7 +30,7 @@ Strictness for this run: **<LEVEL>**. Apply that level's threshold and ignore th
 
 - **lenient**: fix only unambiguous violations: narrate-then-justify, type-paraphrase, "I'm doing X" wrappers, em-dashes, stale/contradictory comments, and clear writing-voice violations (hype/marketing words, anthropomorphism, `loudly`-style intensifiers). Leave every borderline or judgment-call comment alone.
 - **standard**: the full guidelines as written: also trim decorative TSDoc on internal helpers and per-overload captions, cut any comment that fails "would a careful reader misunderstand this code without it?", and rewrite any surviving comment whose phrasing trips the writing-voice ban-list down to the plain mechanism. Keep genuine guardrails and invariants.
-- **strict**: minimalist. For every comment apply "if someone deleted this AND mechanically refactored, would they reintroduce a bug?", if no, cut it. Collapse multi-line whys to one line. Every surviving comment must earn its place and pass the writing-voice ban-list.
+- **strict**: minimalist. For every comment apply "if someone deleted this AND mechanically refactored, would they reintroduce a bug?", if no, cut it. Collapse multi-line whys to one line. Every surviving comment must earn its place and pass the writing-voice ban-list. Check if the TSDoc is applicable based on whether the function is public or internal, and its importance.
 
 Mode for this run: **<MODE>**.
 
