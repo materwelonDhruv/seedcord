@@ -20,6 +20,7 @@ The `where` column names the transport that publishes each one.
 | `anyInteraction` | both | an interaction arrives, before routing |
 | `unhandledEventError` | gateway | an event dispatch throws past the boundary |
 | `eventDispatching` | gateway | before the handlers for an event run |
+| `eventDispatched` | gateway | those handlers settle |
 
 {/* prettier-ignore-end */}
 
@@ -80,6 +81,8 @@ export class Trace extends Subscriber<'eventDispatching'> {
 `eventDispatching` fires only for an event that some handler registered, since seedcord attaches a client listener per registered event. It also fires ahead of your middleware, so an event that a middleware later stops has already published here.
 
 </Callout>
+
+`eventDispatched` closes the pair once the handlers settle. Read it for outcomes, and see [the telemetry page](/events/telemetry) for its fields.
 
 ## The two unhandled errors
 

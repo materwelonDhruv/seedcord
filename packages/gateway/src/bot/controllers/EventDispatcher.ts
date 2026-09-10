@@ -23,6 +23,7 @@ import { Envapter } from 'envapt';
 import { eventMiddlewareMetaOf } from '#bDecorators/Middlewares';
 import { eventGateContext } from '#bot/gates/runGates';
 import { handleEventFault } from '#bot/handleEventFault';
+import { reportEventDispatch } from '#bot/reportEventDispatch';
 import { EventHandler, EventMiddleware } from '#handlers/event';
 
 import type { RegisterEventMetadataEntry } from '#bDecorators/Events';
@@ -347,6 +348,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
         if (handlersToExecute.length === 0) return;
 
+        const startedAt = performance.now();
         const dispatch = new DispatchContext(`event:${String(eventName)}`);
         const ran: EventMiddleware[] = [];
         const handlers: HandlerResult[] = [];
@@ -367,7 +369,9 @@ export class EventDispatcher implements Initializeable, HmrAware {
                 handlers.push(await this.processHandler(eventName, entry.ctor, args, dispatch));
             }
         } finally {
-            await runAfter(ran, eventResultFor(stopped, handlers), this.logger);
+            const result = eventResultFor(stopped, handlers);
+            reportEventDispatch(this.core, eventName, result, startedAt);
+            await runAfter(ran, result, this.logger);
         }
     }
 

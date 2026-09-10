@@ -122,6 +122,49 @@ export class WriteAudit extends Subscriber<'responseAttempted'> {
 
 A `reply` or an `update` can come back from Discord without the message it should carry. seedcord throws `ReplyCallbackMissingMessage` there, and that write publishes nothing, since the call itself succeeded and named no message.
 
+## What one event fire reports
+
+One event fire runs every handler you registered for it, each behind its own fault boundary. `eventDispatched` reports the fire once they settle, on the gateway transport.
+
+{/* prettier-ignore-start */}
+
+| field | type | what it holds |
+| --- | --- | --- |
+| `name` | `keyof ClientEvents` | the event, `messageCreate` shaped |
+| `outcome` | [`DispatchOutcome`](ref:core/DispatchOutcome) | how the middleware chain ended |
+| `handlers` | [`HandlerOutcome[]`](ref:core/HandlerOutcome) | one entry per handler that ran, in order |
+| `durationMs` | `number` | dispatch entry until every handler settles, monotonic |
+
+{/* prettier-ignore-end */}
+
+`outcome` describes the middleware chain alone. A chain that refuses the event reads `refused` and leaves `handlers` empty, because no handler ran. Each entry in `handlers` carries the class name and its own outcome, so one failing handler shows up without hiding the ones that succeeded.
+
+```ts twoslash title="src/subscribers/FlakyHandlers.ts"
+import { Subscribe, Subscriber } from '@seedcord/gateway';
+// ---cut---
+@Subscribe('eventDispatched')
+export class FlakyHandlers extends Subscriber<'eventDispatched'> {
+    public async execute(): Promise<void> {
+        const { name, handlers } = this.data;
+
+        for (const entry of handlers) {
+            if (entry.outcome === 'handled') continue;
+            this.logger.warn(
+                `${entry.handler} ${entry.outcome} on ${name}`
+            );
+        }
+    }
+}
+```
+
+The thrown value stays off this key. `unknownException` already carries it, under an `origin` of `event:messageCreate:AutoMod`, so joining on that string pairs a failed entry here with the throw that caused it.
+
+<Callout type="warning">
+
+An event carries no snowflake, so there is no `queuedMs` to read. A fire that runs no handler publishes nothing, and neither does `eventDispatching`, so the pair stays even.
+
+</Callout>
+
 ## Storing them yourself
 
 seedcord publishes these and keeps none of them. A subscriber is the whole surface. Anything you want to keep, you write somewhere yourself.
