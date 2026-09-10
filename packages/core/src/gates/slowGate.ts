@@ -20,7 +20,7 @@ function logger(): Logger {
  */
 export interface SlowGateMonitor {
     readonly observe: GateObserver;
-    report(routeId: string | null): void;
+    report(declaredRoute: string | null): void;
 }
 
 // undefined in production, so timedCheck skips the clock there. read per call, the environment binds late
@@ -29,13 +29,13 @@ export function slowGateMonitor(): SlowGateMonitor | undefined {
     const readings: { name: string; ms: number }[] = [];
     return {
         observe: (name, ms) => readings.push({ name, ms }),
-        report(routeId) {
+        report(declaredRoute) {
             const total = readings.reduce((sum, reading) => sum + reading.ms, 0);
             if (total < SLOW_GATE_MS) return;
             const shares = readings
                 .toSorted((a, b) => b.ms - a.ms)
                 .map((reading) => `${paint.sky.bold(reading.name)} ${paint.mute(`${Math.round(reading.ms)}ms`)}`);
-            const route = routeId === null ? '' : ` for ${paint.sky.bold(routeId)}`;
+            const route = declaredRoute === null ? '' : ` for ${paint.sky.bold(declaredRoute)}`;
             const headline = `gates${route} took ${paint.amber(`${Math.round(total)}ms`)} of the 3s ack budget`;
             logger().utils.block(headline, shares, 'warn', (text) => text);
         }

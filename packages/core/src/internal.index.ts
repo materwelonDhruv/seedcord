@@ -26,7 +26,7 @@ export {
     type RoutableConstructor
 } from '#decorators/interactionRoutes';
 
-export { routeIdOf, runGates, runHandlerGates } from '#gates/runGates';
+export { runGates, runHandlerGates } from '#gates/runGates';
 export { slowGateMonitor, type SlowGateMonitor } from '#gates/slowGate';
 export type { GateObserver } from '#gates/runGates';
 export { accessorStore, clearStore, guardedAccessor } from '#src/miscellaneous/guarded';

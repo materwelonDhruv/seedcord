@@ -94,7 +94,7 @@ Leaving the `ctx` parameter unannotated makes it a [`GateContextBase`](ref:core/
 | `memberRoleIds` | `readonly string[]` | the caller's role ids without the everyone role, empty outside a server |
 | `memberPermissions` | `bigint \| null` | the caller's permission bits, channel-scoped on an interaction and role-derived on a gateway event, null outside a server |
 | `appPermissions` | `bigint \| null` | your bot's permission bits in the invoked channel, null on gateway events |
-| `routeId` | `string \| null` | the dispatched handler as `kind:route`, such as `slash:daily`, null off a route |
+| `declaredRoute` | `string \| null` | the route this dispatch matched, such as `slash:daily`, null off a route |
 
 {/* prettier-ignore-end */}
 

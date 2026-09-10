@@ -370,7 +370,7 @@ async function gateRefusal(step: BeforeHandler): Promise<{ caught: unknown } | n
     try {
         await runHandlerGates(
             Handler,
-            interactionGateContext(payload, core, dispatch, match.routeId),
+            interactionGateContext(payload, core, dispatch),
             match.routeId ?? undefined,
             monitor?.observe
         );

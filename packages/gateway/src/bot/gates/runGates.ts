@@ -37,7 +37,7 @@ export function interactionGateContext(
         appPermissions: interaction.appPermissions.bitfield,
         memberGuildPermissions: rawMember instanceof GuildMember ? rawMember.permissions.bitfield : null,
         appGuildPermissions: interaction.guild?.members.me?.permissions.bitfield ?? null,
-        routeId: null // runHandlerGates sets routeId from the handler metadata before the gates run
+        declaredRoute: null // runHandlerGates overwrites this with the matched route
     };
 }
 
@@ -66,6 +66,6 @@ export function eventGateContext(
         appPermissions: null,
         memberGuildPermissions: actor.member?.permissions.bitfield ?? null,
         appGuildPermissions: actor.guild?.members.me?.permissions.bitfield ?? null,
-        routeId: null // runHandlerGates sets routeId from the handler metadata before the gates run
+        declaredRoute: null // an event handler declares no route, so this stays null through the gates
     };
 }

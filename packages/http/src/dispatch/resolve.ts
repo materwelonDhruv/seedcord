@@ -16,8 +16,7 @@ import type { APIInteraction } from 'discord-api-types/v10';
 export interface ResolvedRoute {
     readonly kind: InteractionKind;
     /**
-     * The stable dispatch id, `kind:key` (`slash:ban`), the shape core's `routeIdOf` builds. Null for the
-     * unhandled default, which matches no row.
+     * The stable dispatch id, `kind:key` (`slash:ban`). Null for the unhandled default, which matches no row.
      */
     readonly routeId: string | null;
     readonly attemptedKey?: string;

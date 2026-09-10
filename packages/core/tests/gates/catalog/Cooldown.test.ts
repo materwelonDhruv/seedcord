@@ -23,7 +23,7 @@ class CustomRefusal extends Notice {
 
 function cdCtx(
     rateLimiter: object,
-    ids: { userId?: string; guildId?: string; channelId?: string; routeId?: string | null } = {}
+    ids: { userId?: string; guildId?: string; channelId?: string; declaredRoute?: string | null } = {}
 ): GateContextBase {
     // the gate reads core.rateLimiter and the id scalars, so a minimal cast stands in
     const core = { rateLimiter } as unknown as CoreBase;
@@ -32,7 +32,7 @@ function cdCtx(
         userId: ids.userId ?? 'u1',
         guildId: ids.guildId ?? 'g1',
         channelId: ids.channelId ?? 'c1',
-        routeId: ids.routeId ?? null
+        declaredRoute: ids.declaredRoute ?? null
     } as unknown as GateContextBase;
 }
 
@@ -61,7 +61,7 @@ describe('Cooldown', () => {
 
     it('keys the same route and config identically across two Cooldown instances', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
-        const ctx = cdCtx({ peek, charge: vi.fn() }, { routeId: 'slash:daily' });
+        const ctx = cdCtx({ peek, charge: vi.fn() }, { declaredRoute: 'slash:daily' });
         await Cooldown(5).check(ctx);
         await Cooldown(5).check(ctx);
         // the key derives from the route and config, so two loads of the same handler match
@@ -70,20 +70,20 @@ describe('Cooldown', () => {
 
     it('includes the route id in the key', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
-        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { routeId: 'slash:daily' }));
+        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: 'slash:daily' }));
         expect(String(peek.mock.calls[0]?.[0])).toContain('slash:daily');
     });
 
     it('keys two different routes to different keys', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
-        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { routeId: 'slash:daily' }));
-        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { routeId: 'slash:weekly' }));
+        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: 'slash:daily' }));
+        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: 'slash:weekly' }));
         expect(peek.mock.calls[0]?.[0]).not.toBe(peek.mock.calls[1]?.[0]);
     });
 
     it('keys two durations on one route to different keys', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
-        const ctx = cdCtx({ peek, charge: vi.fn() }, { routeId: 'slash:daily' });
+        const ctx = cdCtx({ peek, charge: vi.fn() }, { declaredRoute: 'slash:daily' });
         await Cooldown(5).check(ctx);
         await Cooldown(10).check(ctx);
         expect(peek.mock.calls[0]?.[0]).not.toBe(peek.mock.calls[1]?.[0]);
@@ -92,16 +92,16 @@ describe('Cooldown', () => {
     it('keys two off-route Cooldown instances to different keys', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
         // no route to key on, so unrelated event handlers must not collide on one bucket
-        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { routeId: null }));
-        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { routeId: null }));
+        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: null }));
+        await Cooldown(5).check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: null }));
         expect(peek.mock.calls[0]?.[0]).not.toBe(peek.mock.calls[1]?.[0]);
     });
 
     it('keys one off-route Cooldown instance identically across contexts', async () => {
         const peek = vi.fn().mockReturnValue({ limited: false });
         const gate = Cooldown(5);
-        await gate.check(cdCtx({ peek, charge: vi.fn() }, { routeId: null }));
-        await gate.check(cdCtx({ peek, charge: vi.fn() }, { routeId: null }));
+        await gate.check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: null }));
+        await gate.check(cdCtx({ peek, charge: vi.fn() }, { declaredRoute: null }));
         // one declaration site keys one bucket, so the same off-route gate limits its scope consistently
         expect(peek.mock.calls[0]?.[0]).toBe(peek.mock.calls[1]?.[0]);
     });

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { GatedMetadataKey, InteractionRouteKeys } from '#src/metadataKeys';
+import { GatedMetadataKey } from '#src/metadataKeys';
 
 import { discardCommits, runCheck, runCommits } from './effects';
 
@@ -8,16 +8,6 @@ import type { Gate, GateContextBase } from './Gate';
 
 // a combinator (`and`/`or`) reports once under its joined name.
 export type GateObserver = (gateName: string, elapsedMs: number) => void;
-
-// the stable id a route decorator stored, e.g. slash:daily or button:confirm. null for a plain event handler.
-export function routeIdOf(handlerCtor: object): string | null {
-    for (const [kind, key] of Object.entries(InteractionRouteKeys)) {
-        // justified: getMetadata returns any, this key only ever stores the route/prefix string array
-        const routes = Reflect.getMetadata(key, handlerCtor) as string[] | undefined;
-        if (routes?.length) return `${kind}:${routes.join(',')}`;
-    }
-    return null;
-}
 
 async function timedCheck(gate: Gate<GateContextBase>, ctx: GateContextBase, observe: GateObserver): Promise<void> {
     const start = performance.now();
@@ -46,16 +36,15 @@ export async function runGates(
     }
 }
 
-// dispatchers call this before execute, inside the boundary, so a refusal renders or drops. an explicit
-// routeId is for manifest-driven handlers, which carry no route metadata to derive one from.
+// dispatchers call this before execute, inside the boundary, so a refusal renders or drops
 export async function runHandlerGates(
     handlerCtor: object,
     ctx: GateContextBase,
-    routeId?: string,
+    declaredRoute?: string,
     observe?: GateObserver
 ): Promise<void> {
     // justified: getMetadata returns any, and this key only ever stores the @Gated gate array
     const gates = Reflect.getMetadata(GatedMetadataKey, handlerCtor) as readonly Gate<GateContextBase>[] | undefined;
     if (!gates) return;
-    await runGates(gates, { ...ctx, routeId: routeId ?? routeIdOf(handlerCtor) }, observe);
+    await runGates(gates, { ...ctx, declaredRoute: declaredRoute ?? null }, observe);
 }
