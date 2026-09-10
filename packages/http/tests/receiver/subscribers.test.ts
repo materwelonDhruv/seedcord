@@ -27,6 +27,14 @@ class UnsetReporter extends WebhookLog<'unknownException', CoreBase> {
     }
 }
 
+@Subscribe('unknownException')
+@WebhookUrl('EDGE_BAD_WEBHOOK_URL')
+class MalformedReporter extends WebhookLog<'unknownException', CoreBase> {
+    report(): { components: [] } {
+        return { components: [] };
+    }
+}
+
 class NotASubscriber {
     public readonly kind = 'plain';
 }
@@ -73,6 +81,33 @@ describe('manifest subscribers on workerd', () => {
         expect(sent).not.toHaveBeenCalled();
         warn.mockRestore();
         sent.mockRestore();
+    });
+
+    // SubscriberLoader.init throws the same error on node
+    it('throws at registration for a malformed webhook url', () => {
+        Envapter.useSource(new PortableSource({ EDGE_BAD_WEBHOOK_URL: 'https://example.com/nope' }));
+
+        expect(() => registerSubscribers(stubBus(), [MalformedReporter])).toThrow(
+            expect.objectContaining({ code: SeedcordErrorCode.ConfigWebhookUrlInvalid })
+        );
+    });
+
+    it('reports a subscriber class carrying no @Subscribe', () => {
+        class Unsubscribed extends Subscriber<'unknownException', CoreBase> {
+            execute(): Promise<void> {
+                return Promise.resolve();
+            }
+        }
+
+        expect(() => registerSubscribers(stubBus(), [Unsubscribed])).toThrow(
+            expect.objectContaining({ code: SeedcordErrorCode.ManifestEntryWrongClass })
+        );
+    });
+
+    it('reports a non-class entry', () => {
+        expect(() => registerSubscribers(stubBus(), [null as never])).toThrow(
+            expect.objectContaining({ code: SeedcordErrorCode.ManifestEntryWrongClass })
+        );
     });
 
     it('throws naming the array and the class when a listed class is not a subscriber', () => {

@@ -5,7 +5,6 @@ export { createSeedcord } from './createSeedcord';
 export type { EngineContext } from './createSeedcord';
 
 export type { Manifest } from './manifest/Manifest';
-export type { HandlerConstructor } from '#handlers/constructors';
 
 export type { Core } from '#interfaces/Core';
 export type { HttpConfig, HttpEdgeConfig, HttpServerConfig } from '#interfaces/Config';

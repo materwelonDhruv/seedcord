@@ -78,6 +78,8 @@ const messages = {
         `Two different middleware classes share the name \`${name}\`. Rename one so they do not collide.`,
     [SeedcordErrorCode.ManifestEntryWrongClass]: (array: string, className: string, base: string) =>
         `The manifest lists \`${className}\` under \`${array}\`, but \`${className}\` doesn't extend ${base}. Move it to the array for its own base, or drop it.`,
+    [SeedcordErrorCode.ManifestEntryNoRoutes]: (array: string, className: string, decorator: string) =>
+        `The manifest lists \`${className}\` under \`${array}\`, but \`${className}\` carries no ${decorator}. Add the decorator, or drop the entry.`,
 
     [SeedcordErrorCode.ReplyIllegalAckState]: (method: string, reason: string, alternative: string, routeId: string) =>
         `${paint.sky(`${method}()`)} was called when ${reason}.\n${alternative} (route ${paint.mute(routeId)})`,

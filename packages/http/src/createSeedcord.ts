@@ -1,5 +1,6 @@
 import { interactionMiddleware, MiddlewareRegistry, RegisterDefaults } from '@seedcord/core/internal';
-import { validateDiscordToken } from '@seedcord/errors/internal';
+import { SeedcordErrorCode } from '@seedcord/errors';
+import { SeedcordError, validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
 import { Envapter } from 'envapt';
 
@@ -17,6 +18,10 @@ export type { EngineContext } from './engine';
 
 // the duplicate-route message prints a file path in this slot on node
 const MANIFEST_ORIGIN = 'the manifest';
+
+function noRoutes(array: string, className: string, decorator: string): SeedcordError {
+    return new SeedcordError(SeedcordErrorCode.ManifestEntryNoRoutes, [array, className, decorator]);
+}
 
 /**
  * Builds the HTTP-interactions engine, a `(request, ctx?) => Promise<Response>` handler.
@@ -46,10 +51,16 @@ export function createSeedcord(
     registerSubscribers(core.bus, manifest.subscribers);
 
     const routes = new RouteRegistry();
-    for (const handler of manifest.handlers) routes.register(handler, MANIFEST_ORIGIN);
+    for (const handler of manifest.handlers) {
+        if (!routes.register(handler, MANIFEST_ORIGIN)) throw noRoutes('handlers', handler.name, 'route decorator');
+    }
 
     const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
-    for (const middleware of manifest.middleware) middlewares.register(middleware);
+    for (const middleware of manifest.middleware) {
+        if (!middlewares.register(middleware)) {
+            throw noRoutes('middleware', middleware.name, '@RegisterInteractionMiddleware');
+        }
+    }
 
     return buildEngine(core, routes.maps, middlewares).handle;
 }

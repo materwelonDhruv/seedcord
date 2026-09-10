@@ -84,6 +84,8 @@ export enum SeedcordErrorCode {
     DuplicateMiddleware = 1402,
     /** A manifest array lists a class that does not extend the base for that array. */
     ManifestEntryWrongClass = 1403,
+    /** A manifest array lists a class whose decorator is missing. Nothing registered. */
+    ManifestEntryNoRoutes = 1404,
 
     /** A reply method was called in an ack state where it is illegal. */
     ReplyIllegalAckState = 1501,
