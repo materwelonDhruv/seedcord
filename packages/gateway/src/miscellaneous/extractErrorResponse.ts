@@ -28,7 +28,7 @@ interface EventOrigin {
 export interface ErrorOrigin {
     interaction?: Repliables;
     event?: EventOrigin;
-    routeId: string;
+    origin: string;
     dispatch: DispatchContext;
     guild: Nullable<Guild>;
     user: Nullable<User>;
@@ -40,19 +40,19 @@ export interface ExtractedErrorResponse {
     response: ReplyResponse;
 }
 
-export function extractErrorResponse(error: Error, core: Core, origin: ErrorOrigin): ExtractedErrorResponse {
+export function extractErrorResponse(error: Error, core: Core, fault: ErrorOrigin): ExtractedErrorResponse {
     const uuid = crypto.randomUUID();
-    const { dispatch } = origin;
+    const { dispatch } = fault;
     const developerUsername = core.config.notifications?.developerUsername;
     const ctx: RenderContext =
         developerUsername === undefined ? { uuid, dispatch } : { uuid, developerUsername, dispatch };
 
     if (error instanceof Notice) {
-        if (error.report) reportFault(error, core, origin, uuid);
+        if (error.report) reportFault(error, core, fault, uuid);
         return { uuid, response: error.render(ctx) };
     }
 
-    reportRawFault(error, core, origin, uuid);
+    reportRawFault(error, core, fault, uuid);
 
     const Override = core.config.errors?.defaultError;
     const response = Override ? new Override(uuid).render(ctx) : new Fault().render(ctx);
@@ -60,31 +60,31 @@ export function extractErrorResponse(error: Error, core: Core, origin: ErrorOrig
     return { uuid, response };
 }
 
-function reportFault(denial: Notice, core: Core, origin: ErrorOrigin, uuid: UUID): void {
+function reportFault(denial: Notice, core: Core, fault: ErrorOrigin, uuid: UUID): void {
     logger.error(`${denial.name}: ${uuid}`, denial);
 
-    if (origin.interaction) {
+    if (fault.interaction) {
         core.bus[PublishDefault]('handledException', {
             denial,
             uuid,
-            routeId: origin.routeId,
-            source: buildInteractionSource(origin.interaction)
+            origin: fault.origin,
+            source: buildInteractionSource(fault.interaction)
         });
-    } else if (origin.event) {
+    } else if (fault.event) {
         core.bus[PublishDefault]('handledException', {
             denial,
             uuid,
-            routeId: origin.routeId,
-            source: buildEventSource(origin.event, origin)
+            origin: fault.origin,
+            source: buildEventSource(fault.event, fault)
         });
     } else {
         // an autocomplete throw has no typed source. unknownException is the only channel left
         core.bus[PublishDefault]('unknownException', {
             uuid,
             error: denial,
-            routeId: origin.routeId,
-            ...scalarActors(origin),
-            metadata: metadataFor(origin)
+            origin: fault.origin,
+            ...scalarActors(fault),
+            metadata: metadataFor(fault)
         });
     }
 }
@@ -96,7 +96,7 @@ function causeLine(error: Error): string {
     return `\ncaused by ${cause.name}: ${first ?? cause.message}`;
 }
 
-function reportRawFault(error: Error, core: Core, origin: ErrorOrigin, uuid: UUID): void {
+function reportRawFault(error: Error, core: Core, fault: ErrorOrigin, uuid: UUID): void {
     const showStack = core.config.errors?.errorStack ?? false;
     if (showStack) logger.error(uuid, error);
     else logger.error(`${uuid} | ${error.message}${causeLine(error)}`);
@@ -104,32 +104,32 @@ function reportRawFault(error: Error, core: Core, origin: ErrorOrigin, uuid: UUI
     core.bus[PublishDefault]('unknownException', {
         uuid,
         error,
-        routeId: origin.routeId,
-        ...scalarActors(origin),
-        metadata: metadataFor(origin)
+        origin: fault.origin,
+        ...scalarActors(fault),
+        metadata: metadataFor(fault)
     });
 }
 
 // the bus payload must stay djs-free
-function scalarActors(origin: ErrorOrigin): Pick<SubscriptionData<'unknownException'>, 'guild' | 'user'> {
+function scalarActors(fault: ErrorOrigin): Pick<SubscriptionData<'unknownException'>, 'guild' | 'user'> {
     return {
-        guild: origin.guild ? { id: origin.guild.id, name: origin.guild.name } : undefined,
-        user: origin.user ? { id: origin.user.id, username: origin.user.username } : undefined
+        guild: fault.guild ? { id: fault.guild.id, name: fault.guild.name } : undefined,
+        user: fault.user ? { id: fault.user.id, username: fault.user.username } : undefined
     };
 }
 
-function metadataFor(origin: ErrorOrigin): unknown {
-    if (origin.event) return { eventName: origin.event.name, handler: origin.event.handler, args: origin.event.args };
-    return origin.metadata;
+function metadataFor(fault: ErrorOrigin): unknown {
+    if (fault.event) return { eventName: fault.event.name, handler: fault.event.handler, args: fault.event.args };
+    return fault.metadata;
 }
 
-function buildEventSource(event: EventOrigin, origin: ErrorOrigin): EventFaultSource {
+function buildEventSource(event: EventOrigin, fault: ErrorOrigin): EventFaultSource {
     return {
         kind: 'event',
         eventName: event.name,
         handler: event.handler,
-        userId: origin.user?.id ?? null,
-        guildId: origin.guild?.id ?? null,
+        userId: fault.user?.id ?? null,
+        guildId: fault.guild?.id ?? null,
         channelId: event.channelId,
         raw: event.args
     };

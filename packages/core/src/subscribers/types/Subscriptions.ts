@@ -104,7 +104,7 @@ export interface DefaultSubscriptions {
         readonly uuid: UUID;
         readonly error: Error;
         /** Where the throw came from, `slash:ban` for an interaction and `event:name:handler` for an event. */
-        readonly routeId: string;
+        readonly origin: string;
         readonly guild?: { readonly id: string; readonly name: string } | undefined;
         readonly user?: { readonly id: string; readonly username: string } | undefined;
         readonly metadata?: unknown;
@@ -113,8 +113,8 @@ export interface DefaultSubscriptions {
     readonly handledException: {
         readonly denial: Notice;
         readonly uuid: UUID;
-        /** The same id `interactionDispatched` publishes. An event reads `event:name:handler`. */
-        readonly routeId: string;
+        /** Where the reported Notice came from, the same shape `unknownException.origin` carries. */
+        readonly origin: string;
         readonly source: FaultSource;
     };
     /** Triggered when an interaction dispatch throws past the fault boundary. */

@@ -179,10 +179,10 @@ describe('handleEventFault', () => {
         expect(publish).toHaveBeenCalledTimes(2);
     });
 
-    it('publishes the event route as routeId', () => {
+    it('names the event and the handler that threw as the origin', () => {
         handleEventFault(new Error('boom'), 'messageCreate', 'Starboard', [{}], mockCore(publish));
 
         const [, payload] = publish.mock.calls[0] as [string, SubscriptionData<'unknownException'>];
-        expect(payload.routeId).toBe('event:messageCreate:Starboard');
+        expect(payload.origin).toBe('event:messageCreate:Starboard');
     });
 });

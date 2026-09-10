@@ -74,11 +74,11 @@ class MirrorCard extends BuilderComponent<'container'> {
 @WebhookUrl('FAULT_MIRROR_WEBHOOK_URL')
 export class FaultMirror extends WebhookLog<'handledException'> {
     public report(): WebhookReport {
-        const { uuid, routeId } = this.data;
+        const { uuid, origin } = this.data;
 
         return {
             username: 'Faults',
-            components: [new MirrorCard(uuid, routeId).component]
+            components: [new MirrorCard(uuid, origin).component]
         };
     }
 }
@@ -161,16 +161,16 @@ class MirrorCard extends BuilderComponent<'container'> {
 @WebhookUrl('FAULT_MIRROR_WEBHOOK_URL')
 export class FaultMirror extends WebhookLog<'handledException'> {
     protected override throttleKey(): string {
-        return `mirror:${this.data.routeId}`;
+        return `mirror:${this.data.origin}`;
     }
 
     public report(suppressed: number): WebhookReport {
-        const { uuid, routeId } = this.data;
+        const { uuid, origin } = this.data;
 
         return {
             username: 'Faults',
             components: [
-                new MirrorCard(uuid, routeId, suppressed).component
+                new MirrorCard(uuid, origin, suppressed).component
             ]
         };
     }

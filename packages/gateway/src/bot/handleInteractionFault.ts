@@ -41,7 +41,7 @@ export async function handleInteractionFault(
     // discord does not accept a message on an autocomplete. the fault is only reported.
     if (interaction.isAutocomplete()) {
         extractErrorResponse(error, core, {
-            routeId,
+            origin: routeId,
             dispatch,
             guild: interaction.guild,
             user: interaction.user,
@@ -54,7 +54,7 @@ export async function handleInteractionFault(
 
     const { response } = extractErrorResponse(error, core, {
         interaction,
-        routeId,
+        origin: routeId,
         dispatch,
         guild: interaction.guild,
         user: interaction.user,

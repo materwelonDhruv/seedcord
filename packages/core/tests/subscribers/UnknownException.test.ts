@@ -16,7 +16,7 @@ const core = {} as unknown as CoreBase;
 
 // the text a text-display carries in the container, so an assertion sees the real webhook string
 function reportText(error: Error, suppressed = 0): string {
-    const report = new UnknownException({ uuid: randomUUID(), error, routeId: 'slash:probe' }, core).report(suppressed);
+    const report = new UnknownException({ uuid: randomUUID(), error, origin: 'slash:probe' }, core).report(suppressed);
     // justified: report() emits a single container component, its json shape is APIContainerComponent
     const container = report.components[0]?.toJSON() as APIContainerComponent;
     return container.components

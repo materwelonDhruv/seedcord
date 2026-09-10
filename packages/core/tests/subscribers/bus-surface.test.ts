@@ -25,7 +25,7 @@ describe('the Bus surface a bot author reaches', () => {
     it('throws on emit, which would skip every subscriber', () => {
         const bus = stubBus();
 
-        const payload = { uuid: randomUUID(), error: new Error('x'), routeId: 'r' };
+        const payload = { uuid: randomUUID(), error: new Error('x'), origin: 'r' };
 
         // eslint-disable-next-line @typescript-eslint/no-deprecated --  this pins the deprecation
         expect(() => bus.emit('unknownException', payload)).toThrow(

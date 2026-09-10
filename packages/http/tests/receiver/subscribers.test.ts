@@ -43,7 +43,7 @@ function rowFor(exportName: string, load: () => Promise<Record<string, unknown>>
 const payload = (): SubscriptionData<'unknownException'> => ({
     uuid: crypto.randomUUID(),
     error: new Error('boom'),
-    routeId: 'slash:probe'
+    origin: 'slash:probe'
 });
 
 describe('manifest subscribers on workerd', () => {

@@ -15,14 +15,14 @@ type InteractionFaultSource = Extract<FaultSource, { kind: 'interaction' }>;
 export function reportFault(
     error: Error,
     uuid: RenderContext['uuid'],
-    routeId: string,
+    origin: string,
     payload: ValidInteractionTypes,
     core: Core
 ): void {
     const source = interactionSource(payload);
     if (error instanceof Notice && source)
-        core.bus[PublishDefault]('handledException', { denial: error, uuid, routeId, source });
-    else core.bus[PublishDefault]('unknownException', { uuid, error, routeId, ...actors(payload), metadata: payload });
+        core.bus[PublishDefault]('handledException', { denial: error, uuid, origin, source });
+    else core.bus[PublishDefault]('unknownException', { uuid, error, origin, ...actors(payload), metadata: payload });
 }
 
 // the raw payload has guild_id and no guild name

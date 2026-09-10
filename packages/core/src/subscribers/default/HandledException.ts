@@ -17,7 +17,7 @@ import type { AllSubscriptions, FaultSource } from '../types/Subscriptions';
 @WebhookUrl('HANDLED_EXCEPTION_WEBHOOK_URL')
 export class HandledException extends WebhookLog<'handledException', CoreBase> {
     protected override throttleKey(): string {
-        return `handledException:${this.data.routeId}:${this.data.denial.name}`;
+        return `handledException:${this.data.origin}:${this.data.denial.name}`;
     }
 
     report(suppressed: number): WebhookReport {

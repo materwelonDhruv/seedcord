@@ -134,10 +134,10 @@ describe('http fault publishing', () => {
         expect(unknown[0]?.error.message).toBe('handler exploded');
     });
 
-    it('publishes the dispatch routeId, so a subscriber can group faults by route', async () => {
+    it('names the dispatch route as the fault origin, so a subscriber can group faults', async () => {
         const { unknown } = await faultsFor(BoomHandler);
 
-        expect(unknown[0]?.routeId).toBe('slash:ok');
+        expect(unknown[0]?.origin).toBe('slash:ok');
     });
 
     it('publishes both bugs when one route throws two different errors', async () => {

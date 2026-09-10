@@ -17,7 +17,7 @@ import type { AllSubscriptions } from '../types/Subscriptions';
 @WebhookUrl('UNKNOWN_EXCEPTION_WEBHOOK_URL')
 export class UnknownException extends WebhookLog<'unknownException', CoreBase> {
     protected override throttleKey(): string {
-        return `unknownException:${this.data.routeId}:${nameOf(this.data.error)}`;
+        return `unknownException:${this.data.origin}:${nameOf(this.data.error)}`;
     }
 
     report(suppressed: number): WebhookReport {

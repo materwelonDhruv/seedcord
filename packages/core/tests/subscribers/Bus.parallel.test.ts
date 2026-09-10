@@ -46,7 +46,7 @@ describe('Bus subscriber concurrency', () => {
         bus[PublishDefault]('unknownException', {
             uuid: crypto.randomUUID(),
             error: new Error('boom'),
-            routeId: 'slash:probe'
+            origin: 'slash:probe'
         });
         await delay(60);
 

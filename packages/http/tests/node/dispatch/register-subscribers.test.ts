@@ -27,7 +27,7 @@ function manifestWith(load: () => Promise<Record<string, unknown>>): RouteManife
 const payload = (): SubscriptionData<'unknownException'> => ({
     uuid: crypto.randomUUID(),
     error: new Error('boom'),
-    routeId: 'slash:probe'
+    origin: 'slash:probe'
 });
 
 // the Bus logs the subscriber failure with the thrown error as the last argument

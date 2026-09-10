@@ -47,7 +47,7 @@ const eventSource: EventFaultSource = {
 const core = {} as unknown as CoreBase;
 
 function handledReport(denial: Notice, source: FaultSource, suppressed = 0): WebhookReport {
-    const data = { denial, uuid: randomUUID(), routeId: 'slash:probe', source };
+    const data = { denial, uuid: randomUUID(), origin: 'slash:probe', source };
     return new HandledException(data, core).report(suppressed);
 }
 
