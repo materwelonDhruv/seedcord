@@ -13,7 +13,6 @@ import {
     MiddlewareRegistry,
     PublishDefault,
     resultFor,
-    routeIdOf,
     runAfter,
     runHandlerGates,
     slowGateMonitor
@@ -398,7 +397,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
 
         const HandlerCtor = matched ?? fallback;
         // an empty key means a customId seedcord never minted
-        const dispatch = new DispatchContext(routeIdOf(HandlerCtor) ?? `${kind}:${key || 'unrouted'}`);
+        const dispatch = new DispatchContext(`${kind}:${key || 'unrouted'}`);
         const report = this.reporterFor({
             interaction,
             kind,
