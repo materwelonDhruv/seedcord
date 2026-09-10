@@ -84,4 +84,13 @@ describe('http InteractionDispatcher discovery', () => {
         const match = resolve(dispatcher.maps, slashPayload('missing'));
         expect(match?.routeId).toBeNull();
     });
+
+    it('drops every route a handler owned when its file goes away', async () => {
+        const dispatcher = await readyDispatcher();
+
+        await dispatcher.onHmr({ type: 'delete', file: path.join(HANDLERS_DIR, 'PingCommand.ts') });
+
+        const match = resolve(dispatcher.maps, slashPayload('ping'));
+        expect(match?.routeId).toBeNull();
+    });
 });

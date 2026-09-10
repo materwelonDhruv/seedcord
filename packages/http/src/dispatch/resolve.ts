@@ -102,8 +102,8 @@ function describeRow(row: RouteModule): string {
  *
  * @throws A **SeedcordError** when two rows resolve to the same route.
  */
-export function buildRouteMaps(manifest: RouteManifest): RouteMaps {
-    const maps: RouteMaps = {
+export function emptyRouteMaps(): RouteMaps {
+    return {
         [InteractionKind.Slash]: new Map(),
         [InteractionKind.UserContextMenu]: new Map(),
         [InteractionKind.MessageContextMenu]: new Map(),
@@ -116,6 +116,10 @@ export function buildRouteMaps(manifest: RouteManifest): RouteMaps {
         [InteractionKind.MentionableMenu]: new Map(),
         [InteractionKind.Modal]: new Map()
     };
+}
+
+export function buildRouteMaps(manifest: RouteManifest): RouteMaps {
+    const maps = emptyRouteMaps();
     const owners = new Map<string, RouteModule>();
 
     function set(kind: InteractionKind, key: string, row: RouteModule): void {
