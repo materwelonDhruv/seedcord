@@ -41,8 +41,7 @@ export interface GateContextBase {
     /**
      * The route this dispatch matched, as `kind:route` (`slash:daily`, `button:confirm`). A handler
      * registered on several routes reports the one that matched. Null off a route, which covers a plain
-     * event handler and a gate run outside a handler. `Cooldown` keys on it so its window survives a
-     * restart.
+     * event handler and a gate run outside a handler.
      */
     readonly declaredRoute: string | null;
     /**

@@ -74,8 +74,7 @@ interface DispatchReportRow {
     readonly fallback: boolean;
     readonly startedAt: number;
     readonly queuedMs: number;
-    // read late, since a matched handler's own routeId replaces the map key
-    readonly routeId: () => string;
+    readonly routeId: string;
 }
 
 interface BeforeHandler {
@@ -404,7 +403,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             fallback: !matched,
             startedAt,
             queuedMs,
-            routeId: () => dispatch.routeId
+            routeId: dispatch.routeId
         });
 
         // outside the try so the fault boundary keeps the handler's ack state
@@ -468,7 +467,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             if (reported) return;
             reported = true;
             reportDispatch(this.core.bus, {
-                routeId: row.routeId(),
+                routeId: row.routeId,
                 interactionId: row.interaction.id,
                 kind: row.kind,
                 outcome,

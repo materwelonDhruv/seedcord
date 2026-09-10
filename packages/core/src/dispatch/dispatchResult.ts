@@ -11,8 +11,8 @@ export type DispatchResult =
 export type HandlerResult = { readonly handler: string } & DispatchResult;
 
 /**
- * What `eventDispatched` publishes for each handler that ran. The thrown value stays off the bus, since
- * `unknownException` already carries it under the same `event:name:handler` origin.
+ * What `eventDispatched` publishes for each handler that ran. `unknownException` carries the thrown
+ * value under the same `event:name:handler` origin.
  */
 export type HandlerOutcome = Pick<HandlerResult, 'handler' | 'outcome'>;
 

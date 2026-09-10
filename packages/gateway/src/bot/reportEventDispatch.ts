@@ -4,7 +4,7 @@ import type { Core } from '#interfaces/Core';
 import type { EventDispatchResult } from '@seedcord/core';
 import type { ClientEvents } from 'discord.js';
 
-// the event twin of core's reportDispatch, which publishes interactionDispatched
+// the interaction side of this is core's reportDispatch
 export function reportEventDispatch(
     core: Core,
     name: keyof ClientEvents,

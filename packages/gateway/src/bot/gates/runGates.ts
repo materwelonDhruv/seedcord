@@ -66,6 +66,6 @@ export function eventGateContext(
         appPermissions: null,
         memberGuildPermissions: actor.member?.permissions.bitfield ?? null,
         appGuildPermissions: actor.guild?.members.me?.permissions.bitfield ?? null,
-        declaredRoute: null // an event handler declares no route, so this stays null through the gates
+        declaredRoute: null // an event handler doesn't declare a route
     };
 }
