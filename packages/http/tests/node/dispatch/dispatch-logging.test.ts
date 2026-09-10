@@ -1,10 +1,12 @@
+import { InteractionKind } from '@seedcord/core';
 import { LoggerChannelRegistry } from '@seedcord/logger';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { SlashHandler } from '#handlers/interaction/SlashHandler';
 
-import { FROM, capturingCtx, emptyManifest, readyEngine, signedRequest, slashPayload } from './harness';
+import { capturingCtx, manifestFor, readyEngine, signedRequest, slashPayload } from './harness';
 
+import type { Manifest } from '#src/manifest/Manifest';
 import type { LogRecord } from '@seedcord/types';
 
 const rest = vi.hoisted(() => {
@@ -32,11 +34,8 @@ class Ban extends SlashHandler<never> {
     }
 }
 
-function banManifest(): ReturnType<typeof emptyManifest> {
-    return {
-        ...emptyManifest(),
-        commandRoutes: [{ name: 'ban', type: 1, exportName: 'Ban', from: FROM, load: () => Promise.resolve({ Ban }) }]
-    };
+function banManifest(): Manifest {
+    return manifestFor(InteractionKind.Slash, 'ban', Ban);
 }
 
 let records: LogRecord[] = [];
@@ -84,27 +83,5 @@ describe('dispatch logging', () => {
         dispose();
 
         expect(dispatcherLines().filter((message) => message.includes('Processing'))).toHaveLength(1);
-    });
-
-    it('stays quiet when the route fails to load its handler', async () => {
-        const manifest = {
-            ...emptyManifest(),
-            commandRoutes: [
-                {
-                    name: 'ban',
-                    type: 1,
-                    exportName: 'Ban',
-                    from: FROM,
-                    load: () => Promise.reject(new Error('boom'))
-                }
-            ]
-        };
-        const { signer, handle } = await readyEngine(manifest);
-        const ctx = capturingCtx();
-
-        await handle(await signedRequest(signer, slashPayload('ban')), ctx);
-        dispose();
-
-        expect(dispatcherLines().filter((message) => message.includes('Processing'))).toHaveLength(0);
     });
 });

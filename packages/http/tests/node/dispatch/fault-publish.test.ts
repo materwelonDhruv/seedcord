@@ -11,7 +11,7 @@ import { createCore, dispatchInteraction } from '#src/dispatch/dispatchInteracti
 import { slashPayload } from './harness';
 import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
-import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
+import type { HandlerConstructor, InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { Core } from '#interfaces/Core';
 import type { ResolvedRoute } from '#src/dispatch/resolve';
@@ -80,12 +80,8 @@ function watched(): { core: Core; published: Published } {
     return { core, published };
 }
 
-async function dispatchThrough(core: Core, handler: unknown): Promise<void> {
-    const match: ResolvedRoute = {
-        kind: InteractionKind.Slash,
-        routeId: 'slash:ok',
-        load: () => Promise.resolve(handler)
-    };
+async function dispatchThrough(core: Core, handler: HandlerConstructor): Promise<void> {
+    const match: ResolvedRoute = { kind: InteractionKind.Slash, routeId: 'slash:ok', ctor: handler };
     const execute = await dispatchInteraction({
         match,
         payload: slashPayload('ok') as ValidInteractionTypes,
@@ -95,7 +91,7 @@ async function dispatchThrough(core: Core, handler: unknown): Promise<void> {
     await execute?.();
 }
 
-async function faultsFor(handler: unknown): Promise<Published> {
+async function faultsFor(handler: HandlerConstructor): Promise<Published> {
     const { core, published } = watched();
     await dispatchThrough(core, handler);
     return published;

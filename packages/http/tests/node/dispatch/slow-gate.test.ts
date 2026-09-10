@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 
-import { defineGate } from '@seedcord/core';
+import { defineGate, InteractionKind } from '@seedcord/core';
 import { GatedMetadataKey } from '@seedcord/core/internal';
 import { Logger } from '@seedcord/logger';
 import { Envapter, PortableSource } from 'envapt';
@@ -8,11 +8,12 @@ import { afterEach, beforeEach, describe, expect, it, vi, type MockInstance } fr
 
 import { SlashHandler } from '#handlers/interaction/SlashHandler';
 
-import { FROM, capturingCtx, emptyManifest, signedRequest, slashPayload } from './harness';
+import { capturingCtx, manifestFor, signedRequest, slashPayload } from './harness';
 import { createSigner } from '../../helpers/ed25519';
 import { nullPathConfig, VALID_TOKEN } from '../../helpers/fixtures';
 
 import type { EngineContext } from '#src/createSeedcord';
+import type { Manifest } from '#src/manifest/Manifest';
 import type { Gate, GateContextBase } from '@seedcord/core';
 
 const rest = vi.hoisted(() => {
@@ -43,25 +44,20 @@ vi.mock('@discordjs/rest', async (importOriginal) => ({
 
 type Engine = (request: Request, ctx?: EngineContext) => Promise<Response>;
 
-function guarded(gates: Gate<GateContextBase>[]): ReturnType<typeof emptyManifest> {
+function guarded(gates: Gate<GateContextBase>[]): Manifest {
     class Guarded extends SlashHandler<never> {
         async execute(): Promise<void> {
             await this.reply('ran');
         }
     }
     Reflect.defineMetadata(GatedMetadataKey, gates, Guarded);
-    return {
-        ...emptyManifest(),
-        commandRoutes: [
-            { name: 'guarded', type: 1, exportName: 'Guarded', from: FROM, load: () => Promise.resolve({ Guarded }) }
-        ]
-    };
+    return manifestFor(InteractionKind.Slash, 'guarded', Guarded);
 }
 
 // createSeedcord reads the public key and token off the environment at build time, so bind them per engine,
 // with ENVIRONMENT=production for the prod case
 async function engineFor(
-    manifest: ReturnType<typeof emptyManifest>,
+    manifest: Manifest,
     production: boolean
 ): Promise<{ handle: Engine; signer: Awaited<ReturnType<typeof createSigner>> }> {
     const signer = await createSigner();
