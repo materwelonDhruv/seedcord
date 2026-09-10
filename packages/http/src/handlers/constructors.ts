@@ -11,9 +11,8 @@ type HandlerBases = typeof InteractionHandler | typeof AutocompleteHandler;
 type AnyHandler = BaseHandler<unknown, Core>;
 
 /**
- * A concrete handler narrows `event` to its own interaction type. Construct-signature parameters check
- * contravariantly. That puts every handler class outside the signature of its own base. Erasing the
- * parameters lets a manifest list the classes.
+ * Any handler class, for a manifest to list. Typed construct parameters would exclude every handler
+ * that narrows `event` to its own interaction type.
  */
 export type HandlerConstructor = Constructor<AnyHandler, never[]>;
 

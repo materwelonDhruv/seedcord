@@ -9,7 +9,7 @@ export function stubBus(): Bus {
     return new Bus({} as unknown as CoreBase);
 }
 
-/** The id every host decodes out of {@link VALID_TOKEN}. */
+// the id every host decodes out of VALID_TOKEN
 export const APP_ID = '1195232619718254663';
 
 // eslint-disable-next-line no-magic-numbers -- mimic valid token shape

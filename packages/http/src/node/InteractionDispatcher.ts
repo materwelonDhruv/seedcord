@@ -22,7 +22,7 @@ import type { RouteMap, RouteMaps } from '#src/dispatch/resolve';
 import type { Initializeable, ContextMenuLeaves } from '@seedcord/core/internal';
 import type { HmrAware, HmrUpdateEvent } from '@seedcord/types';
 
-// hmr swaps entries live and resolve() reads per request
+// hmr swaps entries in these maps while resolve() reads them per request
 export class InteractionDispatcher implements Initializeable, HmrAware {
     /** @internal */
     public readonly middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);

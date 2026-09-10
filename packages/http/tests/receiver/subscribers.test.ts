@@ -31,7 +31,7 @@ class NotASubscriber {
     public readonly kind = 'plain';
 }
 
-// justified: the Bus only stores core, no member is read during publish
+// justified: the Bus only stores core and reads no member during publish
 function stubBus(): Bus {
     return new Bus({} as unknown as CoreBase);
 }
@@ -44,7 +44,7 @@ const payload = (): SubscriptionData<'unknownException'> => ({
 });
 
 describe('manifest subscribers on workerd', () => {
-    // the logger reads the environment at construction, and workerd binds no source by default
+    // workerd binds no source by default
     beforeEach(() => {
         Envapter.useSource(new PortableSource({}));
     });

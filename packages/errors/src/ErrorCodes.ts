@@ -82,7 +82,7 @@ export enum SeedcordErrorCode {
     InteractionDuplicateRoute = 1401,
     /** Two different middleware classes share a class name. */
     DuplicateMiddleware = 1402,
-    /** A manifest array lists a class that does not extend the base that array takes. */
+    /** A manifest array lists a class that does not extend the base for that array. */
     ManifestEntryWrongClass = 1403,
 
     /** A reply method was called in an ack state where it is illegal. */

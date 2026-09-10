@@ -43,7 +43,7 @@ const rest = vi.hoisted(() => {
     return { instances, FakeRest };
 });
 
-// the factory must not import project modules, vitest loads factory imports in a mock-bypass
+// the factory must not import project modules, because vitest loads factory imports in a mock-bypass
 // context that would cache the engine graph unmocked
 vi.mock('@discordjs/rest', async (importOriginal) => ({
     ...(await importOriginal<object>()),
@@ -236,7 +236,6 @@ describe('handler gates', () => {
         const { signer, handle } = await readyEngine(manifest);
         const ctx = capturingCtx();
 
-        // a caller holding only SendMessages, missing BanMembers, so the gate refuses
         const payload = {
             ...slashPayload('guarded'),
             guild_id: 'g-1',

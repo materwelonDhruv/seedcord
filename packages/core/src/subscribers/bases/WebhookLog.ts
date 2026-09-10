@@ -30,9 +30,9 @@ export interface WebhookReport {
 /**
  * Base class for subscribers that deliver their event to a Discord webhook.
  *
- * Declare the url's environment variable with `@WebhookUrl` and implement {@link report}. Url
- * resolution, validation, sender reuse, and sending run in the base. When the variable is unset
- * the reporter is skipped at registration with a boot warning.
+ * Declare the url's environment variable with `@WebhookUrl` and implement {@link report}. The base
+ * resolves the url, validates it, reuses one sender per url, and sends. Registration skips a reporter
+ * whose variable is unset and warns at boot.
  *
  * @typeParam KeyOfSubscribers - The subscription key this reporter receives
  * @typeParam TCore - The transport's Core

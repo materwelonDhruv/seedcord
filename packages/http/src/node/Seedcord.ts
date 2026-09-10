@@ -279,7 +279,7 @@ export class Seedcord<Cfg extends HttpConfig = HttpConfig>
                 this.logger.info(paint.coral.bold('Interactions server stopped'));
                 resolveClose();
             });
-            // node's close() waits out idle keep-alive sockets
+            // node's close() leaves idle keep-alive sockets open
             server.closeIdleConnections();
         });
     }

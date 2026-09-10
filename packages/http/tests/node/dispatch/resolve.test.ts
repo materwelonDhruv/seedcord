@@ -166,7 +166,7 @@ describe('resolve', () => {
     it('resolves the unhandled default for a wire no prefix owns', () => {
         const maps = mapsWith([InteractionKind.Button, 'approve']);
 
-        // no colon in the wire, so prefixOf reads an empty key, which the reporter renders as unrouted
+        // prefixOf reads an empty key out of a wire with no colon
         expect(resolve(maps, component(2, 'other-app-id'))).toMatchObject({
             kind: 'button',
             routeId: null,

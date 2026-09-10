@@ -33,7 +33,7 @@ const rest = vi.hoisted(() => {
     return { instances, FakeRest };
 });
 
-// the factory must not import project modules, vitest loads factory imports in a mock-bypass
+// the factory must not import project modules, because vitest loads factory imports in a mock-bypass
 // context that would cache the engine graph unmocked
 vi.mock('@discordjs/rest', async (importOriginal) => ({
     ...(await importOriginal<object>()),
@@ -109,7 +109,7 @@ describe('autocomplete dispatch', () => {
         const refuse = defineGate('refuse', () => {
             throw new TestNotice();
         });
-        // @Gated rejects a gate on an autocomplete handler at compile time, this backstops a metadata-set gate at runtime
+        // @Gated rejects a gate on an autocomplete handler at compile time. writing the metadata skips that check.
         Reflect.defineMetadata(GatedMetadataKey, [refuse], Search);
         const { signer, handle } = await readyEngine(completes(Search, 'search'));
         const ctx = capturingCtx();

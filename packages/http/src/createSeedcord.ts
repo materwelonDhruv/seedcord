@@ -15,7 +15,7 @@ import type { EngineContext } from './engine';
 
 export type { EngineContext } from './engine';
 
-// fills the slot the duplicate-route message gives a file path on node
+// the duplicate-route message prints a file path in this slot on node
 const MANIFEST_ORIGIN = 'the manifest';
 
 /**

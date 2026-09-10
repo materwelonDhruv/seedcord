@@ -11,7 +11,7 @@ const notGenerated = (): never => {
 
 /**
  * The generated class list. `seedcord build` aliases this module to the emitted file. Reading a class
- * list off the un-built stub will throw.
+ * list off the un-built stub throws.
  */
 export const manifest: Manifest = {
     get handlers(): never {

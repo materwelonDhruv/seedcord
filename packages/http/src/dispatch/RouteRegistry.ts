@@ -37,7 +37,6 @@ export class RouteRegistry {
         for (const [kind, keys] of interactionRoutesOf(ctor)) {
             for (const key of keys) {
                 const existing = this.owners.get(`${kind}:${key}`);
-                // a bare set lets the later class shadow the earlier one
                 if (existing && existing.ctor !== ctor) {
                     throw new SeedcordError(SeedcordErrorCode.InteractionDuplicateRoute, [
                         `${kind}:${key}`,

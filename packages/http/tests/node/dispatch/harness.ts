@@ -39,7 +39,7 @@ export async function readyEngine(
 }
 
 export function slashPayload(name: string): object {
-    // app_permissions is on every real interaction, the builder reads it unconditionally like the gateway does
+    // the builder reads app_permissions unconditionally, like the gateway does
     return {
         type: 2,
         id: 'int-1',

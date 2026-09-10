@@ -9,14 +9,8 @@ import type { TypedConstructor } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
 import type { Constructor } from 'type-fest';
 
-/**
- * A concrete handler narrows `event` to the one interaction or client event it serves.
- * Construct-signature parameters check contravariantly. That puts every handler class outside the
- * signature of its own base. Erasing the parameters lets one of these hold any handler class. The
- * instance type keeps the two families apart, since their events share no member.
- *
- * @internal
- */
+// typed construct parameters would exclude every handler that narrows its event
+/** @internal */
 export type HandlerConstructor = Constructor<BaseHandler<ValidInteractionTypes>, never[]>;
 
 /** @internal The two interaction bases with their own signatures, for the site that constructs one. */

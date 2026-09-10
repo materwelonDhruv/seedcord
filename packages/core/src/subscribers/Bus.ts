@@ -24,13 +24,8 @@ import type {
 import type { EventFrequency, TypedConstructor } from '@seedcord/types';
 import type { Constructor } from 'type-fest';
 
-/**
- * A concrete subscriber narrows `data` and `core` to its own payload and transport. Construct-signature
- * parameters check contravariantly. Erasing them lets this type hold any subscriber class. One cast at
- * dispatch restores both.
- *
- * @internal
- */
+// typed construct parameters would exclude every subscriber that narrows them
+/** @internal */
 export type StoredSubscriberCtor = Constructor<Subscriber<SubscriptionKey, CoreBase>, never[]>;
 
 /** @internal */
@@ -54,7 +49,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
 
     private readonly subscribersMap = new Map<SubscriptionKey, SubscriberRegistration[]>();
     private readonly executedOnce = new Set<SubscriberRegistration>();
-    // url -> env keys, filled as reporters register and read once by verifyWebhooks
+    // url -> env keys
     private readonly webhookProbes = new Map<string, string[]>();
 
     constructor(protected core: CoreBase) {
@@ -69,7 +64,6 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
 
     /** @internal */
     public [RegisterSubscriber](registration: SubscriberRegistration): void {
-        // a url-less reporter never registers. a publish on its key reaches nothing
         if (!this.probeWebhook(registration.ctor)) return;
 
         for (const key of registration.keys) {
@@ -90,7 +84,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
             const index = registrations.findIndex((entry) => entry.ctor === ctor);
             if (index !== -1) registrations.splice(index, 1);
         }
-        // the once state hangs off the registration identity, which is why a restored subscriber runs again
+        // a re-registered subscriber runs again because executedOnce is keyed by registration identity
     }
 
     /** @internal */
@@ -98,7 +92,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
         return [...this.subscribersMap.values()].reduce((total, entries) => total + entries.length, 0);
     }
 
-    /** @internal the url check at registration already dropped a reporter with none set */
+    /** @internal registration already dropped every reporter with no url set */
     public async [VerifyWebhooks](): Promise<void> {
         const missing: string[] = [];
         await Promise.all(
@@ -111,7 +105,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
                     );
             })
         );
-        // collected first so the first boot names every missing webhook at once
+        // collected first so one throw names every missing webhook
         if (missing.length > 0) throw new SeedcordError(SeedcordErrorCode.ConfigWebhookNotFound, [missing.join(', ')]);
     }
 
@@ -134,11 +128,11 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
     /**
      * Publishes an event to its subscribers and native listeners.
      *
-     * Fire-and-forget. Subscriber handlers run asynchronously and this returns before they finish. A
-     * caller cannot assume a side effect has completed. Errors thrown by a subscriber or by an `on()`
-     * listener are caught and logged, never surfaced here. One throwing listener does not stop the
-     * others. Subscribers on one key run concurrently and carry no ordering guarantee. A `'once'`
-     * subscriber is marked as executed when it starts, even if it throws. It never runs twice.
+     * Fire-and-forget. Subscriber handlers run asynchronously and this returns before they finish.
+     * Errors thrown by a subscriber or by an `on()` listener are caught and logged, never surfaced
+     * here. One throwing listener does not stop the others. Subscribers on one key run concurrently
+     * and carry no ordering guarantee. A `'once'` subscriber is marked as executed when it starts,
+     * even if it throws. It never runs twice.
      *
      * The framework's own keys are excluded. Subscribe to those and listen with `on`. The framework
      * is their only publisher.
@@ -211,10 +205,10 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
         subscriberName: KeyOfSubscribers,
         data: AllSubscriptions[KeyOfSubscribers]
     ): Promise<void> {
-        // named outside the try so the catch can say which subscriber threw. several run per key
+        // named outside the try so the catch can say which subscriber threw
         let name = '<unresolved>';
         try {
-            // the registration keys each subscriber to its subscriptions. data matches this ctor's payload arm.
+            // data matches this ctor's payload arm because the registration keyed it to its subscriptions
             const Ctor = entry.ctor as TypedConstructor<typeof Subscriber>;
             name = Ctor.name;
             await new Ctor(data, this.core).execute();
@@ -227,7 +221,7 @@ export class Bus extends TypedEventEmitter<SubscriptionTuples> {
     }
 }
 
-// every caller has already gated on the Subscribe metadata being there
+// every caller already checked that the Subscribe metadata is there
 /** @internal */
 export function registrationFor(ctor: StoredSubscriberCtor): SubscriberRegistration {
     const meta = Reflect.getMetadata(SubscribeMetadataKey, ctor) as SubscribeMetadataEntry;

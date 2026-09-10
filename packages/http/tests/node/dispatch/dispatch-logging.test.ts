@@ -21,7 +21,7 @@ const rest = vi.hoisted(() => {
     return { FakeRest };
 });
 
-// the factory must not import project modules, vitest loads factory imports in a mock-bypass
+// the factory must not import project modules, because vitest loads factory imports in a mock-bypass
 // context that would cache the engine graph unmocked
 vi.mock('@discordjs/rest', async (importOriginal) => ({
     ...(await importOriginal<object>()),
@@ -43,7 +43,7 @@ let dispose: () => void;
 
 beforeEach(() => {
     records = [];
-    // a test run defaults to the info floor, which drops the debug record before any sink sees it
+    // a test run defaults to the info floor and records nothing at debug
     LoggerChannelRegistry.instance.configure({ level: 'debug', sinks: [] });
     const handle = LoggerChannelRegistry.instance.installSink({
         kind: 'capture',

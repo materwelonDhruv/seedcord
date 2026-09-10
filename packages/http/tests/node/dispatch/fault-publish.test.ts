@@ -50,7 +50,7 @@ class NoticeHandler extends SlashHandler<never> {
 
 class RawThrowHandler extends SlashHandler<never> {
     execute(): Promise<void> {
-        // eslint-disable-next-line no-throw-literal, @typescript-eslint/only-throw-error -- a non-Error throw is what this pins
+        // eslint-disable-next-line no-throw-literal, @typescript-eslint/only-throw-error -- this pins a non-Error throw
         throw 'nope';
     }
 }

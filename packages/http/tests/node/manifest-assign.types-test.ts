@@ -8,7 +8,7 @@ import { UserInfoMenu } from './discovery/fixtures/handlers/UserInfoMenu';
 
 import type { Manifest } from '#src/manifest/Manifest';
 
-// a generated manifest lists concrete classes with no cast available to it
+// a generated manifest lists concrete classes and cannot cast them
 export const handlers: Manifest['handlers'] = [
     PingCommand,
     BanAutocomplete,

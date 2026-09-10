@@ -342,7 +342,7 @@ describe('interactionDispatched from the http dispatcher', () => {
         expect(published[0]).toMatchObject({ routeId: 'button:unrouted', fallback: true });
     });
 
-    // the same shape gateway emits, so a dashboard can break unmatched routes down by command
+    // the same shape gateway emits
     it('flags the unhandled default as a fallback and keeps the attempted key', async () => {
         const match: ResolvedRoute = {
             kind: InteractionKind.Slash,
@@ -356,7 +356,6 @@ describe('interactionDispatched from the http dispatcher', () => {
         expect(published[0]).toMatchObject({ routeId: 'slash:unregistered', fallback: true });
     });
 
-    // the production buildSender wiring, so dropping core.bus from RepliableHandler fails here
     it('publishes responseAttempted from the handler own reply, carrying the route id', async () => {
         Envapter.useSource(new PortableSource({}));
         const core = createCore(nullPathConfig, VALID_TOKEN);

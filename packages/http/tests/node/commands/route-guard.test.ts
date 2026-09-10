@@ -11,7 +11,7 @@ import type { ResolvedRoute } from '#src/dispatch/resolve';
 const HANDLERS_DIR = path.resolve(__dirname, '../discovery/fixtures/handlers');
 
 function route(kind: ResolvedRoute['kind'], key: string): ResolvedRoute {
-    // the guard reads map membership only, never the class
+    // the guard reads map membership only
     return { kind, routeId: `${kind}:${key}`, ctor: UnhandledRepliable };
 }
 

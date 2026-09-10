@@ -10,7 +10,7 @@ import { slashRouteOf } from './slashRouteOf';
 import type { HandlerConstructor } from '#handlers/constructors';
 import type { APIInteraction } from 'discord-api-types/v10';
 
-/** A registered handler matched to an incoming interaction, keyed the way the gateway dispatcher keys. */
+/** A registered handler matched to an incoming interaction, under the keys the gateway dispatcher uses. */
 export interface ResolvedRoute {
     readonly kind: InteractionKind;
     /** The stable dispatch id, `kind:key` (`slash:ban`). The unhandled default carries null. */
@@ -91,7 +91,6 @@ export function emptyRouteMaps(): RouteMaps {
     };
 }
 
-// dispatched through the normal pipeline like the gateway's unhandled default
 function unhandled(kind: InteractionKind, attemptedKey: string): ResolvedRoute {
     return {
         kind,
@@ -103,10 +102,9 @@ function unhandled(kind: InteractionKind, attemptedKey: string): ResolvedRoute {
 
 /**
  * Matches a verified non-PING interaction to a registered handler. A known kind with no handler resolves
- * to the unhandled default. That one replies "Feature not implemented yet." (empty choices on autocomplete).
- * Null is an unrecognized payload shape, which the engine acks with a 202 without dispatching.
- * Components and modals route by the stable customId prefix, so a wire whose layout hash drifted still
- * routes to its handler, where decode refuses with `StaleCustomId`.
+ * to the unhandled default. Null is an unrecognized payload shape, which the engine acks with a 202
+ * without dispatching. Components and modals route by the stable customId prefix. A wire whose layout
+ * hash drifted still reaches its handler, where decode refuses with `StaleCustomId`.
  */
 export function resolve(maps: RouteMaps, interaction: APIInteraction): ResolvedRoute | null {
     switch (interaction.type) {

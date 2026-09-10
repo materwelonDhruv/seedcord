@@ -57,7 +57,7 @@ const edgeStartup: Pick<CoordinatedStartup, 'addTask'> = { addTask: () => noLife
 
 export function createCore(config: HttpConfig, token: string): Core {
     const rateLimiter: IRateLimiter = config.store ?? new MemoryRateLimiter();
-    // justified: bus completes the shape on the next line, and the Bus reads core at dispatch
+    // justified: bus completes the shape on the next line. the Bus reads core at dispatch, never here.
     const draft = {
         config,
         rateLimiter,
@@ -100,7 +100,7 @@ async function sendGuarded(routeId: string, send: () => Promise<unknown>): Promi
     }
 }
 
-// a message reply is illegal on autocomplete, so empty choices are the only way to clear the pending state
+// empty choices are the only legal way to clear a pending autocomplete
 async function respondEmptyChoices(scope: FaultScope): Promise<void> {
     const telemetry = { bus: scope.core.bus, dispatch: scope.dispatch, interactionId: scope.payload.id };
     await reportedWrite(telemetry, 'respond', () =>
@@ -188,7 +188,7 @@ function unhandledRouteId(match: ResolvedRoute): string {
     return `${match.kind}:${key.length > 0 ? key : 'unrouted'}`;
 }
 
-// nothing is acked yet here, so a fresh sender can reply the card
+// a fresh sender can still reply the card because nothing is acked yet here
 function freshScope(
     match: ResolvedRoute,
     payload: ValidInteractionTypes,
@@ -284,7 +284,7 @@ async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unkn
 export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Promise<void>) | null> {
     const { match, payload, core } = args;
     const routeId = unhandledRouteId(match);
-    // every fault path below renders against this one bag
+    // every fault path below renders against this one context
     const dispatch = new DispatchContext(routeId);
     const report = dispatchReporter(match, payload, core, dispatch.id);
 
@@ -333,7 +333,7 @@ export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Pr
     };
 }
 
-// autocomplete has no reply target. @Gated rejects it at compile time and this is the runtime backstop
+// autocomplete has no reply target. @Gated already rejects a gate on one at compile time.
 async function gateRefusal(step: BeforeHandler): Promise<{ caught: unknown } | null> {
     const { Handler, dispatch } = step;
     const { match, payload, core } = step.args;

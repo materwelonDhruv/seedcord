@@ -54,8 +54,7 @@ function guarded(gates: Gate<GateContextBase>[]): Manifest {
     return manifestFor(InteractionKind.Slash, 'guarded', Guarded);
 }
 
-// createSeedcord reads the public key and token off the environment at build time, so bind them per engine,
-// with ENVIRONMENT=production for the prod case
+// createSeedcord reads the public key and token off the environment at build time. bind them per engine.
 async function engineFor(
     manifest: Manifest,
     production: boolean
@@ -68,8 +67,7 @@ async function engineFor(
     return { handle: createSeedcord(nullPathConfig, manifest), signer };
 }
 
-// the gate bodies advance this, so a performance.now() reader anywhere else in the dispatch cannot
-// shift what core's timedCheck measures
+// this clock moves only when a gate body advances it
 function fakeClock(): (ms: number) => void {
     let now = 0;
     vi.spyOn(performance, 'now').mockImplementation(() => now);
@@ -111,7 +109,6 @@ describe('slow-gate dev warning', () => {
     it('warns once when several gate checks sum past the threshold together', async () => {
         const warn = vi.spyOn(Logger.prototype, 'warn').mockImplementation(() => undefined);
         const advance = fakeClock();
-        // 400ms per gate, 800ms combined
         const first = defineGate('firstgate', () => advance(400));
         const second = defineGate('secondgate', () => advance(400));
         const { handle, signer } = await engineFor(guarded([first, second]), false);
