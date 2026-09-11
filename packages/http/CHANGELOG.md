@@ -1,5 +1,25 @@
 # @seedcord/http
 
+## 0.8.0
+
+### Minor Changes
+
+- d4b9108: Added `dispatchId` to every bus key a dispatch publishes, and `dispatch.id` to the bag behind it. A fault used to carry no way back to the dispatch that raised it, so pairing one with its `interactionDispatched` meant guessing from the route and the clock. Key a store on it to line up a dispatch, its writes, and its faults.
+- 359748d: **BREAKING:** every handler constructor now takes a `DispatchContext`.
+
+    The node host loads `InteractionMiddleware` from `bot.interactions.middlewares` and runs the chain over the handler's reply surface before its gates. Every middleware that started gets its `after()`, even when a gate refuses the interaction.
+
+### Patch Changes
+
+- Updated dependencies [d4b9108, 359748d]
+    - @seedcord/core@0.7.0
+    - @seedcord/types@0.13.0
+    - @seedcord/errors@0.8.0
+    - @seedcord/logger@0.3.2
+    - @seedcord/rate-limiter@0.1.8
+    - @seedcord/utils@0.8.11
+    - @seedcord/custom-id@0.2.1
+
 ## 0.7.0
 
 ### Minor Changes

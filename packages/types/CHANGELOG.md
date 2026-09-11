@@ -1,5 +1,12 @@
 # @seedcord/types
 
+## 0.13.0
+
+### Minor Changes
+
+- d4b9108: Added `dispatchId` to every bus key a dispatch publishes, and `dispatch.id` to the bag behind it. A fault used to carry no way back to the dispatch that raised it, so pairing one with its `interactionDispatched` meant guessing from the route and the clock. Key a store on it to line up a dispatch, its writes, and its faults.
+- 359748d: Added `DispatchState` and `DispatchBag`. Declare a key on `DispatchState`, then every handler, middleware, gate, and card can read it through `this.dispatch`.
+
 ## 0.12.0
 
 ### Minor Changes

@@ -1,5 +1,12 @@
 # @seedcord/custom-id
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies [359748d]
+    - @seedcord/errors@0.8.0
+
 ## 0.2.0
 
 ### Minor Changes

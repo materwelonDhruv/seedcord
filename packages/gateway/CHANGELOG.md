@@ -1,5 +1,28 @@
 # @seedcord/gateway
 
+## 0.6.0
+
+### Minor Changes
+
+- d4b9108: Added `dispatchId` to every bus key a dispatch publishes, and `dispatch.id` to the bag behind it. A fault used to carry no way back to the dispatch that raised it, so pairing one with its `interactionDispatched` meant guessing from the route and the clock. Key a store on it to line up a dispatch, its writes, and its faults.
+- d4b9108: Added `eventDispatched`, which fires once an event's handlers settle and carries the class name and outcome of each one. An event used to report only that it started, so a handler that failed showed up nowhere. A fire that runs no handler stays quiet, matching `eventDispatching`.
+- d4b9108: **BREAKING:** Fixed `eventDispatching` firing without a matching `eventDispatched` once a `frequency: 'once'` handler has run. seedcord published the first key alone on every later message, so a subscriber pairing them leaked an entry each time.
+- d4b9108: **BREAKING:** Fixed the cooldown on a handler registered on two buttons. Because its route id joined both into `button:confirm,cancel`, clicking either one put both on cooldown. Now it would just be `button:confirm`, for example.
+- 359748d: **BREAKING:** `@RegisterEventMiddleware` replaces the `Middleware(type, priority, options)` decorator. seedcord now throws at load when two event middleware classes share a name.
+
+    Both middleware bases gained an `after()` that runs on every middleware whose `execute()` started, even on a refused dispatch.
+
+### Patch Changes
+
+- Updated dependencies [d4b9108, 359748d]
+    - @seedcord/core@0.7.0
+    - @seedcord/types@0.13.0
+    - @seedcord/errors@0.8.0
+    - @seedcord/logger@0.3.2
+    - @seedcord/rate-limiter@0.1.8
+    - @seedcord/utils@0.8.11
+    - @seedcord/custom-id@0.2.1
+
 ## 0.5.1
 
 ### Patch Changes

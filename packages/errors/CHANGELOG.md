@@ -1,5 +1,13 @@
 # @seedcord/errors
 
+## 0.8.0
+
+### Minor Changes
+
+- 359748d: **BREAKING:** `SeedcordErrorCode.InteractionDuplicateMiddleware` is now `DuplicateMiddleware`, since event middleware throws it too. Dropping `DecoratorInteractionEventFilter` renumbered the five `Decorator*` codes after it.
+
+    Added `DispatchStateMissing` for a `dispatch.require()` key that nothing wrote.
+
 ## 0.7.0
 
 ### Minor Changes

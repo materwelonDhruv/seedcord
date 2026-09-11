@@ -1,7 +1,7 @@
 {
     "name": "@seedcord/mock-gateway",
     "type": "module",
-    "version": "0.2.32",
+    "version": "0.2.33",
     "engines": {
         "node": ">=24.11"
     },
