@@ -160,7 +160,7 @@ export class FlakyHandlers extends Subscriber<'eventDispatched'> {
 }
 ```
 
-The thrown value stays off this key. `unknownException` already carries it under an `origin` of `event:messageCreate:AutoMod`, and joining on that string pairs a failed entry here with the throw behind it.
+The thrown value stays off this key, since `unknownException` carries it under an `origin` like `event:messageCreate:AutoMod`. Pairing a failed entry here with its throw takes both `dispatchId` and that origin. The id picks the fire, and the handler segment picks which handler threw. Two fires of one event share an `origin`, so that string on its own can point at the wrong throw.
 
 <Callout type="warning">
 

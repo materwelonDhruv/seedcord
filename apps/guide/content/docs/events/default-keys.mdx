@@ -90,10 +90,38 @@ export class Trace extends Subscriber<'eventDispatching'> {
 
 ## The fault keys
 
-`unknownException` carries the `uuid`, the `error`, the `origin`, and optional `guild`, `user`, and `metadata` fields. `origin` is where the throw came from, `slash:ban` on an interaction and `event:messageCreate:AutoMod` on an event, since one event fire runs several handlers. `metadata` is typed `unknown`. On a fault from an event handler that metadata holds the event name, the handler, and the args. `handledException` carries the `uuid`, the `origin`, the `Notice` itself as `denial`, and a [`FaultSource`](ref:core/FaultSource) naming where the throw came from.
+`unknownException` fires on a raw throw.
 
-seedcord ships a subscriber for each and registers it for you. Both [post a card to a Discord webhook](/throwing/reporting) once you set `UNKNOWN_EXCEPTION_WEBHOOK_URL` and `HANDLED_EXCEPTION_WEBHOOK_URL`. An unset variable leaves that reporter off, with one line at boot to say so.
+{/* prettier-ignore-start */}
 
-## The telemetry keys
+| field | type | what it holds |
+| --- | --- | --- |
+| `uuid` | `UUID` | this fault, and the id the error card shows the user |
+| `dispatchId` | `string \| null` | the dispatch it came from, null on a process-level throw |
+| `error` | `Error` | the throw itself |
+| `origin` | `string` | where it came from, for example `slash:ban` or `event:messageCreate:AutoMod` |
+| `guild` | `{ id, name }` | optional, the guild the dispatch ran in |
+| `user` | `{ id, username }` | optional, whoever ran it |
+| `metadata` | `unknown` | optional. On an event fault it holds the event name, the handler, and the args |
 
-`interactionDispatched` and `responseAttempted` carry timings and an outcome. [Reading the telemetry](/events/telemetry) covers what each field measures on each path.
+{/* prettier-ignore-end */}
+
+A reported `Notice` thrown from an autocomplete publishes here, since [`FaultSource`](ref:core/FaultSource) covers interactions and events only.
+
+`handledException` fires on a [`Notice`](ref:core/Notice) with `report` true.
+
+{/* prettier-ignore-start */}
+
+| field | type | what it holds |
+| --- | --- | --- |
+| `uuid` | `UUID` | this fault, and the id the error card shows the user |
+| `dispatchId` | `string` | the dispatch that reported it |
+| `origin` | `string` | the same shape `unknownException` carries |
+| `denial` | [`Notice`](ref:core/Notice) | the Notice itself |
+| `source` | [`FaultSource`](ref:core/FaultSource) | where the throw came from, typed per transport |
+
+{/* prettier-ignore-end */}
+
+An event `origin` carries a third segment naming the handler, since one fire runs several of them.
+
+seedcord ships a subscriber for each and registers it for you. Both [post a card to a Discord webhook](/throwing/reporting) once you set `UNKNOWN_EXCEPTION_WEBHOOK_URL` and `HANDLED_EXCEPTION_WEBHOOK_URL`. An unset variable leaves that reporter off and warns you about it during boot.

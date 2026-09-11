@@ -60,11 +60,11 @@ import type { WebhookReport } from '@seedcord/gateway';
 // ---cut-start---
 
 class MirrorCard extends BuilderComponent<'container'> {
-    constructor(uuid: string, route: string) {
+    constructor(uuid: string, origin: string) {
         super('container');
 
         this.instance.addTextDisplayComponents((text) =>
-            text.setContent(`### ${route}\n\`${uuid}\``)
+            text.setContent(`### ${origin}\n\`${uuid}\``)
         );
     }
 }
@@ -144,14 +144,14 @@ import type { WebhookReport } from '@seedcord/gateway';
 // ---cut-start---
 
 class MirrorCard extends BuilderComponent<'container'> {
-    constructor(uuid: string, route: string, suppressed: number) {
+    constructor(uuid: string, origin: string, suppressed: number) {
         super('container');
 
         const tail =
             suppressed > 0 ? `\n-# +${suppressed} more` : '';
 
         this.instance.addTextDisplayComponents((text) =>
-            text.setContent(`### ${route}\n\`${uuid}\`${tail}`)
+            text.setContent(`### ${origin}\n\`${uuid}\`${tail}`)
         );
     }
 }
@@ -177,7 +177,7 @@ export class FaultMirror extends WebhookLog<'handledException'> {
 }
 ```
 
-Both shipped reporters key on the route and the error's class name, and they end their card with the count.
+Both shipped reporters key on the origin and the error's class name, and they end their card with the count.
 
 ```txt output
 -# 12 more of these since the last report
