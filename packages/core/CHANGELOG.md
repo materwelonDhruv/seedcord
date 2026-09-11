@@ -1,5 +1,29 @@
 # @seedcord/core
 
+## 0.7.0-next.0
+
+### Minor Changes
+
+- d4b9108: Added `dispatchId` to every bus key a dispatch publishes, and `dispatch.id` to the bag behind it. A fault used to carry no way back to the dispatch that raised it, so pairing one with its `interactionDispatched` meant guessing from the route and the clock. Key a store on it to line up a dispatch, its writes, and its faults.
+- 359748d: `interactionDispatched` now carries `userId` and `guildId`.
+- d4b9108: Added `eventDispatched`, which fires once an event's handlers settle and carries the class name and outcome of each one. An event used to report only that it started, so a handler that failed showed up nowhere. A fire that runs no handler stays quiet, matching `eventDispatching`.
+- d4b9108: **BREAKING:** Renamed `routeId` on `unknownException` and `handledException` to `origin`, because on an event it carries a third segment naming the handler that threw. A subscriber reading `this.data.routeId` now reads `this.data.origin`. `interactionDispatched` and `responseAttempted` keep theirs.
+- d4b9108: **BREAKING:** Renamed `routeId` on the gate context to `declaredRoute`, because the bag beside it carries a field of the same name, and only the gate context's is null off a route. A gate reading `ctx.routeId` now reads `ctx.declaredRoute`. The bag is unchanged.
+- 359748d: **BREAKING:** every handler constructor now takes a `DispatchContext`.
+
+    `@RegisterInteractionMiddleware` registers an interaction middleware and filters it with `{ kinds }`. Middleware, gates, and error cards read one typed bag per dispatch through `this.dispatch`.
+
+### Patch Changes
+
+- Updated dependencies [d4b9108]
+- Updated dependencies [359748d]
+- Updated dependencies [359748d]
+    - @seedcord/types@0.13.0-next.0
+    - @seedcord/errors@0.8.0-next.0
+    - @seedcord/logger@0.3.2-next.0
+    - @seedcord/utils@0.8.11-next.0
+    - @seedcord/custom-id@0.2.1-next.0
+
 ## 0.6.0
 
 ### Minor Changes

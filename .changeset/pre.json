@@ -33,5 +33,19 @@
     "@seedcord/ui": "0.2.0",
     "@seedcord/vitest-config": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "dispatch-id",
+    "dispatch-state-types",
+    "dispatched-actor-fields",
+    "duplicate-middleware-code",
+    "event-dispatched-key",
+    "event-dispatching-pairs",
+    "fault-origin-field",
+    "gate-declared-route",
+    "matched-route-identity",
+    "middleware-dispatch-core",
+    "middleware-dispatch-gateway",
+    "middleware-dispatch-http",
+    "middleware-lint-rules"
+  ]
 }

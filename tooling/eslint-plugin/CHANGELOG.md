@@ -1,5 +1,11 @@
 # @seedcord/eslint-plugin
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 359748d: `middleware-missing-register-decorator` now matches the per-kind middleware decorators. `no-raw-interaction-acks` now reports a raw ack inside a middleware.
+
 ## 0.3.1
 
 ### Patch Changes
