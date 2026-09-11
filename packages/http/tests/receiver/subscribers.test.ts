@@ -100,7 +100,7 @@ describe('manifest subscribers on workerd', () => {
         }
 
         expect(() => registerSubscribers(stubBus(), [Unsubscribed])).toThrow(
-            expect.objectContaining({ code: SeedcordErrorCode.ManifestEntryWrongClass })
+            expect.objectContaining({ code: SeedcordErrorCode.ManifestEntryNoRoutes })
         );
     });
 

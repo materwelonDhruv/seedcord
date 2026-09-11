@@ -1,6 +1,5 @@
 import { interactionMiddleware, MiddlewareRegistry, RegisterDefaults } from '@seedcord/core/internal';
-import { SeedcordErrorCode } from '@seedcord/errors';
-import { SeedcordError, validateDiscordToken } from '@seedcord/errors/internal';
+import { validateDiscordToken } from '@seedcord/errors/internal';
 import { Logger } from '@seedcord/logger';
 import { Envapter } from 'envapt';
 
@@ -8,6 +7,7 @@ import { createCore } from './dispatch/dispatchInteraction';
 import { registerSubscribers } from './dispatch/registerSubscribers';
 import { RouteRegistry } from './dispatch/RouteRegistry';
 import { buildEngine } from './engine';
+import { isHandlerClass, isMiddlewareClass, noRoutes, wrongClass } from './manifest/entries';
 
 import type { InteractionMiddlewareConstructor } from '#handlers/constructors';
 import type { HttpConfig } from '#interfaces/Config';
@@ -18,10 +18,6 @@ export type { EngineContext } from './engine';
 
 // the duplicate-route message prints a file path in this slot on node
 const MANIFEST_ORIGIN = 'the manifest';
-
-function noRoutes(array: string, className: string, decorator: string): SeedcordError {
-    return new SeedcordError(SeedcordErrorCode.ManifestEntryNoRoutes, [array, className, decorator]);
-}
 
 /**
  * Builds the HTTP-interactions engine, a `(request, ctx?) => Promise<Response>` handler.
@@ -52,11 +48,14 @@ export function createSeedcord(
 
     const routes = new RouteRegistry();
     for (const handler of manifest.handlers) {
+        if (!isHandlerClass(handler))
+            throw wrongClass('handlers', handler, 'InteractionHandler or AutocompleteHandler');
         if (!routes.register(handler, MANIFEST_ORIGIN)) throw noRoutes('handlers', handler.name, 'route decorator');
     }
 
     const middlewares = new MiddlewareRegistry<InteractionMiddlewareConstructor>(interactionMiddleware);
     for (const middleware of manifest.middleware) {
+        if (!isMiddlewareClass(middleware)) throw wrongClass('middleware', middleware, 'InteractionMiddleware');
         if (!middlewares.register(middleware)) {
             throw noRoutes('middleware', middleware.name, '@RegisterInteractionMiddleware');
         }
