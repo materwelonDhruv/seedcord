@@ -1,6 +1,6 @@
+import type { UUID } from '../uuid';
 import type { DispatchBag } from './Dispatch';
 import type { APIMessageTopLevelComponent } from 'discord-api-types/v10';
-import type { UUID } from 'node:crypto';
 
 /** A ComponentsV2 top-level component, as discord.js accepts it in a message's `components` field. */
 export interface V2Component {

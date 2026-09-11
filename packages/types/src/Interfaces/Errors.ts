@@ -1,5 +1,5 @@
+import type { UUID } from '../uuid';
 import type { RenderContext, ReplyResponse } from './ReplyResponse';
-import type { UUID } from 'node:crypto';
 
 /**
  * Structural shape of a renderable denial. A framework `Notice` subclass satisfies it. Used to type
