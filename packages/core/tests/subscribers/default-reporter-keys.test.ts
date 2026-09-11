@@ -55,9 +55,13 @@ beforeEach(() => {
 describe('the two default reporters', () => {
     it('keep their own throttle windows on one route and one error name', async () => {
         const origin = 'slash:ban';
+        const dispatchId = 'd-1';
 
-        await new UnknownException({ uuid: randomUUID(), error: new Boom(), origin }, core).execute();
-        await new HandledException({ denial: new Boom(), uuid: randomUUID(), origin, source }, core).execute();
+        await new UnknownException({ uuid: randomUUID(), dispatchId, error: new Boom(), origin }, core).execute();
+        await new HandledException(
+            { denial: new Boom(), uuid: randomUUID(), dispatchId, origin, source },
+            core
+        ).execute();
 
         expect(hoisted.postMock).toHaveBeenCalledTimes(2);
     });

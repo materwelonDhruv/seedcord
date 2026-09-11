@@ -6,7 +6,7 @@ import { slashRouteOf } from './slashRouteOf';
 
 import type { ValidInteractionTypes } from '#handlers/interactionTypes';
 import type { Core } from '#interfaces/Core';
-import type { FaultSource, SubscriptionData } from '@seedcord/core';
+import type { DispatchContext, FaultSource, SubscriptionData } from '@seedcord/core';
 import type { RenderContext } from '@seedcord/types';
 
 type InteractionFaultSource = Extract<FaultSource, { kind: 'interaction' }>;
@@ -15,14 +15,15 @@ type InteractionFaultSource = Extract<FaultSource, { kind: 'interaction' }>;
 export function reportFault(
     error: Error,
     uuid: RenderContext['uuid'],
-    origin: string,
+    dispatch: DispatchContext,
     payload: ValidInteractionTypes,
     core: Core
 ): void {
     const source = interactionSource(payload);
+    const from = { uuid, dispatchId: dispatch.id, origin: dispatch.routeId };
     if (error instanceof Notice && source)
-        core.bus[PublishDefault]('handledException', { denial: error, uuid, origin, source });
-    else core.bus[PublishDefault]('unknownException', { uuid, error, origin, ...actors(payload), metadata: payload });
+        core.bus[PublishDefault]('handledException', { denial: error, ...from, source });
+    else core.bus[PublishDefault]('unknownException', { ...from, error, ...actors(payload), metadata: payload });
 }
 
 // the raw payload has guild_id and no guild name

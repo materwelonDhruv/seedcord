@@ -48,7 +48,7 @@ export async function handleInteractionFault(
             metadata: interaction
         });
         // empty choices clear the client's loading spinner
-        await sendEmptyChoices(interaction, core, routeId);
+        await sendEmptyChoices(interaction, core, dispatch);
         return;
     }
 
@@ -61,14 +61,18 @@ export async function handleInteractionFault(
         metadata: interaction
     });
     // the handler's own sender carries its ack state. a middleware throw arrives without one
-    const liveSender = sender ?? new ReplySender(interaction, routeId, core.bus);
+    const liveSender = sender ?? new ReplySender(interaction, dispatch, core.bus);
     await sendGuarded(liveSender, response, error instanceof Notice ? error.ephemeral : true);
 }
 
-async function sendEmptyChoices(interaction: AutocompleteInteraction, core: Core, routeId: string): Promise<void> {
-    const telemetry = { bus: core.bus, interactionId: interaction.id };
+async function sendEmptyChoices(
+    interaction: AutocompleteInteraction,
+    core: Core,
+    dispatch: DispatchContext
+): Promise<void> {
+    const telemetry = { bus: core.bus, dispatch, interactionId: interaction.id };
     try {
-        await reportedWrite(telemetry, routeId, 'respond', () => interaction.respond([]));
+        await reportedWrite(telemetry, 'respond', () => interaction.respond([]));
     } catch (error) {
         logger.debug(`autocomplete empty-choices send failed: ${String(error)}`);
     }

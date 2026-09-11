@@ -102,8 +102,7 @@ export abstract class AutocompleteHandler<Route extends keyof SlashRegistry> ext
     /** Send autocomplete suggestions, callback type 8. Prefer {@link match}, which restricts each field's choices to its declared type. */
     protected async respond(choices: readonly APIApplicationCommandOptionChoice[]): Promise<void> {
         await reportedWrite(
-            { bus: this.core.bus, interactionId: this.event.id },
-            this.dispatch.routeId,
+            { bus: this.core.bus, dispatch: this.dispatch, interactionId: this.event.id },
             'respond',
             () =>
                 this.core.rest.post(Routes.interactionCallback(this.event.id, this.event.token), {

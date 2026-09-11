@@ -146,8 +146,7 @@ describe('eventDispatched', () => {
         seedcord.bus.on('eventDispatched', (payload) => ends.push(payload));
 
         const fire = onSpy.mock.calls.find(([event]) => event === 'messageCreate')?.[1] as
-            | ((...args: unknown[]) => void)
-            | undefined;
+            ((...args: unknown[]) => void) | undefined;
         expect(fire).toBeDefined();
 
         fire?.({ reply: vi.fn() });
@@ -158,6 +157,24 @@ describe('eventDispatched', () => {
 
         expect(ends).toHaveLength(1);
         expect(starts).toHaveLength(1);
+    });
+
+    it('stamps the same dispatchId on both keys for one fire', async () => {
+        await testEnv.createFile(`${EVENTS_DIR}/Ok.ts`, OK);
+
+        seedcord = new Seedcord(testConfig({ events: testEnv.resolvePath(EVENTS_DIR) }));
+        const events = dispatcherOf(seedcord);
+        await events.init();
+
+        const starts: SubscriptionData<'eventDispatching'>[] = [];
+        const ends: SubscriptionData<'eventDispatched'>[] = [];
+        seedcord.bus.on('eventDispatching', (payload) => starts.push(payload));
+        seedcord.bus.on('eventDispatched', (payload) => ends.push(payload));
+
+        await events.processEvent('messageCreate', [{ reply: vi.fn() }]);
+
+        expect(starts[0]?.dispatchId).toEqual(expect.any(String));
+        expect(ends[0]?.dispatchId).toBe(starts[0]?.dispatchId);
     });
 
     it('stays quiet for an event no handler registered', async () => {

@@ -28,6 +28,7 @@ class Refusal extends Notice {
 
 function reportFor(queuedMs = 0): Parameters<typeof reportDispatch>[1] {
     return {
+        dispatchId: 'd-1',
         routeId: 'slash:ping',
         interactionId: 'i1',
         kind: InteractionKind.Slash,

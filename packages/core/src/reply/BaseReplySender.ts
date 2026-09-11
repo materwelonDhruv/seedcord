@@ -32,16 +32,19 @@ export abstract class BaseReplySender<TMessage extends { id: string }, TNative =
     private ackedBy?: AckTrace;
 
     protected constructor(
-        protected readonly routeId: string,
         private readonly telemetry: ReplyTelemetry,
         initialState: AckState = 'unacked'
     ) {
         this.state = initialState;
     }
 
+    protected get routeId(): string {
+        return this.telemetry.dispatch.routeId;
+    }
+
     // anything that threw already reported through attemptWrite
     private report(method: ReplyMethod, startedAt: number, messageId: string | null): void {
-        publishResponse(this.telemetry, { routeId: this.routeId, method, startedAt, outcome: 'sent', messageId });
+        publishResponse(this.telemetry, { method, startedAt, outcome: 'sent', messageId });
     }
 
     private async attempt<Result>(
@@ -49,7 +52,7 @@ export abstract class BaseReplySender<TMessage extends { id: string }, TNative =
         startedAt: number,
         write: () => Promise<Result>
     ): Promise<Result> {
-        return await attemptWrite(this.telemetry, this.routeId, method, startedAt, write);
+        return await attemptWrite(this.telemetry, method, startedAt, write);
     }
 
     public async reply(response: ReplyResponse<TNative> | string, opts?: SendOpts): Promise<TMessage> {

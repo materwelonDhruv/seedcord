@@ -29,6 +29,7 @@ export class SlowDispatch extends Subscriber<'interactionDispatched'> {
 
 | field | type | what it holds |
 | --- | --- | --- |
+| `dispatchId` | `string` | this dispatch, unique to it |
 | `routeId` | `string` | the route that ran, `slash:ban` shaped |
 | `interactionId` | `string` | Discord's id for this interaction |
 | `kind` | [`InteractionKind`](ref:core/InteractionKind) | `slash`, `button`, `modal`, `autocomplete`, the five `*Menu` kinds, and the two `*ContextMenu` kinds |
@@ -83,6 +84,7 @@ So `queuedMs` is how long the interaction waited before your bot got to it. It g
 
 | field | type | what it holds |
 | --- | --- | --- |
+| `dispatchId` | `string` | the dispatch this write belongs to |
 | `routeId` | `string` | the same route id the dispatch reports |
 | `interactionId` | `string` | the same interaction id |
 | `method` | [`WriteMethod`](ref:core/WriteMethod) | `reply`, `defer`, `deferUpdate`, `update`, `followUp`, `edit`, `delete`, `showModal`, or `respond` |
@@ -97,7 +99,7 @@ So `queuedMs` is how long the interaction waited before your bot got to it. It g
 
 `messageId` carries an id for `reply`, `update`, `followUp`, and `edit`. Every other verb reports `null`, and so does any failed write.
 
-Both keys carry `interactionId`. Keying a store on it lines one dispatch up with all of its writes.
+Both keys carry `interactionId`, which is Discord's own id for the interaction.
 
 ## Catching a failed write
 
@@ -130,6 +132,7 @@ One event fire runs every handler you registered for it, each behind its own fau
 
 | field | type | what it holds |
 | --- | --- | --- |
+| `dispatchId` | `string` | this fire, the same id `eventDispatching` published |
 | `name` | `keyof ClientEvents` | the event, `messageCreate` shaped |
 | `outcome` | [`DispatchOutcome`](ref:core/DispatchOutcome) | how the middleware chain ended |
 | `handlers` | [`HandlerOutcome[]`](ref:core/HandlerOutcome) | one entry per handler that ran, in order |
@@ -137,7 +140,7 @@ One event fire runs every handler you registered for it, each behind its own fau
 
 {/* prettier-ignore-end */}
 
-`outcome` describes the middleware chain alone. A chain that refuses the event reads `refused` and leaves `handlers` empty, because no handler ran. Each entry in `handlers` carries the class name and its own outcome, so one failing handler shows up without hiding the ones that succeeded.
+`outcome` describes the middleware chain alone. Where the chain refuses the event, it reads `refused` and leaves `handlers` empty, since the handlers never started. Each entry in `handlers` carries its own class name and outcome, which surfaces one failing handler while the ones beside it still report success.
 
 ```ts twoslash title="src/subscribers/FlakyHandlers.ts"
 import { Subscribe, Subscriber } from '@seedcord/gateway';
@@ -157,13 +160,101 @@ export class FlakyHandlers extends Subscriber<'eventDispatched'> {
 }
 ```
 
-The thrown value stays off this key. `unknownException` already carries it, under an `origin` of `event:messageCreate:AutoMod`, so joining on that string pairs a failed entry here with the throw that caused it.
+The thrown value stays off this key. `unknownException` already carries it under an `origin` of `event:messageCreate:AutoMod`, and joining on that string pairs a failed entry here with the throw behind it.
 
 <Callout type="warning">
 
-An event carries no snowflake, so there is no `queuedMs` to read. A fire that runs no handler publishes nothing, and neither does `eventDispatching`, so the pair stays even.
+`queuedMs` comes from the interaction's snowflake. An event does not carry one, so this key omits the field. Both keys publish only when at least one handler is about to run, which keeps them paired.
 
 </Callout>
+
+## Joining the keys
+
+Every key above carries a `dispatchId`. Two runs of the same route get two different ones, so keying a store on it lines up a single dispatch with everything it published.
+
+Your handlers, your gates, and your error cards read that same string off the bag, before any of these keys fire.
+
+```ts twoslash title="src/handlers/middlewares/Trace.ts"
+import {
+    InteractionMiddleware,
+    RegisterInteractionMiddleware
+} from '@seedcord/gateway';
+declare const audit: {
+    record(row: { trace: string; route: string }): Promise<void>;
+};
+// ---cut---
+@RegisterInteractionMiddleware()
+export class Trace extends InteractionMiddleware {
+    public async execute(): Promise<void> {
+        await audit.record({
+            trace: this.dispatch.id,
+            route: this.dispatch.routeId
+        });
+    }
+}
+```
+
+A handler reaches it through `this.dispatch.id`, a gate through `ctx.dispatch.id`, and an error card through its render context. Whatever you write from inside the dispatch already shares a key with what seedcord publishes about it.
+
+Across subscribers, write that column and query on it.
+
+```ts twoslash title="src/subscribers/Trace.ts"
+import { Subscribe, Subscriber } from '@seedcord/gateway';
+declare const db: { insert(row: object): Promise<void> };
+// ---cut---
+@Subscribe('interactionDispatched')
+export class Dispatches extends Subscriber<'interactionDispatched'> {
+    public async execute(): Promise<void> {
+        const { dispatchId, routeId, outcome, durationMs } =
+            this.data;
+        await db.insert({
+            dispatchId,
+            routeId,
+            outcome,
+            durationMs
+        });
+    }
+}
+
+@Subscribe('unknownException')
+export class Faults extends Subscriber<'unknownException'> {
+    public async execute(): Promise<void> {
+        const { dispatchId, uuid, error } = this.data;
+        await db.insert({
+            dispatchId,
+            uuid,
+            message: error.message
+        });
+    }
+}
+```
+
+<Callout type="warning">
+
+`unknownException.dispatchId` is `string | null`. An unhandled rejection reaches Node outside any dispatch, which is the case that reports `null`.
+
+</Callout>
+
+## Typing a payload yourself
+
+[`SubscriptionData`](ref:core/SubscriptionData) takes a key and gives back that key's payload type. Use it to type a function that receives one.
+
+```ts twoslash title="src/subscribers/rows.ts"
+import type { SubscriptionData } from '@seedcord/gateway';
+declare const db: { insert(row: object): Promise<void> };
+// ---cut---
+function rowFor(
+    data: SubscriptionData<'interactionDispatched'>
+): object {
+    return {
+        id: data.dispatchId,
+        route: data.routeId,
+        ms: data.durationMs
+    };
+}
+```
+
+Since `AllSubscriptions` merges the framework's keys with yours, a key you declared yourself types the same way.
 
 ## Storing them yourself
 

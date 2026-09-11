@@ -9,6 +9,12 @@ export interface DispatchState {}
  * it. Declared here so {@link RenderContext} can carry one without importing the concrete class.
  */
 export interface DispatchBag {
+    /**
+     * Unique to this one dispatch, and unique again the next time the same route runs. Every bus key
+     * this dispatch publishes carries it as `dispatchId`, so a store keyed on it lines up the dispatch,
+     * its writes, and any fault it raised.
+     */
+    readonly id: string;
     /** The dispatched handler as `kind:route`, for example `slash:daily` or `button:confirm`. */
     readonly routeId: string;
     /** Write a key for the rest of this dispatch to read. */

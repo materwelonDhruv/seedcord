@@ -19,7 +19,7 @@ export function registerProcessErrors(core: CoreBase, shutdown: CoordinatedShutd
         if (core.config.errors?.errorStack ?? false) logger.error(uuid, error);
         else logger.error(`${uuid} | ${error.message}`);
 
-        core.bus[PublishDefault]('unknownException', { uuid, error, origin });
+        core.bus[PublishDefault]('unknownException', { uuid, dispatchId: null, error, origin });
     }
 
     const onRejection = (reason: unknown): void => {

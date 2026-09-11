@@ -1637,6 +1637,68 @@ describe('InteractionDispatcher Integration', () => {
             });
         });
 
+        it('stamps one dispatchId on the dispatch and on the write it made', async () => {
+            await testEnv.createFile(
+                'interactions/Route.ts',
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('joined')
+                export class JoinedHandler extends SlashHandler<'joined'> {
+                    public async execute() {
+                        await this.reply('done');
+                    }
+                }
+                `
+            );
+            const config = testConfig({ interactions: testEnv.resolvePath('interactions') });
+
+            seedcord = new Seedcord(config);
+            const controller = controllerOf(seedcord);
+            await controller.init();
+
+            const dispatched: SubscriptionData<'interactionDispatched'>[] = [];
+            const sent: SubscriptionData<'responseAttempted'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => dispatched.push(payload));
+            seedcord.bus.on('responseAttempted', (payload) => sent.push(payload));
+
+            await controller.handleSlashCommand(fakeSlash('joined'));
+
+            const id = dispatched[0]?.dispatchId;
+            expect(id).toEqual(expect.any(String));
+            expect(sent[0]?.dispatchId).toBe(id);
+        });
+
+        it('gives two runs of the same route different dispatchIds', async () => {
+            await testEnv.createFile(
+                'interactions/Route.ts',
+                `
+                import { SlashHandler, SlashRoute } from '${seedcordPath}';
+
+                @SlashRoute('again')
+                export class AgainHandler extends SlashHandler<'again'> {
+                    public async execute() {
+                        await this.reply('done');
+                    }
+                }
+                `
+            );
+            const config = testConfig({ interactions: testEnv.resolvePath('interactions') });
+
+            seedcord = new Seedcord(config);
+            const controller = controllerOf(seedcord);
+            await controller.init();
+
+            const dispatched: SubscriptionData<'interactionDispatched'>[] = [];
+            seedcord.bus.on('interactionDispatched', (payload) => dispatched.push(payload));
+
+            await controller.handleSlashCommand(fakeSlash('again'));
+            await controller.handleSlashCommand(fakeSlash('again'));
+
+            expect(dispatched).toHaveLength(2);
+            expect(dispatched[0]?.dispatchId).not.toBe(dispatched[1]?.dispatchId);
+        });
+
         // the type-based rule is the same on both transports, so a constructor Silence matches http
         it('reports refused when the handler constructor throws a Silence', async () => {
             const published = await dispatchedFor(

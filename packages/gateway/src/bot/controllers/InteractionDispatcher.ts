@@ -74,6 +74,7 @@ interface DispatchReportRow {
     readonly fallback: boolean;
     readonly startedAt: number;
     readonly queuedMs: number;
+    readonly dispatchId: string;
     readonly routeId: string;
 }
 
@@ -404,6 +405,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             fallback: !matched,
             startedAt,
             queuedMs,
+            dispatchId: dispatch.id,
             routeId: dispatch.routeId
         });
 
@@ -476,6 +478,7 @@ export class InteractionDispatcher implements Initializeable, HmrAware {
             if (reported) return;
             reported = true;
             reportDispatch(this.core.bus, {
+                dispatchId: row.dispatchId,
                 routeId: row.routeId,
                 interactionId: row.interaction.id,
                 kind: row.kind,

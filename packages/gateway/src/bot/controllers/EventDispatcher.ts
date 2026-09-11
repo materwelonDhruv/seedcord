@@ -344,9 +344,9 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
         if (handlersToExecute.length === 0) return;
 
-        reportEventDispatching(this.core, eventName, args);
-
         const dispatch = new DispatchContext(`event:${String(eventName)}`);
+        reportEventDispatching(this.core, dispatch.id, eventName, args);
+
         const ran: EventMiddleware[] = [];
         const handlers: HandlerResult[] = [];
         let stopped: { caught: unknown } | null = null;
@@ -367,7 +367,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
             }
         } finally {
             const result = eventResultFor(stopped, handlers);
-            reportEventDispatched(this.core, eventName, result, startedAt);
+            reportEventDispatched(this.core, dispatch.id, eventName, result, startedAt);
             await runAfter(ran, result, this.logger);
         }
     }

@@ -112,8 +112,7 @@ export abstract class AutocompleteHandler<
     /** Send autocomplete suggestions, callback type 8. Prefer {@link match}, which restricts each field's choices to its declared type. */
     protected async respond(choices: readonly ApplicationCommandOptionChoiceData[]): Promise<void> {
         await reportedWrite(
-            { bus: this.core.bus, interactionId: this.event.id },
-            this.dispatch.routeId,
+            { bus: this.core.bus, dispatch: this.dispatch, interactionId: this.event.id },
             'respond',
             () =>
                 // eslint-disable-next-line @seedcord/no-raw-interaction-acks -- this is the base respond and calls djs directly

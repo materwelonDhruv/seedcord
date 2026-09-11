@@ -9,13 +9,15 @@ declare module '@seedcord/core/internal' {
         };
         /** Triggered before an event's handlers run. An event that no handler registered never triggers it. */
         eventDispatching: {
-            [Name in keyof ClientEvents]: { name: Name; args: ClientEvents[Name] };
+            [Name in keyof ClientEvents]: { dispatchId: string; name: Name; args: ClientEvents[Name] };
         }[keyof ClientEvents];
         /**
          * Triggered once an event's handlers settle, pairing with `eventDispatching`. A fire that runs no
          * handler triggers neither.
          */
         eventDispatched: {
+            /** The same id `eventDispatching` published for this fire. */
+            dispatchId: string;
             name: keyof ClientEvents;
             /** How the middleware chain ended. A chain that refused the event leaves `handlers` empty. */
             outcome: DispatchOutcome;

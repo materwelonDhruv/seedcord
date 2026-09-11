@@ -45,6 +45,7 @@ describe('Bus subscriber concurrency', () => {
 
         bus[PublishDefault]('unknownException', {
             uuid: crypto.randomUUID(),
+            dispatchId: 'd-1',
             error: new Error('boom'),
             origin: 'slash:probe'
         });

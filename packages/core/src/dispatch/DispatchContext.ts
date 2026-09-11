@@ -12,6 +12,8 @@ export class DispatchContext implements DispatchBag {
     // a {} here would let a key named toString or __proto__ reach Object.prototype
     private readonly state = Object.create(null) as Partial<DispatchState>;
 
+    public readonly id = crypto.randomUUID();
+
     constructor(public readonly routeId: string) {}
 
     set<Key extends keyof DispatchState>(key: Key, value: DispatchState[Key]): void {

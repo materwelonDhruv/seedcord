@@ -67,6 +67,7 @@ function reportFault(denial: Notice, core: Core, fault: ErrorOrigin, uuid: UUID)
         core.bus[PublishDefault]('handledException', {
             denial,
             uuid,
+            dispatchId: fault.dispatch.id,
             origin: fault.origin,
             source: buildInteractionSource(fault.interaction)
         });
@@ -74,6 +75,7 @@ function reportFault(denial: Notice, core: Core, fault: ErrorOrigin, uuid: UUID)
         core.bus[PublishDefault]('handledException', {
             denial,
             uuid,
+            dispatchId: fault.dispatch.id,
             origin: fault.origin,
             source: buildEventSource(fault.event, fault)
         });
@@ -81,6 +83,7 @@ function reportFault(denial: Notice, core: Core, fault: ErrorOrigin, uuid: UUID)
         // an autocomplete throw has no typed source. unknownException is the only channel left
         core.bus[PublishDefault]('unknownException', {
             uuid,
+            dispatchId: fault.dispatch.id,
             error: denial,
             origin: fault.origin,
             ...scalarActors(fault),
@@ -103,6 +106,7 @@ function reportRawFault(error: Error, core: Core, fault: ErrorOrigin, uuid: UUID
 
     core.bus[PublishDefault]('unknownException', {
         uuid,
+        dispatchId: fault.dispatch.id,
         error,
         origin: fault.origin,
         ...scalarActors(fault),
