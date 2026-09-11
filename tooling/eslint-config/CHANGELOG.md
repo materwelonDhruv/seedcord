@@ -50,13 +50,7 @@
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - 0a49d85: Ignore `tests/temp` for interrupted test run artifacts.
-- Updated dependencies [f39cde0]
-- Updated dependencies [a259cdc]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [c75f837]
+- Updated dependencies [f39cde0, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, c75f837]
     - @seedcord/eslint-plugin@0.2.0
     - eslint-plugin-discordjs@0.1.3
 
@@ -99,8 +93,6 @@
 
 ### Patch Changes
 
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
 - Updated dependencies [789f17a]
     - @seedcord/eslint-plugin@0.1.0
     - eslint-plugin-discordjs@0.1.0

@@ -9,13 +9,7 @@
 ### Patch Changes
 
 - 0988f67: The transport packages now export `prefixOf`, `decodeFor`, and the custom-id types. Reading a raw customId no longer needs `@seedcord/custom-id` as a direct dependency.
-- Updated dependencies [4013669]
-- Updated dependencies [0988f67]
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [4163b96]
-- Updated dependencies [4013669]
+- Updated dependencies [4013669, 0988f67, b3d1713, 4163b96]
     - @seedcord/core@0.6.0
     - @seedcord/custom-id@0.2.0
     - @seedcord/errors@0.7.0
@@ -34,11 +28,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [f89d8c9]
-- Updated dependencies [f89d8c9]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [f89d8c9, af1b2f8]
     - @seedcord/core@0.5.0
     - @seedcord/errors@0.6.0
     - @seedcord/types@0.11.0
@@ -52,9 +42,6 @@
 ### Patch Changes
 
 - 71c1896: `CustomId` moved to `@seedcord/custom-id`. Core still exports it under the same name. The new `setCustomIdErrors` swaps the card a stale or corrupt button shows.
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
 - Updated dependencies [71c1896]
     - @seedcord/custom-id@0.1.0
     - @seedcord/core@0.4.1
@@ -86,28 +73,7 @@
 - 1fc18be: Fix logger config not being used in an edge bot.
 - 58318fa: Fix TSDoc in `SlashHandler` and `getConfirmation`. They were showing the incorrect number of arguments for option getters.
 - 9b6a31c: A host whose startup failed used to tear down whichever host had replaced it, taking the replacement's signal handlers and logger config with it. Teardown now runs only for the host that is still live. A second `start()` racing the first rejects with the same error, where it used to resolve a half-started host.
-- Updated dependencies [1bf7d89]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [2cb3c87]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [554129a]
-- Updated dependencies [5b15463]
-- Updated dependencies [8dc4791]
-- Updated dependencies [554129a]
-- Updated dependencies [5f4e203]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [0ad8bd1]
-- Updated dependencies [8dc4791]
-- Updated dependencies [6872865]
-- Updated dependencies [3ff40e7]
-- Updated dependencies [64c9a0e]
-- Updated dependencies [554129a]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [0c6cdc8]
-- Updated dependencies [e4e8605]
-- Updated dependencies [554129a]
+- Updated dependencies [1bf7d89, 9b6a31c, 2cb3c87, 554129a, 5b15463, 8dc4791, 5f4e203, 0ad8bd1, 6872865, 3ff40e7, 64c9a0e, 0c6cdc8, e4e8605]
     - @seedcord/errors@0.5.0
     - @seedcord/core@0.4.0
     - @seedcord/event-emitter@0.1.5
@@ -121,10 +87,7 @@
 ### Patch Changes
 
 - a98d27b: A new `commandsDeployed` framework event fires after seedcord deploys your commands, carrying what Discord returned for the global and guild scopes. You can now read the bot's application id from `core.applicationId` on both transports.
-- Updated dependencies [a98d27b]
-- Updated dependencies [6b1cfbf]
-- Updated dependencies [aa4d4c0]
-- Updated dependencies [b29904c]
+- Updated dependencies [a98d27b, 6b1cfbf, aa4d4c0, b29904c]
     - @seedcord/core@0.3.1
     - @seedcord/errors@0.4.3
     - @seedcord/utils@0.8.7
@@ -148,8 +111,7 @@
 - 9c8e66a: _Kinda BREAKING:_ A transport plugin base no longer accepts `transport: 'any'` and the gateway base no longer accepts `runtime: 'edge'`. Extend `@seedcord/core/plugin` for a plugin that runs on either transport. This IS a bug fix. This should not have been allowed before.
 - 8f662bb: Fixed a gate mismatch on a Button or Modal handler labelling the handler `StringSelect`. Every interaction kind now reports its own label.
 - 1d2f1e3: Updated TSDoc reference generation.
-- Updated dependencies [8f662bb]
-- Updated dependencies [1d2f1e3]
+- Updated dependencies [8f662bb, 1d2f1e3]
     - @seedcord/core@0.2.1
     - @seedcord/event-emitter@0.1.4
     - @seedcord/rate-limiter@0.1.4
@@ -178,22 +140,7 @@
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - ad1e4d5: Every fault now reaches your subscribers. A rare bug used to stay silent while a common one kept throwing on the same route. Webhook cards still group repeats to one a minute, and each carries how many it covers.
-- Updated dependencies [1364c82]
-- Updated dependencies [97b62ef]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [aa6bb3a]
-- Updated dependencies [7553449]
-- Updated dependencies [f39cde0]
-- Updated dependencies [5c7c3e2]
-- Updated dependencies [a259cdc]
-- Updated dependencies [1364c82]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [e11cbb3]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [1364c82]
+- Updated dependencies [1364c82, 97b62ef, ad1e4d5, aa6bb3a, 7553449, f39cde0, 5c7c3e2, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, e11cbb3]
     - @seedcord/errors@0.4.0
     - @seedcord/logger@0.2.0
     - @seedcord/core@0.2.0
@@ -207,9 +154,7 @@
 ### Patch Changes
 
 - 71a0b99: _Kinda BREAKING?:_ envapt is a peer dependency now. Your project and seedcord load one copy, so the framework reads the config you set through `Envapter`.
-- Updated dependencies [71a0b99]
-- Updated dependencies [8e8e952]
-- Updated dependencies [527a465]
+- Updated dependencies [71a0b99, 8e8e952, 527a465]
     - @seedcord/core@0.1.4
     - @seedcord/logger@0.1.4
     - @seedcord/errors@0.3.4
@@ -224,9 +169,7 @@
 
 - 9b0a6a6: 'reflect-metadata' is a direct dep now. No need to import it at the top. The packages import it in their index files, first thing.
 - b8189ab: Export other useful packages from http transport like how gateway does
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [9b0a6a6]
+- Updated dependencies [dfd7dc2, 9b0a6a6]
     - @seedcord/errors@0.3.3
     - @seedcord/logger@0.1.3
     - @seedcord/core@0.1.3
@@ -262,15 +205,7 @@
 - c567fea: Loads `reflect-metadata` from the package entry.
 - 5b57bda: A failed startup no longer drops sinks installed through `installSink`, so the `seedcord dev` log view keeps working after one.
 - d470ad4: Now uses the appropriate log levels for logs across the lifecycle of the transports and plugins.
-- Updated dependencies [c567fea]
-- Updated dependencies [0642de5]
-- Updated dependencies [814902a]
-- Updated dependencies [c567fea]
-- Updated dependencies [5b57bda]
-- Updated dependencies [0642de5]
-- Updated dependencies [d470ad4]
-- Updated dependencies [d470ad4]
-- Updated dependencies [814902a]
+- Updated dependencies [c567fea, 0642de5, 814902a, 5b57bda, d470ad4]
     - @seedcord/core@0.1.1
     - @seedcord/errors@0.3.1
     - @seedcord/logger@0.1.1
@@ -300,25 +235,7 @@
 
 - 789f17a: Raise discord.js to `^14.27.0`, `@discordjs/rest` to `^2.6.2`, and discord-api-types to `^0.38.50`.
 - 701b669: Require envapt `^8.1.0`. An older pin in your own bot installs a second copy whose `Envapter` state splits from the framework's.
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [701b669]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [93544a8]
+- Updated dependencies [789f17a, 701b669, 93544a8]
     - @seedcord/core@0.1.0
     - @seedcord/types@0.8.0
     - @seedcord/utils@0.8.0

@@ -34,11 +34,7 @@
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - c75f837: Relocated the folder in the monorepo.
-- Updated dependencies [a259cdc]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c75f837]
+- Updated dependencies [a259cdc, a8d7b5f, 660a94d, c50ad6c, c75f837]
     - eslint-plugin-discordjs@0.1.3
 
 ## 0.1.2
@@ -68,6 +64,5 @@
 ### Patch Changes
 
 - 789f17a: Raise discord.js to `^14.27.0`, `@discordjs/rest` to `^2.6.2`, and discord-api-types to `^0.38.50`.
-- Updated dependencies [789f17a]
 - Updated dependencies [789f17a]
     - eslint-plugin-discordjs@0.1.0

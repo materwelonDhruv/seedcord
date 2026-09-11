@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { pruneSupersededPrereleases } from '../release/prune-changelog';
+import { collapseUpdatedDependencies, pruneSupersededPrereleases } from '../release/prune-changelog';
 
 describe('pruneSupersededPrereleases', () => {
     it('drops a -next section once its stable version is present', () => {
@@ -126,5 +126,69 @@ describe('pruneSupersededPrereleases', () => {
         expect(once).toContain('## 0.2.0\n');
         expect(once).toContain('## 0.1.0\n');
         expect(pruneSupersededPrereleases(once)).toBe(once);
+    });
+});
+
+describe('collapseUpdatedDependencies', () => {
+    it('folds a run into one line, keeping each commit once in order', () => {
+        const input = [
+            '### Patch Changes',
+            '',
+            '- Updated dependencies [78377fa]',
+            '- Updated dependencies [c3613bd]',
+            '- Updated dependencies [0a19719]',
+            '- Updated dependencies [78377fa]',
+            '- Updated dependencies [78377fa]',
+            '    - @seedcord/errors@0.6.0',
+            ''
+        ].join('\n');
+
+        expect(collapseUpdatedDependencies(input)).toBe(
+            [
+                '### Patch Changes',
+                '',
+                '- Updated dependencies [78377fa, c3613bd, 0a19719]',
+                '    - @seedcord/errors@0.6.0',
+                ''
+            ].join('\n')
+        );
+    });
+
+    it('leaves a single line alone', () => {
+        const input = ['- Updated dependencies [78377fa]', '    - @seedcord/errors@0.6.0', ''].join('\n');
+        expect(collapseUpdatedDependencies(input)).toBe(input);
+    });
+
+    it('collapses each run on its own', () => {
+        const input = [
+            '## 0.5.0',
+            '',
+            '- Updated dependencies [aaa1111]',
+            '- Updated dependencies [aaa1111]',
+            '    - @seedcord/types@0.11.0',
+            '',
+            '## 0.4.0',
+            '',
+            '- Updated dependencies [bbb2222]',
+            '- Updated dependencies [ccc3333]',
+            '    - @seedcord/types@0.10.0',
+            ''
+        ].join('\n');
+        const out = collapseUpdatedDependencies(input);
+
+        expect(out).toContain('- Updated dependencies [aaa1111]\n');
+        expect(out).toContain('- Updated dependencies [bbb2222, ccc3333]\n');
+    });
+
+    it('runs clean a second time', () => {
+        const input = [
+            '- Updated dependencies [78377fa]',
+            '- Updated dependencies [c3613bd]',
+            '    - @seedcord/errors@0.6.0',
+            ''
+        ].join('\n');
+        const once = collapseUpdatedDependencies(input);
+
+        expect(collapseUpdatedDependencies(once)).toBe(once);
     });
 });

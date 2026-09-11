@@ -16,16 +16,14 @@
 
     Fixed the rejection message, which named a range on fields that have none. It now names what the field takes, as in `expects a boolean, got "false"`.
 
-- Updated dependencies [b3d1713]
-- Updated dependencies [4013669]
+- Updated dependencies [b3d1713, 4013669]
     - @seedcord/errors@0.7.0
 
 ## 0.1.1
 
 ### Patch Changes
 
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [af1b2f8, f89d8c9]
     - @seedcord/errors@0.6.0
 
 ## 0.1.0

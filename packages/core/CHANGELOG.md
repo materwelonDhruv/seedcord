@@ -16,10 +16,7 @@
 
     Fixed a lifecycle task or plugin hook that throws before returning a promise. The throw now rejects the returned promise.
 
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [4013669]
+- Updated dependencies [b3d1713, 4013669]
     - @seedcord/custom-id@0.2.0
     - @seedcord/errors@0.7.0
     - @seedcord/types@0.12.0
@@ -37,8 +34,7 @@
 ### Patch Changes
 
 - f89d8c9: Fixed handler metadata reads across two copies of core.
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [af1b2f8, f89d8c9]
     - @seedcord/errors@0.6.0
     - @seedcord/types@0.11.0
     - @seedcord/logger@0.3.0
@@ -50,9 +46,6 @@
 ### Patch Changes
 
 - 71c1896: `CustomId` moved to `@seedcord/custom-id`. Core still exports it under the same name. The new `setCustomIdErrors` swaps the card a stale or corrupt button shows.
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
 - Updated dependencies [71c1896]
     - @seedcord/custom-id@0.1.0
     - @seedcord/types@0.10.1
@@ -84,18 +77,7 @@
 - 6872865: `and` and `or` now bracket an arm that is itself a combinator. `or(and(A, B), C)` names itself `(A & B) | C` on a `@Gated` hover and in the compile error for a gate that does not fit its handler.
 - 554129a: Fix the `Silence` example. It threw from an interaction while the text above it said to throw only in event handlers.
 - 9b6a31c: A host whose startup failed used to tear down whichever host had replaced it, taking the replacement's signal handlers and logger config with it. Teardown now runs only for the host that is still live. A second `start()` racing the first rejects with the same error, where it used to resolve a half-started host.
-- Updated dependencies [1bf7d89]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [5b15463]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [0ad8bd1]
-- Updated dependencies [64c9a0e]
-- Updated dependencies [e4e8605]
-- Updated dependencies [554129a]
+- Updated dependencies [1bf7d89, 9b6a31c, 5b15463, 554129a, 0ad8bd1, 64c9a0e, e4e8605]
     - @seedcord/errors@0.5.0
     - @seedcord/event-emitter@0.1.5
     - @seedcord/logger@0.2.2
@@ -112,8 +94,7 @@
 
     _Kinda BREAKING:_ `Initializeable` moved to `@seedcord/core/internal`. It describes framework wiring, and `Plugin` already declares `abstract init()` for you. This was supposed to be internal anyway. No one should have been implementing it.
 
-- Updated dependencies [6b1cfbf]
-- Updated dependencies [b29904c]
+- Updated dependencies [6b1cfbf, b29904c]
     - @seedcord/errors@0.4.3
     - @seedcord/utils@0.8.7
 
@@ -162,18 +143,7 @@
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - ad1e4d5: Every fault now reaches your subscribers. A rare bug used to stay silent while a common one kept throwing on the same route. Webhook cards still group repeats to one a minute, and each carries how many it covers.
-- Updated dependencies [1364c82]
-- Updated dependencies [97b62ef]
-- Updated dependencies [aa6bb3a]
-- Updated dependencies [7553449]
-- Updated dependencies [f39cde0]
-- Updated dependencies [a259cdc]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [e11cbb3]
-- Updated dependencies [1364c82]
+- Updated dependencies [1364c82, 97b62ef, aa6bb3a, 7553449, f39cde0, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, e11cbb3]
     - @seedcord/errors@0.4.0
     - @seedcord/logger@0.2.0
     - @seedcord/event-emitter@0.1.3
@@ -185,9 +155,7 @@
 ### Patch Changes
 
 - 71a0b99: _Kinda BREAKING?:_ envapt is a peer dependency now. Your project and seedcord load one copy, so the framework reads the config you set through `Envapter`.
-- Updated dependencies [71a0b99]
-- Updated dependencies [8e8e952]
-- Updated dependencies [527a465]
+- Updated dependencies [71a0b99, 8e8e952, 527a465]
     - @seedcord/logger@0.1.4
     - @seedcord/errors@0.3.4
     - @seedcord/event-emitter@0.1.2
@@ -199,7 +167,6 @@
 ### Patch Changes
 
 - 9b0a6a6: 'reflect-metadata' is a direct dep now. No need to import it at the top. The packages import it in their index files, first thing.
-- Updated dependencies [dfd7dc2]
 - Updated dependencies [dfd7dc2]
     - @seedcord/errors@0.3.3
     - @seedcord/logger@0.1.3
@@ -228,10 +195,7 @@
 - 0642de5: **BREAKING:** `@seedcord/http` no longer serves a health endpoint, and `healthCheck` is gone from its config. An unsigned POST to the interactions server answers 401, which covers an uptime check.
 - d470ad4: Per-phase lines are now debug and per-task lines are trace.
 - d470ad4: Now uses the appropriate log levels for logs across the lifecycle of the transports and plugins.
-- Updated dependencies [c567fea]
-- Updated dependencies [0642de5]
-- Updated dependencies [c567fea]
-- Updated dependencies [814902a]
+- Updated dependencies [c567fea, 0642de5, 814902a]
     - @seedcord/errors@0.3.1
     - @seedcord/logger@0.1.1
     - @seedcord/types@0.8.1
@@ -287,17 +251,7 @@
 
 - 789f17a: Raise discord.js to `^14.27.0`, `@discordjs/rest` to `^2.6.2`, and discord-api-types to `^0.38.50`.
 - 701b669: Require envapt `^8.1.0`. An older pin in your own bot installs a second copy whose `Envapter` state splits from the framework's.
-- Updated dependencies [789f17a]
-- Updated dependencies [701b669]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [93544a8]
+- Updated dependencies [789f17a, 701b669, 93544a8]
     - @seedcord/types@0.8.0
     - @seedcord/utils@0.8.0
     - @seedcord/logger@0.1.0

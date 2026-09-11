@@ -5,11 +5,7 @@
 ### Patch Changes
 
 - 4013669: `seedcord dev` logs a warning when the tunnel fails to stop on quit, and finishes quitting either way.
-- Updated dependencies [4013669]
-- Updated dependencies [0988f67]
-- Updated dependencies [b3d1713]
-- Updated dependencies [4163b96]
-- Updated dependencies [4013669]
+- Updated dependencies [4013669, 0988f67, b3d1713, 4163b96]
     - @seedcord/core@0.6.0
     - @seedcord/errors@0.7.0
     - @seedcord/types@0.12.0
@@ -20,11 +16,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [f89d8c9]
-- Updated dependencies [f89d8c9]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [f89d8c9, af1b2f8]
     - @seedcord/core@0.5.0
     - @seedcord/errors@0.6.0
     - @seedcord/types@0.11.0
@@ -38,28 +30,7 @@
 - 554129a: `seedcord codegen` now skips a `BuilderComponent` subclass that carries no `@RegisterCommand`, matching the set your bot deploys at startup. An undecorated class previously got a route, and a handler could then typecheck against a command that never reached Discord.
 - 554129a: Hide the internals that were already marked internal. `core.shutdown` and `core.startup` carry `addTask` alone, `core.bus` carries `publish` and the listener methods, and `core.bot` drops the controllers and the lifecycle calls. The http transport's `Core` declares the two lifecycle members, and a core built by `createSeedcord` throws from either one.
 - 554129a: `seedcord codegen` now throws and names the file when a class carrying `@RegisterCommand` fails to construct.
-- Updated dependencies [1bf7d89]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [2cb3c87]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [554129a]
-- Updated dependencies [5b15463]
-- Updated dependencies [8dc4791]
-- Updated dependencies [554129a]
-- Updated dependencies [5f4e203]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [0ad8bd1]
-- Updated dependencies [8dc4791]
-- Updated dependencies [6872865]
-- Updated dependencies [3ff40e7]
-- Updated dependencies [64c9a0e]
-- Updated dependencies [554129a]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [0c6cdc8]
-- Updated dependencies [e4e8605]
-- Updated dependencies [554129a]
+- Updated dependencies [1bf7d89, 9b6a31c, 2cb3c87, 554129a, 5b15463, 8dc4791, 5f4e203, 0ad8bd1, 6872865, 3ff40e7, 64c9a0e, 0c6cdc8, e4e8605]
     - @seedcord/errors@0.5.0
     - @seedcord/core@0.4.0
     - @seedcord/event-emitter@0.1.5
@@ -72,10 +43,7 @@
 ### Patch Changes
 
 - 6b1cfbf: _Kinda BREAKING:_ Starting a bot or running the CLI on a Node version below the `engines` range now throws, naming the required range and the version you are running. The floor stays at `>=24.11`.
-- Updated dependencies [a98d27b]
-- Updated dependencies [6b1cfbf]
-- Updated dependencies [aa4d4c0]
-- Updated dependencies [b29904c]
+- Updated dependencies [a98d27b, 6b1cfbf, aa4d4c0, b29904c]
     - @seedcord/core@0.3.1
     - @seedcord/errors@0.4.3
     - @seedcord/utils@0.8.7
@@ -97,8 +65,7 @@
 ### Patch Changes
 
 - 1d2f1e3: Updated TSDoc reference generation.
-- Updated dependencies [8f662bb]
-- Updated dependencies [1d2f1e3]
+- Updated dependencies [8f662bb, 1d2f1e3]
     - @seedcord/core@0.2.1
     - @seedcord/event-emitter@0.1.4
     - @seedcord/errors@0.4.1
@@ -132,22 +99,7 @@
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - d717336: `seedcord dev` and `seedcord build` now correctly resolve the `paths` a project declares in its tsconfig. The build also rewrites dynamic relative imports, which node rejected for having no extension.
 - 2476bae: Show the actual CLI version in the TUI top left, and transport version as a row in the status block. Also show 'seedcord create' in the `create-seedcord` banner.
-- Updated dependencies [1364c82]
-- Updated dependencies [97b62ef]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [aa6bb3a]
-- Updated dependencies [7553449]
-- Updated dependencies [f39cde0]
-- Updated dependencies [5c7c3e2]
-- Updated dependencies [a259cdc]
-- Updated dependencies [1364c82]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [e11cbb3]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [1364c82]
+- Updated dependencies [1364c82, 97b62ef, ad1e4d5, aa6bb3a, 7553449, f39cde0, 5c7c3e2, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, e11cbb3]
     - @seedcord/errors@0.4.0
     - @seedcord/logger@0.2.0
     - @seedcord/core@0.2.0
@@ -165,9 +117,7 @@
 - 2efe2f7: Fixed the channel dot in `seedcord dev` rendering as a white emoji on Windows and Linux. Also dropped the arrow from the two resize hints.
 - ca24b0d: Ignore churn files in hmr
 - 527a465: Added `idleAnimation` to `seedcord.config.ts`. Setting it to `false` holds the running arc and the live dot still, which cuts idle redraws by about 80% and the bytes written to the terminal by 63%.
-- Updated dependencies [71a0b99]
-- Updated dependencies [8e8e952]
-- Updated dependencies [527a465]
+- Updated dependencies [71a0b99, 8e8e952, 527a465]
     - @seedcord/core@0.1.4
     - @seedcord/logger@0.1.4
     - @seedcord/errors@0.3.4
@@ -186,9 +136,7 @@
 ### Patch Changes
 
 - dfd7dc2: Fix cli bin missing shebang so npm works correctly
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [9b0a6a6]
+- Updated dependencies [dfd7dc2, 9b0a6a6]
     - @seedcord/errors@0.3.3
     - @seedcord/logger@0.1.3
     - @seedcord/core@0.1.3
@@ -221,15 +169,7 @@
 - 5b57bda: A dev log line too long for the pane now wraps onto the next line, and re-wraps when the terminal resizes.
 - c567fea: Set all packages' node floor to LTS.
 - 5b57bda: A hot reload now logs one line worded by what changed, `Unloaded` on a delete, `Registered` on a new file, and `Reloaded` with a duration on an edit.
-- Updated dependencies [c567fea]
-- Updated dependencies [0642de5]
-- Updated dependencies [814902a]
-- Updated dependencies [c567fea]
-- Updated dependencies [5b57bda]
-- Updated dependencies [0642de5]
-- Updated dependencies [d470ad4]
-- Updated dependencies [d470ad4]
-- Updated dependencies [814902a]
+- Updated dependencies [c567fea, 0642de5, 814902a, 5b57bda, d470ad4]
     - @seedcord/core@0.1.1
     - @seedcord/errors@0.3.1
     - @seedcord/logger@0.1.1
@@ -253,25 +193,7 @@
 
 - 789f17a: Raise discord.js to `^14.27.0`, `@discordjs/rest` to `^2.6.2`, and discord-api-types to `^0.38.50`.
 - 701b669: Require envapt `^8.1.0`. An older pin in your own bot installs a second copy whose `Envapter` state splits from the framework's.
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [701b669]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [93544a8]
+- Updated dependencies [789f17a, 701b669, 93544a8]
     - @seedcord/core@0.1.0
     - @seedcord/types@0.8.0
     - @seedcord/utils@0.8.0
@@ -285,9 +207,6 @@
 
 - 7174db3: The dev sidebar no longer shows the config paths and now shows the framework version. The rail width locks at the first running render of each run.
 - Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
     - @seedcord/core@0.1.0-next.2
     - @seedcord/types@0.8.0-next.3
     - @seedcord/services@0.9.0-next.4
@@ -298,9 +217,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [b384e8f]
-- Updated dependencies [b384e8f]
-- Updated dependencies [7f4fb2e]
+- Updated dependencies [b384e8f, 7f4fb2e]
     - @seedcord/errors@0.3.0-next.2
     - @seedcord/core@0.1.0-next.1
     - @seedcord/services@0.9.0-next.3
@@ -328,9 +245,7 @@
 
 - c046193: Measure the `seedcord dev` layout in `useLayoutEffect` so the first frame renders at the correct size.
 - c046193: Modernize internals via the curated eslint-plugin-unicorn rules (modern array, string, and number APIs, and `Error.isError` in error checks). Behavior-preserving, no public API change.
-- Updated dependencies [c046193]
-- Updated dependencies [d8b91f5]
-- Updated dependencies [c046193]
+- Updated dependencies [c046193, d8b91f5]
     - @seedcord/services@0.9.0-next.1
     - @seedcord/utils@0.8.0-next.1
     - @seedcord/types@0.8.0-next.1
@@ -346,8 +261,6 @@
 
 - 8635423: Decouple HMR from vite's `import.meta.hot` behind a typed `DevChannel`. Drop the `HmrModuleHandler` `name` option where you construct the handler, it was only an internal cache key and is no longer accepted.
 - Updated dependencies [8635423]
-- Updated dependencies [8635423]
-- Updated dependencies [8635423]
     - @seedcord/errors@0.2.2-next.0
     - @seedcord/types@0.7.2-next.0
     - @seedcord/services@0.8.3-next.0
@@ -359,12 +272,7 @@
 
 - 0a19719: small fix in the command desc
 - 78377fa: update LICENSE copyright year
-- Updated dependencies [78377fa]
-- Updated dependencies [c3613bd]
-- Updated dependencies [0a19719]
-- Updated dependencies [78377fa]
-- Updated dependencies [78377fa]
-- Updated dependencies [78377fa]
+- Updated dependencies [78377fa, c3613bd, 0a19719]
     - @seedcord/utils@0.7.0
     - @seedcord/errors@0.2.1
     - @seedcord/services@0.8.2
@@ -380,11 +288,7 @@
 ### Patch Changes
 
 - 043e2a1: Bump non-breaking runtime dependencies (envapt 6.0.2, discord-api-types 0.38.49, mongoose 9.7.1, ink 7.1.0, typescript-eslint 8.61.1, tailwindcss peer 4.3.1).
-- Updated dependencies [043e2a1]
-- Updated dependencies [7121c18]
-- Updated dependencies [7121c18]
-- Updated dependencies [7121c18]
-- Updated dependencies [7121c18]
+- Updated dependencies [043e2a1, 7121c18]
     - @seedcord/services@0.8.1
     - @seedcord/utils@0.6.1
     - @seedcord/errors@0.2.0
@@ -395,12 +299,7 @@
 ### Patch Changes
 
 - 6e39348: Depend on `@seedcord/errors` directly for the CLI's own throws, and correct the config-schema default-value tsdoc tags.
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
-- Updated dependencies [180b5a9]
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
+- Updated dependencies [6e39348, 180b5a9]
     - @seedcord/services@0.8.0
     - @seedcord/types@0.6.0
     - @seedcord/errors@0.1.0
@@ -430,15 +329,6 @@
     - Read already-entered sibling options through `this.options`, restricted to the kinds Discord resolves during autocomplete (string, integer, number, boolean) and every read returns `T | null` since a sibling is partial while the user is still typing. The focused value is always a string, even for an integer or number option, because Discord delivers the partial input unparsed. One handler can serve several commands with `@AutocompleteRoute('search', 'find')`, and `this.route` reports which one fired.
     - **BREAKING**: `AutocompleteHandler` is now generic over its command route(s) and `@AutocompleteRoute` takes command routes only, replacing the previous per-field `(commandRoutes, focusedFields)` registration that registered one handler per field. Branch on the focused field with `this.match` instead.
 - Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
     - @seedcord/types@0.5.0
     - @seedcord/utils@0.5.0
     - @seedcord/services@0.7.1
@@ -464,26 +354,7 @@
 - 7308d36: `seedcord build` now emits self-contained source maps (`--sourceMap --inlineSources`), so production stack traces resolve back to the original TypeScript. Run the built output with `node --enable-source-maps`.
 - fe77998: build pipeline migrated from `tsup` to `tsdown`. each published package now ships `dist/index.d.mts` + `dist/index.d.cts` (cjs is a one-line re-export stub) with a per-condition `exports` map. source-level public API unchanged. `@seedcord/tsup-config` renamed to `@seedcord/tsdown-config` and made private.
 - fe77998: bump peer floor: typescript `^6.0.3`, node `^22.13`. shared `tsconfig/base.json` now sets `esModuleInterop: true` and `types: ["node"]` for ts6's removed implicit defaults. no public API changes.
-- Updated dependencies [225977a]
-- Updated dependencies [2c4201b]
-- Updated dependencies [b933d63]
-- Updated dependencies [0083461]
-- Updated dependencies [80ec3d0]
-- Updated dependencies [a34366b]
-- Updated dependencies [0083461]
-- Updated dependencies [12261b8]
-- Updated dependencies [0083461]
-- Updated dependencies [5ab61d1]
-- Updated dependencies [d938005]
-- Updated dependencies [5e4bf42]
-- Updated dependencies [12261b8]
-- Updated dependencies [7308d36]
-- Updated dependencies [7308d36]
-- Updated dependencies [7308d36]
-- Updated dependencies [fe77998]
-- Updated dependencies [a34366b]
-- Updated dependencies [fe77998]
-- Updated dependencies [7e6d80e]
+- Updated dependencies [225977a, 2c4201b, b933d63, 0083461, 80ec3d0, a34366b, 12261b8, 5ab61d1, d938005, 5e4bf42, 7308d36, fe77998, 7e6d80e]
     - @seedcord/services@0.7.0
     - @seedcord/types@0.4.0
     - @seedcord/utils@0.4.0

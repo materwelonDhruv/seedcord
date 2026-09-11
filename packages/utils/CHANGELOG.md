@@ -4,8 +4,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [b3d1713]
-- Updated dependencies [4013669]
+- Updated dependencies [b3d1713, 4013669]
     - @seedcord/errors@0.7.0
     - @seedcord/types@0.12.0
 
@@ -13,8 +12,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [af1b2f8, f89d8c9]
     - @seedcord/errors@0.6.0
     - @seedcord/types@0.11.0
 
@@ -27,13 +25,7 @@
 
     Fixed `longestStringLength([])` returning `-Infinity` instead of `0`.
 
-- Updated dependencies [1bf7d89]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [5b15463]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [0ad8bd1]
-- Updated dependencies [554129a]
+- Updated dependencies [1bf7d89, 9b6a31c, 5b15463, 554129a, 0ad8bd1]
     - @seedcord/errors@0.5.0
     - @seedcord/types@0.10.0
 
@@ -63,17 +55,7 @@
 - a8d7b5f: Rewrote package descriptions for all packages. Also added keywords.
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
-- Updated dependencies [1364c82]
-- Updated dependencies [97b62ef]
-- Updated dependencies [aa6bb3a]
-- Updated dependencies [7553449]
-- Updated dependencies [f39cde0]
-- Updated dependencies [a259cdc]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [e11cbb3]
+- Updated dependencies [1364c82, 97b62ef, aa6bb3a, 7553449, f39cde0, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, e11cbb3]
     - @seedcord/errors@0.4.0
     - @seedcord/types@0.9.0
 
@@ -81,8 +63,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [8e8e952]
-- Updated dependencies [527a465]
+- Updated dependencies [8e8e952, 527a465]
     - @seedcord/errors@0.3.4
     - @seedcord/types@0.8.2
 
@@ -90,7 +71,6 @@
 
 ### Patch Changes
 
-- Updated dependencies [dfd7dc2]
 - Updated dependencies [dfd7dc2]
     - @seedcord/errors@0.3.3
 
@@ -109,9 +89,7 @@
 
 - c567fea: Bump deps.
 - c567fea: Set all packages' node floor to LTS.
-- Updated dependencies [c567fea]
-- Updated dependencies [0642de5]
-- Updated dependencies [c567fea]
+- Updated dependencies [c567fea, 0642de5]
     - @seedcord/errors@0.3.1
     - @seedcord/types@0.8.1
 
@@ -128,11 +106,6 @@
 ### Patch Changes
 
 - 789f17a: Raise discord.js to `^14.27.0`, `@discordjs/rest` to `^2.6.2`, and discord-api-types to `^0.38.50`.
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
 - Updated dependencies [789f17a]
     - @seedcord/types@0.8.0
     - @seedcord/errors@0.3.0
@@ -155,7 +128,6 @@
 - 0a19719: Remove unused exports.
 - 78377fa: add examples to some utils that should have them
 - 78377fa: update LICENSE copyright year
-- Updated dependencies [78377fa]
 - Updated dependencies [78377fa]
     - @seedcord/types@0.7.1
 
@@ -181,8 +153,6 @@
 ### Patch Changes
 
 - Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
     - @seedcord/types@0.6.0
 
 ## 0.5.0
@@ -197,9 +167,6 @@
     - Moved the route-string assembly to `@seedcord/utils/internal`, shared by the framework and `seedcord codegen` so a dispatched interaction and a generated registry key can never diverge. The interaction-to-route extraction is internal now.
     - Removed the unused `SeedcordErrorCode.UtilInvalidSlashRouteArgument`.
 - 19bae0a: Fix `roundToDenomination`'s second example
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
 - Updated dependencies [19bae0a]
     - @seedcord/types@0.5.0
 
@@ -224,14 +191,7 @@
 - 7308d36: `filterCirculars` now returns a serializable `{ '[unserializable]': reason }` placeholder when a value cannot be made JSON-safe, instead of returning the original value (which would re-throw in the caller's own `JSON.stringify`). `traverseDirectory` logs the directory path and cause on a read failure.
 - fe77998: build pipeline migrated from `tsup` to `tsdown`. each published package now ships `dist/index.d.mts` + `dist/index.d.cts` (cjs is a one-line re-export stub) with a per-condition `exports` map. source-level public API unchanged. `@seedcord/tsup-config` renamed to `@seedcord/tsdown-config` and made private.
 - fe77998: bump peer floor: typescript `^6.0.3`, node `^22.13`. shared `tsconfig/base.json` now sets `esModuleInterop: true` and `types: ["node"]` for ts6's removed implicit defaults. no public API changes.
-- Updated dependencies [225977a]
-- Updated dependencies [a34366b]
-- Updated dependencies [5e4bf42]
-- Updated dependencies [7308d36]
-- Updated dependencies [fe77998]
-- Updated dependencies [a34366b]
-- Updated dependencies [fe77998]
-- Updated dependencies [7e6d80e]
+- Updated dependencies [225977a, a34366b, 5e4bf42, 7308d36, fe77998, 7e6d80e]
     - @seedcord/types@0.4.0
 
 ## 0.3.8
@@ -239,9 +199,7 @@
 ### Patch Changes
 
 - f8fbe70: bump general dependencies
-- Updated dependencies [f354d30]
-- Updated dependencies [f8fbe70]
-- Updated dependencies [f8fbe70]
+- Updated dependencies [f354d30, f8fbe70]
     - @seedcord/services@0.6.0
     - @seedcord/types@0.3.5
 
@@ -250,7 +208,6 @@
 ### Patch Changes
 
 - 1d8986b: bump deps
-- Updated dependencies [1d8986b]
 - Updated dependencies [1d8986b]
     - @seedcord/types@0.3.4
     - @seedcord/services@0.5.1
@@ -268,7 +225,6 @@
 ### Patch Changes
 
 - a1a90e6: custom seedcord errors and error codes
-- Updated dependencies [a1a90e6]
 - Updated dependencies [a1a90e6]
     - @seedcord/services@0.4.0
 
@@ -315,10 +271,6 @@
 
 - daf5dd9: improve type exports and tsdoc
 - Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
     - @seedcord/services@0.3.0
     - @seedcord/types@0.3.0
 
@@ -328,8 +280,7 @@
 
 - 8374f01: set up project-wide ci/cd
 - 31d1a56: bump deps
-- Updated dependencies [8374f01]
-- Updated dependencies [31d1a56]
+- Updated dependencies [8374f01, 31d1a56]
     - @seedcord/services@0.2.2
     - @seedcord/types@0.2.2
 

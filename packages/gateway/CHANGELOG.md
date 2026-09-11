@@ -6,13 +6,7 @@
 
 - 0988f67: The transport packages now export `prefixOf`, `decodeFor`, and the custom-id types. Reading a raw customId no longer needs `@seedcord/custom-id` as a direct dependency.
 - 4013669: Halved the drain window to 5000ms for http bots, the same window gateway uses. An http shutdown now completes there, where it used to report a failure. Both transports log how many handlers were still running when the window closed.
-- Updated dependencies [4013669]
-- Updated dependencies [0988f67]
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [b3d1713]
-- Updated dependencies [4163b96]
-- Updated dependencies [4013669]
+- Updated dependencies [4013669, 0988f67, b3d1713, 4163b96]
     - @seedcord/core@0.6.0
     - @seedcord/custom-id@0.2.0
     - @seedcord/errors@0.7.0
@@ -30,11 +24,7 @@
 
 ### Patch Changes
 
-- Updated dependencies [f89d8c9]
-- Updated dependencies [f89d8c9]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [af1b2f8]
-- Updated dependencies [f89d8c9]
+- Updated dependencies [f89d8c9, af1b2f8]
     - @seedcord/core@0.5.0
     - @seedcord/errors@0.6.0
     - @seedcord/types@0.11.0
@@ -48,9 +38,6 @@
 ### Patch Changes
 
 - 71c1896: `CustomId` moved to `@seedcord/custom-id`. Core still exports it under the same name. The new `setCustomIdErrors` swaps the card a stale or corrupt button shows.
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
-- Updated dependencies [71c1896]
 - Updated dependencies [71c1896]
     - @seedcord/custom-id@0.1.0
     - @seedcord/core@0.4.1
@@ -83,28 +70,7 @@
 - 554129a: Hide the internals that were already marked internal. `core.shutdown` and `core.startup` carry `addTask` alone, `core.bus` carries `publish` and the listener methods, and `core.bot` drops the controllers and the lifecycle calls. The http transport's `Core` declares the two lifecycle members, and a core built by `createSeedcord` throws from either one.
 - 58318fa: Fix TSDoc in `SlashHandler` and `getConfirmation`. They were showing the incorrect number of arguments for option getters.
 - 9b6a31c: A host whose startup failed used to tear down whichever host had replaced it, taking the replacement's signal handlers and logger config with it. Teardown now runs only for the host that is still live. A second `start()` racing the first rejects with the same error, where it used to resolve a half-started host.
-- Updated dependencies [1bf7d89]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [2cb3c87]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [554129a]
-- Updated dependencies [5b15463]
-- Updated dependencies [8dc4791]
-- Updated dependencies [554129a]
-- Updated dependencies [5f4e203]
-- Updated dependencies [554129a]
-- Updated dependencies [554129a]
-- Updated dependencies [0ad8bd1]
-- Updated dependencies [8dc4791]
-- Updated dependencies [6872865]
-- Updated dependencies [3ff40e7]
-- Updated dependencies [64c9a0e]
-- Updated dependencies [554129a]
-- Updated dependencies [9b6a31c]
-- Updated dependencies [0c6cdc8]
-- Updated dependencies [e4e8605]
-- Updated dependencies [554129a]
+- Updated dependencies [1bf7d89, 9b6a31c, 2cb3c87, 554129a, 5b15463, 8dc4791, 5f4e203, 0ad8bd1, 6872865, 3ff40e7, 64c9a0e, 0c6cdc8, e4e8605]
     - @seedcord/errors@0.5.0
     - @seedcord/core@0.4.0
     - @seedcord/event-emitter@0.1.5
@@ -118,10 +84,7 @@
 ### Patch Changes
 
 - a98d27b: A new `commandsDeployed` framework event fires after seedcord deploys your commands, carrying what Discord returned for the global and guild scopes. You can now read the bot's application id from `core.applicationId` on both transports.
-- Updated dependencies [a98d27b]
-- Updated dependencies [6b1cfbf]
-- Updated dependencies [aa4d4c0]
-- Updated dependencies [b29904c]
+- Updated dependencies [a98d27b, 6b1cfbf, aa4d4c0, b29904c]
     - @seedcord/core@0.3.1
     - @seedcord/errors@0.4.3
     - @seedcord/utils@0.8.7
@@ -144,8 +107,7 @@
 
 - 9c8e66a: _Kinda BREAKING:_ A transport plugin base no longer accepts `transport: 'any'` and the gateway base no longer accepts `runtime: 'edge'`. Extend `@seedcord/core/plugin` for a plugin that runs on either transport. This IS a bug fix. This should not have been allowed before.
 - 1d2f1e3: Updated TSDoc reference generation.
-- Updated dependencies [8f662bb]
-- Updated dependencies [1d2f1e3]
+- Updated dependencies [8f662bb, 1d2f1e3]
     - @seedcord/core@0.2.1
     - @seedcord/event-emitter@0.1.4
     - @seedcord/rate-limiter@0.1.4
@@ -173,22 +135,7 @@
 - 660a94d: Every package now declares Apache-2.0 along with its homepage, issue tracker, author, and funding link.
 - c50ad6c: Every package now has a README describing that package, with badges and an install line. Seven of them previously shipped a copy of the root README that named no package at all.
 - ad1e4d5: Every fault now reaches your subscribers. A rare bug used to stay silent while a common one kept throwing on the same route. Webhook cards still group repeats to one a minute, and each carries how many it covers.
-- Updated dependencies [1364c82]
-- Updated dependencies [97b62ef]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [aa6bb3a]
-- Updated dependencies [7553449]
-- Updated dependencies [f39cde0]
-- Updated dependencies [5c7c3e2]
-- Updated dependencies [a259cdc]
-- Updated dependencies [1364c82]
-- Updated dependencies [a8d7b5f]
-- Updated dependencies [660a94d]
-- Updated dependencies [c50ad6c]
-- Updated dependencies [c343f4a]
-- Updated dependencies [e11cbb3]
-- Updated dependencies [ad1e4d5]
-- Updated dependencies [1364c82]
+- Updated dependencies [1364c82, 97b62ef, ad1e4d5, aa6bb3a, 7553449, f39cde0, 5c7c3e2, a259cdc, a8d7b5f, 660a94d, c50ad6c, c343f4a, e11cbb3]
     - @seedcord/errors@0.4.0
     - @seedcord/logger@0.2.0
     - @seedcord/core@0.2.0
@@ -202,9 +149,7 @@
 ### Patch Changes
 
 - 71a0b99: _Kinda BREAKING?:_ envapt is a peer dependency now. Your project and seedcord load one copy, so the framework reads the config you set through `Envapter`.
-- Updated dependencies [71a0b99]
-- Updated dependencies [8e8e952]
-- Updated dependencies [527a465]
+- Updated dependencies [71a0b99, 8e8e952, 527a465]
     - @seedcord/core@0.1.4
     - @seedcord/logger@0.1.4
     - @seedcord/errors@0.3.4
@@ -219,9 +164,7 @@
 
 - 9b0a6a6: 'reflect-metadata' is a direct dep now. No need to import it at the top. The packages import it in their index files, first thing.
 - e894fbf: Also export the ComponentHandler from handlers index for AE
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [dfd7dc2]
-- Updated dependencies [9b0a6a6]
+- Updated dependencies [dfd7dc2, 9b0a6a6]
     - @seedcord/errors@0.3.3
     - @seedcord/logger@0.1.3
     - @seedcord/core@0.1.3
@@ -251,15 +194,7 @@
 - 5b57bda: A hot reload now logs one line worded by what changed, `Unloaded` on a delete, `Registered` on a new file, and `Reloaded` with a duration on an edit.
 - 5b57bda: A failed startup no longer drops sinks installed through `installSink`, so the `seedcord dev` log view keeps working after one.
 - d470ad4: Now uses the appropriate log levels for logs across the lifecycle of the transports and plugins.
-- Updated dependencies [c567fea]
-- Updated dependencies [0642de5]
-- Updated dependencies [814902a]
-- Updated dependencies [c567fea]
-- Updated dependencies [5b57bda]
-- Updated dependencies [0642de5]
-- Updated dependencies [d470ad4]
-- Updated dependencies [d470ad4]
-- Updated dependencies [814902a]
+- Updated dependencies [c567fea, 0642de5, 814902a, 5b57bda, d470ad4]
     - @seedcord/core@0.1.1
     - @seedcord/errors@0.3.1
     - @seedcord/logger@0.1.1
@@ -331,26 +266,7 @@
 
     A `once` event handler no longer runs twice when its event fires concurrently. A throwing `core.bus.on()` listener no longer escapes `publish` or skips the listeners after it. Editing a subscriber file hot-reloads it in dev.
 
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [701b669]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [789f17a]
-- Updated dependencies [93544a8]
+- Updated dependencies [789f17a, 701b669, 93544a8]
     - @seedcord/core@0.1.0
     - @seedcord/types@0.8.0
     - @seedcord/utils@0.8.0
@@ -383,9 +299,6 @@
 
 - 7174db3: Move the interaction metadata keys, the gate notices, and `RegisterCommand` from `seedcord` to `@seedcord/core`. `seedcord` re-exports them. `OnCooldown` is created with `resetAt` (renamed from the unpublished `expires`).
 - Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
-- Updated dependencies [7174db3]
     - @seedcord/core@0.1.0-next.2
     - @seedcord/types@0.8.0-next.3
     - @seedcord/services@0.9.0-next.4
@@ -407,9 +320,7 @@
 
     **BREAKING:** `@seedcord/kit` is removed. Import its former exports (`Notice`, `Fault`, `Silence`, `CustomId`, `paginate`, `PageView`, `BuilderComponent`, `RowComponent`) from `seedcord` or `@seedcord/core`.
 
-- Updated dependencies [b384e8f]
-- Updated dependencies [b384e8f]
-- Updated dependencies [7f4fb2e]
+- Updated dependencies [b384e8f, 7f4fb2e]
     - @seedcord/errors@0.3.0-next.2
     - @seedcord/core@0.1.0-next.1
     - @seedcord/services@0.9.0-next.3
@@ -437,9 +348,7 @@
 ### Patch Changes
 
 - c046193: Modernize internals via the curated eslint-plugin-unicorn rules (modern array, string, and number APIs, and `Error.isError` in error checks). Behavior-preserving, no public API change.
-- Updated dependencies [c046193]
-- Updated dependencies [d8b91f5]
-- Updated dependencies [c046193]
+- Updated dependencies [c046193, d8b91f5]
     - @seedcord/services@0.9.0-next.1
     - @seedcord/utils@0.8.0-next.1
     - @seedcord/kit@0.3.0-next.1
@@ -458,8 +367,6 @@
 - 8635423: Register the subscriber bus for HMR so editing a subscriber file hot-reloads it in dev. The wiring existed but was never invoked, so subscriber edits silently needed a full restart.
 - 8635423: Throw on a duplicate interaction route, and on two interaction middleware classes sharing a name. Before, the later registration silently overwrote the earlier one.
 - 8635423: Fix a `once` event handler running twice when the same event fired concurrently. Two overlapping fires both passed the spent-handler check before either marked it spent.
-- Updated dependencies [8635423]
-- Updated dependencies [8635423]
 - Updated dependencies [8635423]
     - @seedcord/errors@0.2.2-next.0
     - @seedcord/types@0.7.2-next.0
@@ -481,12 +388,7 @@
 - 78377fa: add examples to some utils that should have them
 - 51006e2: `__componentDefs` phantom field should be internal
 - 78377fa: update LICENSE copyright year
-- Updated dependencies [78377fa]
-- Updated dependencies [c3613bd]
-- Updated dependencies [0a19719]
-- Updated dependencies [78377fa]
-- Updated dependencies [78377fa]
-- Updated dependencies [78377fa]
+- Updated dependencies [78377fa, c3613bd, 0a19719]
     - @seedcord/utils@0.7.0
     - @seedcord/kit@0.2.0
     - @seedcord/errors@0.2.1
@@ -505,12 +407,7 @@
 
 - 043e2a1: Bump non-breaking runtime dependencies (envapt 6.0.2, discord-api-types 0.38.49, mongoose 9.7.1, ink 7.1.0, typescript-eslint 8.61.1, tailwindcss peer 4.3.1).
 - 7121c18: Add `seedcord commands` to find and delete guild application commands that duplicate a global command (or, with `--purge`, every command in a guild). Run it with no flags for a guided wizard, or headlessly with `--clean --guild <ids>` or `--all-guilds` plus `--apply`, `--purge`, and `--yes`. It reads deployed state over REST, dry-runs by default, and never touches global commands.
-- Updated dependencies [043e2a1]
-- Updated dependencies [7121c18]
-- Updated dependencies [7121c18]
-- Updated dependencies [7121c18]
-- Updated dependencies [bd3293c]
-- Updated dependencies [7121c18]
+- Updated dependencies [043e2a1, 7121c18, bd3293c]
     - @seedcord/services@0.8.1
     - @seedcord/utils@0.6.1
     - @seedcord/errors@0.2.0
@@ -576,12 +473,7 @@
 - 180b5a9: Upgrade the envapt runtime dependency to 6.0.0.
 - 74ea604: HMR now explicitly also runs in the test environment, not only in development.
 - 3c94f9e: Harden interaction routing against metadata-key collisions. Route metadata is now keyed by unique Symbols instead of plain strings, so a third-party `Reflect.defineMetadata` call using a generic string key can no longer overwrite a handler's routes.
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
-- Updated dependencies [180b5a9]
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
-- Updated dependencies [6e39348]
+- Updated dependencies [6e39348, 180b5a9]
     - @seedcord/services@0.8.0
     - @seedcord/types@0.6.0
     - @seedcord/errors@0.1.0
@@ -625,15 +517,6 @@
 - 19bae0a: - Move the HMR types (`HmrEventType`, `HmrUpdateEvent`, `HmrAware`, and the framework/CLI event maps) from `@seedcord/cli` to `@seedcord/types/internal`. `seedcord` and `@seedcord/plugins` imported them only as types but listed `@seedcord/cli` in their runtime `dependencies`, which pulled the CLI and its Ink, React, Vite, and tsx tree into every install. Both now read the types from `@seedcord/types` and drop `@seedcord/cli` from their dependencies, so installing `seedcord` no longer installs the CLI.
     - **BREAKING** (`@seedcord/cli`): the HMR types are no longer re-exported from `@seedcord/cli` and the `@seedcord/cli/vite-hmr` subpath is removed. Import these types from `@seedcord/types` instead. The Vite `CustomEventMap` augmentation stays internal to the framework and the CLI.
 - Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
-- Updated dependencies [19bae0a]
     - @seedcord/types@0.5.0
     - @seedcord/utils@0.5.0
     - @seedcord/services@0.7.1
@@ -669,30 +552,7 @@
 - cf9766d: make sure `@RegisterEffect` can only be used on an EffectHandler. this is the expected behavior so it isn't a breaking change.
 - fe77998: build pipeline migrated from `tsup` to `tsdown`. each published package now ships `dist/index.d.mts` + `dist/index.d.cts` (cjs is a one-line re-export stub) with a per-condition `exports` map. source-level public API unchanged. `@seedcord/tsup-config` renamed to `@seedcord/tsdown-config` and made private.
 - fe77998: bump peer floor: typescript `^6.0.3`, node `^22.13`. shared `tsconfig/base.json` now sets `esModuleInterop: true` and `types: ["node"]` for ts6's removed implicit defaults. no public API changes.
-- Updated dependencies [225977a]
-- Updated dependencies [2c4201b]
-- Updated dependencies [2c4201b]
-- Updated dependencies [b933d63]
-- Updated dependencies [0083461]
-- Updated dependencies [5a529d5]
-- Updated dependencies [fe77998]
-- Updated dependencies [80ec3d0]
-- Updated dependencies [a34366b]
-- Updated dependencies [0083461]
-- Updated dependencies [12261b8]
-- Updated dependencies [0083461]
-- Updated dependencies [5ab61d1]
-- Updated dependencies [d938005]
-- Updated dependencies [5e4bf42]
-- Updated dependencies [12261b8]
-- Updated dependencies [7308d36]
-- Updated dependencies [7308d36]
-- Updated dependencies [7308d36]
-- Updated dependencies [7308d36]
-- Updated dependencies [fe77998]
-- Updated dependencies [a34366b]
-- Updated dependencies [fe77998]
-- Updated dependencies [7e6d80e]
+- Updated dependencies [225977a, 2c4201b, b933d63, 0083461, 5a529d5, fe77998, 80ec3d0, a34366b, 12261b8, 5ab61d1, d938005, 5e4bf42, 7308d36, 7e6d80e]
     - @seedcord/services@0.7.0
     - @seedcord/types@0.4.0
     - @seedcord/utils@0.4.0
@@ -704,9 +564,7 @@
 
 - f8fbe70: discord.js was bumped a patch version
 - f8fbe70: bump general dependencies
-- Updated dependencies [f354d30]
-- Updated dependencies [f8fbe70]
-- Updated dependencies [f8fbe70]
+- Updated dependencies [f354d30, f8fbe70]
     - @seedcord/services@0.6.0
     - @seedcord/types@0.3.5
     - @seedcord/utils@0.3.8
@@ -717,7 +575,6 @@
 
 - 1d8986b: bump deps
 - 1d8986b: bump djs to 14.25.0
-- Updated dependencies [1d8986b]
 - Updated dependencies [1d8986b]
     - @seedcord/types@0.3.4
     - @seedcord/utils@0.3.7
@@ -759,8 +616,7 @@
 ### Patch Changes
 
 - 485670a: add optional custom error input for hasPermsToAssign function as well
-- Updated dependencies [6e067da]
-- Updated dependencies [c0bf149]
+- Updated dependencies [6e067da, c0bf149]
     - @seedcord/utils@0.3.6
     - @seedcord/services@0.5.0
 
@@ -801,7 +657,6 @@
 - a1a90e6: custom seedcord errors and error codes
 - a1a90e6: better validation for UNKNOWN_EXCEPTION_WEBHOOK_URL
 - a1a90e6: make sure that a registered command can only ever be guild OR global. this should not be breaking. If it is, your code was not following best practices.
-- Updated dependencies [a1a90e6]
 - Updated dependencies [a1a90e6]
     - @seedcord/services@0.4.0
     - @seedcord/utils@0.3.5
@@ -885,10 +740,6 @@
 - daf5dd9: update effects related docs for clarity
 - daf5dd9: export missing classes and entities
 - Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
-- Updated dependencies [daf5dd9]
     - @seedcord/services@0.3.0
     - @seedcord/types@0.3.0
     - @seedcord/utils@0.3.0
@@ -900,8 +751,7 @@
 - 8374f01: set up project-wide ci/cd
 - 31d1a56: bump deps
 - 5625037: add a way to specify HOST for healthcheck
-- Updated dependencies [8374f01]
-- Updated dependencies [31d1a56]
+- Updated dependencies [8374f01, 31d1a56]
     - @seedcord/services@0.2.2
     - @seedcord/types@0.2.2
     - @seedcord/utils@0.2.3
@@ -972,8 +822,7 @@
 ### Patch Changes
 
 - 0ed832b: debug logging in emoji injector
-- Updated dependencies [dabf324]
-- Updated dependencies [f0650e8]
+- Updated dependencies [dabf324, f0650e8]
     - @seedcord/utils@0.1.0
     - @seedcord/services@0.1.0
 
@@ -1000,9 +849,5 @@
 - 8c4ce41: Added eslint for TSDoc
 - 48a8c9b: add LICENSE to all package roots
 - 48a8c9b: add TSDoc to almost everything
-- Updated dependencies [d9e2a50]
-- Updated dependencies [48a8c9b]
-- Updated dependencies [8c4ce41]
-- Updated dependencies [48a8c9b]
-- Updated dependencies [48a8c9b]
+- Updated dependencies [d9e2a50, 48a8c9b, 8c4ce41]
     - @seedcord/types@0.1.0
