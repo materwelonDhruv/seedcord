@@ -2,6 +2,7 @@ import { Logger, LoggerChannelRegistry } from '@seedcord/logger';
 import { afterEach, describe, expect, it, vi, type MockInstance } from 'vitest';
 
 import { publishResponse } from '#reply/responseReport';
+import { DispatchContext } from '#src/dispatch/DispatchContext';
 import { Bus } from '#subscribers/Bus';
 
 import type { CoreBase } from '#interfaces/CoreBase';
@@ -31,8 +32,8 @@ describe('reply timing', () => {
         });
 
         publishResponse(
-            { bus: stubBus(), interactionId: 'i1' },
-            { routeId: 'slash:ban', method: 'reply', startedAt: performance.now(), outcome: 'sent', messageId: 'm1' }
+            { bus: stubBus(), dispatch: new DispatchContext('slash:ban'), interactionId: 'i1' },
+            { method: 'reply', startedAt: performance.now(), outcome: 'sent', messageId: 'm1' }
         );
         handle.dispose();
 
@@ -50,8 +51,8 @@ describe('reply timing', () => {
         clock += 88;
 
         publishResponse(
-            { bus: stubBus(), interactionId: 'i1' },
-            { routeId: 'slash:ban', method: 'reply', startedAt, outcome: 'sent', messageId: 'm1' }
+            { bus: stubBus(), dispatch: new DispatchContext('slash:ban'), interactionId: 'i1' },
+            { method: 'reply', startedAt, outcome: 'sent', messageId: 'm1' }
         );
 
         expect(trace).toHaveBeenCalledTimes(1);
@@ -66,9 +67,8 @@ describe('reply timing', () => {
         const trace = traceSpy();
 
         publishResponse(
-            { bus: stubBus(), interactionId: 'i1' },
+            { bus: stubBus(), dispatch: new DispatchContext('slash:ban'), interactionId: 'i1' },
             {
-                routeId: 'slash:ban',
                 method: 'respond',
                 startedAt: performance.now(),
                 outcome: 'failed',

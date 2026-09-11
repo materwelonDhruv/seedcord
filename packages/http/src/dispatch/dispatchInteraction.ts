@@ -102,8 +102,8 @@ async function sendGuarded(routeId: string, send: () => Promise<unknown>): Promi
 
 // a message reply is illegal on autocomplete, so empty choices are the only way to clear the pending state
 async function respondEmptyChoices(scope: FaultScope): Promise<void> {
-    const telemetry = { bus: scope.core.bus, interactionId: scope.payload.id };
-    await reportedWrite(telemetry, scope.routeId, 'respond', () =>
+    const telemetry = { bus: scope.core.bus, dispatch: scope.dispatch, interactionId: scope.payload.id };
+    await reportedWrite(telemetry, 'respond', () =>
         scope.core.rest.post(Routes.interactionCallback(scope.payload.id, scope.payload.token), {
             body: { type: InteractionResponseType.ApplicationCommandAutocompleteResult, data: { choices: [] } }
         })
@@ -119,7 +119,7 @@ function renderContext(scope: FaultScope, uuid: RenderContext['uuid']): RenderCo
 async function handleNotice(notice: Notice, uuid: RenderContext['uuid'], scope: FaultScope): Promise<void> {
     if (notice.report) {
         logger().error(`${notice.name}: ${paint.mute(uuid)}`, notice);
-        reportFault(notice, uuid, scope.routeId, scope.payload, scope.core);
+        reportFault(notice, uuid, scope.dispatch, scope.payload, scope.core);
     }
     const { sender } = scope;
     if (!sender) {
@@ -136,7 +136,7 @@ async function handleRawFault(error: Error, uuid: RenderContext['uuid'], scope: 
     if (core.config.errors?.errorStack ?? false) logger().error(paint.mute(uuid), error);
     else logger().error(`${paint.mute(uuid)} | ${error.message}`);
 
-    reportFault(error, uuid, scope.routeId, scope.payload, core);
+    reportFault(error, uuid, scope.dispatch, scope.payload, core);
 
     if (!sender) {
         await sendGuarded(scope.routeId, () => respondEmptyChoices(scope));
@@ -202,19 +202,21 @@ function freshScope(
         payload,
         routeId,
         dispatch,
-        sender: match.kind === InteractionKind.Autocomplete ? null : new ReplySender(ref, core.rest, routeId, core.bus)
+        sender: match.kind === InteractionKind.Autocomplete ? null : new ReplySender(ref, core.rest, dispatch, core.bus)
     };
 }
 
 function dispatchReporter(
     match: ResolvedRoute,
     payload: ValidInteractionTypes,
-    core: Core
+    core: Core,
+    dispatchId: string
 ): (outcome: DispatchOutcome) => void {
     const startedAt = performance.now();
     const queuedMs = queuedMsFor(payload.id);
     return (outcome) => {
         reportDispatch(core.bus, {
+            dispatchId,
             routeId: unhandledRouteId(match),
             interactionId: payload.id,
             kind: match.kind,
@@ -306,11 +308,10 @@ async function refusalBeforeHandler(step: BeforeHandler): Promise<{ caught: unkn
 // a null return means the refusal is already sent
 export async function dispatchInteraction(args: DispatchArgs): Promise<(() => Promise<void>) | null> {
     const { match, payload, core } = args;
-    const report = dispatchReporter(match, payload, core);
-
     const routeId = unhandledRouteId(match);
     // allocated before the load so every fault path below can render against the same bag
     const dispatch = new DispatchContext(routeId);
+    const report = dispatchReporter(match, payload, core, dispatch.id);
 
     const Handler = await loadHandlerCtor(match, payload, core, dispatch, report);
     if (!Handler) return null;
@@ -370,7 +371,7 @@ async function gateRefusal(step: BeforeHandler): Promise<{ caught: unknown } | n
     try {
         await runHandlerGates(
             Handler,
-            interactionGateContext(payload, core, dispatch, match.routeId),
+            interactionGateContext(payload, core, dispatch),
             match.routeId ?? undefined,
             monitor?.observe
         );

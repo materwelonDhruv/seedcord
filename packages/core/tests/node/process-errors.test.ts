@@ -77,7 +77,7 @@ describe('process error handlers', () => {
             expect(reported).toHaveLength(1);
         });
         expect(reported[0]?.error).toBe(thrown);
-        expect(reported[0]?.routeId).toBe('process:unhandledRejection');
+        expect(reported[0]?.origin).toBe('process:unhandledRejection');
         expect(run).not.toHaveBeenCalled();
     });
 
@@ -92,7 +92,7 @@ describe('process error handlers', () => {
             expect(reported).toHaveLength(1);
         });
         expect(reported[0]?.error).toBe(thrown);
-        expect(reported[0]?.routeId).toBe('process:uncaughtException');
+        expect(reported[0]?.origin).toBe('process:uncaughtException');
         expect(run).toHaveBeenCalledWith(1);
     });
 

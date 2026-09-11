@@ -130,7 +130,7 @@ export function Cooldown(
     const anonId = anonSeq++;
     // routed keys stay stable across restarts, letting a durable store rebuild the same window
     const keyOf = (ctx: GateContextBase): string =>
-        `cooldown:${ctx.routeId ?? `anon${anonId}`}:${per}:w${windowMs}:l${options?.limit ?? 1}:${scopeValue(ctx, per)}`;
+        `cooldown:${ctx.declaredRoute ?? `anon${anonId}`}:${per}:w${windowMs}:l${options?.limit ?? 1}:${scopeValue(ctx, per)}`;
 
     return defineEffectGate(
         'Cooldown',

@@ -8,8 +8,7 @@ import type { APIUser } from 'discord-api-types/v10';
 export function interactionGateContext(
     payload: Repliables,
     core: Core,
-    dispatch: DispatchContext,
-    routeId: string | null
+    dispatch: DispatchContext
 ): InteractionGateContext {
     const member = payload.member ?? null;
     // discord sends member.user in a guild and the top-level user in a dm
@@ -29,6 +28,6 @@ export function interactionGateContext(
         memberPermissions: member ? BigInt(member.permissions) : null,
         // app_permissions is present on every interaction Discord delivers, including DMs
         appPermissions: BigInt(payload.app_permissions),
-        routeId
+        declaredRoute: null // runHandlerGates overwrites this with the matched route
     };
 }

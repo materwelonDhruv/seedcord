@@ -6,6 +6,7 @@ import { PublishDefault } from '#subscribers/publishDefault';
 
 import type { Bus } from '#subscribers/Bus';
 import type { ReplyMethod } from './ackLegality';
+import type { DispatchContext } from '../dispatch/DispatchContext';
 
 let replyLogger: Logger | undefined;
 function logger(): Logger {
@@ -15,6 +16,7 @@ function logger(): Logger {
 
 export interface ReplyTelemetry {
     readonly bus: Bus;
+    readonly dispatch: DispatchContext;
     readonly interactionId: string;
 }
 
@@ -22,7 +24,6 @@ export interface ReplyTelemetry {
 export type WriteMethod = ReplyMethod | 'respond';
 
 interface WriteStart {
-    readonly routeId: string;
     readonly method: WriteMethod;
     // performance.now() captured before the write began
     readonly startedAt: number;
@@ -43,8 +44,10 @@ export type ResponseReport = SentReport | FailedReport;
 /** @internal */
 export function publishResponse(telemetry: ReplyTelemetry, report: ResponseReport): void {
     const durationMs = performance.now() - report.startedAt;
+    const { routeId } = telemetry.dispatch;
     const write = {
-        routeId: report.routeId,
+        dispatchId: telemetry.dispatch.id,
+        routeId,
         interactionId: telemetry.interactionId,
         method: report.method,
         durationMs
@@ -58,26 +61,24 @@ export function publishResponse(telemetry: ReplyTelemetry, report: ResponseRepor
 
     // after publish so a throwing sink doesn't reach the publish above
     logger().trace(
-        `${paint.sky.bold(report.routeId)} ${report.method} ${report.outcome} ${paint.mute('in')} ${Math.round(durationMs)}ms`
+        `${paint.sky.bold(routeId)} ${report.method} ${report.outcome} ${paint.mute('in')} ${Math.round(durationMs)}ms`
     );
 }
 
 export async function reportedWrite<Result>(
     telemetry: ReplyTelemetry,
-    routeId: string,
     method: WriteMethod,
     write: () => Promise<Result>
 ): Promise<Result> {
     const startedAt = performance.now();
-    const result = await attemptWrite(telemetry, routeId, method, startedAt, write);
-    publishResponse(telemetry, { routeId, method, startedAt, outcome: 'sent', messageId: null });
+    const result = await attemptWrite(telemetry, method, startedAt, write);
+    publishResponse(telemetry, { method, startedAt, outcome: 'sent', messageId: null });
     return result;
 }
 
 // publishes the failed arm when write() throws, since the caller's success report sits after the write and a throw skips it
 export async function attemptWrite<Result>(
     telemetry: ReplyTelemetry,
-    routeId: string,
     method: WriteMethod,
     startedAt: number,
     write: () => Promise<Result>
@@ -86,7 +87,7 @@ export async function attemptWrite<Result>(
         return await write();
     } catch (caught) {
         const error = asError(caught);
-        publishResponse(telemetry, { routeId, method, startedAt, outcome: 'failed', error });
+        publishResponse(telemetry, { method, startedAt, outcome: 'failed', error });
         // rethrown raw
         throw caught;
     }

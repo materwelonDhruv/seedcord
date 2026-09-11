@@ -29,6 +29,7 @@ export function outcomeFor(caught: unknown): Exclude<DispatchOutcome, 'handled'>
 }
 
 interface DispatchReport {
+    readonly dispatchId: string;
     readonly routeId: string;
     readonly interactionId: string;
     readonly kind: `${InteractionKind}`;
@@ -61,6 +62,7 @@ export function queuedMsFor(interactionId: string): number {
 export function reportDispatch(bus: Bus, report: DispatchReport): void {
     const durationMs = performance.now() - report.startedAt;
     bus[PublishDefault]('interactionDispatched', {
+        dispatchId: report.dispatchId,
         routeId: report.routeId,
         interactionId: report.interactionId,
         kind: report.kind,

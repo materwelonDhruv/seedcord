@@ -40,7 +40,7 @@ export function handleEventFault(caught: unknown, fault: EventFault, core: Core)
     const actor = deriveEventActor(args);
     extractErrorResponse(error, core, {
         event: { name: eventName, handler: handlerName, args, channelId: actor.channelId },
-        routeId: `event:${eventName}:${handlerName}`,
+        origin: `event:${eventName}:${handlerName}`,
         dispatch,
         guild: actor.guild,
         user: actor.user

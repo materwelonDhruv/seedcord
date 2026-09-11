@@ -39,11 +39,11 @@ export interface GateContextBase {
      */
     readonly appPermissions: bigint | null;
     /**
-     * The dispatched handler as `kind:route` (`slash:daily`, `button:confirm`), or null off a route (a
-     * plain event handler, or a gate run outside a handler). `runHandlerGates` sets it from the handler's
-     * metadata. `Cooldown` uses it so its window is stable across restarts and isolates.
+     * The handler's own route, as `kind:route` (`slash:daily`, `button:confirm`). A handler registered
+     * on several reports the one this dispatch matched. Null when the handler declares none, which
+     * covers a plain event handler, the unhandled default, and a gate run outside a handler.
      */
-    readonly routeId: string | null;
+    readonly declaredRoute: string | null;
     /**
      * The bag for this dispatch, the same instance the handler and its middleware hold. Every middleware
      * runs before the first gate. A gate therefore reads what a middleware wrote.

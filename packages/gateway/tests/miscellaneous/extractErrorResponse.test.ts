@@ -42,7 +42,7 @@ describe('extractErrorResponse', () => {
         const denial = new Fault({ cause: new Error('write failed') });
         const result = extractErrorResponse(denial, mockCore(publish), {
             interaction: slashInteraction(),
-            routeId: 'slash:ban',
+            origin: 'slash:ban',
             dispatch,
             guild: null,
             user: null
@@ -62,7 +62,7 @@ describe('extractErrorResponse', () => {
     it('publishes unknownException for a raw, non-denial throw', () => {
         const publish = vi.fn();
         const result = extractErrorResponse(new Error('a bug'), mockCore(publish), {
-            routeId: 'autocomplete:raw-probe',
+            origin: 'autocomplete:raw-probe',
             dispatch,
             guild: null,
             user: null
@@ -71,17 +71,17 @@ describe('extractErrorResponse', () => {
         expect(publish).toHaveBeenCalledWith('unknownException', expect.objectContaining({ uuid: result.uuid }));
     });
 
-    it('publishes the routeId it was given, so a subscriber can group faults by route', () => {
+    it('publishes the origin it was given, so a subscriber can group faults by route', () => {
         const publish = vi.fn();
         extractErrorResponse(new Error('a bug'), mockCore(publish), {
-            routeId: 'slash:route-probe',
+            origin: 'slash:route-probe',
             dispatch,
             guild: null,
             user: null
         });
 
         const [, payload] = publish.mock.calls[0] as [string, SubscriptionData<'unknownException'>];
-        expect(payload.routeId).toBe('slash:route-probe');
+        expect(payload.origin).toBe('slash:route-probe');
     });
 
     it('publishes both bugs when one route throws two different errors', () => {
@@ -89,7 +89,7 @@ describe('extractErrorResponse', () => {
         const core = mockCore(publish);
         const origin = {
             interaction: slashInteraction('profile'),
-            routeId: 'slash:profile',
+            origin: 'slash:profile',
             dispatch,
             guild: null,
             user: null
@@ -111,7 +111,7 @@ describe('extractErrorResponse', () => {
         const user = { id: 'u1', username: 'uname', client: {} } as unknown as User;
 
         extractErrorResponse(new Error('a bug'), mockCore(publish), {
-            routeId: 'slash:scalar-probe',
+            origin: 'slash:scalar-probe',
             dispatch,
             guild,
             user
@@ -126,7 +126,7 @@ describe('extractErrorResponse', () => {
         const publish = vi.fn();
         extractErrorResponse(new TestNotice(), mockCore(publish), {
             interaction: slashInteraction(),
-            routeId: 'slash:quiet-probe',
+            origin: 'slash:quiet-probe',
             dispatch,
             guild: null,
             user: null
@@ -140,7 +140,7 @@ describe('extractErrorResponse', () => {
         const denial = new Fault({ cause: new Error('write failed') });
         extractErrorResponse(denial, mockCore(publish), {
             event: { name: 'messageCreate', handler: 'Starboard', args: [{}], channelId: 'ch1' },
-            routeId: 'event:messageCreate:Starboard',
+            origin: 'event:messageCreate:Starboard',
             dispatch,
             guild: null,
             user: null

@@ -20,8 +20,9 @@ describe("Bus 'once' re-entrancy", () => {
 
         const payload: AllSubscriptions['unknownException'] = {
             uuid: randomUUID(),
+            dispatchId: 'd-1',
             error: new Error('boom'),
-            routeId: 'slash:probe'
+            origin: 'slash:probe'
         };
 
         let runs = 0;

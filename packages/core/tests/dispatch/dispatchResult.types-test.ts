@@ -1,6 +1,6 @@
 import { expectTypeOf } from 'vitest';
 
-import type { DispatchResult, EventDispatchResult, HandlerResult } from '#src/dispatch/dispatchResult';
+import type { DispatchResult, EventDispatchResult, HandlerOutcome, HandlerResult } from '#src/dispatch/dispatchResult';
 import type { DispatchOutcome } from '#subscribers/types/Subscriptions';
 
 // catches a fourth outcome added to DispatchOutcome and missed here
@@ -31,3 +31,9 @@ expectTypeOf(perHandler).toHaveProperty('handler').toEqualTypeOf<string>();
 if (perHandler.outcome !== 'handled') {
     expectTypeOf(perHandler).toHaveProperty('caught').toEqualTypeOf<unknown>();
 }
+
+const published = {} as HandlerOutcome;
+
+// the thrown value stays off the bus whichever way HandlerResult grows
+expectTypeOf(published).not.toHaveProperty('caught');
+expectTypeOf<HandlerOutcome['outcome']>().toEqualTypeOf<DispatchOutcome>();

@@ -134,7 +134,7 @@ function stubCore(): Core {
 function stubHandler(event: ReturnType<typeof startEvent>): RepliableHandler<Repliables> {
     const interaction = asRepliable(event);
     const core = stubCore();
-    const sender = new ReplySender(interaction, 'slash:page', core.bus);
+    const sender = new ReplySender(interaction, new DispatchContext('slash:page'), core.bus);
     // justified: start reads only these three members off the handler
     return { core, getEvent: () => interaction, sender } as unknown as RepliableHandler<Repliables>;
 }

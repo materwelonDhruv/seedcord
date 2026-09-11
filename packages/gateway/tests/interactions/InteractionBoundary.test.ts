@@ -71,7 +71,7 @@ function handleInteractionFault(
 
 function senderFor(mock: ReturnType<typeof mockInteraction>, routeId: string): ReplySender {
     // justified: the fixture implements only the Repliables surface the sender reads.
-    return new ReplySender(mock as unknown as Repliables, routeId, stubBus());
+    return new ReplySender(mock as unknown as Repliables, new DispatchContext(routeId), stubBus());
 }
 
 describe('handleInteractionFault', () => {

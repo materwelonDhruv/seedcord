@@ -55,7 +55,7 @@ function dmPayload(): Repliables {
 function stubHandler(post: ReturnType<typeof vi.fn>, interaction = guildPayload()): RepliableHandler<Repliables> {
     const core = { bus: stubBus() } as Core;
     // justified: the fixture implements only the REST surface ReplySender reads
-    const sender = new ReplySender(ref, { post } as unknown as REST, 'slash:page', core.bus);
+    const sender = new ReplySender(ref, { post } as unknown as REST, new DispatchContext('slash:page'), core.bus);
     // justified: start reads only these three members off the handler
     return {
         core,

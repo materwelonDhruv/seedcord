@@ -1,3 +1,4 @@
+import { DispatchContext } from '@seedcord/core';
 import { vi } from 'vitest';
 
 import { ReplySender } from '#bot/ReplySender';
@@ -54,5 +55,5 @@ export function mockInteraction(overrides: FlagOverrides = {}) {
 
 export function senderFor(mock: ReturnType<typeof mockInteraction>): ReplySender {
     // eslint-disable-next-line no-restricted-syntax -- fixture cast, the mock implements only the Repliables surface the sender reads
-    return new ReplySender(mock as unknown as Repliables, ROUTE, stubBus());
+    return new ReplySender(mock as unknown as Repliables, new DispatchContext(ROUTE), stubBus());
 }

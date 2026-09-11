@@ -6,7 +6,7 @@ import { MessageFlags } from 'discord.js';
 
 import type { GatewayFile, GatewayReplyResponse } from '#interfaces/ReplyResponse';
 import type { Repliables } from '#src/handlers/interactionTypes';
-import type { Bus } from '@seedcord/core';
+import type { Bus, DispatchContext } from '@seedcord/core';
 import type { AckState } from '@seedcord/core/internal';
 import type { DeferOpts, ReplyFile, SendOpts } from '@seedcord/types';
 import type {
@@ -53,10 +53,10 @@ function seedState(interaction: Repliables): AckState {
 export class ReplySender extends BaseReplySender<SentMessage, GatewayFile> {
     public constructor(
         private readonly interaction: Repliables,
-        routeId: string,
+        dispatch: DispatchContext,
         bus: Bus
     ) {
-        super(routeId, { bus, interactionId: interaction.id }, seedState(interaction));
+        super({ bus, dispatch, interactionId: interaction.id }, seedState(interaction));
     }
 
     protected async writeReply(

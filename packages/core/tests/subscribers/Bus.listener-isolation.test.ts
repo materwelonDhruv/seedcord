@@ -15,8 +15,9 @@ function stubBus(): Bus {
 
 const faultPayload = (): AllSubscriptions['unknownException'] => ({
     uuid: randomUUID(),
+    dispatchId: 'd-1',
     error: new Error('boom'),
-    routeId: 'slash:probe'
+    origin: 'slash:probe'
 });
 
 describe('Bus listener isolation', () => {

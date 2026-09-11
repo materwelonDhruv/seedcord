@@ -169,7 +169,7 @@ describe('handler gates', () => {
             channelId: 'c-1',
             memberRoleIds: ['r-1', 'r-2'],
             memberPermissions: 2048n,
-            routeId: 'slash:guarded'
+            declaredRoute: 'slash:guarded'
         });
     });
 

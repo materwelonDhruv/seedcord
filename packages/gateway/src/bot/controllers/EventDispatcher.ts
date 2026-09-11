@@ -23,12 +23,13 @@ import { Envapter } from 'envapt';
 import { eventMiddlewareMetaOf } from '#bDecorators/Middlewares';
 import { eventGateContext } from '#bot/gates/runGates';
 import { handleEventFault } from '#bot/handleEventFault';
+import { reportEventDispatched, reportEventDispatching } from '#bot/reportEventDispatch';
 import { EventHandler, EventMiddleware } from '#handlers/event';
 
 import type { RegisterEventMetadataEntry } from '#bDecorators/Events';
 import type { EventHandlerConstructor, EventMiddlewareConstructor } from '#handlers/constructors';
 import type { Core } from '#interfaces/Core';
-import type { HandlerResult, SubscriptionData } from '@seedcord/core';
+import type { HandlerResult } from '@seedcord/core';
 import type { Initializeable, MiddlewareRegistrationOf } from '@seedcord/core/internal';
 import type { EventFrequency, HmrAware, HmrUpdateEvent } from '@seedcord/types';
 import type { ClientEvents } from 'discord.js';
@@ -311,11 +312,6 @@ export class EventDispatcher implements Initializeable, HmrAware {
 
         this.core.bot.client.on(eventName, (...args: ClientEvents[typeof eventName]) => {
             if (this.draining) return;
-            // justified: the generic key erases the per-event tuple and args matches eventName here
-            this.core.bus[PublishDefault]('eventDispatching', {
-                name: eventName,
-                args
-            } as SubscriptionData<'eventDispatching'>);
             const run = this.processEvent(eventName, args).catch((caught: unknown) => {
                 const error = asError(caught);
                 this.logger.error(`[${paint.coral.bold('UNHANDLED ERROR AT ROOT')}] ${error.name}`, error.stack);
@@ -338,6 +334,7 @@ export class EventDispatcher implements Initializeable, HmrAware {
         eventName: KeyOfEvents,
         args: ClientEvents[KeyOfEvents]
     ): Promise<void> {
+        const startedAt = performance.now();
         const handlerEntries = this.eventMap.get(eventName);
         if (!handlerEntries || handlerEntries.length === 0) return;
 
@@ -348,6 +345,8 @@ export class EventDispatcher implements Initializeable, HmrAware {
         if (handlersToExecute.length === 0) return;
 
         const dispatch = new DispatchContext(`event:${String(eventName)}`);
+        reportEventDispatching(this.core, dispatch.id, eventName, args);
+
         const ran: EventMiddleware[] = [];
         const handlers: HandlerResult[] = [];
         let stopped: { caught: unknown } | null = null;
@@ -367,7 +366,9 @@ export class EventDispatcher implements Initializeable, HmrAware {
                 handlers.push(await this.processHandler(eventName, entry.ctor, args, dispatch));
             }
         } finally {
-            await runAfter(ran, eventResultFor(stopped, handlers), this.logger);
+            const result = eventResultFor(stopped, handlers);
+            reportEventDispatched(this.core, dispatch.id, eventName, result, startedAt);
+            await runAfter(ran, result, this.logger);
         }
     }
 

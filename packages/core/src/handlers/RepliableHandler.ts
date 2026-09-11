@@ -30,10 +30,10 @@ export abstract class RepliableHandler<
         super(event, core, dispatch, 'interactions');
         this.routeId = dispatch.routeId;
         // the override runs before its own field initializers
-        this.sender = sender ?? this.buildSender(event, core, this.routeId);
+        this.sender = sender ?? this.buildSender(event, core, dispatch);
     }
 
-    protected abstract buildSender(event: Event, core: TCore, routeId: string): TSender;
+    protected abstract buildSender(event: Event, core: TCore, dispatch: DispatchContext): TSender;
 
     /** Send the initial response, exactly once. */
     protected reply(response: ReplyResponse<TNative> | string, opts?: SendOpts): Promise<TMessage> {

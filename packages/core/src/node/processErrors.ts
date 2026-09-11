@@ -12,14 +12,14 @@ const logger = new Logger('Faults', { channel: 'errors' });
 
 /** @internal */
 export function registerProcessErrors(core: CoreBase, shutdown: CoordinatedShutdown): () => void {
-    function report(caught: unknown, routeId: string): void {
+    function report(caught: unknown, origin: string): void {
         const error = asError(caught);
         const uuid = crypto.randomUUID();
 
         if (core.config.errors?.errorStack ?? false) logger.error(uuid, error);
         else logger.error(`${uuid} | ${error.message}`);
 
-        core.bus[PublishDefault]('unknownException', { uuid, error, routeId });
+        core.bus[PublishDefault]('unknownException', { uuid, dispatchId: null, error, origin });
     }
 
     const onRejection = (reason: unknown): void => {

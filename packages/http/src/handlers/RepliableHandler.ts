@@ -7,6 +7,7 @@ import type { Core } from '#interfaces/Core';
 import type { SentMessage } from '#reply/ReplySender';
 import type { Repliables } from './interactionTypes';
 import type { API } from '@discordjs/core/http-only';
+import type { DispatchContext } from '@seedcord/core';
 
 /**
  * Shared base the repliable HTTP interaction handlers extend.
@@ -30,9 +31,9 @@ export abstract class RepliableHandler<Event extends Repliables> extends CoreRep
         return this.event;
     }
 
-    protected buildSender(event: Event, core: Core, routeId: string): ReplySender {
+    protected buildSender(event: Event, core: Core, dispatch: DispatchContext): ReplySender {
         const ref = { application_id: event.application_id, id: event.id, token: event.token };
-        return new ReplySender(ref, core.rest, routeId, core.bus);
+        return new ReplySender(ref, core.rest, dispatch, core.bus);
     }
 
     /**

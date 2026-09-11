@@ -2,8 +2,8 @@ import type { WriteMethod } from '#reply/responseReport';
 import type { InteractionKind } from '#src/metadataKeys';
 import type { Notice } from '#stops/Notice';
 import type { TypedExclude } from '@seedcord/types';
+import type { UUID } from '@seedcord/types/internal';
 import type { APIApplicationCommand } from 'discord-api-types/v10';
-import type { UUID } from 'node:crypto';
 
 /**
  * How a dispatch finished. The thrown value's type sets this, wherever it was thrown. A `Silence` and a
@@ -57,6 +57,8 @@ export interface EventFaultSource {
  * The fields both `responseAttempted` arms carry.
  */
 export interface AttemptedWrite {
+    /** The dispatch this write belongs to, for joining against every other key it published. */
+    readonly dispatchId: string;
     readonly routeId: string;
     /** The interaction this write belongs to, for joining against `interactionDispatched`. */
     readonly interactionId: string;
@@ -102,9 +104,11 @@ export interface DefaultSubscriptions {
     /** Triggered when an unhandled exception (a raw non-Notice throw) occurs. */
     readonly unknownException: {
         readonly uuid: UUID;
+        /** The dispatch that raised it. Null on a process-level throw, which has no dispatch behind it. */
+        readonly dispatchId: string | null;
         readonly error: Error;
         /** Where the throw came from, `slash:ban` for an interaction and `event:name:handler` for an event. */
-        readonly routeId: string;
+        readonly origin: string;
         readonly guild?: { readonly id: string; readonly name: string } | undefined;
         readonly user?: { readonly id: string; readonly username: string } | undefined;
         readonly metadata?: unknown;
@@ -113,8 +117,10 @@ export interface DefaultSubscriptions {
     readonly handledException: {
         readonly denial: Notice;
         readonly uuid: UUID;
-        /** The same id `interactionDispatched` publishes. An event reads `event:name:handler`. */
-        readonly routeId: string;
+        /** The dispatch that reported it. */
+        readonly dispatchId: string;
+        /** Where the reported Notice came from, the same shape `unknownException.origin` carries. */
+        readonly origin: string;
         readonly source: FaultSource;
     };
     /** Triggered when an interaction dispatch throws past the fault boundary. */
@@ -123,6 +129,8 @@ export interface DefaultSubscriptions {
     };
     /** Triggered once per interaction dispatch, after the handler chain settles. */
     readonly interactionDispatched: {
+        /** This dispatch, for joining against every other key it published. */
+        readonly dispatchId: string;
         readonly routeId: string;
         /** The interaction this dispatch ran, for joining against `responseAttempted`. */
         readonly interactionId: string;

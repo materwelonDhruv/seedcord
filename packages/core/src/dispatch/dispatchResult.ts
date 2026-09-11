@@ -11,6 +11,12 @@ export type DispatchResult =
 export type HandlerResult = { readonly handler: string } & DispatchResult;
 
 /**
+ * What `eventDispatched` publishes for each handler that ran. `unknownException` carries the thrown
+ * value under the same `event:name:handler` origin.
+ */
+export type HandlerOutcome = Pick<HandlerResult, 'handler' | 'outcome'>;
+
+/**
  * An event middleware's `after()` receives this once the event finishes. `outcome` reports the
  * middleware chain alone. `handlers` holds one entry per handler that ran. A stopped chain runs none.
  */

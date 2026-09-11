@@ -1,4 +1,5 @@
 import { ContainerBuilder } from '@discordjs/builders';
+import { DispatchContext } from '@seedcord/core';
 import { PublishDefault } from '@seedcord/core/internal';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
@@ -78,7 +79,7 @@ describe('getConfirmation', () => {
         bus: Bus = stubBus()
     ): RepliableHandler<NonModalInteraction> {
         const interaction = source as NonModalInteraction;
-        const sender = new ReplySender(interaction, routeId, bus);
+        const sender = new ReplySender(interaction, new DispatchContext(routeId), bus);
         return {
             getEvent: () => interaction,
             sender

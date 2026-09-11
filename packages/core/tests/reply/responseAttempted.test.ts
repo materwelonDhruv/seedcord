@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { BaseReplySender } from '#reply/BaseReplySender';
+import { DispatchContext } from '#src/dispatch/DispatchContext';
 import { Bus } from '#subscribers/Bus';
 
 import type { CoreBase } from '#interfaces/CoreBase';
@@ -16,7 +17,7 @@ const created: TestMessage = { id: 'm1' };
 
 class TestSender extends BaseReplySender<TestMessage> {
     public constructor(bus: Bus) {
-        super('slash:ping', { bus, interactionId: 'i1' });
+        super({ bus, dispatch: new DispatchContext('slash:ping'), interactionId: 'i1' });
     }
 
     protected writeReply(): Promise<TestMessage> {

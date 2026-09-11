@@ -6,6 +6,7 @@ import type { SentMessage } from '#bot/ReplySender';
 import type { Core } from '#interfaces/Core';
 import type { GatewayFile } from '#interfaces/ReplyResponse';
 import type { Repliables } from './interactionTypes';
+import type { DispatchContext } from '@seedcord/core';
 
 /**
  * Shared base the repliable interaction handlers extend.
@@ -29,7 +30,7 @@ export abstract class RepliableHandler<Event extends Repliables> extends CoreRep
         return this.event;
     }
 
-    protected buildSender(event: Event, core: Core, routeId: string): ReplySender {
-        return new ReplySender(event, routeId, core.bus);
+    protected buildSender(event: Event, core: Core, dispatch: DispatchContext): ReplySender {
+        return new ReplySender(event, dispatch, core.bus);
     }
 }
